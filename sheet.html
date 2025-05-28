@@ -20,13 +20,15 @@
 
 <!-- Tab buttons -->
 
+<input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
 <div class="tab">
-    <button class="tablinks" onclick="selectTab(event, 'Profile')">Profile</button>
-    <button class="tablinks" onclick="selectTab(event, 'Abilities')">Abilities</button>
+    <button type="action" name="act_character" class="sheet-button0">Character</button>
+    <button type="action" name="act_items" class="sheet-button1">Items</button>
+    <button type="action" name="act_abilities" class="sheet-button2">Abilities</button>
 </div>
 
 <!-- Profile page -->
-<div class="main">
+<div class="character">
     <div class="grid">
 
         <!-- Profile page, Level and Profile -->
@@ -51,6 +53,9 @@
 
             <div class="profile section">
                 <h3 class="small">Profile</h3>
+
+                <!-- Trait -->
+
                 <div class="trait horizontal">
                     <label class="mini">Trait:</label>
                     <input class="mini" name="attr_trait" type="text" value="Indomitable" />
@@ -59,41 +64,30 @@
                     <label class="mini">Effect:</label>
                     <textarea class="mini" name="attr_trait_effect" placeholder="The effect provided by your trait">You've slipped from death more times than you can count. Receive one advantage die on checks to endure pain or push your body beyond its natural limits.</textarea>
                 </div>
+
+                <!-- Title  -->
+
                 <div class="title horizontal">
                     <label class="mini">Title:</label>
-                    <input class="mini" name="attr_motive" type="text" value="Gilded Ambition" />
+                    <input class="mini" name="attr_title" type="text" value="Gilded Ambition" />
                 </div>
                 <div class="title-effect list">
                     <label class="mini">Effect:</label>
-                    <textarea class="mini" name="attr_origin" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
+                    <textarea class="mini" name="attr_title_effect" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle.</textarea>
                 </div>
+
+                <!-- Minion -->
+                 
+                <div class="minion horizontal">
+                    <label class="mini">Minion:</label>
+                    <input class="mini" name="attr_minion" type="text" value="Black Puppy" />
+                </div>
+                <div class="title-effect list">
+                    <label class="mini">Effect:</label>
+                    <textarea class="mini" name="attr_minion_effect" placeholder="The effect provided by your title">Placeholder text goes here</textarea>
+                </div>
+
             </div>
-
-            <!-- Title List -->
-
-            <h3 class="small">Titles</h3> 
-            <fieldset>
-                <div class="expandable-section">
-	                <input id="expand-control" class="expand-checkbox" type="checkbox" name="attr_expand_item"/>
-                    <label for="expand-control" class="label-toggle mini">Expand</label>
-                    <div class="expanded-view">
-                        <div class="title horizontal">
-                            <label class="mini">Title:</label>
-                            <input class="mini" name="attr_title" type="text" value="Gilded Ambition" />
-                        </div>
-                        <div class="title-effect list">
-                            <label class="mini">Effect:</label>
-                            <textarea class="mini" name="attr_origin" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
-                        </div>
-                    </div>
-                    <div class="collapsed-view">
-                        <div class="title horizontal">
-                            <label class="mini">Title:</label>
-                            <input class="mini" disabled name="attr_title" value="Gilded Ambition" />
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
         </div>
         
         <!-- Profile page, Attributes -->
@@ -196,11 +190,79 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Fortune -->
+
+            <div class="fortune section">
+                <div class="flex horizontal tight right-aligned">
+                <label class="text large">Fortune</label>
+                    <input class="stat" name="attr_fortune" type="number" min="0" value="3">
+                </div>
+            </div>
+
+            <!-- Effects -->
+
+            <div class="effects section horizontal">
+                <div class="buffs">
+
+                </div>
+                <div class="enfeeblements">
+                    
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Items page -->
+
+<div class="items">
+
+    <!-- Title List -->
+
+    <h3 class="small">Titles</h3> 
+    <fieldset>
+        <div class="expandable-section">
+            <input id="expand-control" class="expand-checkbox" type="checkbox" name="attr_expand_item"/>
+            <label for="expand-control" class="label-toggle mini">Expand</label>
+            <div class="expanded-view">
+                <div class="title horizontal">
+                    <label class="mini">Title:</label>
+                    <input class="mini" name="attr_title" type="text" value="Gilded Ambition" />
+                </div>
+                <div class="title-effect list">
+                    <label class="mini">Effect:</label>
+                    <textarea class="mini" name="attr_origin" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
+                </div>
+            </div>
+            <div class="collapsed-view">
+                <div class="title horizontal">
+                    <label class="mini">Title:</label>
+                    <input class="mini" disabled name="attr_title" value="Gilded Ambition" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+<!-- Abilities page -->
+
+<div class="abilities">
+</abilities>
+
 <!-- ---------------------------SHEET WORKERS----------------- -->
+
+<script type="text/worker">
+    // Tabs
+    const buttonlist = ["character", "items", "abilities"];
+    buttonlist.forEach(button => {
+        on(`clicked:${button}`, function() {
+            setAttrs({
+                sheetTab: button
+            });
+        });
+    });
+</script>
 
 <script type="text/worker">
 

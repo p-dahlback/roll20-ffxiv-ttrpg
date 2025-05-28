@@ -63,6 +63,31 @@ input[type=number].sheet-txtfield {
   -moz-appearance: textfield;
 }
 
+/* TABS */
+
+/* configure the tab buttons */
+.character,
+.items,
+.abilities {
+    display: none;
+}
+
+/* style the active button */
+.tabstoggle[value="character"] ~ div .sheet-button0 {outline: 2px solid red;}
+.tabstoggle[value="items"] ~ div .sheet-button1 {outline: 2px solid red;}
+.tabstoggle[value="abilities"] ~ div .sheet-button2 {outline: 2px solid red;}
+
+/* show the selected tab */
+.tabstoggle[value="character"] ~ div.character,
+.tabstoggle[value="items"] ~ div.items,
+.tabstoggle[value="abilities"] ~ div.abilities {
+    display: block;
+}
+
+.tab {
+  margin-bottom: 8px;
+}
+
 /* EXPAND/COLLAPSE */
 
 .expand-checkbox:not(:checked) ~ .expanded-view,
