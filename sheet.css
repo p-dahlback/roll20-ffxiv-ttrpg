@@ -1,0 +1,285 @@
+/*------------------------------------------------*\
+  #GENERAL
+\*------------------------------------------------*/
+
+
+/* --------- Text ------------- */
+
+span.sheet-bold{
+  font-weight: 800;
+}
+
+
+/* --------- Inputs ------------- */
+
+input[type="text"],
+input[type="text"]:disabled {
+  background-color: transparent;
+  border-style: none none dotted none;
+  border-color: black;
+}
+
+input[type="number"] {
+  background-color: transparent;
+  border: none;
+}
+
+textarea {
+  background-color: transparent;
+  width: 95%;
+  height: 120px;
+  border-style: none none dotted none;
+  border-color: black;
+  resize: none;
+}
+
+input[type="checkbox"].sheet-checkbox {
+  border-style: solid black;
+  border-radius: 0px;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="number"]:focus{
+  background-color: white;
+}
+
+h3 {
+  border-style: none none solid none;
+  border-color: black;
+}
+
+/* -----Hides up/down buttons on numberfields that don't need them ---*/
+
+input[type=number].sheet-ref::-webkit-inner-spin-button,
+input[type=number].sheet-ref::-webkit-outer-spin-button,
+input[type=number].sheet-txtfield::-webkit-inner-spin-button,
+input[type=number].sheet-txtfield::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number].sheet-ref,
+input[type=number].sheet-txtfield {
+  -moz-appearance: textfield;
+}
+
+/* EXPAND/COLLAPSE */
+
+.expand-checkbox:not(:checked) ~ .expanded-view,
+.expand-checkbox:checked ~ .collapsed-view {
+  max-height: 0px;
+  overflow: hidden;
+}
+
+.expand-checkbox:checked ~ .expanded-view,
+.expand-checkbox:not(:checked) ~ .collapsed-view {
+  max-height: 100vh;
+}
+
+.expand-checkbox {
+  display: none
+}
+
+.label-toggle {
+  display: block;
+
+  font-weight: bold;
+  font-family: monospace;
+  text-transform: uppercase;
+  text-align: right;
+
+  padding: 0.5rem;
+
+  cursor: pointer;
+
+  border-radius: 7px;
+}
+
+.label-toggle:hover {
+  color: #7C5A0B;
+}
+
+.label-toggle::before {
+  content: ' ';
+  display: inline-block;
+
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid currentColor;
+
+  vertical-align: middle;
+  margin-right: .7rem;
+  transform: translateY(-2px);
+}
+
+
+/* LABELS */
+
+.center {
+  text-align: center;
+}
+
+.mini {
+  font-size: 1em;
+  font-weight: normal;
+}
+
+.small {
+  font-size: 1.2em;
+}
+
+.medium {
+  font-size: 1.4em;
+}
+
+.large {
+  font-size: 2.3em;
+}
+
+.oneline {
+  text-overflow: ellipsis;
+  text-wrap-mode: nowrap;
+}
+
+/* SECTIONS */
+
+.top {
+  display: grid;
+  grid-template-columns: 50px 0.5fr 0.5fr;
+  grid-gap: 16px;
+  padding: 8px 0px 16px 0px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+}
+
+.grid .left {
+  background-color: cadetblue;
+  padding: 8px 16px 8px 16px;
+}
+
+.grid .right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  background-color: blanchedalmond;
+  padding: 8px 16px 8px 16px;
+}
+
+.vertical {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, 1fr);
+}
+
+.horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+}
+
+.tight {
+  gap: 2px;
+}
+
+.flex.horizontal {
+  align-items: flex-end;
+}
+
+.right-aligned {
+  margin-left: auto;
+  margin-right: 0px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.advantage {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 32px;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  border-style: none none solid none;
+  border-color: black;
+}
+
+.stat-block button {
+  padding-left: 16px;
+  padding-right: 16px;
+  text-align: left;
+  color: black;
+  background: none;
+  border: none;
+}
+
+.stat-block button:hover {
+  color: gray;
+}
+
+.stat-block button:active {
+  color: lightgray;
+}
+
+.stat {
+  text-align: right;
+}
+
+.stat-block .medium {
+  font-size: 1.4em;
+  align-items: baseline;
+}
+
+.active-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.magic-point {
+  display: flex;
+  gap: 32px;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.hit-point {
+  display: flex;
+  gap: 32px;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.image {
+  width: 256px;
+  height: 256px;
+  background-color: white;
+  margin: auto;
+}
+
+/* INPUT */
+
+input[type=number] {
+  font-size: 2.3em;
+  width: 2em;
+}
+
+input[type=number].max {
+  font-size: 1.2em;
+  width: 2.5em;
+}
+
+input.job-input {
+  width: 10em;
+}

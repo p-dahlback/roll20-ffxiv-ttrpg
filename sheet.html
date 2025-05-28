@@ -1,0 +1,251 @@
+<link rel="stylesheet" href="sheet.css" />
+
+<!-- Character name and race -->
+
+<div class="top section">
+    <div class="type">
+        <img src="Images/WAR_Symbol_Token.png" width="50" />
+    </div>
+
+    <div class="name content vertical">
+        <label class="small">Name</label>
+        <input class="medium" name="attr_character_name" type="text" value="Kokopoko">
+    </div>
+    
+    <div class="race content vertical">
+        <label class="small">Race</label>
+        <input class="medium" name="attr_character_race" type="text" value="Lalafell">
+    </div>
+</div>
+
+<!-- Tab buttons -->
+
+<div class="tab">
+    <button class="tablinks" onclick="selectTab(event, 'Profile')">Profile</button>
+    <button class="tablinks" onclick="selectTab(event, 'Abilities')">Abilities</button>
+</div>
+
+<!-- Profile page -->
+<div class="main">
+    <div class="grid">
+
+        <!-- Profile page, Level and Profile -->
+
+        <div class="left section">
+            <div class="basic-info horizontal">
+                <div class="level flex horizontal tight">
+                    <label class="large">LV</label>
+                    <input name="attr_level" type="number" value="30">
+                </div>
+                <div class="job vertical">
+                    <label class="small">Role / Job</label>
+                    <input class="job-input medium" name="attr_job" type="text" value="TANK / WARRIOR">
+                </div>
+            </div>
+        
+            <div class="image section">
+                <img name="attr_character_avatar">
+            </div>
+
+            <!-- Profile -->
+
+            <div class="profile section">
+                <h3 class="small">Profile</h3>
+                <div class="trait horizontal">
+                    <label class="mini">Trait:</label>
+                    <input class="mini" name="attr_trait" type="text" value="Indomitable" />
+                </div>
+                <div class="trait-effect" list>
+                    <label class="mini">Effect:</label>
+                    <textarea class="mini" name="attr_trait_effect" placeholder="The effect provided by your trait">You've slipped from death more times than you can count. Receive one advantage die on checks to endure pain or push your body beyond its natural limits.</textarea>
+                </div>
+                <div class="title horizontal">
+                    <label class="mini">Title:</label>
+                    <input class="mini" name="attr_motive" type="text" value="Gilded Ambition" />
+                </div>
+                <div class="title-effect list">
+                    <label class="mini">Effect:</label>
+                    <textarea class="mini" name="attr_origin" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
+                </div>
+            </div>
+
+            <!-- Title List -->
+
+            <h3 class="small">Titles</h3> 
+            <fieldset>
+                <div class="expandable-section">
+	                <input id="expand-control" class="expand-checkbox" type="checkbox" name="attr_expand_item"/>
+                    <label for="expand-control" class="label-toggle mini">Expand</label>
+                    <div class="expanded-view">
+                        <div class="title horizontal">
+                            <label class="mini">Title:</label>
+                            <input class="mini" name="attr_title" type="text" value="Gilded Ambition" />
+                        </div>
+                        <div class="title-effect list">
+                            <label class="mini">Effect:</label>
+                            <textarea class="mini" name="attr_origin" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
+                        </div>
+                    </div>
+                    <div class="collapsed-view">
+                        <div class="title horizontal">
+                            <label class="mini">Title:</label>
+                            <input class="mini" disabled name="attr_title" value="Gilded Ambition" />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        
+        <!-- Profile page, Attributes -->
+
+        <div class="right section">
+            <div class="advantage">
+                <label class="large">Advantage</label>
+                <input name="attr_advantage" type="number" min="-2" max="2" value="0" />
+            </div>
+            <div class="stat section horizontal">
+
+                <!-- Primary -->
+
+                <div class="main-stat list">
+                    <h3 class="medium">Primary Attributes</h3>
+                    <div class="stat-block">
+                        <button class="medium" name="roll_strength" type="roll" value="/roll @{d20} + @{str}">STR</button>
+                        <input class="stat" name="attr_str" type="number" value="5">
+                    </div>
+                    
+                    <div class="stat-block">
+                        <button class="medium" name="roll_dexterity" type="roll" value="&{template:default} {{name=Dexterity}} {{Result=[[@{d20}+(@{dex})]]}}">DEX</button>
+                        <input class="stat" name="attr_dex" type="number" value="4">
+                    </div>
+                    
+                    <div class="stat-block">
+                        <button class="medium" name="roll_vitality" type="roll" value="&{template:default} {{name=Vitality}} {{Result=[[@{d20}+(@{vit})]]}}">VIT</button>
+                        <input class="stat" name="attr_vit" type="number" value="3">
+                    </div>
+                    
+                    <div class="stat-block">
+                        <button class="medium" name="roll_intelligence" type="roll" value="&{template:default} {{name=Intelligence}} {{Result=[[@{d20}+(@{int})]]}}">INT</button>
+                        <input class="stat" name="attr_int" type="number" value="2">
+                    </div>
+                    
+                    <div class="stat-block">
+                        <button class="medium" name="roll_mind" type="roll" value="&{template:default} {{name=Mind}} {{Result=[[@{d20}+(@{mnd})]]}}">MND</button>
+                        <input class="stat" name="attr_mnd" type="number" value="1">
+                    </div>
+                </div>
+                
+                <!-- Secondary -->
+
+                <div class="sub-stat list">
+                    <h3 class="medium">Secondary Attributes</h3>
+                    <div class="stat-block">
+                        <label class="medium oneline">Defense</label>
+                        <input class="stat" name="attr_defense" type="number" value="15">
+                    </div>
+                    
+                    <div class="stat-block">
+                        <label class="medium oneline">Magic Defense</label>
+                        <input class="stat" name="attr_magic_defense" type="number" value="12">
+                    </div>
+                    
+                    <div class="stat-block">
+                        <label class="medium oneline">Vigilance</label>
+                        <input class="stat" name="attr_vigilance" type="number" value="11">
+                    </div>
+                    
+                    <div class="stat-block">
+                        <label class="medium oneline">Speed</label>
+                        <input class="stat" name="attr_speed" type="number" value="5">
+                    </div>
+                </div>
+            </div> 
+        
+            <!-- Active stats -->
+
+            <div class="active-stat section">
+
+                <!-- HP -->
+
+                <div class="hit-point section">
+                    <label class="text large" style="width: 1em">HP</label>
+                    <div class="flex horizontal tight right-aligned">
+                        <input class="stat" name="attr_hit_points" type="number" min="0" value="30"> /
+                        <input class="stat max" name="attr_hit_points_max" type="number" min="0" value="30">
+                    </div>
+                    <div class="barrier list right-aligned">
+                        <label class="mini">Barrier</label>
+                        <input class="stat" name="attr_barrier_points" type="number" min="0" value="10">
+                    </div>
+                </div>
+                
+                <!-- MP -->
+
+                <div class="magic-point section">
+                    <label class="large" style="width: 1em">MP</label>
+                    <div class="current list">
+                        <label class="mini">Recover 2MP at the end of the (Adventurer Step)</label>
+                        <div class="flex horizontal tight right-aligned">
+                            <input class="stat" name="attr_magic_points" type="number" min="0" value="5"> /
+                            <input class="stat max" name="attr_magic_points_max" type="number" min="0" value="5">
+                        </div>
+                    </div>
+                    <div class="bonus-mp list right-aligned">
+                        <label class="mini">Extra</label>
+                        <input class="stat" name="attr_bonus_mp" type="number" min="0" value="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ---------------------------SHEET WORKERS----------------- -->
+
+<script type="text/worker">
+
+    // Advantage management
+    on("change:advantage sheet:opened", function () {
+        getAttrs(["advantage"], function(values) {
+            let numberOfAdvantageDice = Math.abs(values.advantage)
+            let numberOfDice = 1 + numberOfAdvantageDice
+            let keepMarker
+            if (values.advantage == 0) {
+                keepMarker = ""
+            } else if (values.advantage > 0) {
+                keepMarker = "kh1"
+            } else {
+                keepMarker = "kl1"
+            }
+            setAttrs({
+                d20: numberOfDice + "d20" + keepMarker
+            })
+        })
+    })
+
+    // HP Max
+    on("change:hit_points", function() {
+        getAttrs(["hit_points", "hit_points_max"], function(values) {
+            if (values.hit_points > values.hit_points_max) {
+                setAttrs({
+                    hit_points: values.hit_points_max
+                })
+            }
+        })
+    })
+
+    // MP Max
+    on("change:magic_points", function() {
+        getAttrs(["magic_points", "magic_points_max"], function(values) {
+            if (values.magic_points > values.magic_points_max) {
+                setAttrs({
+                    magic_points: values.magic_points_max
+                })
+            }
+        })
+    })
+
+</script>
+
+
+
