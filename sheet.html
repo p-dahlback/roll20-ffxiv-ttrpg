@@ -23,7 +23,7 @@
 <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
 <div class="tab">
     <button type="action" name="act_character" class="sheet-button0">Character</button>
-    <button type="action" name="act_items" class="sheet-button1">Items</button>
+    <button type="action" name="act_items" class="sheet-button1">Inventory</button>
     <button type="action" name="act_abilities" class="sheet-button2">Abilities</button>
 </div>
 
@@ -71,20 +71,20 @@
                     <label class="mini">Title:</label>
                     <input class="mini" readonly name="attr_selectedTitle" type="text" />
                 </div>
-                <div class="TitleEffect list">
+                <div class="title-effect list">
                     <label class="mini">Effect:</label>
-                    <textarea class="mini" readonly name="attr_selectedTitleEffect" placeholder="Add and select a Title from Inventory"></textarea>
+                    <textarea class="mini" readonly name="attr_selectedTitleEffect" placeholder="Select a Title from Inventory"></textarea>
                 </div>
 
                 <!-- Minion -->
                  
                 <div class="minion horizontal">
                     <label class="mini">Minion:</label>
-                    <input class="mini" readonly name="attr_selectedMinion" type="text" value="Black Puppy" />
+                    <input class="mini" readonly name="attr_selectedMinion" type="text"/>
                 </div>
-                <div class="TitleEffect list">
+                <div class="minion-effect list">
                     <label class="mini">Effect:</label>
-                    <textarea class="mini" readonly name="attr_selectedMinionEffect" placeholder="The effect provided by your title">Placeholder text goes here</textarea>
+                    <textarea class="mini" readonly name="attr_selectedMinionEffect" placeholder="Select a Minion from your Inventory"></textarea>
                 </div>
 
             </div>
@@ -225,12 +225,12 @@
             <h3 class="small">Titles</h3> 
             <fieldset class="repeating_titles">
                 <div class="expandable-section grid">
-                    <input class="mini" name="attr_title" type="text" value="Gilded Ambition" />
-                    <input id="expand-checkbox" class="expand-checkbox" type="checkbox" name="attr_expandItem" value="0" unchecked/>
+                    <input class="mini" name="attr_title" type="text" placeholder="Enter the title name" />
+                    <input class="expand-checkbox" type="checkbox" name="attr_expandItem" value="1" />
                     <div class="expanded-view span2">
-                        <div class="TitleEffect list">
+                        <div class="title-effect list">
                             <label class="mini">Effect:</label>
-                            <textarea class="mini" name="attr_effect" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
+                            <textarea class="mini" name="attr_effect" placeholder="The effect provided by your title"></textarea>
                             <button type="action" class="select" name="act_select">Set as current Title</button>
                         </div>
                     </div>
@@ -241,7 +241,17 @@
 
             <h3 class="small">Minions</h3>
             <fieldset class="repeating_minions">
-                
+                <div class="expandable-section grid">
+                    <input class="mini" name="attr_title" type="text" placeholder="Enter the title name" />
+                    <input class="expand-checkbox" type="checkbox" name="attr_expandItem" value="1" />
+                    <div class="expanded-view span2">
+                        <div class="title-effect list">
+                            <label class="mini">Effect:</label>
+                            <textarea class="mini" name="attr_effect" placeholder="The effect provided by your title"></textarea>
+                            <button type="action" class="select" name="act_select">Set as current Title</button>
+                        </div>
+                    </div>
+                </div>
             </fieldset>
         </div>
 
@@ -250,7 +260,19 @@
         <div class="section list vertical-span2">
             <h3 class="small">Items</h3>
             <fieldset class="repeating_items">
-                
+                <div class="expandable-section grid">
+                    <div class="item-input">
+                        <input class="mini" name="attr_title" type="text" placeholder="Enter the title name" />
+                        <input class="mini" name="attr_count" type="number" value="1" />
+                    </div>
+                    <input class="expand-checkbox" type="checkbox" name="attr_expandItem" value="1" />
+                    <div class="expanded-view span2">
+                        <div class="title-effect list">
+                            <label class="mini">Effect:</label>
+                            <textarea class="mini" name="attr_effect" placeholder="The effect provided by your title"></textarea>
+                        </div>
+                    </div>
+                </div>
             </fieldset>
         </div>
     </div>
@@ -279,7 +301,6 @@
 <script type="text/worker">
     // Title selection
     on("clicked:repeating_titles:select", function(eventInfo) {
-        // Check the current value of the hidden attribute.
         const rowid = eventInfo.sourceAttribute.split("_")[2]
         getAttrs([
             `repeating_titles_${rowid}_title`, 
@@ -296,7 +317,6 @@
 
     // Minion selection
     on("clicked:repeating_minions:select", function(eventInfo) {
-        // Check the current value of the hidden attribute.
         const rowid = eventInfo.sourceAttribute.split("_")[2];
         getAttrs([
             `repeating_minions_${rowid}_title`, 
