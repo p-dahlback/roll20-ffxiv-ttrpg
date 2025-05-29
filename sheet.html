@@ -60,31 +60,31 @@
                     <label class="mini">Trait:</label>
                     <input class="mini" name="attr_trait" type="text" value="Indomitable" />
                 </div>
-                <div class="trait-effect" list>
+                <div class="traitEffect" list>
                     <label class="mini">Effect:</label>
-                    <textarea class="mini" name="attr_trait_effect" placeholder="The effect provided by your trait">You've slipped from death more times than you can count. Receive one advantage die on checks to endure pain or push your body beyond its natural limits.</textarea>
+                    <textarea class="mini" name="attr_traitEffect" placeholder="The effect provided by your trait">You've slipped from death more times than you can count. Receive one advantage die on checks to endure pain or push your body beyond its natural limits.</textarea>
                 </div>
 
                 <!-- Title  -->
 
                 <div class="title horizontal">
                     <label class="mini">Title:</label>
-                    <input class="mini" name="attr_title" type="text" value="Gilded Ambition" />
+                    <input class="mini" readonly name="attr_selectedTitle" type="text" />
                 </div>
-                <div class="title-effect list">
+                <div class="TitleEffect list">
                     <label class="mini">Effect:</label>
-                    <textarea class="mini" name="attr_title_effect" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle.</textarea>
+                    <textarea class="mini" readonly name="attr_selectedTitleEffect" placeholder="Add and select a Title from Inventory"></textarea>
                 </div>
 
                 <!-- Minion -->
                  
                 <div class="minion horizontal">
                     <label class="mini">Minion:</label>
-                    <input class="mini" name="attr_minion" type="text" value="Black Puppy" />
+                    <input class="mini" readonly name="attr_selectedMinion" type="text" value="Black Puppy" />
                 </div>
-                <div class="title-effect list">
+                <div class="TitleEffect list">
                     <label class="mini">Effect:</label>
-                    <textarea class="mini" name="attr_minion_effect" placeholder="The effect provided by your title">Placeholder text goes here</textarea>
+                    <textarea class="mini" readonly name="attr_selectedMinionEffect" placeholder="The effect provided by your title">Placeholder text goes here</textarea>
                 </div>
 
             </div>
@@ -132,7 +132,7 @@
                 <!-- Secondary -->
 
                 <div class="sub-stat list">
-                    <h3 class="medium">Secondary Attributes</h3>
+                    <h3 class="medium standard">Secondary Attributes</h3>
                     <div class="stat-block">
                         <label class="medium oneline">Defense</label>
                         <input class="stat" name="attr_defense" type="number" value="15">
@@ -140,7 +140,7 @@
                     
                     <div class="stat-block">
                         <label class="medium oneline">Magic Defense</label>
-                        <input class="stat" name="attr_magic_defense" type="number" value="12">
+                        <input class="stat" name="attr_magicDefense" type="number" value="12">
                     </div>
                     
                     <div class="stat-block">
@@ -164,12 +164,12 @@
                 <div class="hit-point section">
                     <label class="text large" style="width: 1em">HP</label>
                     <div class="flex horizontal tight right-aligned">
-                        <input class="stat" name="attr_hit_points" type="number" min="0" value="30"> /
-                        <input class="stat max" name="attr_hit_points_max" type="number" min="0" value="30">
+                        <input class="stat" name="attr_hitPoints" type="number" min="0" value="30"> /
+                        <input class="stat max" name="attr_hitPoints_max" type="number" min="0" value="30">
                     </div>
                     <div class="barrier list right-aligned">
                         <label class="mini">Barrier</label>
-                        <input class="stat" name="attr_barrier_points" type="number" min="0" value="10">
+                        <input class="stat" name="attr_barrierPoints" type="number" min="0" value="10">
                     </div>
                 </div>
                 
@@ -180,13 +180,13 @@
                     <div class="current list">
                         <label class="mini">Recover 2MP at the end of the (Adventurer Step)</label>
                         <div class="flex horizontal tight right-aligned">
-                            <input class="stat" name="attr_magic_points" type="number" min="0" value="5"> /
-                            <input class="stat max" name="attr_magic_points_max" type="number" min="0" value="5">
+                            <input class="stat" name="attr_magicPoints" type="number" min="0" value="5"> /
+                            <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
                         </div>
                     </div>
                     <div class="bonus-mp list right-aligned">
                         <label class="mini">Extra</label>
-                        <input class="stat" name="attr_bonus_mp" type="number" min="0" value="1">
+                        <input class="stat" name="attr_bonusMp" type="number" min="0" value="1">
                     </div>
                 </div>
             </div>
@@ -217,38 +217,50 @@
 <!-- Items page -->
 
 <div class="items">
+    <div class="section grid">
+        <div class="section list">
 
-    <!-- Title List -->
+            <!-- Title List -->
 
-    <h3 class="small">Titles</h3> 
-    <fieldset>
-        <div class="expandable-section">
-            <input id="expand-control" class="expand-checkbox" type="checkbox" name="attr_expand_item"/>
-            <label for="expand-control" class="label-toggle mini">Expand</label>
-            <div class="expanded-view">
-                <div class="title horizontal">
-                    <label class="mini">Title:</label>
+            <h3 class="small">Titles</h3> 
+            <fieldset class="repeating_titles">
+                <div class="expandable-section grid">
                     <input class="mini" name="attr_title" type="text" value="Gilded Ambition" />
+                    <input id="expand-checkbox" class="expand-checkbox" type="checkbox" name="attr_expandItem" value="0" unchecked/>
+                    <div class="expanded-view span2">
+                        <div class="TitleEffect list">
+                            <label class="mini">Effect:</label>
+                            <textarea class="mini" name="attr_effect" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
+                            <button type="action" class="select" name="act_select">Set as current Title</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="title-effect list">
-                    <label class="mini">Effect:</label>
-                    <textarea class="mini" name="attr_origin" placeholder="The effect provided by your title">You may reroll a single d20 that landed on a 1 when making a check outside of an encounter. Any die rerolled in this way cannot be rerolled again, and its result must be used. Once resolved, this effect cannot be used again until you have slept for a full cycle."</textarea>
-                </div>
-            </div>
-            <div class="collapsed-view">
-                <div class="title horizontal">
-                    <label class="mini">Title:</label>
-                    <input class="mini" disabled name="attr_title" value="Gilded Ambition" />
-                </div>
-            </div>
+            </fieldset>
+
+            <!-- Minion List -->
+
+            <h3 class="small">Minions</h3>
+            <fieldset class="repeating_minions">
+                
+            </fieldset>
         </div>
-    </fieldset>
+
+        <!-- Item List -->
+
+        <div class="section list vertical-span2">
+            <h3 class="small">Items</h3>
+            <fieldset class="repeating_items">
+                
+            </fieldset>
+        </div>
+    </div>
 </div>
 
 <!-- Abilities page -->
 
 <div class="abilities">
-</abilities>
+
+</div>
 
 <!-- ---------------------------SHEET WORKERS----------------- -->
 
@@ -265,7 +277,42 @@
 </script>
 
 <script type="text/worker">
+    // Title selection
+    on("clicked:repeating_titles:select", function(eventInfo) {
+        // Check the current value of the hidden attribute.
+        const rowid = eventInfo.sourceAttribute.split("_")[2]
+        getAttrs([
+            `repeating_titles_${rowid}_title`, 
+            `repeating_titles_${rowid}_effect`
+        ], function(values) {
+            // Assign selected title
+            setAttrs({
+                selectedTitleId: rowid,
+                selectedTitle: values[`repeating_titles_${rowid}_title`],
+                selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+            })
+        })
+    })
 
+    // Minion selection
+    on("clicked:repeating_minions:select", function(eventInfo) {
+        // Check the current value of the hidden attribute.
+        const rowid = eventInfo.sourceAttribute.split("_")[2];
+        getAttrs([
+            `repeating_minions_${rowid}_title`, 
+            `repeating_minions_${rowid}_effect`
+        ], function(values) {
+            // Assign selected minion
+            setAttrs({
+                selectedMinionId: rowid,
+                selectedMinion: values[`repeating_minions_${rowid}_title`],
+                selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+            })
+        })
+    })
+</script>
+
+<script type="text/worker">
     // Advantage management
     on("change:advantage sheet:opened", function () {
         getAttrs(["advantage"], function(values) {
@@ -286,22 +333,23 @@
     })
 
     // HP Max
-    on("change:hit_points", function() {
-        getAttrs(["hit_points", "hit_points_max"], function(values) {
-            if (values.hit_points > values.hit_points_max) {
+    on("change:hitPoints", function() {
+        getAttrs(["hitPoints", "hitPoints_max"], function(values) {
+            if (values.hitPoints > values.hitPoints_max) {
                 setAttrs({
-                    hit_points: values.hit_points_max
+                    hitPoints: values.hitPoints_max
                 })
             }
         })
     })
 
     // MP Max
-    on("change:magic_points", function() {
-        getAttrs(["magic_points", "magic_points_max"], function(values) {
-            if (values.magic_points > values.magic_points_max) {
+    on("change:magicPoints", function() {
+        getAttrs(["magicPoints", "magicPoints_max"], function(values) {
+            if (values.magicPoints > values.magicPoints_max) {
+                console.log("Reset MP")
                 setAttrs({
-                    magic_points: values.magic_points_max
+                    magicPoints: values.magicPoints_max
                 })
             }
         })

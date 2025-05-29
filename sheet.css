@@ -63,6 +63,18 @@ input[type=number].sheet-txtfield {
   -moz-appearance: textfield;
 }
 
+/* Style reset */
+/*
+.ui-dialog .charsheet select,
+.ui-dialog .charsheet textarea,
+.ui-dialog .charsheet input,
+.ui-dialog .charsheet .uneditable-input,
+.ui-dialog .charsheet label,
+.ui-dialog .charsheet button{
+  all: initial;
+}
+*/
+
 /* TABS */
 
 /* configure the tab buttons */
@@ -101,8 +113,14 @@ input[type=number].sheet-txtfield {
   max-height: 100vh;
 }
 
-.expand-checkbox {
-  display: none
+.expandable-section.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1.5rem 1fr;
+}
+
+.span2 {
+  grid-column: span 2;
 }
 
 .label-toggle {
@@ -153,7 +171,19 @@ input[type=number].sheet-txtfield {
   font-size: 1.2em;
 }
 
+.sub-stat .small {
+  font-size: 0.8em;
+}
+
 .medium {
+  font-size: 1.4em;
+}
+
+.sub-stat .medium {
+  font-size: 1.0em;
+}
+
+.sub-stat .medium.standard {
   font-size: 1.4em;
 }
 
@@ -178,6 +208,16 @@ input[type=number].sheet-txtfield {
 .grid {
   display: grid;
   grid-template-columns: 360px 1fr;
+}
+
+.items.grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: 0.5fr 0.5fr;
+}
+
+.vertical-span2 {
+  grid-row: span 2;
 }
 
 .grid .left {
@@ -257,12 +297,16 @@ input[type=number].sheet-txtfield {
   color: lightgray;
 }
 
-.stat {
+input.stat {
+  font-size: 2.2em;
   text-align: right;
 }
 
-.stat-block .medium {
+.sub-stat input.stat {
   font-size: 1.4em;
+}
+
+.stat-block .medium {
   align-items: baseline;
 }
 
