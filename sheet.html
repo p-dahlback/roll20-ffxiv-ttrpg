@@ -280,8 +280,169 @@
 
 <!-- Abilities page -->
 
-<div class="abilities">
+<div class="abilitiess">
+    <div class="top">
 
+        <!-- Shortcut for HP/MP -->
+
+        <div class="stat-shortcut">
+
+        </div>
+
+        <!-- Limit Break -->
+        <div class="limit">
+
+        </div>
+    </div>
+
+    <!-- Top abilities (Bard songs) -->
+    <input class="job-type" type="hidden" name="attr_job">
+
+    <div class="top-abilities">
+        <h3>Song Abilities</h3>
+    </div>
+
+    <!-- Primary abilities -->
+
+    <details class="primary-abilities">
+        <summary>
+            <h3>Primary Abilities</h3>
+        </summary>
+        <fieldset class="repeating_primary">
+            <div class="ability list">
+                <div class="header list">
+                    <input type="hidden" name="attr_hasLimitation" value="1" />
+                    <input type="hidden" name="attr_hasCost" value="1" />
+                    <input type="hidden" name="attr_hasCondition" value="1" />
+                    <input type="hidden" name="attr_hasTrigger" value="1" />
+                    <input type="hidden" name="attr_hasTarget" value="1" />
+                    <input type="hidden" name="attr_hasCheck" value="1" />
+
+                    <div class="header-title">
+                        <img class="ability-icon" src="https://xivapi.com/i/000000/000158_hr1.png" />
+                        <div class="title adaptive adaptive--text">
+                            <span class="bold adaptive--text__span"  name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</textarea>
+                        </div>
+                        <div  class="uses adaptive adaptive--input">
+                            <span class="mini-input adaptive--input__span"  name="attr_uses">1</span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_uses" min="0" value="1" />
+                        </div>
+                    </div>
+                    <div class="type">
+                        <span class="mini-title floatLeft">Type:</span>
+                        <div  class="adaptive adaptive--input floatLeft">
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type">Primary, Physical</span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" value="Primary, Physical" />
+                        </div>
+                    </div>
+                    <div class="cost">
+                        <span class="mini-title floatLeft">Cost:</span>
+                        <div  class="adaptive adaptive--input floatLeft">
+                            <span class="mini-input adaptive--input__span"  name="attr_cost">2</span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" value="2" />
+                        </div>
+                        <div  class="adaptive adaptive--input floatLeft">
+                            <span class="mini-input adaptive--input__span"  name="attr_resource">Conviction</span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" value="Conviction" />
+                        </div>
+                    </div>
+                    <div class="condition">
+                        <span class="mini-title floatLeft">Condition:</span>
+                        <div  class="adaptive adaptive--text floatLeft">
+                            <span class="mini-input adaptive--text__span"  name="attr_condition">Under the effect of Fang and Claw Bared / Wheel in Motion Ready</span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition">Under the effect of Fang and Claw Bared / Wheel in Motion Ready</textarea>
+                        </div>
+                    </div>
+                    <div class="trigger">
+                        <span class="mini-title floatLeft">Trigger:</span>
+                        <div  class="adaptive adaptive--text floatLeft">
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger">Immediately after an ability check for an ability that targets you</span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger">Immediately after an ability check for an ability that targets you</textarea>
+                        </div>
+                    </div>
+                    <div class="target">
+                        <span class="mini-title floatLeft">Target:</span>
+                        <div  class="adaptive adaptive--text floatLeft">
+                            <span class="mini-input adaptive--text__span"  name="attr_target">Single</span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target">Single</textarea>
+                        </div>
+                    </div>
+                    <div class="range">
+                        <span class="mini-title floatLeft">Range:</span>
+                        <div  class="adaptive adaptive--text floatLeft">
+                            <span class="mini-input adaptive--text__span"  name="attr_range">1 square</span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range">1 square</textarea>
+                        </div>
+                    </div>
+                    <div class="check">
+                        <span class="mini-title floatLeft">Check:</span>
+                        <div  class="adaptive adaptive--input floatLeft">
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check">STR (d20 + 6)</span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" value="STR (d20 + 6)" />
+                        </div>
+                    </div>
+                    <div class="cr">
+                        <span class="mini-title floatLeft">CR:</span>
+                        <div  class="adaptive adaptive--input floatLeft">
+                            <span class="mini-input adaptive--input__span"  name="attr_cr">Target's Defense</span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" value="Target's Defense" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="body list">
+                    <div class="base-effect">
+                        <span class="mini-title floatLeft">Base Effect:</span>
+                        <div  class="adaptive adaptive--text floatLeft">
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect">Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone.</span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect">Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone.</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="direct-hit">
+                        <span class="mini-title floatLeft">Direct Hit:</span>
+                        <div  class="adaptive adaptive--text floatLeft">
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit">Deals an additional 2d6 damage.</span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit">Deals an additional 2d6 damage.</textarea>
+                        </div>
+                    </div>
+
+                    <div class="limitation">
+                        <span class="mini-title floatLeft">Limitation:</span>
+                        <div  class="adaptive adaptive--input floatLeft">
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation">Once per phase.</span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" value="Once per phase." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <!-- Sub-abilities (Ninja jutsu) -->
+
+    <div class="sub-abilities">
+        <h3>Ninjutsu Abilities</h3>
+    </div>
+
+    <!-- Secondary abilities -->
+
+    <div class="secondary-abilities">
+        <h3>Secondary Abilities</h3>
+    </div>
+
+    <!-- Instant abilities -->
+
+    <div class="instant-abilities">
+        <h3>Instant Abilities</h3>
+    </div>
+
+    <!-- Conditional abilities (Monk techniques) -->
+
+    <div class="conditional-abilities">
+        <h3>Technique Abilities</h3>
+    </div>
 </div>
 
 <!-- ---------------------------SHEET WORKERS----------------- -->
