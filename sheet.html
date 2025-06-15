@@ -25,6 +25,7 @@
     <button type="action" name="act_character" class="sheet-button0">Character</button>
     <button type="action" name="act_items" class="sheet-button1">Inventory</button>
     <button type="action" name="act_abilities" class="sheet-button2">Abilities</button>
+    <button type="action" name="act_override" class="sheet-button3 floatRight">...</button>
 </div>
 
 <!-- Profile page -->
@@ -280,7 +281,7 @@
 
 <!-- Abilities page -->
 
-<div class="abilitiess">
+<div class="abilities">
     <div class="top">
 
         <!-- Shortcut for HP/MP -->
@@ -311,80 +312,106 @@
         <fieldset class="repeating_primary">
             <div class="ability list">
                 <div class="header list">
-                    <input type="hidden" name="attr_hasLimitation" value="1" />
-                    <input type="hidden" name="attr_hasCost" value="1" />
-                    <input type="hidden" name="attr_hasCondition" value="1" />
-                    <input type="hidden" name="attr_hasTrigger" value="1" />
-                    <input type="hidden" name="attr_hasTarget" value="1" />
-                    <input type="hidden" name="attr_hasCheck" value="1" />
+                    <input type="hidden" class="overrideSwitch" name="attr_override" />
 
+                    <span class="mini flagTitle floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+                    <div class="uses">
+                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="1" />
+                        <span class="floatRight">/</span>
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="1" />
+                    </div>
                     <div class="header-title">
                         <img class="ability-icon" src="https://xivapi.com/i/000000/000158_hr1.png" />
                         <div class="title adaptive adaptive--text">
+                            <input type="hidden" class="titleFlag" name="attr_hasType" />
                             <span class="bold adaptive--text__span"  name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</textarea>
-                        </div>
-                        <div  class="uses adaptive adaptive--input">
-                            <span class="mini-input adaptive--input__span"  name="attr_uses">1</span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_uses" min="0" value="1" />
                         </div>
                     </div>
                     <div class="type">
                         <span class="mini-title floatLeft">Type:</span>
-                        <div  class="adaptive adaptive--input floatLeft">
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="typeFlag" name="attr_hasType" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type">Primary, Physical</span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" value="Primary, Physical" />
                         </div>
                     </div>
                     <div class="cost">
                         <span class="mini-title floatLeft">Cost:</span>
-                        <div  class="adaptive adaptive--input floatLeft">
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost">2</span>
                             <input class="mini-input adaptive--input__input" type="number" name="attr_cost" value="2" />
                         </div>
-                        <div  class="adaptive adaptive--input floatLeft">
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource">Conviction</span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" value="Conviction" />
                         </div>
                     </div>
                     <div class="condition">
                         <span class="mini-title floatLeft">Condition:</span>
-                        <div  class="adaptive adaptive--text floatLeft">
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition">Under the effect of Fang and Claw Bared / Wheel in Motion Ready</span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition">Under the effect of Fang and Claw Bared / Wheel in Motion Ready</textarea>
                         </div>
                     </div>
                     <div class="trigger">
                         <span class="mini-title floatLeft">Trigger:</span>
-                        <div  class="adaptive adaptive--text floatLeft">
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger">Immediately after an ability check for an ability that targets you</span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger">Immediately after an ability check for an ability that targets you</textarea>
                         </div>
                     </div>
                     <div class="target">
                         <span class="mini-title floatLeft">Target:</span>
-                        <div  class="adaptive adaptive--text floatLeft">
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
                             <span class="mini-input adaptive--text__span"  name="attr_target">Single</span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target">Single</textarea>
                         </div>
                     </div>
                     <div class="range">
                         <span class="mini-title floatLeft">Range:</span>
-                        <div  class="adaptive adaptive--text floatLeft">
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
                             <span class="mini-input adaptive--text__span"  name="attr_range">1 square</span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range">1 square</textarea>
                         </div>
                     </div>
                     <div class="check">
                         <span class="mini-title floatLeft">Check:</span>
-                        <div  class="adaptive adaptive--input floatLeft">
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check">STR (d20 + 6)</span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" value="STR (d20 + 6)" />
                         </div>
                     </div>
                     <div class="cr">
                         <span class="mini-title floatLeft">CR:</span>
-                        <div  class="adaptive adaptive--input floatLeft">
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr">Target's Defense</span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" value="Target's Defense" />
                         </div>
@@ -392,25 +419,35 @@
                 </div>
 
                 <div class="body list">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" />
+
+                    <span class="mini flagTitle floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+
                     <div class="base-effect">
                         <span class="mini-title floatLeft">Base Effect:</span>
-                        <div  class="adaptive adaptive--text floatLeft">
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect">Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone.</span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect">Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone.</textarea>
                         </div>
                     </div>
-                    
                     <div class="direct-hit">
                         <span class="mini-title floatLeft">Direct Hit:</span>
-                        <div  class="adaptive adaptive--text floatLeft">
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit">Deals an additional 2d6 damage.</span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit">Deals an additional 2d6 damage.</textarea>
                         </div>
                     </div>
-
                     <div class="limitation">
                         <span class="mini-title floatLeft">Limitation:</span>
-                        <div  class="adaptive adaptive--input floatLeft">
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation">Once per phase.</span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" value="Once per phase." />
                         </div>
@@ -418,7 +455,7 @@
                 </div>
             </div>
         </fieldset>
-    </div>
+    </details>
 
     <!-- Sub-abilities (Ninja jutsu) -->
 
@@ -445,13 +482,20 @@
     </div>
 </div>
 
+<div class="override">
+    <h3>Manual Override</h3>
+    <p>Enables manual input for things the player would normally not mess with, primarily intended for setting up NPC sheets.</p>
+    <p>Mess with at your own risk!</p>
+    <input type="text" name="attr_override" placeholder="Enter 'override' to activate" />
+</div>
+
 <!-- ---------------------------SHEET WORKERS----------------- -->
 
 <script type="text/worker">
     // Tabs
-    const buttonlist = ["character", "items", "abilities"];
+    const buttonlist = ["character", "items", "abilities", "override"];
     buttonlist.forEach(button => {
-        on(`clicked:${button}`, function() {
+        on(`clicked:${button}`, () => {
             setAttrs({
                 sheetTab: button
             });
@@ -461,12 +505,12 @@
 
 <script type="text/worker">
     // Title selection
-    on("clicked:repeating_titles:select", function(eventInfo) {
+    on("clicked:repeating_titles:select", eventInfo => {
         const rowid = eventInfo.sourceAttribute.split("_")[2]
         getAttrs([
             `repeating_titles_${rowid}_title`, 
             `repeating_titles_${rowid}_effect`
-        ], function(values) {
+        ], values => {
             // Assign selected title
             setAttrs({
                 selectedTitleId: rowid,
@@ -477,12 +521,12 @@
     })
 
     // Minion selection
-    on("clicked:repeating_minions:select", function(eventInfo) {
+    on("clicked:repeating_minions:select", eventInfo => {
         const rowid = eventInfo.sourceAttribute.split("_")[2];
         getAttrs([
             `repeating_minions_${rowid}_title`, 
             `repeating_minions_${rowid}_effect`
-        ], function(values) {
+        ], values => {
             // Assign selected minion
             setAttrs({
                 selectedMinionId: rowid,
@@ -495,8 +539,8 @@
 
 <script type="text/worker">
     // Advantage management
-    on("change:advantage sheet:opened", function () {
-        getAttrs(["advantage"], function(values) {
+    on("change:advantage sheet:opened", () => {
+        getAttrs(["advantage"], values => {
             let numberOfAdvantageDice = Math.abs(values.advantage)
             let numberOfDice = 1 + numberOfAdvantageDice
             let keepMarker
@@ -514,8 +558,8 @@
     })
 
     // HP Max
-    on("change:hitPoints", function() {
-        getAttrs(["hitPoints", "hitPoints_max"], function(values) {
+    on("change:hitPoints", () => {
+        getAttrs(["hitPoints", "hitPoints_max"], values => {
             if (values.hitPoints > values.hitPoints_max) {
                 setAttrs({
                     hitPoints: values.hitPoints_max
@@ -525,8 +569,8 @@
     })
 
     // MP Max
-    on("change:magicPoints", function() {
-        getAttrs(["magicPoints", "magicPoints_max"], function(values) {
+    on("change:magicPoints", () => {
+        getAttrs(["magicPoints", "magicPoints_max"], values => {
             if (values.magicPoints > values.magicPoints_max) {
                 console.log("Reset MP")
                 setAttrs({
@@ -538,5 +582,17 @@
 
 </script>
 
-
+<script type="text/worker">
+    // Assign override state
+    on('change:override', () => {
+        getAttrs(['override'], values => {
+        console.log("Changed override to " + values.override)
+            getSectionIDs('repeating_primary', ids => {
+                const output = {}
+                ids.forEach(id => output[`repeating_primary_${id}_override`] = values.override)
+                setAttrs(output)
+            })
+        })
+    })
+</script>
 

@@ -93,8 +93,8 @@ input[type=number].sheet-txtfield {
 }
 */
 
-.ui-dialog .charsheet textarea,
-.ui-dialog .charsheet input {
+textarea,
+input {
   all: initial;
 }
 
@@ -103,7 +103,8 @@ input[type=number].sheet-txtfield {
 /* configure the tab buttons */
 .character,
 .items,
-.abilities {
+.abilities,
+.override {
     display: none;
 }
 
@@ -111,11 +112,13 @@ input[type=number].sheet-txtfield {
 .tabstoggle[value="character"] ~ div .sheet-button0 {outline: 2px solid red;}
 .tabstoggle[value="items"] ~ div .sheet-button1 {outline: 2px solid red;}
 .tabstoggle[value="abilities"] ~ div .sheet-button2 {outline: 2px solid red;}
+.tabstoggle[value="override"] ~ div .sheet-button3 {outline: 2px solid red;}
 
 /* show the selected tab */
 .tabstoggle[value="character"] ~ div.character,
 .tabstoggle[value="items"] ~ div.items,
-.tabstoggle[value="abilities"] ~ div.abilities {
+.tabstoggle[value="abilities"] ~ div.abilities,
+.tabstoggle[value="override"] ~ div.override {
     display: block;
 }
 
@@ -426,6 +429,9 @@ input.job-input {
 
 .ability-icon {
   width: 40px;
+  height: 40px;
+  background-color: aquamarine;
+  border-radius: 4px;
   margin-top: 0px;
   margin-left: 4px;
   margin-right: 8px;
@@ -439,14 +445,15 @@ input.job-input {
 }
 
 .uses {
-  padding-left: 8px;
-  flex-grow: 0;
-  flex-shrink: 0;
   height: 1.6em;
-  background-color: white;
-  border-style: solid;
-  border-color: black;
-  border-width: 1px;
+}
+
+.uses .max {
+  margin-left: 4px;
+}
+
+.ui-dialog .charsheet .uses > input {
+  width: 2em;
 }
 
 .ability .header {
@@ -465,7 +472,6 @@ input.job-input {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
-  grid-template-columns: 50px 1fr 20px;
 }
 
 .header-title > .title {
@@ -498,8 +504,100 @@ input.job-input {
   display: none;
 }
 
-.job-type[value="BRD"] ~ .top-abilities, 
-.job-type[value="NIN"] ~ .sub-abilities,
+.flagTitle {
+  margin-right: 4px;
+}
+
+.uses,
+.cost,
+.condition,
+.trigger,
+.target,
+.range,
+.check,
+.cr,
+.direct-hit,
+.limitation {
+  display: none;
+}
+
+.title textarea,
+.type input,
+.uses .max,
+.cost input,
+.condition textarea,
+.trigger textarea,
+.target textarea,
+.range textarea,
+.check input,
+.cr input,
+.base-effect textarea,
+.direct-hit textarea,
+.limitation input {
+  user-select: none;
+  pointer-events: none;
+}
+
+.titleFlag[value="e"] ~ textarea,
+.typeFlag[value="e"] ~ input,
+.usesFlag[value="e"] ~ .max, 
+.costFlag[value="e"]  ~ input,
+.conditionFlag[value="e"]  ~ textarea,
+.triggerFlag[value="e"] ~ textarea,
+.targetFlag[value="e"] ~ textarea,
+.checkFlag[value="e"] ~ input,
+.baseEffectFlag[value="e"] ~ textarea,
+.directHitFlag[value="e"] ~ textarea,
+.limitationFlag[value="e"] ~ input {
+  user-select: auto;
+  pointer-events: initial;
+}
+
+.flagTitle,
+.titleFlag,
+.typeFlag,
+.iconSource,
+.usesFlag,
+.costFlag,
+.conditionFlag,
+.triggerFlag,
+.targetFlag,
+.checkFlag,
+.baseEffectFlag,
+.directHitFlag,
+.limitationFlag {
+  display: none;
+}
+
+.overrideSwitch[value="override"] ~ .flagTitle,
+.overrideSwitch[value="override"] ~ .titleFlag,
+.overrideSwitch[value="override"] ~ .typeFlag,
+.overrideSwitch[value="override"] ~ .iconSource,
+.overrideSwitch[value="override"] ~ .usesFlag,
+.overrideSwitch[value="override"] ~ .costFlag,
+.overrideSwitch[value="override"] ~ .conditionFlag,
+.overrideSwitch[value="override"] ~ .triggerFlag,
+.overrideSwitch[value="override"] ~ .targetFlag,
+.overrideSwitch[value="override"] ~ .checkFlag,
+.overrideSwitch[value="override"] ~ .baseEffectFlag,
+.overrideSwitch[value="override"] ~ .directHitFlag,
+.overrideSwitch[value="override"] ~ .limitationFlag {
+  display: inline-block;
+}
+
+.usesFlag:not(:placeholder-shown) ~ .uses,
+.costFlag:not(:placeholder-shown) ~ .cost,
+.conditionFlag:not(:placeholder-shown) ~ .condition,
+.triggerFlag:not(:placeholder-shown) ~ .trigger,
+.targetFlag:not(:placeholder-shown) ~ .target,
+.targetFlag:not(:placeholder-shown) ~ .range,
+.checkFlag:not(:placeholder-shown)~ .check,
+.checkFlag:not(:placeholder-shown) ~ .cr,
+.directHitFlag:not(:placeholder-shown) ~ .direct-hit,
+.limitationFlag:not(:placeholder-shown) ~ .limitation {
+  display: block;
+}
+
 .job-type[value="MNK"] ~ .conditional-abilities {
   display: block;
 }
@@ -509,6 +607,12 @@ input.job-input {
   flex-wrap: wrap;
   column-count: 3 auto;
   min-height: 10rem;
+}
+
+/* OVERRIDE */
+
+.override {
+  max-width: 400px;
 }
 
 /* ADAPTIVE CONTENT */
