@@ -312,7 +312,7 @@
         <fieldset class="repeating_primary">
             <div class="ability list">
                 <div class="header list">
-                    <input type="hidden" class="overrideSwitch" name="attr_override" />
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
 
                     <span class="mini flagTitle floatLeft">Title flag:</span>
                     <input type="text" class="titleFlag mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
@@ -419,7 +419,7 @@
                 </div>
 
                 <div class="body list">
-                    <input type="hidden" class="overrideSwitch" name="attr_override" />
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
 
                     <span class="mini flagTitle floatLeft">Base effect flag:</span>
                     <input type="text" class="baseEffectFlag mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
@@ -589,7 +589,7 @@
         console.log("Changed override to " + values.override)
             getSectionIDs('repeating_primary', ids => {
                 const output = {}
-                ids.forEach(id => output[`repeating_primary_${id}_override`] = values.override)
+                ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override)
                 setAttrs(output)
             })
         })
