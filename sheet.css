@@ -128,6 +128,10 @@ input {
 
 /* EXPAND/COLLAPSE */
 
+.expand-checkbox.hidden {
+  display: none;
+}
+
 .expand-checkbox:not(:checked) ~ .expanded-view,
 .expand-checkbox:checked ~ .collapsed-view {
   max-height: 0px;
@@ -135,6 +139,8 @@ input {
 }
 
 .expand-checkbox:checked ~ .expanded-view,
+.expand-checkbox[value="1"] ~ .expanded-view,
+.expand-checkbox[value="on"] ~ .expanded-view,
 .expand-checkbox:not(:checked) ~ .collapsed-view {
   max-height: 100vh;
 }
@@ -168,7 +174,7 @@ input {
   color: #7C5A0B;
 }
 
-.expand-checkbox {
+.ui-dialog .charsheet .expand-checkbox {
   appearance: none;
   -webkit-appearance: none;
   display: flex;
@@ -178,6 +184,8 @@ input {
   padding: 0.1rem;
   background: none;
   border: none;
+  width: 2rem;
+  height: 2rem;
 }
 
 .expand-checkbox:focus {
@@ -423,8 +431,9 @@ input.job-input {
   border-style: solid;
   border-radius: 6px;
   margin: 3px;
-
   vertical-align: top;
+  display: flex;
+  flex-direction: column;
 }
 
 .ability-icon {
@@ -498,16 +507,34 @@ input.job-input {
   font-style: italic;
 }
 
-.top-abilities,
-.sub-abilities,
-.conditional-abilities {
-  display: none;
-}
-
 .flagTitle {
   margin-right: 4px;
 }
 
+.ability-controls {
+  min-height: 2em;
+  width: 1fr;
+  margin: 4px;
+}
+
+.ability-action {
+  color: black;
+  float: right;
+  font-size: 2rem;
+  font-family: Pictos;
+  margin: 2px;
+}
+
+.ability-action-trigger {
+  color: black;
+  float: left;
+  font-size: 2rem;
+  font-family: dicefontd20;
+  margin: 2px;
+}
+
+/* ABILITY VISIBILITY */
+/* Field visibility */
 .uses,
 .cost,
 .condition,
@@ -520,6 +547,21 @@ input.job-input {
 .limitation {
   display: none;
 }
+
+.usesFlag:not(:placeholder-shown) ~ .uses,
+.costFlag:not(:placeholder-shown) ~ .cost,
+.conditionFlag:not(:placeholder-shown) ~ .condition,
+.triggerFlag:not(:placeholder-shown) ~ .trigger,
+.targetFlag:not(:placeholder-shown) ~ .target,
+.targetFlag:not(:placeholder-shown) ~ .range,
+.checkFlag:not(:placeholder-shown)~ .check,
+.checkFlag:not(:placeholder-shown) ~ .cr,
+.directHitFlag:not(:placeholder-shown) ~ .direct-hit,
+.limitationFlag:not(:placeholder-shown) ~ .limitation {
+  display: block;
+}
+
+/* Field editable setting */
 
 .title textarea,
 .type input,
@@ -553,6 +595,8 @@ input.job-input {
   pointer-events: initial;
 }
 
+/* Flag visibility */
+
 .flagTitle,
 .titleFlag,
 .typeFlag,
@@ -569,44 +613,70 @@ input.job-input {
   display: none;
 }
 
-.overrideSwitch[value="override"] ~ .flagTitle,
-.overrideSwitch[value="override"] ~ .titleFlag,
-.overrideSwitch[value="override"] ~ .typeFlag,
-.overrideSwitch[value="override"] ~ .iconSource,
-.overrideSwitch[value="override"] ~ .usesFlag,
-.overrideSwitch[value="override"] ~ .costFlag,
-.overrideSwitch[value="override"] ~ .conditionFlag,
-.overrideSwitch[value="override"] ~ .triggerFlag,
-.overrideSwitch[value="override"] ~ .targetFlag,
-.overrideSwitch[value="override"] ~ .checkFlag,
-.overrideSwitch[value="override"] ~ .baseEffectFlag,
-.overrideSwitch[value="override"] ~ .directHitFlag,
-.overrideSwitch[value="override"] ~ .limitationFlag {
+.overrideSwitch:not([value="auto"]) ~ .flagTitle,
+.overrideSwitch:not([value="auto"]) ~ .titleFlag,
+.overrideSwitch:not([value="auto"]) ~ .typeFlag,
+.overrideSwitch:not([value="auto"]) ~ .iconSource,
+.overrideSwitch:not([value="auto"]) ~ .usesFlag,
+.overrideSwitch:not([value="auto"]) ~ .costFlag,
+.overrideSwitch:not([value="auto"]) ~ .conditionFlag,
+.overrideSwitch:not([value="auto"]) ~ .triggerFlag,
+.overrideSwitch:not([value="auto"]) ~ .targetFlag,
+.overrideSwitch:not([value="auto"]) ~ .checkFlag,
+.overrideSwitch:not([value="auto"]) ~ .baseEffectFlag,
+.overrideSwitch:not([value="auto"]) ~ .directHitFlag,
+.overrideSwitch:not([value="auto"]) ~ .limitationFlag {
   display: inline-block;
 }
 
-.usesFlag:not(:placeholder-shown) ~ .uses,
-.costFlag:not(:placeholder-shown) ~ .cost,
-.conditionFlag:not(:placeholder-shown) ~ .condition,
-.triggerFlag:not(:placeholder-shown) ~ .trigger,
-.targetFlag:not(:placeholder-shown) ~ .target,
-.targetFlag:not(:placeholder-shown) ~ .range,
-.checkFlag:not(:placeholder-shown)~ .check,
-.checkFlag:not(:placeholder-shown) ~ .cr,
-.directHitFlag:not(:placeholder-shown) ~ .direct-hit,
-.limitationFlag:not(:placeholder-shown) ~ .limitation {
+/* Repeating section change control visibility */
+
+div[data-groupname=repeating_song].repcontrol,
+div[data-groupname=repeating_primary].repcontrol,
+div[data-groupname=repeating_ninjutsu].repcontrol,
+div[data-groupname=repeating_secondary].repcontrol, 
+div[data-groupname=repeating_instant].repcontrol,
+div[data-groupname=repeating_technique].repcontrol {
+  display: none;
+}
+
+.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_song].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_primary].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_ninjutsu].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_secondary].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_instant].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_technique].repcontrol {
   display: block;
 }
 
+/* ABILITY CATEGORY VISIBILITY */
+
+.top-abilities,
+.sub-abilities,
+.conditional-abilities {
+  display: none;
+}
+
+.job-type[value="BRD"] ~ .top-abilities,
+.job-type[value="NIN"] ~ .sub-abilities,
 .job-type[value="MNK"] ~ .conditional-abilities {
   display: block;
 }
 
-.repcontainer[data-groupname="repeating_primary"] {
+.repcontainer[data-groupname="repeating_song"],
+.repcontainer[data-groupname="repeating_primary"],
+.repcontainer[data-groupname="repeating_ninjutsu"],
+.repcontainer[data-groupname="repeating_secondary"],
+.repcontainer[data-groupname="repeating_instant"],
+.repcontainer[data-groupname="repeating_technique"] {
+  /*
   display: flex;
   flex-wrap: wrap;
-  column-count: 3 auto;
+  column-count: 3;
   min-height: 10rem;
+  */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 /* OVERRIDE */

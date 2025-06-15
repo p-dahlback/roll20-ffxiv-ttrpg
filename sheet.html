@@ -301,6 +301,10 @@
 
     <div class="top-abilities">
         <h3>Song Abilities</h3>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+        <fieldset class="repeating_song">
+
+        </fieldset>
     </div>
 
     <!-- Primary abilities -->
@@ -309,13 +313,14 @@
         <summary>
             <h3>Primary Abilities</h3>
         </summary>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_primary">
-            <div class="ability list">
+            <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
 
                     <span class="mini flagTitle floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <input type="text" class="titleFlag mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
                     <span class="mini flagTitle floatLeft">Type flag:</span>
                     <input type="text" class="typeFlag mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
                     <span class="mini flagTitle floatLeft">Cost flag:</span>
@@ -332,6 +337,7 @@
                     <input type="text" class="usesFlag mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle floatLeft">Icon source:</span>
                     <input type="text" class="iconSource mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
 
                     <div class="uses">
                         <input type="hidden" class="usesFlag" name="attr_hasUses" />
@@ -339,15 +345,23 @@
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="1" />
                     </div>
+
                     <div class="header-title">
-                        <img class="ability-icon" src="https://xivapi.com/i/000000/000158_hr1.png" />
+                        <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
                             <input type="hidden" class="titleFlag" name="attr_hasType" />
                             <span class="bold adaptive--text__span"  name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</textarea>
                         </div>
                     </div>
-                    <div class="type">
+
+                    <div class="ability-controls">
+                        <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                        <button type="action" class="ability-action" name="act_share">q</button>
+                    </div>
+
+                    <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="typeFlag" name="attr_hasType" />
@@ -355,7 +369,7 @@
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" value="Primary, Physical" />
                         </div>
                     </div>
-                    <div class="cost">
+                    <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="costFlag" name="attr_hasCost" />
@@ -368,7 +382,7 @@
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" value="Conviction" />
                         </div>
                     </div>
-                    <div class="condition">
+                    <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
@@ -376,7 +390,7 @@
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition">Under the effect of Fang and Claw Bared / Wheel in Motion Ready</textarea>
                         </div>
                     </div>
-                    <div class="trigger">
+                    <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
@@ -384,7 +398,7 @@
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger">Immediately after an ability check for an ability that targets you</textarea>
                         </div>
                     </div>
-                    <div class="target">
+                    <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="targetFlag" name="attr_hasTarget" />
@@ -392,7 +406,7 @@
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target">Single</textarea>
                         </div>
                     </div>
-                    <div class="range">
+                    <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="targetFlag" name="attr_hasTarget" />
@@ -400,7 +414,7 @@
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range">1 square</textarea>
                         </div>
                     </div>
-                    <div class="check">
+                    <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="checkFlag" name="attr_hasCheck" />
@@ -408,7 +422,7 @@
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" value="STR (d20 + 6)" />
                         </div>
                     </div>
-                    <div class="cr">
+                    <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="checkFlag" name="attr_hasCheck" />
@@ -420,6 +434,7 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
 
                     <span class="mini flagTitle floatLeft">Base effect flag:</span>
                     <input type="text" class="baseEffectFlag mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
@@ -428,7 +443,7 @@
                     <span class="mini flagTitle floatLeft">Limitation flag:</span>
                     <input type="text" class="limitationFlag mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
-                    <div class="base-effect">
+                    <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
@@ -436,7 +451,7 @@
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect">Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone.</textarea>
                         </div>
                     </div>
-                    <div class="direct-hit">
+                    <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
@@ -444,7 +459,7 @@
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit">Deals an additional 2d6 damage.</textarea>
                         </div>
                     </div>
-                    <div class="limitation">
+                    <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
@@ -461,24 +476,40 @@
 
     <div class="sub-abilities">
         <h3>Ninjutsu Abilities</h3>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+        <fieldset class="repeating_ninjutsu">
+
+        </fieldset>
     </div>
 
     <!-- Secondary abilities -->
 
     <div class="secondary-abilities">
         <h3>Secondary Abilities</h3>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+        <fieldset class="repeating_secondary">
+
+        </fieldset>
     </div>
 
     <!-- Instant abilities -->
 
     <div class="instant-abilities">
         <h3>Instant Abilities</h3>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+        <fieldset class="repeating_instant">
+
+        </fieldset>
     </div>
 
     <!-- Conditional abilities (Monk techniques) -->
 
     <div class="conditional-abilities">
         <h3>Technique Abilities</h3>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+        <fieldset class="repeating_technique">
+
+        </fieldset>
     </div>
 </div>
 
@@ -486,7 +517,7 @@
     <h3>Manual Override</h3>
     <p>Enables manual input for things the player would normally not mess with, primarily intended for setting up NPC sheets.</p>
     <p>Mess with at your own risk!</p>
-    <input type="text" name="attr_override" placeholder="Enter 'override' to activate" />
+    <input type="text" name="attr_override" placeholder="Enter 'auto' to disable manual editing" />
 </div>
 
 <!-- ---------------------------SHEET WORKERS----------------- -->
@@ -522,7 +553,7 @@
 
     // Minion selection
     on("clicked:repeating_minions:select", eventInfo => {
-        const rowid = eventInfo.sourceAttribute.split("_")[2];
+        const rowid = eventInfo.sourceAttribute.split("_")[2]
         getAttrs([
             `repeating_minions_${rowid}_title`, 
             `repeating_minions_${rowid}_effect`
@@ -535,6 +566,57 @@
             })
         })
     })
+</script>
+
+<script type="text/worker">
+    // Ability actions
+    function toggleExpandedStateInSection(eventInfo) {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+        getAttrs([`repeating_${section}_${rowId}_expandItem`], values => {
+            // Toggle
+            const value = values[`repeating_${section}_${rowId}_expandItem`]
+            var attributes = {}
+            var newValue = "on"
+            if (value == "on") { 
+                newValue = "off"
+            } else if (value == "1") {
+                newValue = "off"
+            } else if (value == "off") {
+                newValue = "on"
+            } else if (value == "0") {
+                newValue= "on"
+            }
+            attributes[`repeating_${section}_${rowId}_expandItem`] = newValue
+            setAttrs(attributes)
+        })
+    }
+
+    on("clicked:repeating_song:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_primary:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_ninjutsu:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_secondary:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_instant:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_technique:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
 </script>
 
 <script type="text/worker">
