@@ -9,7 +9,8 @@ span.sheet-bold{
   font-weight: 800;
 }
 
-.bold {
+.bold,
+.sheet-rolltemplate-hit .sheet-bold {
   font-weight: 800;
 }
 
@@ -103,7 +104,7 @@ input {
 /* configure the tab buttons */
 .character,
 .items,
-.abilities,
+.char-abilities,
 .override {
     display: none;
 }
@@ -117,7 +118,7 @@ input {
 /* show the selected tab */
 .tabstoggle[value="character"] ~ div.character,
 .tabstoggle[value="items"] ~ div.items,
-.tabstoggle[value="abilities"] ~ div.abilities,
+.tabstoggle[value="abilities"] ~ div.char-abilities,
 .tabstoggle[value="override"] ~ div.override {
     display: block;
 }
@@ -426,17 +427,22 @@ input.job-input {
 
 .ability {
   width: 20em;
-  background-color: white;
+  margin: 3px;
+}
+
+.ability,
+.sheet-rolltemplate-hit .sheet-ability-template,
+.sheet-rolltemplate-damage .sheet-template-container {
   border-color: #7C5A0B;
   border-style: solid;
   border-radius: 6px;
-  margin: 3px;
-  vertical-align: top;
   display: flex;
   flex-direction: column;
+  vertical-align: top;
 }
 
-.ability-icon {
+.ability-icon,
+.sheet-rolltemplate-hit .sheet-ability-icon {
   width: 40px;
   height: 40px;
   background-color: aquamarine;
@@ -449,7 +455,8 @@ input.job-input {
   flex-shrink: 0;
 }
 
-.title {
+.title,
+.sheet-rolltemplate-hit .sheet-title {
   flex-grow: 1;
 }
 
@@ -465,25 +472,51 @@ input.job-input {
   width: 2em;
 }
 
-.ability .header {
+.ability .header,
+.sheet-rolltemplate-hit .sheet-header {
   background-color: beige;
   border-radius: 6px 6px 0px 0px;
   padding: 4px;
 }
 
-.ability .body {
+.sheet-rolltemplate-damage .sheet-header {
+  padding: 4px 4px 8px 4px;
+}
+
+.sheet-rolltemplate-damage .sheet-template-container {
+  background-color: beige;
+}
+
+.sheet-rolltemplate-hit .sheet-ability-icon a {
+  pointer-events: none;
+  user-select: none;
+}
+
+.ability .body,
+.sheet-rolltemplate-hit .sheet-body,
+.sheet-rolltemplate-damage .sheet-body  {
   background-color: white;
   border-radius: 0px 0px 6px 6px;
   padding: 4px;
 }
 
-.header-title {
+.sheet-rolltemplate-damage .sheet-body {
+  padding: 16px 4px 8px 4px;
+}
+
+.sheet-rolltemplate-damage .sheet-body h4 {
+  font-size: 1.8rem;
+}
+
+.header-title,
+.sheet-rolltemplate-hit .sheet-header-title {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
 }
 
-.header-title > .title {
+.header-title > .title,
+.sheet-rolltemplate-hit .sheet-title {
   border-style: solid;
   border-width: 0 0 3px 0;
   border-color: #7C5A0B;
@@ -597,6 +630,7 @@ input.job-input {
 
 /* Flag visibility */
 
+.overrideContent,
 .flagTitle,
 .titleFlag,
 .typeFlag,
@@ -613,6 +647,7 @@ input.job-input {
   display: none;
 }
 
+.overrideSwitch:not([value="auto"]) ~ .overrideContent,
 .overrideSwitch:not([value="auto"]) ~ .flagTitle,
 .overrideSwitch:not([value="auto"]) ~ .titleFlag,
 .overrideSwitch:not([value="auto"]) ~ .typeFlag,

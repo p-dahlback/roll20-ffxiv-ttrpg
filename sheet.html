@@ -281,7 +281,7 @@
 
 <!-- Abilities page -->
 
-<div class="abilities">
+<div class="char-abilities">
     <div class="top">
 
         <!-- Shortcut for HP/MP -->
@@ -359,6 +359,7 @@
                         <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
                         <button type="action" class="ability-action" name="act_info">i</button>
                         <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_damage" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -467,6 +468,25 @@
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" value="Once per phase." />
                         </div>
                     </div>
+
+                    <span class="mini flagTitle floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent mini-input" name="attr_hitType">
+                        <option value="Damage">Hit</option>
+                        <option value="Healing">Critical</option>
+                    </select>
+                    <span class="mini flagTitle floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent mini-input" name="attr_damageType">
+                        <option value="Damage">Damage</option>
+                        <option value="Healing">Healing</option>
+                    </select>
+                    <span class="mini flagTitle floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc" value="1d20cs20"/>
+                    <span class="mini flagTitle floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
                 </div>
             </div>
         </fieldset>
@@ -678,3 +698,211 @@
     })
 </script>
 
+<script type="text/worker">
+    // Roll ability
+    function spendResource(cost, resourceType, value, value_max, attributeName) {
+        if (cost > 0 && resourceType && value >= 0 && value_max >= 0) {
+            if (value < cost) {
+                return `${cost} ${resourceType} - Insufficient (${value}/${value_max})`
+            } else {
+                const newValue = value - cost
+                var attributes = {}
+                attributes[attributeName] = newValue
+                setAttrs(attributes)
+                return `Spent ${cost} ${resourceType} (${newValue}/${value_max})`
+            }
+        } else {
+            return `${cost} ${resourceType} - Character has no ${resourceType}!`
+        }
+    }
+
+    function activateAbility(eventInfo) {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+        getAttrs([
+            `repeating_${section}_${rowId}_icon`,
+            `repeating_${section}_${rowId}_title`,
+            `repeating_${section}_${rowId}_type`,
+            `repeating_${section}_${rowId}_cost`,
+            `repeating_${section}_${rowId}_resource`,
+            `repeating_${section}_${rowId}_condition`,
+            `repeating_${section}_${rowId}_trigger`,
+            `repeating_${section}_${rowId}_uses`,
+
+            `repeating_${section}_${rowId}_target`,
+            `repeating_${section}_${rowId}_range`,
+
+            `repeating_${section}_${rowId}_baseEffect`,
+            `repeating_${section}_${rowId}_directHit`,
+
+            `repeating_${section}_${rowId}_stat`,
+            `repeating_${section}_${rowId}_hitType`,
+            `repeating_${section}_${rowId}_damageType`,
+            `repeating_${section}_${rowId}_hitDie`,
+            `repeating_${section}_${rowId}_baseValue`,
+            `repeating_${section}_${rowId}_dhValue`,
+            `repeating_${section}_${rowId}_cr`,
+
+            "str", "dex", "vit", "int", "mnd",
+            "mp", "mp_max", "resourceValue", "resourceValue_max"
+        ], values => {
+            // Perform roll
+            const title = values[`repeating_${section}_${rowId}_title`]
+            const icon = values[`repeating_${section}_${rowId}_icon`]
+            const cost = values[`repeating_${section}_${rowId}_cost`]
+            const resourceType = values[`repeating_${section}_${rowId}_resource`]
+            const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase()
+            const hitType = values[`repeating_${section}_${rowId}_hitType`].toLowerCase()
+            const hitDie = values[`repeating_${section}_${rowId}_hitDie`]
+            const statValue = values[statType]
+            const cr = values[`repeating_${section}_${rowId}_cr`]
+
+            var resourceCost = ""
+            if (resourceType.toLowerCase() == "mp") {
+                resourceCost = spendResource(cost, resourceType, values.mp, values.mp_max, "mp")
+            } else {
+                resourceCost = spendResource(cost, resourceType, values.resourceValue, values.resourceValue_max, "resourceValue")
+            }
+
+            var hitTitle = "Hit: "
+            if (hitType == "critical") {
+                hitTitle = "Critical: "
+            }
+
+            var crString = ""
+            if (cr) {
+                crString = `CR: ${cr}`
+            }
+
+            //{{button=[Damage](!/&#13;&amp;{template:damage&rbrace; {&lbrace;damage=[[1d20]]&rbrace;&rbrace; {&lbrace;directHit=[[2d6]]&rbrace;&rbrace; ) }}
+            startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} {{cost=${resourceCost}}} {{hitTitle=${hitTitle}}} {{hit=[[${hitDie} + ${statValue}]]}} {{cr=${crString}}}`, results => {
+                const hitRoll = results.results.hit
+                const hitValue = hitRoll.result
+
+                const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
+                const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]
+                const damageType = values[`repeating_${section}_${rowId}_damageType`]
+
+                var criticalMultiplier = "1"
+                if (hitRoll.dice[0] == "20") {
+                    criticalMultiplier = "2"
+                }
+                finishRoll(results.rollId)
+
+                // Add crit multiplier to other dice rolls
+                var baseValueWithMultipliers = baseValue
+                if (baseValue.includes("d")) {
+                    baseValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + baseValue[0] + "]]" + baseValue.substring(1)
+                }
+                var directHitValueWithMultipliers = directHitValue
+                if (directHitValue.includes("d")) {
+                    directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1)
+                }
+
+                var damageTitle = `${damageType}: `
+                var damageDice = `[[${baseValueWithMultipliers}]]`
+                var directHitTitle = ""
+                var directHitDice = ""
+                var totalTitle = ""
+                if (criticalMultiplier > 1 && directHitValueWithMultipliers) {
+                    if (baseValueWithMultipliers) {
+                        damageDice = `[[${baseValueWithMultipliers} + ${directHitValueWithMultipliers}]]`
+                    } else {
+                        damageDice = `[[${directHitValueWithMultipliers}]]`
+                    }
+                } else if (directHitValueWithMultipliers) {
+                    directHitTitle = "Direct Hit: "
+                    directHitDice = `[[${directHitValueWithMultipliers}]]`
+                }
+
+                var totalTitle = ""
+                if (directHitValueWithMultipliers && baseValueWithMultipliers) {
+                    totalTitle = `Full ${damageTitle}`
+                }
+
+                // Roll damage
+                startRoll(`&{template:damage} {{name=${title}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} {{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}`, results => {
+                    var total = ""
+                    if (directHitValueWithMultipliers && baseValueWithMultipliers) {
+                        total = results.results.damage.result + results.results.directHit.result
+                    }
+                    
+                    finishRoll(
+                        results.rollId,
+                        {
+                            damage: total
+                        }
+                    )
+                })
+            })
+        })
+    }
+
+    on("clicked:repeating_primary:damage", eventInfo => {
+        console.log("damage called " + JSON.stringify(eventInfo))
+    })
+
+    on("clicked:repeating_song:trigger", eventInfo => {
+        activateAbility(eventInfo)
+    })
+
+    on("clicked:repeating_primary:trigger", eventInfo => {
+        activateAbility(eventInfo)
+    })
+
+    on("clicked:repeating_ninjutsu:trigger", eventInfo => {
+        activateAbility(eventInfo)
+    })
+
+    on("clicked:repeating_secondary:trigger", eventInfo => {
+        activateAbility(eventInfo)
+    })
+
+    on("clicked:repeating_instant:trigger", eventInfo => {
+        activateAbility(eventInfo)
+    })
+
+    on("clicked:repeating_technique:trigger", eventInfo => {
+        activateAbility(eventInfo)
+    })
+
+    on("clicked:damage", eventInfo => {
+        console.log("Event: " + JSON.stringify(eventInfo))
+    })
+
+</script>
+
+<rolltemplate class="sheet-rolltemplate-hit">
+    <div class="sheet-ability-template">
+        <div class="sheet-header">
+            <div class="sheet-header-title">
+                <div class="sheet-ability-icon">
+                    {{icon}}
+                </div>
+                <div class="sheet-title">
+                    <span class="sheet-bold">{{name}}</span>
+                </div>
+            </div>
+            <h4>{{cost}}</h4>
+        </div>
+        <div class="sheet-body">
+            <h4>{{hitTitle}}{{hit}}</h4>
+            <h4>{{cr}}</h4>
+            <div>{{button}}</div>
+        </div>
+    </div>
+</rolltemplate>
+
+<rolltemplate class="sheet-rolltemplate-damage">
+    <div class="sheet-template-container">
+        <div class="sheet-header">
+            <h4>{{name}}</h4>
+            <h4>{{damageTitle}}{{damage}}</h4>
+            <h4>{{directHitTitle}}{{directHit}}</h4>
+        </div>
+        <div class="sheet-body">
+            <h4>{{totalTitle}}{{computed::damage}}</h4>
+        </div>
+    </div>
+</rolltemplate>
