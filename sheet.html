@@ -589,57 +589,6 @@
 </script>
 
 <script type="text/worker">
-    // Ability actions
-    function toggleExpandedStateInSection(eventInfo) {
-        const sourceAttributes = eventInfo.sourceAttribute.split("_")
-        const section = sourceAttributes[1]
-        const rowId = sourceAttributes[2]
-        getAttrs([`repeating_${section}_${rowId}_expandItem`], values => {
-            // Toggle
-            const value = values[`repeating_${section}_${rowId}_expandItem`]
-            var attributes = {}
-            var newValue = "on"
-            if (value == "on") { 
-                newValue = "off"
-            } else if (value == "1") {
-                newValue = "off"
-            } else if (value == "off") {
-                newValue = "on"
-            } else if (value == "0") {
-                newValue= "on"
-            }
-            attributes[`repeating_${section}_${rowId}_expandItem`] = newValue
-            setAttrs(attributes)
-        })
-    }
-
-    on("clicked:repeating_song:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
-
-    on("clicked:repeating_primary:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
-
-    on("clicked:repeating_ninjutsu:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
-
-    on("clicked:repeating_secondary:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
-
-    on("clicked:repeating_instant:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
-
-    on("clicked:repeating_technique:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
-
-</script>
-
-<script type="text/worker">
     // Advantage management
     on("change:advantage sheet:opened", () => {
         getAttrs(["advantage"], values => {
@@ -699,23 +648,136 @@
 </script>
 
 <script type="text/worker">
-    // Roll ability
+    // Ability info
+    function toggleExpandedStateInSection(eventInfo) {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+        getAttrs([`repeating_${section}_${rowId}_expandItem`], values => {
+            // Toggle
+            const value = values[`repeating_${section}_${rowId}_expandItem`]
+            var attributes = {}
+            var newValue = "on"
+            if (value == "on" || value == "1") { 
+                newValue = "off"
+            } else if (value == "off" || value == "0") {
+                newValue = "on"
+            }
+            attributes[`repeating_${section}_${rowId}_expandItem`] = newValue
+            setAttrs(attributes)
+        })
+    }
+
+    on("clicked:repeating_song:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_primary:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_ninjutsu:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_secondary:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_instant:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+    on("clicked:repeating_technique:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
+</script>
+
+<script type="text/worker">
+
+    function templateValues(title, value) {
+        if (value) {
+            return [title, value]
+        }
+        return ["", ""]
+    }
+
     function spendResource(cost, resourceType, value, value_max, attributeName) {
         if (cost > 0 && resourceType && value >= 0 && value_max >= 0) {
             if (value < cost) {
-                return `${cost} ${resourceType} - Insufficient (${value}/${value_max})`
+                return [false, `${cost} ${resourceType} - Insufficient (${value}/${value_max})`]
             } else {
                 const newValue = value - cost
                 var attributes = {}
                 attributes[attributeName] = newValue
                 setAttrs(attributes)
-                return `Spent ${cost} ${resourceType} (${newValue}/${value_max})`
+                const resultString = `Spent ${cost} ${resourceType} (${newValue}/${value_max})`
+                console.log(resultString)
+                return [true, resultString]
             }
         } else {
-            return `${cost} ${resourceType} - Character has no ${resourceType}!`
+            return [false, `${cost} ${resourceType} - Character has no ${resourceType}!`]
         }
     }
 
+    function stringWithTitle(title, value) {
+        if (value) {
+            return `${title} ${value}`
+        }
+        return ""
+    }
+
+    // Share ability details to chat
+    function shareAbility(eventInfo) {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+        getAttrs([
+            `repeating_${section}_${rowId}_icon`,
+            `repeating_${section}_${rowId}_title`,
+            `repeating_${section}_${rowId}_type`,
+            `repeating_${section}_${rowId}_cost`,
+            `repeating_${section}_${rowId}_resource`,
+            `repeating_${section}_${rowId}_condition`,
+            `repeating_${section}_${rowId}_trigger`,
+
+            `repeating_${section}_${rowId}_target`,
+            `repeating_${section}_${rowId}_range`,
+            `repeating_${section}_${rowId}_check`,
+            `repeating_${section}_${rowId}_cr`,
+
+            `repeating_${section}_${rowId}_baseEffect`,
+            `repeating_${section}_${rowId}_directHit`,
+            `repeating_${section}_${rowId}_limitation`
+        ], values => {
+            const icon = values[`repeating_${section}_${rowId}_icon`]
+            const title = values[`repeating_${section}_${rowId}_title`]
+            const type = templateValues("Type:", values[`repeating_${section}_${rowId}_type`])
+            const cost = templateValues("Cost:", values[`repeating_${section}_${rowId}_cost`])
+            const resourceType = values[`repeating_${section}_${rowId}_resource`]
+            const condition = templateValues("Condition:", values[`repeating_${section}_${rowId}_condition`])
+            const trigger = templateValues("Trigger:", values[`repeating_${section}_${rowId}_trigger`])
+            const target = templateValues("Target:", values[`repeating_${section}_${rowId}_target`])
+            const range = templateValues("Range:", values[`repeating_${section}_${rowId}_range`])
+            const check = templateValues("Check:", values[`repeating_${section}_${rowId}_check`])
+            const cr = templateValues("CR:", values[`repeating_${section}_${rowId}_cr`])
+            const baseEffect = templateValues("Base Effect:", values[`repeating_${section}_${rowId}_baseEffect`])
+            const directHit = templateValues("Direct Hit:", values[`repeating_${section}_${rowId}_directHit`])
+            const limitation = templateValues("Limitation:", values[`repeating_${section}_${rowId}_limitation`])
+
+            startRoll(`&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
+            `{{typeTitle=${type[0]}}} {{type=${type[1]}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}}` +
+            `{{triggeTitle=${trigger[0]}}} {{trigger=${trigger[1]}}} {{targetTitle=${target[0]}}} {{target=${target[1]}}}` +
+            `{{rangeTitle=${range[0]}}} {{range=${range[1]}}} {{checkTitle=${check[0]}}} {{check=${check[1]}}}` +
+            `{{crTitle=${cr[0]}}} {{cr=${cr[1]}}} {{baseEffectTitle=${baseEffect[0]}}} {{baseEffect=${baseEffect[1]}}}` +
+            `{{directHitTitle=${directHit[0]}}} {{directHit=${directHit[1]}}} {{limitationTitle=${limitation[0]}}} {{limitation=${limitation[1]}}}`, results => {
+                finishRoll(results.rollId)
+            })
+        })
+    }
+
+    // Roll ability
     function activateAbility(eventInfo) {
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
         const section = sourceAttributes[1]
@@ -729,6 +791,7 @@
             `repeating_${section}_${rowId}_condition`,
             `repeating_${section}_${rowId}_trigger`,
             `repeating_${section}_${rowId}_uses`,
+            `repeating_${section}_${rowId}_uses_max`,
 
             `repeating_${section}_${rowId}_target`,
             `repeating_${section}_${rowId}_range`,
@@ -750,19 +813,32 @@
             // Perform roll
             const title = values[`repeating_${section}_${rowId}_title`]
             const icon = values[`repeating_${section}_${rowId}_icon`]
+            const uses = values[`repeating_${section}_${rowId}_uses`]
+            const usesMax = values[`repeating_${section}_${rowId}_uses_max`]
+
             const cost = values[`repeating_${section}_${rowId}_cost`]
             const resourceType = values[`repeating_${section}_${rowId}_resource`]
+
             const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase()
             const hitType = values[`repeating_${section}_${rowId}_hitType`].toLowerCase()
             const hitDie = values[`repeating_${section}_${rowId}_hitDie`]
             const statValue = values[statType]
-            const cr = values[`repeating_${section}_${rowId}_cr`]
-
+            
+            // Spend MP/resources
             var resourceCost = ""
+            var resourceResult = false
             if (resourceType.toLowerCase() == "mp") {
-                resourceCost = spendResource(cost, resourceType, values.mp, values.mp_max, "mp")
+                let result = spendResource(cost, resourceType, values.mp, values.mp_max, "mp")
+                resourceResult = result[0]
+                resourceCost = result[1]
             } else {
-                resourceCost = spendResource(cost, resourceType, values.resourceValue, values.resourceValue_max, "resourceValue")
+                let result = spendResource(cost, resourceType, values.resourceValue, values.resourceValue_max, "resourceValue")
+                resourceResult = result[0]
+                resourceCost = result[1]
+            }
+            // Spend uses if there are any
+            if (usesMax > 0 && resourceResult) {
+                spendResource(1, "uses", uses, usesMax, `repeating_${section}_${rowId}_uses`)
             }
 
             var hitTitle = "Hit: "
@@ -770,13 +846,15 @@
                 hitTitle = "Critical: "
             }
 
-            var crString = ""
-            if (cr) {
-                crString = `CR: ${cr}`
-            }
+            const crString = stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`])
+            const typeString = stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`])
+            const conditionString = stringWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`])
+            const triggerString = stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`])
 
             //{{button=[Damage](!/&#13;&amp;{template:damage&rbrace; {&lbrace;damage=[[1d20]]&rbrace;&rbrace; {&lbrace;directHit=[[2d6]]&rbrace;&rbrace; ) }}
-            startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} {{cost=${resourceCost}}} {{hitTitle=${hitTitle}}} {{hit=[[${hitDie} + ${statValue}]]}} {{cr=${crString}}}`, results => {
+            startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} {{cost=${resourceCost}}} ` +
+            `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}}` +
+            `{{hitTitle=${hitTitle}}} {{hit=[[${hitDie} + ${statValue}]]}} {{cr=${crString}}}`, results => {
                 const hitRoll = results.results.hit
                 const hitValue = hitRoll.result
 
@@ -785,7 +863,7 @@
                 const damageType = values[`repeating_${section}_${rowId}_damageType`]
 
                 var criticalMultiplier = "1"
-                if (hitRoll.dice[0] == "20") {
+                if (hitRoll.dice && hitRoll.dice[0] == "20") {
                     criticalMultiplier = "2"
                 }
                 finishRoll(results.rollId)
@@ -822,7 +900,8 @@
                 }
 
                 // Roll damage
-                startRoll(`&{template:damage} {{name=${title}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} {{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}`, results => {
+                startRoll(`&{template:damage} {{name=${title}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
+                `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}`, results => {
                     var total = ""
                     if (directHitValueWithMultipliers && baseValueWithMultipliers) {
                         total = results.results.damage.result + results.results.directHit.result
@@ -838,6 +917,30 @@
             })
         })
     }
+
+    on("clicked:repeating_song:share", eventInfo => {
+        shareAbility(eventInfo)
+    })
+
+    on("clicked:repeating_primary:share", eventInfo => {
+        shareAbility(eventInfo)
+    })
+
+    on("clicked:repeating_ninjutsu:share", eventInfo => {
+        shareAbility(eventInfo)
+    })
+
+    on("clicked:repeating_secondary:share", eventInfo => {
+        shareAbility(eventInfo)
+    })
+
+    on("clicked:repeating_instant:share", eventInfo => {
+        shareAbility(eventInfo)
+    })
+
+    on("clicked:repeating_technique:share", eventInfo => {
+        shareAbility(eventInfo)
+    })
 
     on("clicked:repeating_primary:damage", eventInfo => {
         console.log("damage called " + JSON.stringify(eventInfo))
@@ -873,6 +976,68 @@
 
 </script>
 
+<rolltemplate class="sheet-rolltemplate-ability">
+    <div class="sheet-ability-template">
+        <div class="sheet-header sheet-list">
+            <div class="sheet-header-title">
+                <div class="sheet-ability-icon">
+                    {{icon}}
+                </div>
+                <div class="sheet-title">
+                    <span class="sheet-bold">{{name}}</span>
+                </div>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">Type:</span>
+                <span class="sheet-mini-input sheet-floatLeft sheet-italic">{{type}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{costTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{cost}}</span>
+                <span class="sheet-mini-input sheet-floatLeft" style="margin-left: 4px;">{{resourceType}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{conditionTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{condition}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{triggerTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{trigger}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{targetTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{target}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{rangeTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{range}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{checkTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft sheet-bold">{{check}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{crTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{cr}}</span>
+            </div>
+        </div>
+        <div class="sheet-body">
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{baseEffectTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{baseEffect}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{directHitTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{directHit}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{limitationTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{limitation}}</span>
+            </div>
+        </div>
+    </div>
+</rolltemplate>
+
 <rolltemplate class="sheet-rolltemplate-hit">
     <div class="sheet-ability-template">
         <div class="sheet-header">
@@ -885,6 +1050,7 @@
                 </div>
             </div>
             <h4>{{cost}}</h4>
+            <h4>{{type}}</h4>
         </div>
         <div class="sheet-body">
             <h4>{{hitTitle}}{{hit}}</h4>
@@ -897,7 +1063,6 @@
 <rolltemplate class="sheet-rolltemplate-damage">
     <div class="sheet-template-container">
         <div class="sheet-header">
-            <h4>{{name}}</h4>
             <h4>{{damageTitle}}{{damage}}</h4>
             <h4>{{directHitTitle}}{{directHit}}</h4>
         </div>
