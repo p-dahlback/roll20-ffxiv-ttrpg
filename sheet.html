@@ -488,6 +488,8 @@
                     <input type="text" class="overrideContent mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
                     <span class="mini flagTitle floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
                     <input type="text" class="overrideContent mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
                     <span class="mini flagTitle floatLeft">Combo name (used for easy chaining to next ability)</span>
                     <input type="text" class="overrideContent mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
                 </div>
@@ -724,6 +726,47 @@
         }
     }
 
+    function restoreResource(restoration, resourceType) {
+        const values = restoration.split(",")
+        var attributes = []
+        for (let i = 0; i < values.length; i++) {
+            const parts = values[i].trim().split(" ")
+            if (parts.length != 2) {
+                console.log("Invalid restore declaration " + values[i])
+                continue
+            }
+            const typeForValue = parts[1].toLowerCase()
+            if (typeForValue == "mp") {
+                attributes.push({
+                    name: "magicPoints",
+                    value: parts[0]
+                })
+            } else if (typeForValue == "hp") {
+                attributes.push({
+                    name: "hitpoints",
+                    value: parts[0]
+                })
+            } else if (resourceType && typeForValue == resourceType.toLowerCase()) {
+                attributes.push({
+                    name: "resourceValue",
+                    value: parts[0]
+                })
+            }
+        }
+        const attributeNames = attributes.flatMap((element) => [element.name, element.name + "_max"])
+        getAttrs(attributeNames, values => {
+            var newValues = {}
+            for (let attribute of attributes) {
+                const value = values[attribute.name]
+                const max = values[attribute.name + "_max"]
+                const newValue = Math.min(value + attribute.value, max)
+                newValues[attribute.name] = newValue
+                console.log("Restored " + attribute.name + " to " + newValue)
+            }
+            setAttrs(newValues)
+        })
+    }
+
     function stringWithTitle(title, value) {
         if (value) {
             return `${title} ${value}`
@@ -809,6 +852,7 @@
             `repeating_${section}_${rowId}_baseValue`,
             `repeating_${section}_${rowId}_dhValue`,
             `repeating_${section}_${rowId}_cr`,
+            `repeating_${section}_${rowId}_restore`,
 
             `repeating_${section}_${rowId}_combo`,
 
@@ -828,7 +872,9 @@
             const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase()
             const hitType = values[`repeating_${section}_${rowId}_hitType`].toLowerCase()
             const hitDie = values[`repeating_${section}_${rowId}_hitDie`]
+            const restoration = values[`repeating_${section}_${rowId}_restore`]
             const statValue = values[statType]
+            const baseEffect = values[`repeating_${section}_${rowId}_baseEffect`]
 
             setAttrs({
                 currentCombo: "" // Reset combo indicators
@@ -839,7 +885,7 @@
             var resourceResult = false
             if (cost > 0) {
                 if (resourceType.toLowerCase() == "mp") {
-                    let result = spendResource(cost, resourceType, values.mp, values.mp_max, "mp")
+                    let result = spendResource(cost, resourceType, values.mp, values.mp_max, "magicPoints")
                     resourceResult = result[0]
                     resourceCost = result[1]
                 } else {
@@ -848,9 +894,15 @@
                     resourceCost = result[1]
                 }
             }
-            // Spend uses if there are any
-            if (usesMax > 0 && resourceResult) {
-                spendResource(1, "uses", uses, usesMax, `repeating_${section}_${rowId}_uses`)
+            if (resourceResult) {
+                // Spend uses if there are any
+                if (usesMax > 0) {
+                    spendResource(1, "uses", uses, usesMax, `repeating_${section}_${rowId}_uses`)
+                }
+                // Restore resources
+                if (restoration) {
+                    restoreResource(restoration, resourceType)
+                }
             }
 
             var hitTitle = "Hit: "
@@ -866,7 +918,7 @@
             //{{button=[Damage](!/&#13;&amp;{template:damage&rbrace; {&lbrace;damage=[[1d20]]&rbrace;&rbrace; {&lbrace;directHit=[[2d6]]&rbrace;&rbrace; ) }}
             startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} {{cost=${resourceCost}}} ` +
             `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}}` +
-            `{{hitTitle=${hitTitle}}} {{hit=[[${hitDie} + ${statValue}]]}} {{cr=${crString}}}`, results => {
+            `{{hitTitle=${hitTitle}}} {{hit=[[${hitDie} + ${statValue}]]}} {{cr=${crString}}} {{baseEffect=${baseEffect}}}`, results => {
                 const hitRoll = results.results.hit
                 const hitValue = hitRoll.result
 
@@ -1163,6 +1215,8 @@
             <h4>{{type}}</h4>
         </div>
         <div class="sheet-body">
+            <span class="sheet-mini-title">Base Effect:</span>
+            <span class="sheet-mini-input">{{baseEffect}}</span>
             <h4>{{hitTitle}}{{hit}}</h4>
             <h4>{{cr}}</h4>
             <div>{{button}}</div>

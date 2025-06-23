@@ -545,14 +545,16 @@ input.job-input {
 }
 
 .mini-title,
-.sheet-rolltemplate-ability .sheet-mini-title {
+.sheet-rolltemplate-ability .sheet-mini-title,
+.sheet-rolltemplate-hit .sheet-mini-title  {
   font-size: 1.2rem;
   font-weight: bolder;
   padding-right: 4px;
 }
 
 .ui-dialog .charsheet .mini-input,
-.sheet-rolltemplate-ability .sheet-mini-input {
+.sheet-rolltemplate-ability .sheet-mini-input,
+.sheet-rolltemplate-hitsheet-mini-input {
   font-size: 1.5rem;
 }
 
