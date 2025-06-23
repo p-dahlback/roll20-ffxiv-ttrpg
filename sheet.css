@@ -524,6 +524,10 @@ input.job-input {
   font-size: 1.8rem;
 }
 
+.sheet-rolltemplate-damage .sheet-button-container {
+  padding-top: 16px;
+}
+
 .header-title,
 .sheet-rolltemplate-ability .sheet-header-title,
 .sheet-rolltemplate-hit .sheet-header-title {

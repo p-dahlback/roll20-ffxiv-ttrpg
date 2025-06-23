@@ -359,7 +359,8 @@
                         <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
                         <button type="action" class="ability-action" name="act_info">i</button>
                         <button type="action" class="ability-action" name="act_share">q</button>
-                        <button type="action" name="act_damage" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo1" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -488,7 +489,7 @@
                     <span class="mini flagTitle floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
                     <input type="text" class="overrideContent mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
                     <span class="mini flagTitle floatLeft">Combo name (used for easy chaining to next ability)</span>
-                    <input type="text" class="overrideContent mini-input" name="attr_combo" title="Combo value" placeholder="Rage of Halone, etc" />
+                    <input type="text" class="overrideContent mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
                 </div>
             </div>
         </fieldset>
@@ -809,8 +810,11 @@
             `repeating_${section}_${rowId}_dhValue`,
             `repeating_${section}_${rowId}_cr`,
 
+            `repeating_${section}_${rowId}_combo`,
+
             "str", "dex", "vit", "int", "mnd",
-            "mp", "mp_max", "resourceValue", "resourceValue_max"
+            "mp", "mp_max", "resourceValue", "resourceValue_max",
+            "character_name"
         ], values => {
             // Perform roll
             const title = values[`repeating_${section}_${rowId}_title`]
@@ -825,18 +829,24 @@
             const hitType = values[`repeating_${section}_${rowId}_hitType`].toLowerCase()
             const hitDie = values[`repeating_${section}_${rowId}_hitDie`]
             const statValue = values[statType]
+
+            setAttrs({
+                currentCombo: "" // Reset combo indicators
+            })
             
             // Spend MP/resources
             var resourceCost = ""
             var resourceResult = false
-            if (resourceType.toLowerCase() == "mp") {
-                let result = spendResource(cost, resourceType, values.mp, values.mp_max, "mp")
-                resourceResult = result[0]
-                resourceCost = result[1]
-            } else {
-                let result = spendResource(cost, resourceType, values.resourceValue, values.resourceValue_max, "resourceValue")
-                resourceResult = result[0]
-                resourceCost = result[1]
+            if (cost > 0) {
+                if (resourceType.toLowerCase() == "mp") {
+                    let result = spendResource(cost, resourceType, values.mp, values.mp_max, "mp")
+                    resourceResult = result[0]
+                    resourceCost = result[1]
+                } else {
+                    let result = spendResource(cost, resourceType, values.resourceValue, values.resourceValue_max, "resourceValue")
+                    resourceResult = result[0]
+                    resourceCost = result[1]
+                }
             }
             // Spend uses if there are any
             if (usesMax > 0 && resourceResult) {
@@ -863,6 +873,8 @@
                 const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
                 const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]
                 const damageType = values[`repeating_${section}_${rowId}_damageType`]
+
+                const combo = values[`repeating_${section}_${rowId}_combo`]
 
                 var criticalMultiplier = "1"
                 if (hitRoll.dice && hitRoll.dice[0] == "20") {
@@ -901,9 +913,26 @@
                     totalTitle = `Full ${damageTitle}`
                 }
 
+                var button = ""
+                var comboTitle = ""
+                if (combo) {
+                    setAttrs({
+                        currentCombo: combo
+                    })
+                    var choices = [combo]
+                    comboTitle = "Combo:"
+                    if (combo.includes("|")) {
+                        choices = combo.split("|")
+                    }
+                    for (let i = 0; i < choices.length; i++) {
+                        button += `[${choices[i].trim()}](~${values.character_name}|repeating_${section}_${rowId}_runcombo${i + 1}) `
+                    }
+                }
+
                 // Roll damage
                 startRoll(`&{template:damage} {{name=${title}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
-                `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}`, results => {
+                `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
+                `{{comboTitle=${comboTitle}}} {{button=${button}}}`, results => {
                     var total = ""
                     if (directHitValueWithMultipliers && baseValueWithMultipliers) {
                         total = results.results.damage.result + results.results.directHit.result
@@ -915,6 +944,45 @@
                             damage: total
                         }
                     )
+                })
+            })
+        })
+    }
+
+    function activateCombo(eventInfo, index) {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+        console.log("Combo activated " + eventInfo)
+        getAttrs([
+            `repeating_${section}_${rowId}_combo`,
+        ], values => {
+            const combo = values[`repeating_${section}_${rowId}_combo`]
+            var abilityName = combo.trim().toLowerCase()
+            if (combo.includes("|")) {
+                const choices = combo.split("|")
+                if (index < choices.length) {
+                    abilityName = choices[index].trim().toLowerCase()
+                } else {
+                    console.log(`Combo index out of bonds: selected ${index}, not in ${combo}`)
+                    return
+                }
+            }
+            getSectionIDs(`repeating_${section}`, ids => {
+                const attributes = ids.map((element) => `repeating_${section}_${element}_title`)
+                getAttrs(attributes, values => {
+                    for (let i = 0; i < ids.length; i++) {
+                        const id = ids[i]
+                        const attribute = attributes[i]
+                        if (values[attribute].trim().toLowerCase() == abilityName) {
+                            const triggerEvent = {
+                                sourceAttribute: `repeating_${section}_${id}_runcomboFrom_${rowId}`
+                            }
+                            activateAbility(triggerEvent)
+                            return
+                        }
+                    }
+                    console.log("Couldn't find ability with name " + abilityName)
                 })
             })
         })
@@ -944,10 +1012,6 @@
         shareAbility(eventInfo)
     })
 
-    on("clicked:repeating_primary:damage", eventInfo => {
-        console.log("damage called " + JSON.stringify(eventInfo))
-    })
-
     on("clicked:repeating_song:trigger", eventInfo => {
         activateAbility(eventInfo)
     })
@@ -972,8 +1036,52 @@
         activateAbility(eventInfo)
     })
 
-    on("clicked:damage", eventInfo => {
-        console.log("Event: " + JSON.stringify(eventInfo))
+    on("clicked:repeating_song:runcombo1", eventInfo => {
+        activateCombo(eventInfo, 0)
+    })
+
+    on("clicked:repeating_primary:runcombo1", eventInfo => {
+        activateCombo(eventInfo, 0)
+    })
+
+    on("clicked:repeating_ninjutsu:runcombo1", eventInfo => {
+        activateCombo(eventInfo, 0)
+    })
+
+    on("clicked:repeating_secondary:runcombo1", eventInfo => {
+        activateCombo(eventInfo, 0)
+    })
+
+    on("clicked:repeating_instant:runcombo1", eventInfo => {
+        activateCombo(eventInfo, 0)
+    })
+
+    on("clicked:repeating_technique:runcombo1", eventInfo => {
+        activateCombo(eventInfo, 0)
+    })
+
+    on("clicked:repeating_song:runcombo2", eventInfo => {
+        activateCombo(eventInfo, 1)
+    })
+
+    on("clicked:repeating_primary:runcombo2", eventInfo => {
+        activateCombo(eventInfo, 1)
+    })
+
+    on("clicked:repeating_ninjutsu:runcombo2", eventInfo => {
+        activateCombo(eventInfo, 1)
+    })
+
+    on("clicked:repeating_secondary:runcombo2", eventInfo => {
+        activateCombo(eventInfo, 1)
+    })
+
+    on("clicked:repeating_instant:runcombo2", eventInfo => {
+        activateCombo(eventInfo, 1)
+    })
+
+    on("clicked:repeating_technique:runcombo2", eventInfo => {
+        activateCombo(eventInfo, 1)
     })
 
 </script>
@@ -1070,6 +1178,9 @@
         </div>
         <div class="sheet-body">
             <h4>{{totalTitle}}{{computed::damage}}</h4>
+            <div class="sheet-button-container">
+                {{button}}
+            </div>
         </div>
     </div>
 </rolltemplate>
