@@ -659,37 +659,14 @@ input.job-input {
 /* Flag visibility */
 
 .overrideContent,
-.flagTitle,
-.titleFlag,
-.typeFlag,
-.iconSource,
-.usesFlag,
-.costFlag,
-.conditionFlag,
-.triggerFlag,
-.targetFlag,
-.checkFlag,
-.baseEffectFlag,
-.directHitFlag,
-.limitationFlag {
+.flagTitle {
   display: none;
 }
 
 .overrideSwitch:not([value="auto"]) ~ .overrideContent,
-.overrideSwitch:not([value="auto"]) ~ .flagTitle,
-.overrideSwitch:not([value="auto"]) ~ .titleFlag,
-.overrideSwitch:not([value="auto"]) ~ .typeFlag,
-.overrideSwitch:not([value="auto"]) ~ .iconSource,
-.overrideSwitch:not([value="auto"]) ~ .usesFlag,
-.overrideSwitch:not([value="auto"]) ~ .costFlag,
-.overrideSwitch:not([value="auto"]) ~ .conditionFlag,
-.overrideSwitch:not([value="auto"]) ~ .triggerFlag,
-.overrideSwitch:not([value="auto"]) ~ .targetFlag,
-.overrideSwitch:not([value="auto"]) ~ .checkFlag,
-.overrideSwitch:not([value="auto"]) ~ .baseEffectFlag,
-.overrideSwitch:not([value="auto"]) ~ .directHitFlag,
-.overrideSwitch:not([value="auto"]) ~ .limitationFlag {
+.overrideSwitch:not([value="auto"]) ~ .flagTitle {
   display: inline-block;
+  background-color: lightblue;
 }
 
 /* Repeating section change control visibility */

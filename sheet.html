@@ -318,26 +318,26 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-
-                    <span class="mini flagTitle floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle floatLeft">Icon source:</span>
-                    <input type="text" class="iconSource mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
                         <input type="hidden" class="usesFlag" name="attr_hasUses" />
@@ -438,12 +438,12 @@
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
 
-                    <span class="mini flagTitle floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
@@ -470,28 +470,30 @@
                         </div>
                     </div>
 
-                    <span class="mini flagTitle floatLeft">Stat for rolls (used for calculations):</span>
-                    <input type="text" class="overrideContent mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
-                    <span class="mini flagTitle floatLeft">Hit dice type (used for display on rolls):</span>
-                    <select class="overrideContent mini-input" name="attr_hitType">
-                        <option value="Damage">Hit</option>
-                        <option value="Healing">Critical</option>
+                    <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+                        <option value="Hit">Hit</option>
+                        <option value="Critical">Critical</option>
+                        <option value="None">None</option>
                     </select>
-                    <span class="mini flagTitle floatLeft">Damage/Healing (used for display on rolls):</span>
-                    <select class="overrideContent mini-input" name="attr_damageType">
+                    <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_damageType">
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
+                        <option value="Defense">Defense</option>
                     </select>
-                    <span class="mini flagTitle floatLeft">Hit die (used for rolls):</span>
-                    <input type="text" class="overrideContent mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc" value="1d20cs20"/>
-                    <span class="mini flagTitle floatLeft">Base effect dice/value (used to calculate damage)</span>
-                    <input type="text" class="overrideContent mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
-                    <span class="mini flagTitle floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
-                    <input type="text" class="overrideContent mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
-                    <span class="mini flagTitle floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
-                    <input type="text" class="overrideContent mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
-                    <span class="mini flagTitle floatLeft">Combo name (used for easy chaining to next ability)</span>
-                    <input type="text" class="overrideContent mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
+                    <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
                 </div>
             </div>
         </fieldset>
@@ -800,8 +802,6 @@
             const icon = values[`repeating_${section}_${rowId}_icon`]
             const title = values[`repeating_${section}_${rowId}_title`]
             const type = templateValues("Type:", values[`repeating_${section}_${rowId}_type`])
-            const cost = templateValues("Cost:", values[`repeating_${section}_${rowId}_cost`])
-            const resourceType = values[`repeating_${section}_${rowId}_resource`]
             const condition = templateValues("Condition:", values[`repeating_${section}_${rowId}_condition`])
             const trigger = templateValues("Trigger:", values[`repeating_${section}_${rowId}_trigger`])
             const target = templateValues("Target:", values[`repeating_${section}_${rowId}_target`])
@@ -811,6 +811,13 @@
             const baseEffect = templateValues("Base Effect:", values[`repeating_${section}_${rowId}_baseEffect`])
             const directHit = templateValues("Direct Hit:", values[`repeating_${section}_${rowId}_directHit`])
             const limitation = templateValues("Limitation:", values[`repeating_${section}_${rowId}_limitation`])
+
+            var cost = templateValues("Cost:", values[`repeating_${section}_${rowId}_cost`])
+            var resourceType = values[`repeating_${section}_${rowId}_resource`]
+            if (cost[1] <= 0) {
+                cost = ["", ""]
+                resourceType = ""
+            }
 
             startRoll(`&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
             `{{typeTitle=${type[0]}}} {{type=${type[1]}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}}` +
@@ -825,6 +832,7 @@
 
     // Roll ability
     function activateAbility(eventInfo) {
+        console.log("Activate ability " + JSON.stringify(eventInfo))
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
@@ -870,7 +878,7 @@
             const resourceType = values[`repeating_${section}_${rowId}_resource`]
 
             const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase()
-            const hitType = values[`repeating_${section}_${rowId}_hitType`].toLowerCase()
+            const hitType = values[`repeating_${section}_${rowId}_hitType`]
             const hitDie = values[`repeating_${section}_${rowId}_hitDie`]
             const restoration = values[`repeating_${section}_${rowId}_restore`]
             const statValue = values[statType]
@@ -905,21 +913,32 @@
                 }
             }
 
-            var hitTitle = "Hit: "
-            if (hitType == "critical") {
-                hitTitle = "Critical: "
-            }
-
             const crString = stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`])
             const typeString = stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`])
             const conditionString = stringWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`])
             const triggerString = stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`])
 
-            //{{button=[Damage](!/&#13;&amp;{template:damage&rbrace; {&lbrace;damage=[[1d20]]&rbrace;&rbrace; {&lbrace;directHit=[[2d6]]&rbrace;&rbrace; ) }}
+            var hitTitle = ""
+            var hitDefinition = ""
+            if (hitType != "None") {
+                hitTitle = `${hitType}: `
+                if (statValue > 0) {
+                    hitDefinition = `[[${hitDie} + ${statValue}]]`
+                } else {
+                    hitDefinition = `[[${hitDie}]]`
+                }
+            }
+
             startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} {{cost=${resourceCost}}} ` +
             `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}}` +
-            `{{hitTitle=${hitTitle}}} {{hit=[[${hitDie} + ${statValue}]]}} {{cr=${crString}}} {{baseEffect=${baseEffect}}}`, results => {
-                const hitRoll = results.results.hit
+            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}}`, results => {
+                var hitRoll = results.results.hit
+                if (!hitRoll) {
+                    hitRoll = {
+                        result: undefined,
+                        dice: undefined
+                    }
+                }
                 const hitValue = hitRoll.result
 
                 const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
@@ -944,8 +963,12 @@
                     directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1)
                 }
 
-                var damageTitle = `${damageType}: `
-                var damageDice = `[[${baseValueWithMultipliers}]]`
+                var damageTitle = ""
+                var damageDice = ""
+                if (baseValueWithMultipliers) {
+                    damageTitle = `${damageType}: `
+                    damageDice = `[[${baseValueWithMultipliers}]]`
+                }
                 var directHitTitle = ""
                 var directHitDice = ""
                 var totalTitle = ""
@@ -981,6 +1004,11 @@
                     }
                 }
 
+                if (!damageDice && !directHitDice && !combo) {
+                    console.log("No reason to roll damage")
+                    return
+                }
+
                 // Roll damage
                 startRoll(`&{template:damage} {{name=${title}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
@@ -1005,7 +1033,7 @@
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
-        console.log("Combo activated " + eventInfo)
+        console.log("Combo activated " + JSON.stringify(eventInfo))
         getAttrs([
             `repeating_${section}_${rowId}_combo`,
         ], values => {
@@ -1030,6 +1058,7 @@
                             const triggerEvent = {
                                 sourceAttribute: `repeating_${section}_${id}_runcomboFrom_${rowId}`
                             }
+                            console.log("Activating " + abilityName)
                             activateAbility(triggerEvent)
                             return
                         }
