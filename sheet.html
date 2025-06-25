@@ -776,6 +776,47 @@
         return ""
     }
 
+    function applyAdvantageToDice(advantage, dice) {
+        if (advantage == 0) {
+            return dice
+        }
+        if (!dice.includes("d")) {
+            return dice
+        }
+        const highOrLow = advantage > 0 ? "kh" : "kl"
+        const multiplier = Math.abs(advantage) + 1
+
+        var searchString = dice
+        var newDice = ""
+        var index
+        while ((index = searchString.indexOf("d")) >= 0) {
+            let numberOfDice
+            if (index == 0) {
+                numberOfDice = 1
+                searchString = `1${searchString}`
+                index = 1
+            } else {
+                newDice += searchString.substring(0, index - 1)
+                numberOfDice = searchString.substring(index - 1, index)
+            }
+            const numberOfDiceWithMultiplier = numberOfDice * multiplier
+
+            // Find end of roll
+            let match = /[\-+* \/\)]/.exec(searchString.substring(index))
+            if (match) {
+                const matchIndex = match.index + index
+                newDice += `${numberOfDiceWithMultiplier}${searchString.substring(index, matchIndex)}${highOrLow}${numberOfDice}`
+                searchString = searchString.substring(matchIndex)
+            } else {
+                newDice += `${numberOfDiceWithMultiplier}${searchString.substring(index).trim()}${highOrLow}${numberOfDice}`
+                searchString = ""
+                break
+            }
+        }
+        newDice += searchString
+        return newDice
+    }
+
     // Share ability details to chat
     function shareAbility(eventInfo) {
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
@@ -865,7 +906,8 @@
             `repeating_${section}_${rowId}_combo`,
 
             "str", "dex", "vit", "int", "mnd",
-            "mp", "mp_max", "resourceValue", "resourceValue_max",
+            "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
+            "advantage",
             "character_name"
         ], values => {
             // Perform roll
@@ -879,7 +921,6 @@
 
             const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase()
             const hitType = values[`repeating_${section}_${rowId}_hitType`]
-            const hitDie = values[`repeating_${section}_${rowId}_hitDie`]
             const restoration = values[`repeating_${section}_${rowId}_restore`]
             const statValue = values[statType]
             const baseEffect = values[`repeating_${section}_${rowId}_baseEffect`]
@@ -918,6 +959,10 @@
             const conditionString = stringWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`])
             const triggerString = stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`])
 
+
+            var hitDie = values[`repeating_${section}_${rowId}_hitDie`]
+            hitDie = applyAdvantageToDice(values.advantage, hitDie)
+
             var hitTitle = ""
             var hitDefinition = ""
             if (hitType != "None") {
@@ -936,7 +981,8 @@
                 if (!hitRoll) {
                     hitRoll = {
                         result: undefined,
-                        dice: undefined
+                        dice: undefined,
+                        expression: undefined
                     }
                 }
                 const hitValue = hitRoll.result
@@ -947,9 +993,11 @@
 
                 const combo = values[`repeating_${section}_${rowId}_combo`]
 
-                var criticalMultiplier = "1"
-                if (hitRoll.dice && hitRoll.dice[0] == "20") {
-                    criticalMultiplier = "2"
+                var criticalMultiplier = 1
+                if (hitRoll.dice && hitRoll.expression.includes("kh")) {
+                    criticalMultiplier = Math.max(...hitRoll.dice) == 20 ? 2 : 1
+                } else if (hitRoll.dice && hitRoll.expression.includes("kl")) {
+                    criticalMultiplier = Math.min(...hitRoll.dice) == 20 ? 2 : 1
                 }
                 finishRoll(results.rollId)
 
@@ -1013,8 +1061,8 @@
                 startRoll(`&{template:damage} {{name=${title}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
                 `{{comboTitle=${comboTitle}}} {{button=${button}}}`, results => {
-                    var total = ""
-                    if (directHitValueWithMultipliers && baseValueWithMultipliers) {
+                    var total = results.results.damage.result
+                    if (damageDice && directHitDice) {
                         total = results.results.damage.result + results.results.directHit.result
                     }
                     
