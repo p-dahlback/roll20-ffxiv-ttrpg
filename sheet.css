@@ -426,6 +426,15 @@ input.job-input {
 }
 */
 
+/* Stat editable setting */
+
+.basic-info .overrideSwitch[value="auto"] ~ input,
+.stat .overrideSwitch[value="auto"] ~ input,
+.active-stat .overrideSwitch[value="auto"] ~ input.max {
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ABILITIES */
 
 .ability {

@@ -37,10 +37,12 @@
         <div class="left section">
             <div class="basic-info horizontal">
                 <div class="level flex horizontal tight">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                     <label class="large">LV</label>
                     <input name="attr_level" type="number" value="30">
                 </div>
                 <div class="job vertical">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                     <label class="small">Role / Job</label>
                     <input class="job-input medium" name="attr_job" type="text" value="TANK / WARRIOR">
                 </div>
@@ -52,7 +54,7 @@
 
             <!-- Profile -->
 
-            <div class="profile section">
+            <div class="profile section list">
                 <h3 class="small">Profile</h3>
 
                 <!-- Trait -->
@@ -70,22 +72,22 @@
 
                 <div class="title horizontal">
                     <label class="mini">Title:</label>
-                    <input class="mini" readonly name="attr_selectedTitle" type="text" />
+                    <span class="mini" name="attr_selectedTitle">Select a title from Inventory</span>
                 </div>
-                <div class="title-effect list">
-                    <label class="mini">Effect:</label>
-                    <textarea class="mini" readonly name="attr_selectedTitleEffect" placeholder="Select a Title from Inventory"></textarea>
+                <div class="title-effect">
+                    <label class="mini floatLeft">Effect:</label>
+                    <span class="mini floatLeft" name="attr_selectedTitleEffect"></span>
                 </div>
 
                 <!-- Minion -->
                  
                 <div class="minion horizontal">
                     <label class="mini">Minion:</label>
-                    <input class="mini" readonly name="attr_selectedMinion" type="text"/>
+                    <span class="mini" name="attr_selectedMinion">Select a minion from Inventory</span>
                 </div>
-                <div class="minion-effect list">
-                    <label class="mini">Effect:</label>
-                    <textarea class="mini" readonly name="attr_selectedMinionEffect" placeholder="Select a Minion from your Inventory"></textarea>
+                <div class="minion-effect">
+                    <label class="mini floatLeft">Effect:</label>
+                    <span class="mini floatLeft" name="attr_selectedMinionEffect"></span>
                 </div>
 
             </div>
@@ -105,26 +107,31 @@
                 <div class="main-stat list">
                     <h3 class="medium">Primary Attributes</h3>
                     <div class="stat-block">
-                        <button class="medium" name="roll_strength" type="roll" value="/roll @{d20} + @{str}">STR</button>
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <button class="medium" name="roll_strength" type="roll" value="&{template:default} {{name=Strength}} {{Result=[[@{d20}+(@{str})]]}}">STR</button>
                         <input class="stat" name="attr_str" type="number" value="5">
                     </div>
                     
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <button class="medium" name="roll_dexterity" type="roll" value="&{template:default} {{name=Dexterity}} {{Result=[[@{d20}+(@{dex})]]}}">DEX</button>
                         <input class="stat" name="attr_dex" type="number" value="4">
                     </div>
                     
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <button class="medium" name="roll_vitality" type="roll" value="&{template:default} {{name=Vitality}} {{Result=[[@{d20}+(@{vit})]]}}">VIT</button>
                         <input class="stat" name="attr_vit" type="number" value="3">
                     </div>
                     
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <button class="medium" name="roll_intelligence" type="roll" value="&{template:default} {{name=Intelligence}} {{Result=[[@{d20}+(@{int})]]}}">INT</button>
                         <input class="stat" name="attr_int" type="number" value="2">
                     </div>
                     
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <button class="medium" name="roll_mind" type="roll" value="&{template:default} {{name=Mind}} {{Result=[[@{d20}+(@{mnd})]]}}">MND</button>
                         <input class="stat" name="attr_mnd" type="number" value="1">
                     </div>
@@ -133,23 +140,29 @@
                 <!-- Secondary -->
 
                 <div class="sub-stat list">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+
                     <h3 class="medium standard">Secondary Attributes</h3>
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <label class="medium oneline">Defense</label>
                         <input class="stat" name="attr_defense" type="number" value="15">
                     </div>
                     
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <label class="medium oneline">Magic Defense</label>
                         <input class="stat" name="attr_magicDefense" type="number" value="12">
                     </div>
                     
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <label class="medium oneline">Vigilance</label>
                         <input class="stat" name="attr_vigilance" type="number" value="11">
                     </div>
                     
                     <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <label class="medium oneline">Speed</label>
                         <input class="stat" name="attr_speed" type="number" value="5">
                     </div>
@@ -165,6 +178,7 @@
                 <div class="hit-point section">
                     <label class="text large" style="width: 1em">HP</label>
                     <div class="flex horizontal tight right-aligned">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                         <input class="stat" name="attr_hitPoints" type="number" min="0" value="30"> /
                         <input class="stat max" name="attr_hitPoints_max" type="number" min="0" value="30">
                     </div>
@@ -179,15 +193,16 @@
                 <div class="magic-point section">
                     <label class="large" style="width: 1em">MP</label>
                     <div class="current list">
-                        <label class="mini">Recover 2MP at the end of the (Adventurer Step)</label>
+                        <div class="mini">
+                            <span>Recover</span>
+                            <span name="attr_mpRecovery"></span>
+                            <span>MP at the end of the (Adventurer Step)</span>
+                        </div>
                         <div class="flex horizontal tight right-aligned">
+                            <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                             <input class="stat" name="attr_magicPoints" type="number" min="0" value="5"> /
                             <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
                         </div>
-                    </div>
-                    <div class="bonus-mp list right-aligned">
-                        <label class="mini">Extra</label>
-                        <input class="stat" name="attr_bonusMp" type="number" min="0" value="1">
                     </div>
                 </div>
             </div>
