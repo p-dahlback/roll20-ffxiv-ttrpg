@@ -219,12 +219,9 @@
             <!-- Effects -->
 
             <div class="effects section horizontal">
-                <div class="buffs">
-
-                </div>
-                <div class="enfeeblements">
-                    
-                </div>
+                <h3 class="small">Effects</h3> 
+                <fieldset class="repeating_effects">
+                </fieldset>
             </div>
         </div>
     </div>
@@ -374,6 +371,8 @@
                         <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
                         <button type="action" class="ability-action" name="act_info">i</button>
                         <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
                     </div>
@@ -911,19 +910,13 @@
 
             `repeating_${section}_${rowId}_stat`,
             `repeating_${section}_${rowId}_hitType`,
-            `repeating_${section}_${rowId}_damageType`,
             `repeating_${section}_${rowId}_hitDie`,
-            `repeating_${section}_${rowId}_baseValue`,
-            `repeating_${section}_${rowId}_dhValue`,
             `repeating_${section}_${rowId}_cr`,
             `repeating_${section}_${rowId}_restore`,
 
-            `repeating_${section}_${rowId}_combo`,
-
             "str", "dex", "vit", "int", "mnd",
             "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
-            "advantage",
-            "character_name"
+            "advantage", "character_name"
         ], values => {
             // Perform roll
             const title = values[`repeating_${section}_${rowId}_title`]
@@ -974,12 +967,12 @@
             const conditionString = stringWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`])
             const triggerString = stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`])
 
-
             var hitDie = values[`repeating_${section}_${rowId}_hitDie`]
             hitDie = applyAdvantageToDice(values.advantage, hitDie)
 
             var hitTitle = ""
             var hitDefinition = ""
+            var button = ""
             if (hitType != "None") {
                 hitTitle = `${hitType}: `
                 if (statValue > 0) {
@@ -987,11 +980,15 @@
                 } else {
                     hitDefinition = `[[${hitDie}]]`
                 }
+                button = `[Damage](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`
             }
+            var attributes = {}
+            attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
+            setAttrs(attributes)
 
             startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} {{cost=${resourceCost}}} ` +
             `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}}` +
-            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}}`, results => {
+            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} {{button=${button}}}`, results => {
                 var hitRoll = results.results.hit
                 if (!hitRoll) {
                     hitRoll = {
@@ -1002,92 +999,118 @@
                 }
                 const hitValue = hitRoll.result
 
-                const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
-                const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]
-                const damageType = values[`repeating_${section}_${rowId}_damageType`]
-
-                const combo = values[`repeating_${section}_${rowId}_combo`]
-
                 var criticalMultiplier = 1
-                if (hitRoll.dice && hitRoll.expression.includes("kh")) {
-                    criticalMultiplier = Math.max(...hitRoll.dice) == 20 ? 2 : 1
-                } else if (hitRoll.dice && hitRoll.expression.includes("kl")) {
-                    criticalMultiplier = Math.min(...hitRoll.dice) == 20 ? 2 : 1
+                if (hitRoll.dice && hitRoll.expression.includes("kl")) {
+                    criticalMultiplier = Math.min(...hitRoll.dice) >= 20 ? 2 : 1
+                } else {
+                    criticalMultiplier = Math.max(...hitRoll.dice) >= 20 ? 2 : 1
                 }
+
+                attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = criticalMultiplier
+                setAttrs(attributes)
+
                 finishRoll(results.rollId)
+            })
+        })
+    }
 
-                // Add crit multiplier to other dice rolls
-                var baseValueWithMultipliers = baseValue
-                if (baseValue.includes("d")) {
-                    baseValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + baseValue[0] + "]]" + baseValue.substring(1)
-                }
-                var directHitValueWithMultipliers = directHitValue
-                if (directHitValue.includes("d")) {
-                    directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1)
-                }
+    function rollDamage(eventInfo) {
+        console.log("Roll damage " + JSON.stringify(eventInfo))
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+        getAttrs([
+            `repeating_${section}_${rowId}_damageType`,
+            `repeating_${section}_${rowId}_baseValue`,
+            `repeating_${section}_${rowId}_dhValue`,
+            `repeating_${section}_${rowId}_combo`,
+            `repeating_${section}_${rowId}_currentCriticalMultiplier`,
 
-                var damageTitle = ""
-                var damageDice = ""
+            "character_name"
+        ], values => {
+            const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
+            const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]
+            const damageType = values[`repeating_${section}_${rowId}_damageType`]
+            const combo = values[`repeating_${section}_${rowId}_combo`]
+            const criticalMultiplier = values[`repeating_${section}_${rowId}_currentCriticalMultiplier`]
+
+            // Add crit multiplier to other dice rolls
+            var baseValueWithMultipliers = baseValue
+            if (baseValue.includes("d")) {
+                baseValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + baseValue[0] + "]]" + baseValue.substring(1)
+            }
+            var directHitValueWithMultipliers = directHitValue
+            if (directHitValue.includes("d")) {
+                directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1)
+            }
+
+            var damageTitle = ""
+            var damageDice = ""
+            if (baseValueWithMultipliers) {
+                damageTitle = `${damageType}: `
+                damageDice = `[[${baseValueWithMultipliers}]]`
+            }
+            var directHitTitle = ""
+            var directHitDice = ""
+            var totalTitle = ""
+            if (criticalMultiplier > 1 && directHitValueWithMultipliers) {
                 if (baseValueWithMultipliers) {
-                    damageTitle = `${damageType}: `
-                    damageDice = `[[${baseValueWithMultipliers}]]`
+                    damageDice = `[[${baseValueWithMultipliers} + ${directHitValueWithMultipliers}]]`
+                } else {
+                    damageDice = `[[${directHitValueWithMultipliers}]]`
                 }
-                var directHitTitle = ""
-                var directHitDice = ""
-                var totalTitle = ""
-                if (criticalMultiplier > 1 && directHitValueWithMultipliers) {
-                    if (baseValueWithMultipliers) {
-                        damageDice = `[[${baseValueWithMultipliers} + ${directHitValueWithMultipliers}]]`
-                    } else {
-                        damageDice = `[[${directHitValueWithMultipliers}]]`
-                    }
-                } else if (directHitValueWithMultipliers) {
-                    directHitTitle = "Direct Hit: "
-                    directHitDice = `[[${directHitValueWithMultipliers}]]`
-                }
+            } else if (directHitValueWithMultipliers) {
+                directHitTitle = "Direct Hit: "
+                directHitDice = `[[${directHitValueWithMultipliers}]]`
+            }
 
-                var totalTitle = ""
-                if (directHitValueWithMultipliers && baseValueWithMultipliers) {
-                    totalTitle = `Full ${damageTitle}`
-                }
+            var totalTitle = ""
+            if (directHitValueWithMultipliers && baseValueWithMultipliers) {
+                totalTitle = `Full ${damageTitle}`
+            }
 
-                var button = ""
-                var comboTitle = ""
-                if (combo) {
-                    setAttrs({
-                        currentCombo: combo
-                    })
-                    var choices = [combo]
-                    comboTitle = "Combo:"
-                    if (combo.includes("|")) {
-                        choices = combo.split("|")
-                    }
-                    for (let i = 0; i < choices.length; i++) {
-                        button += `[${choices[i].trim()}](~${values.character_name}|repeating_${section}_${rowId}_runcombo${i + 1}) `
-                    }
-                }
-
-                if (!damageDice && !directHitDice && !combo) {
-                    console.log("No reason to roll damage")
-                    return
-                }
-
-                // Roll damage
-                startRoll(`&{template:damage} {{name=${title}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
-                `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
-                `{{comboTitle=${comboTitle}}} {{button=${button}}}`, results => {
-                    var total = results.results.damage.result
-                    if (damageDice && directHitDice) {
-                        total = results.results.damage.result + results.results.directHit.result
-                    }
-                    
-                    finishRoll(
-                        results.rollId,
-                        {
-                            damage: total
-                        }
-                    )
+            var button = ""
+            var comboTitle = ""
+            if (combo) {
+                setAttrs({
+                    currentCombo: combo
                 })
+                var choices = [combo]
+                comboTitle = "Combo:"
+                if (combo.includes("|")) {
+                    choices = combo.split("|")
+                }
+                for (let i = 0; i < choices.length; i++) {
+                    button += `[${choices[i].trim()}](~${values.character_name}|repeating_${section}_${rowId}_runcombo${i + 1})`
+                }
+            }
+
+            if (!damageDice && !directHitDice && !combo) {
+                console.log("No reason to roll damage")
+                return
+            }
+
+            // Roll damage
+            console.log(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
+            `{{comboTitle=${comboTitle}}} {{button=${button}}}`)
+            startRoll(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
+            `{{comboTitle=${comboTitle}}} {{button=${button}}}`, results => {
+                var total = results.results.damage.result
+                if (damageDice && directHitDice) {
+                    total = results.results.damage.result + results.results.directHit.result
+                }
+                var attributes = {}
+                attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
+                setAttrs(attributes)
+                
+                finishRoll(
+                    results.rollId,
+                    {
+                        damage: total
+                    }
+                )
             })
         })
     }
@@ -1178,6 +1201,30 @@
 
     on("clicked:repeating_technique:trigger", eventInfo => {
         activateAbility(eventInfo)
+    })
+
+    on("clicked:repeating_song:rolldamage", eventInfo => {
+        rollDamage(eventInfo)
+    })
+
+    on("clicked:repeating_primary:rolldamage", eventInfo => {
+        rollDamage(eventInfo)
+    })
+
+    on("clicked:repeating_ninjutsu:rolldamage", eventInfo => {
+        rollDamage(eventInfo)
+    })
+
+    on("clicked:repeating_secondary:rolldamage", eventInfo => {
+        rollDamage(eventInfo)
+    })
+
+    on("clicked:repeating_instant:rolldamage", eventInfo => {
+        rollDamage(eventInfo)
+    })
+
+    on("clicked:repeating_technique:rolldamage", eventInfo => {
+        rollDamage(eventInfo)
     })
 
     on("clicked:repeating_song:runcombo1", eventInfo => {
