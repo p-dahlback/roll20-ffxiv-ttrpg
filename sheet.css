@@ -99,6 +99,14 @@ input {
   all: initial;
 }
 
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: white;
+  padding-bottom: 8px;
+}
+
 /* TABS */
 
 /* configure the tab buttons */
@@ -335,10 +343,7 @@ input {
 }
 
 .advantage {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 32px;
+  padding-left: 16px;
 }
 
 .stat-block {
@@ -381,24 +386,41 @@ input.stat {
   align-items: baseline;
 }
 
-.active-stat {
+.stat-shortcut {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-direction: row;
+  gap: 8px;
+  padding-bottom: 8px;
 }
 
-.magic-point {
+.points {
   display: flex;
-  gap: 32px;
-  flex-direction: row;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-header {
+  height: 20px;
 }
 
 .hit-point {
-  display: flex;
-  gap: 32px;
-  flex-direction: row;
-  align-items: flex-end;
+  display: grid;
+  grid-template: 
+    "a b c d" auto
+    "e e e f" auto;
+}
+
+.hit-point span {
+  align-self: center;
+}
+
+.resource-point {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.resource-point span {
+  align-self: center;
 }
 
 .image {
@@ -406,6 +428,14 @@ input.stat {
   height: 256px;
   background-color: white;
   margin: auto;
+}
+
+.ui-dialog .charsheet .resource {
+  display: none;
+}
+
+.ui-dialog .charsheet .resourceSwitch:not([value=""]) ~ .resource {
+  display: inline-block;
 }
 
 /* INPUT */
@@ -430,7 +460,7 @@ input.job-input {
 
 .basic-info .overrideSwitch[value="auto"] ~ input,
 .stat .overrideSwitch[value="auto"] ~ input,
-.active-stat .overrideSwitch[value="auto"] ~ input.max {
+.stat-shortcut .overrideSwitch[value="auto"] ~ input.max {
   pointer-events: none;
   user-select: none;
 }
@@ -680,6 +710,7 @@ input.job-input {
 
 /* Repeating section change control visibility */
 
+div[data-groupname=repeating_limit].repcontrol,
 div[data-groupname=repeating_song].repcontrol,
 div[data-groupname=repeating_primary].repcontrol,
 div[data-groupname=repeating_ninjutsu].repcontrol,
@@ -689,6 +720,7 @@ div[data-groupname=repeating_technique].repcontrol {
   display: none;
 }
 
+.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_limit].repcontrol,
 .overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_song].repcontrol,
 .overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_primary].repcontrol,
 .overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_ninjutsu].repcontrol,
@@ -712,6 +744,7 @@ div[data-groupname=repeating_technique].repcontrol {
   display: block;
 }
 
+.repcontainer[data-groupname="repeating_limit"],
 .repcontainer[data-groupname="repeating_song"],
 .repcontainer[data-groupname="repeating_primary"],
 .repcontainer[data-groupname="repeating_ninjutsu"],

@@ -2,34 +2,87 @@
 
 <!-- Character name and race -->
 
-<div class="top section">
-    <div class="type">
-        <img src="Images/WAR_Symbol_Token.png" width="50" />
+<div class="sticky section">
+    <div class="top section">
+        <div class="type">
+            <img src="Images/WAR_Symbol_Token.png" width="50" />
+        </div>
+
+        <div class="name content vertical">
+            <label class="small">Name</label>
+            <input class="medium" name="attr_character_name" type="text" value="Kokopoko">
+        </div>
+        
+        <div class="race content vertical">
+            <label class="small">Race</label>
+            <input class="medium" name="attr_character_race" type="text" value="Lalafell">
+        </div>
     </div>
 
-    <div class="name content vertical">
-        <label class="small">Name</label>
-        <input class="medium" name="attr_character_name" type="text" value="Kokopoko">
+    <!-- Shortcut for HP/MP -->
+
+    <div class="stat-shortcut section">
+        <!-- HP -->
+
+        <div class="points section">
+            <div class="stat-header"></div>
+            <div class="hit-point section">
+                <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                <span class="text large" style="width: 1em">HP</span>
+                <input class="stat" name="attr_hitPoints" type="number" min="0" value="30">
+                <span>/</span>
+                <input class="stat max" name="attr_hitPoints_max" type="number" min="0" value="30">
+                <span class="text large">Barrier</span>
+                <input class="stat" name="attr_barrierPoints" type="number" min="0" value="10">
+            </div>
+        </div>
+        
+        <!-- MP, Resource -->
+
+        <div class="points section">
+            <div class="mini stat-header">
+                <span>Recover</span>
+                <span name="attr_mpRecovery"></span>
+                <span>MP at the end of the (Adventurer Step)</span>
+            </div>
+            <div class="resource-point">
+                <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                <input type="hidden" class="resourceSwitch" name="attr_resource" placeholder="placeholder" />
+                <span class="text large" style="width: 1em">MP</span>
+                <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
+                <span>/</span>
+                <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+
+                <span class="text large resource" name="attr_resource"></span>
+                <input class="stat resource" name="attr_resourceValue" type="number" min="0">
+                <span class="resource">/</span>
+                <input class="stat max resource" name="attr_resourceValue_max" type="number" min="0">
+            </div>
+        </div>
+
+        <!-- Advantage -->
+
+        <div class="points advantage" style="width: 25%;">
+            <label class="large stat-header">Advantage</label>
+            <input class="stat" name="attr_advantage" type="number" min="-2" max="2" value="0" />
+        </div>
     </div>
-    
-    <div class="race content vertical">
-        <label class="small">Race</label>
-        <input class="medium" name="attr_character_race" type="text" value="Lalafell">
+
+    <!-- Tab buttons -->
+
+    <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
+    <div class="tab">
+        <button type="action" name="act_character" class="sheet-button0">Character</button>
+        <button type="action" name="act_abilities" class="sheet-button2">Abilities</button>
+        <button type="action" name="act_items" class="sheet-button1">Inventory</button>
+        <button type="action" name="act_override" class="sheet-button3 floatRight">...</button>
     </div>
 </div>
-
-<!-- Tab buttons -->
 
 <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
-<div class="tab">
-    <button type="action" name="act_character" class="sheet-button0">Character</button>
-    <button type="action" name="act_items" class="sheet-button1">Inventory</button>
-    <button type="action" name="act_abilities" class="sheet-button2">Abilities</button>
-    <button type="action" name="act_override" class="sheet-button3 floatRight">...</button>
-</div>
 
 <!-- Profile page -->
-<div class="character">
+<div class="character fancy">
     <div class="grid">
 
         <!-- Profile page, Level and Profile -->
@@ -96,10 +149,6 @@
         <!-- Profile page, Attributes -->
 
         <div class="right section">
-            <div class="advantage">
-                <label class="large">Advantage</label>
-                <input name="attr_advantage" type="number" min="-2" max="2" value="0" />
-            </div>
             <div class="stat section horizontal">
 
                 <!-- Primary -->
@@ -168,44 +217,6 @@
                     </div>
                 </div>
             </div> 
-        
-            <!-- Active stats -->
-
-            <div class="active-stat section">
-
-                <!-- HP -->
-
-                <div class="hit-point section">
-                    <label class="text large" style="width: 1em">HP</label>
-                    <div class="flex horizontal tight right-aligned">
-                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <input class="stat" name="attr_hitPoints" type="number" min="0" value="30"> /
-                        <input class="stat max" name="attr_hitPoints_max" type="number" min="0" value="30">
-                    </div>
-                    <div class="barrier list right-aligned">
-                        <label class="mini">Barrier</label>
-                        <input class="stat" name="attr_barrierPoints" type="number" min="0" value="10">
-                    </div>
-                </div>
-                
-                <!-- MP -->
-
-                <div class="magic-point section">
-                    <label class="large" style="width: 1em">MP</label>
-                    <div class="current list">
-                        <div class="mini">
-                            <span>Recover</span>
-                            <span name="attr_mpRecovery"></span>
-                            <span>MP at the end of the (Adventurer Step)</span>
-                        </div>
-                        <div class="flex horizontal tight right-aligned">
-                            <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                            <input class="stat" name="attr_magicPoints" type="number" min="0" value="5"> /
-                            <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Fortune -->
 
@@ -229,7 +240,7 @@
 
 <!-- Items page -->
 
-<div class="items">
+<div class="items fancy">
     <div class="section grid">
         <div class="section list">
 
@@ -293,18 +304,14 @@
 
 <!-- Abilities page -->
 
-<div class="char-abilities">
+<div class="char-abilities fancy">
     <div class="top">
-
-        <!-- Shortcut for HP/MP -->
-
-        <div class="stat-shortcut">
-
-        </div>
 
         <!-- Limit Break -->
         <div class="limit">
+            <fieldset class="repeating_limit">
 
+            </fieldset>
         </div>
     </div>
 
@@ -321,10 +328,8 @@
 
     <!-- Primary abilities -->
 
-    <details class="primary-abilities">
-        <summary>
-            <h3>Primary Abilities</h3>
-        </summary>
+    <div class="primary-abilities">
+        <h3>Primary Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_primary">
             <div class="ability">
@@ -511,7 +516,7 @@
                 </div>
             </div>
         </fieldset>
-    </details>
+    </div>
 
     <!-- Sub-abilities (Ninja jutsu) -->
 
@@ -554,7 +559,7 @@
     </div>
 </div>
 
-<div class="override">
+<div class="override fancy">
     <h3>Manual Override</h3>
     <p>Enables manual input for things the player would normally not mess with, primarily intended for setting up NPC sheets.</p>
     <p>Mess with at your own risk!</p>
@@ -689,6 +694,10 @@
         })
     }
 
+    on("clicked:repeating_limit:info", eventInfo => {
+        toggleExpandedStateInSection(eventInfo)
+    })
+
     on("clicked:repeating_song:info", eventInfo => {
         toggleExpandedStateInSection(eventInfo)
     })
@@ -763,6 +772,7 @@
                     value: parts[0]
                 })
             } else if (resourceType && typeForValue == resourceType.toLowerCase()) {
+                console.log("Value " + parts[0])
                 attributes.push({
                     name: "resourceValue",
                     value: parts[0]
@@ -775,7 +785,8 @@
             for (let attribute of attributes) {
                 const value = values[attribute.name]
                 const max = values[attribute.name + "_max"]
-                const newValue = Math.min(value + attribute.value, max)
+                const sum = +value + +attribute.value
+                const newValue = Math.min(sum, max)
                 newValues[attribute.name] = newValue
                 console.log("Restored " + attribute.name + " to " + newValue)
             }
@@ -1155,6 +1166,10 @@
         })
     }
 
+    on("clicked:repeating_limit:share", eventInfo => {
+        shareAbility(eventInfo)
+    })
+
     on("clicked:repeating_song:share", eventInfo => {
         shareAbility(eventInfo)
     })
@@ -1177,6 +1192,10 @@
 
     on("clicked:repeating_technique:share", eventInfo => {
         shareAbility(eventInfo)
+    })
+
+    on("clicked:repeating_limit:trigger", eventInfo => {
+        activateAbility(eventInfo)
     })
 
     on("clicked:repeating_song:trigger", eventInfo => {
@@ -1203,6 +1222,10 @@
         activateAbility(eventInfo)
     })
 
+    on("clicked:repeating_limit:rolldamage", eventInfo => {
+        rollDamage(eventInfo)
+    })
+
     on("clicked:repeating_song:rolldamage", eventInfo => {
         rollDamage(eventInfo)
     })
@@ -1227,6 +1250,10 @@
         rollDamage(eventInfo)
     })
 
+    on("clicked:repeating_limit:runcombo1", eventInfo => {
+        activateCombo(eventInfo, 0)
+    })
+
     on("clicked:repeating_song:runcombo1", eventInfo => {
         activateCombo(eventInfo, 0)
     })
@@ -1249,6 +1276,10 @@
 
     on("clicked:repeating_technique:runcombo1", eventInfo => {
         activateCombo(eventInfo, 0)
+    })
+
+    on("clicked:repeating_limit:runcombo2", eventInfo => {
+        activateCombo(eventInfo, 1)
     })
 
     on("clicked:repeating_song:runcombo2", eventInfo => {
