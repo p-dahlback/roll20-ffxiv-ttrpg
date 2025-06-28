@@ -110,17 +110,6 @@
             <div class="profile section list">
                 <h3 class="small">Profile</h3>
 
-                <!-- Trait -->
-
-                <div class="trait horizontal">
-                    <label class="mini">Trait:</label>
-                    <input class="mini" name="attr_trait" type="text" value="Indomitable" />
-                </div>
-                <div class="traitEffect" list>
-                    <label class="mini">Effect:</label>
-                    <textarea class="mini" name="attr_traitEffect" placeholder="The effect provided by your trait">You've slipped from death more times than you can count. Receive one advantage die on checks to endure pain or push your body beyond its natural limits.</textarea>
-                </div>
-
                 <!-- Title  -->
 
                 <div class="title horizontal">
@@ -143,6 +132,22 @@
                     <span class="mini floatLeft" name="attr_selectedMinionEffect"></span>
                 </div>
 
+                <!-- Traits -->
+
+                <h3>Traits</h3>
+                <fieldset class="repeating_traits">
+                    <div class="trait list">
+                        <div class="horizontal">
+                            <span class="medium">Trait:</span>
+                            <input class="medium" name="attr_title" placeholder="Title"></span>
+                        </div>
+                        <span class="small floatLeft">Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
         </div>
         
