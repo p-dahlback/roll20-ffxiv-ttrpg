@@ -509,6 +509,27 @@ input.job-input {
   vertical-align: top;
 }
 
+.effect-icon {
+  width: 20px;
+  height: 20px;
+  background-color: aquamarine;
+  border-radius: 4px;
+  margin-top: auto;
+  margin-bottom: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.effect-type {
+  width: 10em;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.effect-value {
+  width: 6em;
+}
+
 .ability-icon,
 .sheet-rolltemplate-ability .sheet-ability-icon,
 .sheet-rolltemplate-hit .sheet-ability-icon {
