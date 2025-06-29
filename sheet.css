@@ -102,6 +102,7 @@ input {
 .sticky {
   position: sticky;
   top: 0;
+  width: 100%;
   z-index: 999;
   background-color: white;
   padding-bottom: 8px;
@@ -439,10 +440,20 @@ input.stat {
 }
 
 .trait {
-  padding: 4px 0px 4px 0px;
+  padding: 12px 0px 12px 0px;
+}
+
+.effects {
+  width: 100%;
 }
 
 /* INPUT */
+
+input[type=text] {
+  border-style: none none dotted none;
+  border-width: 1px;
+  border-color: black;
+}
 
 /*
 input[type=number] {
@@ -467,6 +478,7 @@ input.job-input {
 .stat-shortcut .overrideSwitch[value="auto"] ~ input.max {
   pointer-events: none;
   user-select: none;
+  border-style: none;
 }
 
 /* ABILITIES */
@@ -682,6 +694,7 @@ input.job-input {
 .limitation input {
   user-select: none;
   pointer-events: none;
+  border: none;
 }
 
 .titleFlag[value="e"] ~ textarea,

@@ -113,24 +113,28 @@
                 <!-- Title  -->
 
                 <div class="title horizontal">
-                    <label class="mini">Title:</label>
-                    <span class="mini" name="attr_selectedTitle">Select a title from Inventory</span>
+                    <span class="medium bold">Title:</span>
+                    <span class="medium" name="attr_selectedTitle">Select a title from Inventory</span>
                 </div>
-                <div class="title-effect">
-                    <label class="mini floatLeft">Effect:</label>
-                    <span class="mini floatLeft" name="attr_selectedTitleEffect"></span>
-                </div>
+                <div class="title-effect list">
+                    <span class="medium bold">Effect: </span>
+                    <span class="medium" name="attr_selectedTitleEffect"></span>
+                </div> 
+                
+                <hr />
 
                 <!-- Minion -->
                  
                 <div class="minion horizontal">
-                    <label class="mini">Minion:</label>
-                    <span class="mini" name="attr_selectedMinion">Select a minion from Inventory</span>
+                    <span class="medium bold">Minion:</span> 
+                    <span class="medium" name="attr_selectedMinion">Select a minion from Inventory</span>
                 </div>
-                <div class="minion-effect">
-                    <label class="mini floatLeft">Effect:</label>
-                    <span class="mini floatLeft" name="attr_selectedMinionEffect"></span>
+                <div class="minion-effect list">
+                    <span class="medium bold">Effect: </span>
+                    <span class="medium" name="attr_selectedMinionEffect"></span>
                 </div>
+
+                <hr />
 
                 <!-- Traits -->
 
@@ -138,13 +142,13 @@
                 <fieldset class="repeating_traits">
                     <div class="trait list">
                         <div class="horizontal">
-                            <span class="medium">Trait:</span>
-                            <input class="medium" name="attr_title" placeholder="Title"></span>
+                            <span class="medium bold">Trait:</span>
+                            <input class="medium" type="text" name="attr_title" placeholder="Title"></span>
                         </div>
-                        <span class="small floatLeft">Effect:</span>
+                        <span class="medium bold">Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
-                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect"></textarea>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The trait's effects"></textarea>
                         </div>
                     </div>
                 </fieldset>
@@ -234,9 +238,33 @@
 
             <!-- Effects -->
 
-            <div class="effects section horizontal">
+            <div class="effects section">
                 <h3 class="small">Effects</h3> 
                 <fieldset class="repeating_effects">
+                    <div>
+                        <select class="effect-type" name="attr_type">
+                            <option value="none">--Select--</option>
+                            <option value="battle(x)">Battle Litany(X)</option>
+                            <option value="critical(x)">Critical Up(X)</option>
+                            <option value="dot(x)">DOT(X)</option>
+                            <option value="regen(x)">Regen(X)</option>
+                            <option value="ready(x)">X Ready</option>
+                            <hr />
+                            <option value="blind">Blind</option>
+                            <option value="bound">Bound</option>
+                            <option value="heavy">Heavy</option>
+                            <option value="paralyzed">Paralyzed</option>
+                            <option value="prone">Prone</option>
+                            <option value="silence">Silence</option>
+                            <option value="sleep">Sleep</option>
+                            <option value="slow">Slow</option>
+                            <option value="stun">Stun</option>
+                            <hr />
+                            <option value="weak">Weak</option>
+                            <option value="brink">Brink of Death</option>
+                            <option value="comatose">Comatose</option>
+                        </select>
+                    </div>
                 </fieldset>
             </div>
         </div>
