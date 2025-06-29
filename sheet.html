@@ -64,7 +64,12 @@
 
         <div class="points advantage" style="width: 25%;">
             <label class="large stat-header">Advantage</label>
-            <input class="stat" name="attr_advantage" type="number" min="-2" max="2" value="0" />
+            <div class="horizontal">
+                <button class="math-button" type="action" name="act_decreaseAdvantage">-</button>
+                <span class="large" name="attr_advantage"></span>
+                <button class="math-button" type="action" name="act_increaseAdvantage">+</button>
+            </div>
+            <button type="action" name="act_clearAdvantage">Clear</button>
         </div>
     </div>
 
@@ -611,6 +616,18 @@
             });
         });
     });
+
+    // Initial setup
+    on("sheet:opened", () => {
+        getAttrs(["d20"], values => {
+            if (values.d20) {
+                return
+            }
+            setAttrs({
+                d20: "1d20"
+            })
+        })
+    })
 </script>
 
 <script type="text/worker">
@@ -649,21 +666,38 @@
 
 <script type="text/worker">
     // Advantage management
-    on("change:advantage sheet:opened", () => {
+    function addAdvantage(change) {
         getAttrs(["advantage"], values => {
-            let numberOfAdvantageDice = Math.abs(values.advantage)
+            const advantage = Math.min(Math.max(values.advantage + change, -3), 3)
+            let numberOfAdvantageDice = Math.abs(advantage)
             let numberOfDice = 1 + numberOfAdvantageDice
             let keepMarker
-            if (values.advantage == 0) {
+            if (advantage == 0) {
                 keepMarker = ""
-            } else if (values.advantage > 0) {
+            } else if (advantage > 0) {
                 keepMarker = "kh1"
             } else {
                 keepMarker = "kl1"
             }
             setAttrs({
+                advantage: advantage,
                 d20: numberOfDice + "d20" + keepMarker
             })
+        })
+    }
+
+    on("clicked:increaseAdvantage", eventInfo => {
+        addAdvantage(1)
+    })
+
+    on("clicked:decreaseAdvantage", eventInfo => {
+        addAdvantage(-1)
+    })
+
+    on("clicked:clearAdvantage", eventInfo => {
+        setAttrs({
+            advantage: 0,
+            d20: "1d20"
         })
     })
 
@@ -685,6 +719,18 @@
                 console.log("Reset MP")
                 setAttrs({
                     magicPoints: values.magicPoints_max
+                })
+            }
+        })
+    })
+
+    // Resource Max
+    on("change:resourceValue", () => {
+        getAttrs(["resourceValue", "resourceValue_max"], values => {
+            if (values.resourceValue > values.resourceValue_max) {
+                console.log("Reset resource")
+                setAttrs({
+                    resourceValue: values.resourceValue_max
                 })
             }
         })

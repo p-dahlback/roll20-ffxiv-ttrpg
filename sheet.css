@@ -347,6 +347,15 @@ input {
   padding-left: 16px;
 }
 
+.advantage .horizontal {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.math-button {
+  width: 1em;
+}
+
 .stat-block {
   display: flex;
   flex-direction: row;
