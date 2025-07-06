@@ -171,31 +171,31 @@
                     <h3 class="medium">Primary Attributes</h3>
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <button class="medium" name="roll_strength" type="roll" value="&{template:default} {{name=Strength}} {{Result=[[@{d20}+(@{str})]]}}">STR</button>
+                        <button class="medium roll" name="act_rollStr" type="action">STR</button>
                         <input class="stat" name="attr_str" type="number" value="5">
                     </div>
                     
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <button class="medium" name="roll_dexterity" type="roll" value="&{template:default} {{name=Dexterity}} {{Result=[[@{d20}+(@{dex})]]}}">DEX</button>
+                        <button class="medium roll" name="act_rollDex" type="action">DEX</button>
                         <input class="stat" name="attr_dex" type="number" value="4">
                     </div>
                     
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <button class="medium" name="roll_vitality" type="roll" value="&{template:default} {{name=Vitality}} {{Result=[[@{d20}+(@{vit})]]}}">VIT</button>
+                        <button class="medium roll" name="act_rollVit" type="action">VIT</button>
                         <input class="stat" name="attr_vit" type="number" value="3">
                     </div>
                     
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <button class="medium" name="roll_intelligence" type="roll" value="&{template:default} {{name=Intelligence}} {{Result=[[@{d20}+(@{int})]]}}">INT</button>
+                        <button class="medium roll" name="act_rollInt" type="action">INT</button>
                         <input class="stat" name="attr_int" type="number" value="2">
                     </div>
                     
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <button class="medium" name="roll_mind" type="roll" value="&{template:default} {{name=Mind}} {{Result=[[@{d20}+(@{mnd})]]}}">MND</button>
+                        <button class="medium roll" name="act_rollMnd" type="action">MND</button>
                         <input class="stat" name="attr_mnd" type="number" value="1">
                     </div>
                 </div>
@@ -246,20 +246,25 @@
             <div class="effects section">
                 <h3 class="small">Effects</h3> 
                 <fieldset class="repeating_effects">
-                    <div class="horizontal">
+                    <div class="horizontal semi-tight">
                         <img class="effect-icon" name="attr_icon" />
                         <select class="effect-type" name="attr_type">
                             <option value="none">--Select--</option>
-                            <option value="battle(x)">Battle Litany(X)</option>
+                            <option value="battle(x)">Roll Up(X)</option>
                             <option value="critical(x)">Critical Up(X)</option>
-                            <option value="dot(x)">DOT(X)</option>
+                            <option value="attribute(x)">Attribute Up(X)</option>
                             <option value="regen(x)">Regen(X)</option>
                             <option value="ready(x)">X Ready</option>
+                            <option value="advantage">Advantage</option>
+                            <option value="unstunnable">Stun Immunity</option>
                             <hr />
                             <option value="blind">Blind</option>
                             <option value="bound">Bound</option>
+                            <option value="enmity(x)">Enmity to X</option>
+                            <option value="dot(x)">DOT(X)</option>
                             <option value="heavy">Heavy</option>
                             <option value="paralyzed">Paralyzed</option>
+                            <option value="petrified">Petrified</option>
                             <option value="prone">Prone</option>
                             <option value="silence">Silence</option>
                             <option value="sleep">Sleep</option>
@@ -271,6 +276,15 @@
                             <option value="comatose">Comatose</option>
                         </select>
                         <input class="effect-value" type="text" name="attr_value" placeholder="X" />
+                        <select class="effect-type" name="attr_expiry">
+                            <option value="turn">End of turn</option>
+                            <option value="phase">End of phase</option>
+                            <option value="encounter">End of encounter</option>
+                            <option value="rest">After rest</option>
+                            <hr />
+                            <option value="use">On use</option>
+                            <option value="damage">On damage</option>
+                        </select>
                     </div>
                 </fieldset>
             </div>
@@ -407,8 +421,8 @@
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
                             <input type="hidden" class="titleFlag" name="attr_hasTitle" />
-                            <span class="bold adaptive--text__span"  name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</span>
-                            <textarea class="adaptive--text__textarea" type="text" name="attr_title">Paladin Combo (Fast Blade + Riot Blade)</textarea>
+                            <span class="bold adaptive--text__span"  name="attr_title"></span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
                     </div>
 
@@ -417,6 +431,7 @@
                         <button type="action" class="ability-action" name="act_info">i</button>
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_rollbattlelitany" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
@@ -426,69 +441,69 @@
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="typeFlag" name="attr_hasType" />
-                            <span class="mini-input italic adaptive--input__span"  name="attr_type">Primary, Physical</span>
-                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" value="Primary, Physical" />
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
                     </div>
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="costFlag" name="attr_hasCost" />
-                            <span class="mini-input adaptive--input__span"  name="attr_cost">2</span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" value="2" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="costFlag" name="attr_hasCost" />
-                            <span class="mini-input adaptive--input__span"  name="attr_resource">Conviction</span>
-                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" value="Conviction" />
+                            <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
                     </div>
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
-                            <span class="mini-input adaptive--text__span"  name="attr_condition">Under the effect of Fang and Claw Bared / Wheel in Motion Ready</span>
-                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition">Under the effect of Fang and Claw Bared / Wheel in Motion Ready</textarea>
+                            <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
                     </div>
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
-                            <span class="mini-input adaptive--text__span"  name="attr_trigger">Immediately after an ability check for an ability that targets you</span>
-                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger">Immediately after an ability check for an ability that targets you</textarea>
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
                     </div>
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="targetFlag" name="attr_hasTarget" />
-                            <span class="mini-input adaptive--text__span"  name="attr_target">Single</span>
-                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target">Single</textarea>
+                            <span class="mini-input adaptive--text__span"  name="attr_target"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
                     </div>
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="targetFlag" name="attr_hasTarget" />
-                            <span class="mini-input adaptive--text__span"  name="attr_range">1 square</span>
-                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range">1 square</textarea>
+                            <span class="mini-input adaptive--text__span"  name="attr_range"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
                     </div>
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="checkFlag" name="attr_hasCheck" />
-                            <span class="mini-input bold adaptive--input__span"  name="attr_check">STR (d20 + 6)</span>
-                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" value="STR (d20 + 6)" />
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
                     </div>
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="checkFlag" name="attr_hasCheck" />
-                            <span class="mini-input adaptive--input__span"  name="attr_cr">Target's Defense</span>
-                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" value="Target's Defense" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
                     </div>
                 </div>
@@ -508,24 +523,24 @@
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
-                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect">Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone.</span>
-                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect">Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone.</textarea>
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
                     </div>
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
-                            <span class="mini-input adaptive--text__span"  name="attr_directHit">Deals an additional 2d6 damage.</span>
-                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit">Deals an additional 2d6 damage.</textarea>
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
                     </div>
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
-                            <span class="mini-input adaptive--input__span"  name="attr_limitation">Once per phase.</span>
-                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" value="Once per phase." />
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" value="Once per phase." placeholder="Once per phase." />
                         </div>
                     </div>
 
@@ -807,6 +822,127 @@
 
 <script type="text/worker">
 
+    function getAttrsAndEffects(bonusAttributes, completion) {
+        getSectionIDs("repeating_effects", ids => {
+            const attributes = ids.flatMap((element) => [
+                `repeating_effects_${element}_type`,
+                `repeating_effects_${element}_value`,
+                `repeating_effects_${element}_expiry`
+            ])
+            getAttrs(attributes.concat(bonusAttributes), values => {
+                var sortedValues = {}
+                const effectKeys = Object.keys(values).filter((key) => key.includes("repeating_effects"))
+                for (let attribute of effectKeys) {
+                    let components = attribute.split("_")
+                    let id = components[2]
+                    let attributeName = components[3]
+                    if (!sortedValues[id]) {
+                        sortedValues[id] = {}
+                    }
+                    sortedValues[id][attributeName] = values[attribute]
+                }
+                const valueObjects = Object.values(sortedValues)
+                completion(values, valueObjects)
+            })
+        })
+    }
+
+    function getEffects(completion) {
+        getAttrsAndEffects([], (values, effects) => {
+            completion(effects)
+        })
+    }
+
+    function getCriticalThreshold(effects) {
+        let criticalUp = effects.find((effect) => effect.type == "critical(x)")
+        if (criticalUp && criticalUp.value) {
+            return 20 - parseInt(criticalUp.value)
+        }
+        return 20
+    }
+
+    function addEffectsToRoll(effects, rollMacro, rollType) {
+        var penalty = 0
+        var hasParalysis = false
+        var criticalUp = 0
+        var attributeUp = {}
+        for (let effect of effects) {
+            switch (effect.type) {
+                case "attribute(x)":
+                    const attributeDefinition = effect.value.trim()
+                    var match = attributeDefinition.match(/^\-?\d+/)
+                    if (!match) {
+                        match = attributeDefinition.match(/\-?\d+$/)
+                    }
+                    if (!match) {
+                        console.log("Invalid attribute declaration will not be added to roll " + attributeDefinition)
+                        break
+                    }
+                    const value = parseInt(match[0])
+                    const attribute = attributeDefinition.replace(match[0], "").trim().toLowerCase()
+                    attributeUp[attribute] = value
+                    break
+                case "blind":
+                    penalty += 2
+                    break
+                case "brink":
+                    penalty += 5
+                    break
+                case "critical(x)":
+                    if (effect.value) {
+                        criticalUp += parseInt(effect.value)
+                    }
+                    break
+                case "paralyzed":
+                    if (rollType == "primary") {
+                        hasParalysis = true
+                    }
+                    break
+                case "petrified":
+                    penalty += 5
+                    break
+                case "prone":
+                    penalty += 2
+                    break
+                case "sleep":
+                    penalty += 3
+                    break
+                case "slow":
+                    penalty += 2
+                    break
+                case "stun":
+                    penalty += 5
+                    break
+                case "weak":
+                    penalty += 2
+                    break
+            }
+        }
+        var updatedMacro = rollMacro
+        if (hasParalysis) {
+            updatedMacro = updatedMacro.replace(/cs\>?20/, "cs>20cf<5[chance of paralysis]")
+        }
+        if (criticalUp > 0) {
+            updatedMacro = updatedMacro.replace(/cs\>?20/, `cs>${20 - criticalUp}`)
+        }
+        if (penalty > 0) {
+            updatedMacro = `${updatedMacro} - ${penalty}[penalty]`
+        }
+        const matches = [...updatedMacro.matchAll(/@\{([a-z]{3})\}/g)]
+        for (let match of matches) {
+            const attributeName = match[1]
+            const attributeValue = attributeUp[attributeName]
+            if (!attributeValue) {
+                continue
+            }
+            updatedMacro = updatedMacro.replace(
+                match[0], 
+                `${match[0]}[${attributeName.toUpperCase()}] + ${attributeUp[attributeName]}[${attributeName.toUpperCase()} bonus]`
+            )
+        }
+        return updatedMacro
+    }
+
     function templateValues(title, value) {
         if (value) {
             return [title, value]
@@ -835,6 +971,8 @@
     function restoreResource(restoration, resourceType) {
         const values = restoration.split(",")
         var attributes = []
+        var summary = "Restored "
+        var didRestore = false
         for (let i = 0; i < values.length; i++) {
             const parts = values[i].trim().split(" ")
             if (parts.length != 2) {
@@ -843,23 +981,33 @@
             }
             const typeForValue = parts[1].toLowerCase()
             if (typeForValue == "mp") {
+                didRestore = true
                 attributes.push({
                     name: "magicPoints",
                     value: parts[0]
                 })
+                summary += `${parts[0]} MP, `
             } else if (typeForValue == "hp") {
+                didRestore = true
                 attributes.push({
                     name: "hitpoints",
                     value: parts[0]
                 })
+                summary += `${parts[0]} HP, `
             } else if (resourceType && typeForValue == resourceType.toLowerCase()) {
-                console.log("Value " + parts[0])
+                didRestore = true
                 attributes.push({
                     name: "resourceValue",
                     value: parts[0]
                 })
+                summary += `${parts[0]} ${resourceType}, `
             }
         }
+
+        if (!didRestore) {
+            return ""
+        }
+
         const attributeNames = attributes.flatMap((element) => [element.name, element.name + "_max"])
         getAttrs(attributeNames, values => {
             var newValues = {}
@@ -873,6 +1021,69 @@
             }
             setAttrs(newValues)
         })
+
+        return summary.substring(0, summary.length - 2)
+    }
+
+    function performAbilityResourceChanges(section, rowId, values) {
+        const cost = values[`repeating_${section}_${rowId}_cost`]
+        const resourceType = values[`repeating_${section}_${rowId}_resource`]
+        const uses = values[`repeating_${section}_${rowId}_uses`]
+        const usesMax = values[`repeating_${section}_${rowId}_uses_max`]
+        const restoration = values[`repeating_${section}_${rowId}_restore`]
+        
+        var resourceCost = ""
+        var resourceResult = false
+        if (cost > 0) {
+            if (resourceType.toLowerCase() == "mp") {
+                let result = spendResource(
+                    cost, 
+                    resourceType, 
+                    values.magicPoints, 
+                    values.magicPoints_max, 
+                    "magicPoints"
+                )
+                resourceResult = result[0]
+                resourceCost = result[1]
+            } else {
+                let result = spendResource(
+                    cost,
+                    resourceType,
+                    values.resourceValue,
+                    values.resourceValue_max,
+                    "resourceValue"
+                )
+                resourceResult = result[0]
+                resourceCost = result[1]
+            }
+        }
+        if (resourceResult) {
+            // Spend uses if there are any
+            if (usesMax > 0) {
+                let result = spendResource(
+                    1,
+                    "uses",
+                    uses,
+                    usesMax,
+                    `repeating_${section}_${rowId}_uses`
+                )
+                if (result[1]) {
+                    resourceCost += `\n${result[1]}`
+                }
+            }
+        }
+
+        // Restore resources
+        if (restoration && (resourceResult || cost == 0)) {
+            const restorationSummary = restoreResource(restoration, resourceType)
+            if (resourceCost) {
+                resourceCost += `\n${restorationSummary}`
+            } else {
+                resourceCost = restorationSummary
+            }
+        }
+
+        return resourceCost
     }
 
     function stringWithTitle(title, value) {
@@ -921,6 +1132,20 @@
         }
         newDice += searchString
         return newDice
+    }
+
+    // Roll stat
+    function rollStat(stat, statName) {
+        getAttrsAndEffects([
+            "d20"
+        ], (values, effects) => {
+            var roll = `${values.d20} + @{${stat}}`
+            roll = addEffectsToRoll(effects, roll, "stat")
+
+            startRoll(`&{template:default} {{name=${statName}}} {{Result=[[${roll}]]}}`, results => {
+                finishRoll(results.rollId)
+            })
+        })
     }
 
     // Share ability details to chat
@@ -983,7 +1208,8 @@
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
-        getAttrs([
+
+        getAttrsAndEffects([
             `repeating_${section}_${rowId}_icon`,
             `repeating_${section}_${rowId}_title`,
             `repeating_${section}_${rowId}_type`,
@@ -1001,59 +1227,38 @@
             `repeating_${section}_${rowId}_directHit`,
 
             `repeating_${section}_${rowId}_stat`,
+            `repeating_${section}_${rowId}_damageType`,
             `repeating_${section}_${rowId}_hitType`,
             `repeating_${section}_${rowId}_hitDie`,
             `repeating_${section}_${rowId}_cr`,
             `repeating_${section}_${rowId}_restore`,
+            `repeating_${section}_${rowId}_combo`,
 
             "str", "dex", "vit", "int", "mnd",
             "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
             "advantage", "character_name"
-        ], values => {
+        ], (values, effects) => {
             // Perform roll
             const title = values[`repeating_${section}_${rowId}_title`]
             const icon = values[`repeating_${section}_${rowId}_icon`]
-            const uses = values[`repeating_${section}_${rowId}_uses`]
             const usesMax = values[`repeating_${section}_${rowId}_uses_max`]
 
             const cost = values[`repeating_${section}_${rowId}_cost`]
             const resourceType = values[`repeating_${section}_${rowId}_resource`]
 
             const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase()
+            const damageType = values[`repeating_${section}_${rowId}_damageType`]
             const hitType = values[`repeating_${section}_${rowId}_hitType`]
             const restoration = values[`repeating_${section}_${rowId}_restore`]
             const statValue = values[statType]
             const baseEffect = values[`repeating_${section}_${rowId}_baseEffect`]
+            const directHit = values[`repeating_${section}_${rowId}_directHit`]
+
+            const combo = values[`repeating_${section}_${rowId}_combo`]
 
             setAttrs({
                 currentCombo: "" // Reset combo indicators
             })
-            
-            // Spend MP/resources
-            var resourceCost = ""
-            var resourceResult = false
-            if (cost > 0) {
-                if (resourceType.toLowerCase() == "mp") {
-                    let result = spendResource(cost, resourceType, values.mp, values.mp_max, "magicPoints")
-                    resourceResult = result[0]
-                    resourceCost = result[1]
-                } else {
-                    let result = spendResource(cost, resourceType, values.resourceValue, values.resourceValue_max, "resourceValue")
-                    resourceResult = result[0]
-                    resourceCost = result[1]
-                }
-            }
-            if (resourceResult) {
-                // Spend uses if there are any
-                if (usesMax > 0) {
-                    spendResource(1, "uses", uses, usesMax, `repeating_${section}_${rowId}_uses`)
-                }
-                // Restore resources
-                if (restoration) {
-                    restoreResource(restoration, resourceType)
-                }
-            }
-
             const crString = stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`])
             const typeString = stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`])
             const conditionString = stringWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`])
@@ -1065,22 +1270,41 @@
             var hitTitle = ""
             var hitDefinition = ""
             var button = ""
-            if (hitType != "None") {
+            if (hitType != "None" && hitDie) {
                 hitTitle = `${hitType}: `
                 if (statValue > 0) {
-                    hitDefinition = `[[${hitDie} + ${statValue}]]`
-                } else {
-                    hitDefinition = `[[${hitDie}]]`
+                    hitDie = `${hitDie} + @{${statType}}`
                 }
-                button = `[Damage](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`
+                hitDie = addEffectsToRoll(effects, hitDie, section)
+                hitDefinition = `[[${hitDie}]]`
+
+                var battleButton = ""
+                if (effects.some((effect) => effect.type == "battle(x)")) {
+                    battleButton = ` [${damageType} + Roll Up(X)](~${values.character_name}|repeating_${section}_${rowId}_rollbattlelitany)`
+                }
+                button = `[${damageType}](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)${battleButton}`
+                console.log(button)
+            } else if (cost > 0 || usesMax > 0 || restoration || combo) {
+                button = `[Effect](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`
             }
+
+            var directHitTitle = ""
+            if (directHit) {
+                directHitTitle = "Direct Hit:"
+            }
+
             var attributes = {}
-            attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
+            attributes[`repeating_${section}_${rowId}_currentRoll`] = ""
             setAttrs(attributes)
 
-            startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} {{cost=${resourceCost}}} ` +
-            `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}}` +
-            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} {{button=${button}}}`, results => {
+            console.log(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
+            `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}} ` +
+            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{button=${button}}}`)
+            startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
+            `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}} ` +
+            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{button=${button}}}`, results => {
                 var hitRoll = results.results.hit
                 if (!hitRoll) {
                     hitRoll = {
@@ -1090,15 +1314,16 @@
                     }
                 }
                 const hitValue = hitRoll.result
-
-                var criticalMultiplier = 1
-                if (hitRoll.dice && hitRoll.expression.includes("kl")) {
-                    criticalMultiplier = Math.min(...hitRoll.dice) >= 20 ? 2 : 1
-                } else {
-                    criticalMultiplier = Math.max(...hitRoll.dice) >= 20 ? 2 : 1
+                if (hitRoll.dice) {
+                    var die
+                    if (hitRoll.expression.includes("kl")) {
+                        die = Math.min(...hitRoll.dice)
+                    }
+                    else {
+                        die = Math.max(...hitRoll.dice)
+                    }
+                    attributes[`repeating_${section}_${rowId}_currentRoll`] = die
                 }
-
-                attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = criticalMultiplier
                 setAttrs(attributes)
 
                 finishRoll(results.rollId)
@@ -1106,25 +1331,53 @@
         })
     }
 
-    function rollDamage(eventInfo) {
+    function rollDamage(useLitany, eventInfo) {
         console.log("Roll damage " + JSON.stringify(eventInfo))
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
-        getAttrs([
+        getAttrsAndEffects([
             `repeating_${section}_${rowId}_damageType`,
             `repeating_${section}_${rowId}_baseValue`,
             `repeating_${section}_${rowId}_dhValue`,
             `repeating_${section}_${rowId}_combo`,
-            `repeating_${section}_${rowId}_currentCriticalMultiplier`,
+            `repeating_${section}_${rowId}_currentRoll`,
 
+            `repeating_${section}_${rowId}_cost`,
+            `repeating_${section}_${rowId}_uses`,
+            `repeating_${section}_${rowId}_uses_max`,
+            `repeating_${section}_${rowId}_restore`,
+            `repeating_${section}_${rowId}_resource`,
+
+            "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
             "character_name"
-        ], values => {
+        ], (values, effects) => {
             const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
             const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]
             const damageType = values[`repeating_${section}_${rowId}_damageType`]
             const combo = values[`repeating_${section}_${rowId}_combo`]
-            const criticalMultiplier = values[`repeating_${section}_${rowId}_currentCriticalMultiplier`]
+            const roll = parseInt(values[`repeating_${section}_${rowId}_currentRoll`])
+
+            var litanyValue = 0
+            if (useLitany) {
+                litanyValue = effects.reduce(
+                    (accumulator, currentValue) => {
+                        if (currentValue.type != "battle(x)") {
+                            return accumulator
+                        }
+                        if (currentValue.value) {
+                            return accumulator + parseInt(currentValue.value)
+                        }
+                        return accumulator
+                    }, 0
+                )
+            }
+
+            var criticalMultiplier = 1
+            if (roll) {
+                const criticalThreshold = getCriticalThreshold(effects)
+                criticalMultiplier = roll + litanyValue >= criticalThreshold ? 2 : 1
+            }
 
             // Add crit multiplier to other dice rolls
             var baseValueWithMultipliers = baseValue
@@ -1145,13 +1398,7 @@
             var directHitTitle = ""
             var directHitDice = ""
             var totalTitle = ""
-            if (criticalMultiplier > 1 && directHitValueWithMultipliers) {
-                if (baseValueWithMultipliers) {
-                    damageDice = `[[${baseValueWithMultipliers} + ${directHitValueWithMultipliers}]]`
-                } else {
-                    damageDice = `[[${directHitValueWithMultipliers}]]`
-                }
-            } else if (directHitValueWithMultipliers) {
+            if (directHitValueWithMultipliers) {
                 directHitTitle = "Direct Hit: "
                 directHitDice = `[[${directHitValueWithMultipliers}]]`
             }
@@ -1177,7 +1424,9 @@
                 }
             }
 
-            if (!damageDice && !directHitDice && !combo) {
+            const resourceCost = performAbilityResourceChanges(section, rowId, values)
+
+            if (!damageDice && !directHitDice && !combo && !resourceCost) {
                 console.log("No reason to roll damage")
                 return
             }
@@ -1185,13 +1434,18 @@
             // Roll damage
             console.log(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}}`)
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}}`)
             startRoll(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}}`, results => {
-                var total = results.results.damage.result
-                if (damageDice && directHitDice) {
-                    total = results.results.damage.result + results.results.directHit.result
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}}`, results => {
+                const damageRoll = results.results.damage
+                const directHitRoll = results.results.directHit
+                var total = ""
+                if (damageRoll) {
+                    total = damageRoll.result
+                }
+                if (damageRoll && directHitRoll) {
+                    total = damageRoll.result + directHitRoll.result
                 }
                 var attributes = {}
                 attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
@@ -1246,6 +1500,27 @@
             })
         })
     }
+
+    on("clicked:rollStr", eventInfo => {
+        rollStat("str", "Strength")
+    })
+
+    on("clicked:rollDex", eventInfo => {
+        console.log("rolled dex")
+        rollStat("dex", "Dexterity")
+    })
+
+    on("clicked:rollVit", eventInfo => {
+        rollStat("vit", "Vitality")
+    })
+
+    on("clicked:rollInt", eventInfo => {
+        rollStat("int", "Intelligence")
+    })
+
+    on("clicked:rollMnd", eventInfo => {
+        rollStat("mnd", "Mind")
+    })
 
     on("clicked:repeating_limit:share", eventInfo => {
         shareAbility(eventInfo)
@@ -1304,31 +1579,59 @@
     })
 
     on("clicked:repeating_limit:rolldamage", eventInfo => {
-        rollDamage(eventInfo)
+        rollDamage(false, eventInfo)
     })
 
     on("clicked:repeating_song:rolldamage", eventInfo => {
-        rollDamage(eventInfo)
+        rollDamage(false, eventInfo)
     })
 
     on("clicked:repeating_primary:rolldamage", eventInfo => {
-        rollDamage(eventInfo)
+        rollDamage(false, eventInfo)
     })
 
     on("clicked:repeating_ninjutsu:rolldamage", eventInfo => {
-        rollDamage(eventInfo)
+        rollDamage(false, eventInfo)
     })
 
     on("clicked:repeating_secondary:rolldamage", eventInfo => {
-        rollDamage(eventInfo)
+        rollDamage(false, eventInfo)
     })
 
     on("clicked:repeating_instant:rolldamage", eventInfo => {
-        rollDamage(eventInfo)
+        rollDamage(false, eventInfo)
     })
 
     on("clicked:repeating_technique:rolldamage", eventInfo => {
-        rollDamage(eventInfo)
+        rollDamage(false, eventInfo)
+    })
+
+    on("clicked:repeating_limit:rollbattlelitany", eventInfo => {
+        rollDamage(true, eventInfo)
+    })
+
+    on("clicked:repeating_song:rollbattlelitany", eventInfo => {
+        rollDamage(true, eventInfo)
+    })
+
+    on("clicked:repeating_primary:rollbattlelitany", eventInfo => {
+        rollDamage(true, eventInfo)
+    })
+
+    on("clicked:repeating_ninjutsu:rollbattlelitany", eventInfo => {
+        rollDamage(true, eventInfo)
+    })
+
+    on("clicked:repeating_secondary:rollbattlelitany", eventInfo => {
+        rollDamage(true, eventInfo)
+    })
+
+    on("clicked:repeating_instant:rollbattlelitany", eventInfo => {
+        rollDamage(true, eventInfo)
+    })
+
+    on("clicked:repeating_technique:rollbattlelitany", eventInfo => {
+        rollDamage(true, eventInfo)
     })
 
     on("clicked:repeating_limit:runcombo1", eventInfo => {
@@ -1466,8 +1769,14 @@
             <h4>{{type}}</h4>
         </div>
         <div class="sheet-body">
-            <span class="sheet-mini-title">Base Effect:</span>
-            <span class="sheet-mini-input">{{baseEffect}}</span>
+            <div>
+                <span class="sheet-mini-title">Base Effect:</span>
+                <span class="sheet-mini-input">{{baseEffect}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title">{{directHitTitle}}</span>
+                <span class="sheet-mini-input">{{directHit}}</span>
+            </div>
             <h4>{{hitTitle}}{{hit}}</h4>
             <h4>{{cr}}</h4>
             <div>{{button}}</div>
@@ -1478,6 +1787,9 @@
 <rolltemplate class="sheet-rolltemplate-damage">
     <div class="sheet-template-container">
         <div class="sheet-header">
+            <div>
+                <span class="sheet-mini-input sheet-floatLeft">{{cost}}</span>
+            </div>
             <h4>{{damageTitle}}{{damage}}</h4>
             <h4>{{directHitTitle}}{{directHit}}</h4>
         </div>

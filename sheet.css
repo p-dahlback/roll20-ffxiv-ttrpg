@@ -318,6 +318,10 @@ input {
   gap: 2px;
 }
 
+.semi-tight {
+  gap: 8px;
+}
+
 .flex.horizontal {
   align-items: flex-end;
 }
@@ -354,6 +358,16 @@ input {
 
 .math-button {
   width: 1em;
+}
+
+.ui-dialog .charsheet button.roll {
+  font-size: 1.6em;
+}
+
+.ui-dialog .charsheet button.roll::before {
+  font-family: dicefontd20;
+  content: "t";
+  font-size: 1em;
 }
 
 .stat-block {
