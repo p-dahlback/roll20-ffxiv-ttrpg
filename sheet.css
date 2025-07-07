@@ -758,11 +758,16 @@ input.job-input {
   margin: 3px;
 }
 
+.repcontainer[data-groupname="repeating_limit"] .ability {
+  margin: 0px;
+  width: 100%;
+}
+
 .ability,
 .sheet-rolltemplate-ability .sheet-ability-template,
 .sheet-rolltemplate-hit .sheet-ability-template,
 .sheet-rolltemplate-damage .sheet-template-container {
-  border-color: #7C5A0B;
+  border-color: #766c4b;
   border-style: solid;
   border-radius: 6px;
   display: flex;
@@ -795,12 +800,13 @@ input.job-input {
 .sheet-rolltemplate-hit .sheet-ability-icon {
   width: 40px;
   height: 40px;
-  background-color: aquamarine;
+  background-color: gray;
   border-radius: 4px;
   margin-top: 0px;
   margin-left: 4px;
   margin-right: 8px;
   margin-bottom: auto;
+  box-shadow: black 1px 2px 5px;
   flex-grow: 0;
   flex-shrink: 0;
 }
@@ -825,7 +831,7 @@ input.job-input {
 
 .ability .header,
 .sheet-rolltemplate-ability .sheet-header {
-  background-color: beige;
+  background-color: #f8ede4;
   border-radius: 6px 6px 0px 0px;
   padding: 4px;
 }
@@ -1035,6 +1041,7 @@ div[data-groupname=repeating_technique].repcontrol {
 .overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_instant].repcontrol,
 .overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_technique].repcontrol {
   display: block;
+  padding-bottom: 16px;
 }
 
 /* ABILITY CATEGORY VISIBILITY */
@@ -1051,21 +1058,23 @@ div[data-groupname=repeating_technique].repcontrol {
   display: block;
 }
 
-.repcontainer[data-groupname="repeating_limit"],
+.repcontainer[data-groupname="repeating_limit"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 5rem;
+  padding: 8px 16px 16px 3px;
+}
+
 .repcontainer[data-groupname="repeating_song"],
 .repcontainer[data-groupname="repeating_primary"],
 .repcontainer[data-groupname="repeating_ninjutsu"],
 .repcontainer[data-groupname="repeating_secondary"],
 .repcontainer[data-groupname="repeating_instant"],
 .repcontainer[data-groupname="repeating_technique"] {
-  /*
-  display: flex;
-  flex-wrap: wrap;
-  column-count: 3;
-  min-height: 10rem;
-  */
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  min-height: 5rem;
+  padding: 8px 0 16px 0;
 }
 
 /* OVERRIDE */

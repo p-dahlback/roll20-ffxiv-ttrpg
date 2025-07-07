@@ -10,12 +10,12 @@
 
         <div class="name content vertical tight">
             <span class="header small bold">Name</span>
-            <input class="large" name="attr_character_name" type="text" value="Kokopoko">
+            <input class="large" name="attr_character_name" type="text">
         </div>
         
         <div class="race content vertical tight">
             <span class="header small bold">Race</span>
-            <input class="large" name="attr_character_race" type="text" value="Lalafell">
+            <input class="large" name="attr_character_race" type="text">
         </div>
     </div>
 
@@ -33,7 +33,7 @@
                 <span>/</span>
                 <input class="stat max" name="attr_hitPoints_max" type="number" min="0" value="30">
                 <span class="text header large">Barrier</span>
-                <input class="stat" name="attr_barrierPoints" type="number" min="0" value="10">
+                <input class="stat" name="attr_barrierPoints" type="number" min="0" value="0">
             </div>
         </div>
         
@@ -105,7 +105,7 @@
                 <div class="job vertical">
                     <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                     <span class="header medium bold">Role / Job</span>
-                    <input class="job-input header medium" name="attr_job" type="text" value="TANK / WARRIOR">
+                    <input class="job-input header medium" name="attr_job" type="text">
                 </div>
             </div>
         
@@ -364,16 +364,6 @@
 <!-- Abilities page -->
 
 <div class="char-abilities">
-    <div class="top">
-
-        <!-- Limit Break -->
-        <div class="limit">
-            <fieldset class="repeating_limit">
-
-            </fieldset>
-        </div>
-    </div>
-
     <!-- Top abilities (Bard songs) -->
     <input class="job-type" type="hidden" name="attr_job">
 
@@ -381,16 +371,6 @@
         <h3 class="large">Song Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_song">
-
-        </fieldset>
-    </div>
-
-    <!-- Primary abilities -->
-
-    <div class="primary-abilities">
-        <h3 class="large">Primary Abilities</h3>
-        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-        <fieldset class="repeating_primary">
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
@@ -417,9 +397,9 @@
 
                     <div class="uses">
                         <input type="hidden" class="usesFlag" name="attr_hasUses" />
-                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="1" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
-                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="1" />
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
                     </div>
 
                     <div class="header-title">
@@ -545,7 +525,200 @@
                         <div class="adaptive adaptive--input floatLeft">
                             <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
-                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" value="Once per phase." placeholder="Once per phase." />
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+                        </div>
+                    </div>
+
+                    <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+                        <option value="Hit">Hit</option>
+                        <option value="Critical">Critical</option>
+                        <option value="None">None</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+                        <option value="Damage">Damage</option>
+                        <option value="Healing">Healing</option>
+                        <option value="Defense">Defense</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <!-- Primary abilities -->
+
+    <div class="primary-abilities">
+        <h3 class="large">Primary Abilities</h3>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+        <fieldset class="repeating_primary">
+            <div class="ability">
+                <div class="header list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+                    <div class="uses">
+                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+                        <span class="floatRight">/</span>
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+                    </div>
+
+                    <div class="header-title">
+                        <img class="ability-icon" name="attr_icon" />
+                        <div class="title adaptive adaptive--text">
+                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <span class="bold adaptive--text__span"  name="attr_title"></span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ability-controls">
+                        <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                        <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo1" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                    </div>
+
+                    <div class="type expanded-view">
+                        <span class="mini-title floatLeft">Type:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
+                        </div>
+                    </div>
+                    <div class="cost expanded-view">
+                        <span class="mini-title floatLeft">Cost:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                        </div>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+                        </div>
+                    </div>
+                    <div class="condition expanded-view">
+                        <span class="mini-title floatLeft">Condition:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+                        </div>
+                    </div>
+                    <div class="trigger expanded-view">
+                        <span class="mini-title floatLeft">Trigger:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+                        </div>
+                    </div>
+                    <div class="target expanded-view">
+                        <span class="mini-title floatLeft">Target:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_target"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+                        </div>
+                    </div>
+                    <div class="range expanded-view">
+                        <span class="mini-title floatLeft">Range:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_range"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+                        </div>
+                    </div>
+                    <div class="check expanded-view">
+                        <span class="mini-title floatLeft">Check:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+                        </div>
+                    </div>
+                    <div class="cr expanded-view">
+                        <span class="mini-title floatLeft">CR:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="body list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+
+                    <div class="base-effect expanded-view">
+                        <span class="mini-title floatLeft">Base Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+                        </div>
+                    </div>
+                    <div class="direct-hit expanded-view">
+                        <span class="mini-title floatLeft">Direct Hit:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+                        </div>
+                    </div>
+                    <div class="limitation expanded-view">
+                        <span class="mini-title floatLeft">Limitation:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
                     </div>
 
@@ -581,40 +754,965 @@
     <!-- Sub-abilities (Ninja jutsu) -->
 
     <div class="sub-abilities">
-        <h3>Ninjutsu Abilities</h3>
+        <h3 class="large">Ninjutsu Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_ninjutsu">
+            <div class="ability">
+                <div class="header list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
 
+                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+                    <div class="uses">
+                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+                        <span class="floatRight">/</span>
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+                    </div>
+
+                    <div class="header-title">
+                        <img class="ability-icon" name="attr_icon" />
+                        <div class="title adaptive adaptive--text">
+                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <span class="bold adaptive--text__span"  name="attr_title"></span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ability-controls">
+                        <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                        <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo1" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                    </div>
+
+                    <div class="type expanded-view">
+                        <span class="mini-title floatLeft">Type:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
+                        </div>
+                    </div>
+                    <div class="cost expanded-view">
+                        <span class="mini-title floatLeft">Cost:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                        </div>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+                        </div>
+                    </div>
+                    <div class="condition expanded-view">
+                        <span class="mini-title floatLeft">Condition:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+                        </div>
+                    </div>
+                    <div class="trigger expanded-view">
+                        <span class="mini-title floatLeft">Trigger:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+                        </div>
+                    </div>
+                    <div class="target expanded-view">
+                        <span class="mini-title floatLeft">Target:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_target"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+                        </div>
+                    </div>
+                    <div class="range expanded-view">
+                        <span class="mini-title floatLeft">Range:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_range"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+                        </div>
+                    </div>
+                    <div class="check expanded-view">
+                        <span class="mini-title floatLeft">Check:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+                        </div>
+                    </div>
+                    <div class="cr expanded-view">
+                        <span class="mini-title floatLeft">CR:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="body list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+
+                    <div class="base-effect expanded-view">
+                        <span class="mini-title floatLeft">Base Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+                        </div>
+                    </div>
+                    <div class="direct-hit expanded-view">
+                        <span class="mini-title floatLeft">Direct Hit:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+                        </div>
+                    </div>
+                    <div class="limitation expanded-view">
+                        <span class="mini-title floatLeft">Limitation:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+                        </div>
+                    </div>
+
+                    <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+                        <option value="Hit">Hit</option>
+                        <option value="Critical">Critical</option>
+                        <option value="None">None</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+                        <option value="Damage">Damage</option>
+                        <option value="Healing">Healing</option>
+                        <option value="Defense">Defense</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
+                </div>
+            </div>
         </fieldset>
     </div>
 
     <!-- Secondary abilities -->
 
     <div class="secondary-abilities">
-        <h3>Secondary Abilities</h3>
+        <h3 class="large">Secondary Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_secondary">
+            <div class="ability">
+                <div class="header list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
 
+                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+                    <div class="uses">
+                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+                        <span class="floatRight">/</span>
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+                    </div>
+
+                    <div class="header-title">
+                        <img class="ability-icon" name="attr_icon" />
+                        <div class="title adaptive adaptive--text">
+                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <span class="bold adaptive--text__span"  name="attr_title"></span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ability-controls">
+                        <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                        <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo1" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                    </div>
+
+                    <div class="type expanded-view">
+                        <span class="mini-title floatLeft">Type:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
+                        </div>
+                    </div>
+                    <div class="cost expanded-view">
+                        <span class="mini-title floatLeft">Cost:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                        </div>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+                        </div>
+                    </div>
+                    <div class="condition expanded-view">
+                        <span class="mini-title floatLeft">Condition:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+                        </div>
+                    </div>
+                    <div class="trigger expanded-view">
+                        <span class="mini-title floatLeft">Trigger:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+                        </div>
+                    </div>
+                    <div class="target expanded-view">
+                        <span class="mini-title floatLeft">Target:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_target"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+                        </div>
+                    </div>
+                    <div class="range expanded-view">
+                        <span class="mini-title floatLeft">Range:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_range"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+                        </div>
+                    </div>
+                    <div class="check expanded-view">
+                        <span class="mini-title floatLeft">Check:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+                        </div>
+                    </div>
+                    <div class="cr expanded-view">
+                        <span class="mini-title floatLeft">CR:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="body list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+
+                    <div class="base-effect expanded-view">
+                        <span class="mini-title floatLeft">Base Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+                        </div>
+                    </div>
+                    <div class="direct-hit expanded-view">
+                        <span class="mini-title floatLeft">Direct Hit:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+                        </div>
+                    </div>
+                    <div class="limitation expanded-view">
+                        <span class="mini-title floatLeft">Limitation:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+                        </div>
+                    </div>
+
+                    <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+                        <option value="Hit">Hit</option>
+                        <option value="Critical">Critical</option>
+                        <option value="None">None</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+                        <option value="Damage">Damage</option>
+                        <option value="Healing">Healing</option>
+                        <option value="Defense">Defense</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
+                </div>
+            </div>
         </fieldset>
     </div>
 
     <!-- Instant abilities -->
 
     <div class="instant-abilities">
-        <h3>Instant Abilities</h3>
+        <h3 class="large">Instant Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_instant">
+            <div class="ability">
+                <div class="header list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
 
+                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+                    <div class="uses">
+                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+                        <span class="floatRight">/</span>
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+                    </div>
+
+                    <div class="header-title">
+                        <img class="ability-icon" name="attr_icon" />
+                        <div class="title adaptive adaptive--text">
+                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <span class="bold adaptive--text__span"  name="attr_title"></span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ability-controls">
+                        <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                        <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo1" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                    </div>
+
+                    <div class="type expanded-view">
+                        <span class="mini-title floatLeft">Type:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
+                        </div>
+                    </div>
+                    <div class="cost expanded-view">
+                        <span class="mini-title floatLeft">Cost:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                        </div>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+                        </div>
+                    </div>
+                    <div class="condition expanded-view">
+                        <span class="mini-title floatLeft">Condition:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+                        </div>
+                    </div>
+                    <div class="trigger expanded-view">
+                        <span class="mini-title floatLeft">Trigger:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+                        </div>
+                    </div>
+                    <div class="target expanded-view">
+                        <span class="mini-title floatLeft">Target:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_target"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+                        </div>
+                    </div>
+                    <div class="range expanded-view">
+                        <span class="mini-title floatLeft">Range:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_range"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+                        </div>
+                    </div>
+                    <div class="check expanded-view">
+                        <span class="mini-title floatLeft">Check:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+                        </div>
+                    </div>
+                    <div class="cr expanded-view">
+                        <span class="mini-title floatLeft">CR:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="body list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+
+                    <div class="base-effect expanded-view">
+                        <span class="mini-title floatLeft">Base Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+                        </div>
+                    </div>
+                    <div class="direct-hit expanded-view">
+                        <span class="mini-title floatLeft">Direct Hit:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+                        </div>
+                    </div>
+                    <div class="limitation expanded-view">
+                        <span class="mini-title floatLeft">Limitation:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+                        </div>
+                    </div>
+
+                    <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+                        <option value="Hit">Hit</option>
+                        <option value="Critical">Critical</option>
+                        <option value="None">None</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+                        <option value="Damage">Damage</option>
+                        <option value="Healing">Healing</option>
+                        <option value="Defense">Defense</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
+                </div>
+            </div>
         </fieldset>
     </div>
 
     <!-- Conditional abilities (Monk techniques) -->
 
     <div class="conditional-abilities">
-        <h3>Technique Abilities</h3>
+        <h3 class="large">Technique Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_technique">
+            <div class="ability">
+                <div class="header list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
 
+                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+                    <div class="uses">
+                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+                        <span class="floatRight">/</span>
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+                    </div>
+
+                    <div class="header-title">
+                        <img class="ability-icon" name="attr_icon" />
+                        <div class="title adaptive adaptive--text">
+                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <span class="bold adaptive--text__span"  name="attr_title"></span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ability-controls">
+                        <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                        <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo1" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                    </div>
+
+                    <div class="type expanded-view">
+                        <span class="mini-title floatLeft">Type:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
+                        </div>
+                    </div>
+                    <div class="cost expanded-view">
+                        <span class="mini-title floatLeft">Cost:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                        </div>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+                        </div>
+                    </div>
+                    <div class="condition expanded-view">
+                        <span class="mini-title floatLeft">Condition:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+                        </div>
+                    </div>
+                    <div class="trigger expanded-view">
+                        <span class="mini-title floatLeft">Trigger:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+                        </div>
+                    </div>
+                    <div class="target expanded-view">
+                        <span class="mini-title floatLeft">Target:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_target"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+                        </div>
+                    </div>
+                    <div class="range expanded-view">
+                        <span class="mini-title floatLeft">Range:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_range"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+                        </div>
+                    </div>
+                    <div class="check expanded-view">
+                        <span class="mini-title floatLeft">Check:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+                        </div>
+                    </div>
+                    <div class="cr expanded-view">
+                        <span class="mini-title floatLeft">CR:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="body list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+
+                    <div class="base-effect expanded-view">
+                        <span class="mini-title floatLeft">Base Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+                        </div>
+                    </div>
+                    <div class="direct-hit expanded-view">
+                        <span class="mini-title floatLeft">Direct Hit:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+                        </div>
+                    </div>
+                    <div class="limitation expanded-view">
+                        <span class="mini-title floatLeft">Limitation:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+                        </div>
+                    </div>
+
+                    <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+                        <option value="Hit">Hit</option>
+                        <option value="Critical">Critical</option>
+                        <option value="None">None</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+                        <option value="Damage">Damage</option>
+                        <option value="Healing">Healing</option>
+                        <option value="Defense">Defense</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <!-- Limit Break -->
+
+    <div class="limit">
+        <h3 class="large">Limit Break</h3>
+        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+        <fieldset class="repeating_limit">
+            <div class="ability">
+                <div class="header list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
+                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
+                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
+                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
+                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
+                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
+                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
+                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
+                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
+                    <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+                    <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+                    <div class="uses">
+                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+                        <span class="floatRight">/</span>
+                        <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+                    </div>
+
+                    <div class="header-title">
+                        <img class="ability-icon" name="attr_icon" />
+                        <div class="title adaptive adaptive--text">
+                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <span class="bold adaptive--text__span"  name="attr_title"></span>
+                            <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ability-controls">
+                        <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                        <button type="action" class="ability-action" name="act_share">q</button>
+                        <button type="action" name="act_rolldamage" style="display: none;">d</button>
+                        <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo1" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                    </div>
+
+                    <div class="type expanded-view">
+                        <span class="mini-title floatLeft">Type:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
+                            <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
+                        </div>
+                    </div>
+                    <div class="cost expanded-view">
+                        <span class="mini-title floatLeft">Cost:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                        </div>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+                        </div>
+                    </div>
+                    <div class="condition expanded-view">
+                        <span class="mini-title floatLeft">Condition:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+                        </div>
+                    </div>
+                    <div class="trigger expanded-view">
+                        <span class="mini-title floatLeft">Trigger:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+                        </div>
+                    </div>
+                    <div class="target expanded-view">
+                        <span class="mini-title floatLeft">Target:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_target"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+                        </div>
+                    </div>
+                    <div class="range expanded-view">
+                        <span class="mini-title floatLeft">Range:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <span class="mini-input adaptive--text__span"  name="attr_range"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+                        </div>
+                    </div>
+                    <div class="check expanded-view">
+                        <span class="mini-title floatLeft">Check:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
+                            <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+                        </div>
+                    </div>
+                    <div class="cr expanded-view">
+                        <span class="mini-title floatLeft">CR:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="body list">
+                    <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_expandItem" />
+
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
+                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
+                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
+                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
+
+                    <div class="base-effect expanded-view">
+                        <span class="mini-title floatLeft">Base Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+                        </div>
+                    </div>
+                    <div class="direct-hit expanded-view">
+                        <span class="mini-title floatLeft">Direct Hit:</span>
+                        <div class="adaptive adaptive--text floatLeft">
+                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
+                            <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+                        </div>
+                    </div>
+                    <div class="limitation expanded-view">
+                        <span class="mini-title floatLeft">Limitation:</span>
+                        <div class="adaptive adaptive--input floatLeft">
+                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
+                            <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+                        </div>
+                    </div>
+
+                    <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+                        <option value="Hit">Hit</option>
+                        <option value="Critical">Critical</option>
+                        <option value="None">None</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+                    <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+                        <option value="Damage">Damage</option>
+                        <option value="Healing">Healing</option>
+                        <option value="Defense">Defense</option>
+                    </select>
+                    <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+                    <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+                    <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+                    <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path|Storm's Eye" />
+                </div>
+            </div>
         </fieldset>
     </div>
 </div>
@@ -764,10 +1862,40 @@
     // Assign override state
     on('change:override', () => {
         getAttrs(['override'], values => {
-        console.log("Changed override to " + values.override)
+            console.log("Changed override to " + values.override)
+            getSectionIDs('repeating_limit', ids => {
+                const output = {}
+                ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override)
+                setAttrs(output)
+            })
+            getSectionIDs('repeating_song', ids => {
+                const output = {}
+                ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override)
+                setAttrs(output)
+            })
             getSectionIDs('repeating_primary', ids => {
                 const output = {}
                 ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override)
+                setAttrs(output)
+            })
+            getSectionIDs('repeating_ninjutsu', ids => {
+                const output = {}
+                ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override)
+                setAttrs(output)
+            })
+            getSectionIDs('repeating_secondary', ids => {
+                const output = {}
+                ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override)
+                setAttrs(output)
+            })
+            getSectionIDs('repeating_instant', ids => {
+                const output = {}
+                ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override)
+                setAttrs(output)
+            })
+            getSectionIDs('repeating_technique', ids => {
+                const output = {}
+                ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override)
                 setAttrs(output)
             })
         })
@@ -1062,7 +2190,7 @@
                 resourceCost = result[1]
             }
         }
-        if (resourceResult) {
+        if (resourceResult || cost == 0) {
             // Spend uses if there are any
             if (usesMax > 0) {
                 let result = spendResource(
@@ -1073,7 +2201,11 @@
                     `repeating_${section}_${rowId}_uses`
                 )
                 if (result[1]) {
-                    resourceCost += `\n${result[1]}`
+                    if (resourceCost) {
+                        resourceCost += `\n${result[1]}`
+                    } else {
+                        resourceCost = result[1]
+                    }
                 }
             }
         }
@@ -1198,7 +2330,7 @@
 
             startRoll(`&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
             `{{typeTitle=${type[0]}}} {{type=${type[1]}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}}` +
-            `{{triggeTitle=${trigger[0]}}} {{trigger=${trigger[1]}}} {{targetTitle=${target[0]}}} {{target=${target[1]}}}` +
+            `{{triggerTitle=${trigger[0]}}} {{trigger=${trigger[1]}}} {{targetTitle=${target[0]}}} {{target=${target[1]}}}` +
             `{{rangeTitle=${range[0]}}} {{range=${range[1]}}} {{checkTitle=${check[0]}}} {{check=${check[1]}}}` +
             `{{crTitle=${cr[0]}}} {{cr=${cr[1]}}} {{baseEffectTitle=${baseEffect[0]}}} {{baseEffect=${baseEffect[1]}}}` +
             `{{directHitTitle=${directHit[0]}}} {{directHit=${directHit[1]}}} {{limitationTitle=${limitation[0]}}} {{limitation=${limitation[1]}}}`, results => {
@@ -1235,6 +2367,7 @@
             `repeating_${section}_${rowId}_damageType`,
             `repeating_${section}_${rowId}_hitType`,
             `repeating_${section}_${rowId}_hitDie`,
+            `repeating_${section}_${rowId}_baseValue`,
             `repeating_${section}_${rowId}_cr`,
             `repeating_${section}_${rowId}_restore`,
             `repeating_${section}_${rowId}_combo`,
@@ -1257,6 +2390,7 @@
             const restoration = values[`repeating_${section}_${rowId}_restore`]
             const statValue = values[statType]
             const baseEffect = values[`repeating_${section}_${rowId}_baseEffect`]
+            const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
             const directHit = values[`repeating_${section}_${rowId}_directHit`]
 
             const combo = values[`repeating_${section}_${rowId}_combo`]
@@ -1289,7 +2423,7 @@
                 }
                 button = `[${damageType}](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)${bonusButton}`
                 console.log(button)
-            } else if (cost > 0 || usesMax > 0 || restoration || combo) {
+            } else if (cost > 0 || usesMax > 0 || restoration || combo || baseValue) {
                 button = `[Effect](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`
             }
 
