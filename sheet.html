@@ -1692,6 +1692,46 @@
 
 </script>
 
+<script type="text/worker">
+    function getIconForEffectType(type) {
+        switch (type) {
+            case "advantage": return "https://xivapi.com/i/215000/215711.png"
+            case "attribute(x)": return "https://xivapi.com/i/215000/215075.png"
+            case "battle(x)": return "https://xivapi.com/i/215000/215612.png"
+            case "blind": return "https://xivapi.com/i/215000/215012.png"
+            case "bound": return "https://xivapi.com/i/215000/215003.png"
+            case "brink": return "https://xivapi.com/i/215000/215011.png"
+            case "comatose": return "https://xivapi.com/i/215000/215559.png"
+            case "critical(x)": return "https://xivapi.com/i/215000/215952.png"
+            case "dot(x)": return "https://xivapi.com/i/215000/215530.png"
+            case "enmity(x)": return "https://xivapi.com/i/214000/214155.png"
+            case "heavy": return "https://xivapi.com/i/215000/215002.png"
+            case "paralyzed": return "https://xivapi.com/i/215000/215006.png"
+            case "petrified": return "https://xivapi.com/i/215000/215001.png"
+            case "prone": return "https://xivapi.com/i/215000/215724.png"
+            case "ready(x)": return "https://xivapi.com/i/216000/216002.png"
+            case "regen(x)": return "https://xivapi.com/i/212000/212626.png"
+            case "silence": return "https://xivapi.com/i/215000/215005.png"
+            case "sleep": return "https://xivapi.com/i/215000/215013.png"
+            case "slow": return "https://xivapi.com/i/215000/215009.png"
+            case "stun": return "https://xivapi.com/i/215000/215004.png"
+            case "unstunnable": return "https://xivapi.com/i/215000/215540.png"
+            case "weak": return "https://xivapi.com/i/215000/215010.png"
+            default: return ""
+        }
+    }
+
+    // Effect icon assignment
+    on("change:repeating_effects:type", () => {
+        getAttrs(["repeating_effects_type"], values => {
+            const iconUrl = getIconForEffectType(values.repeating_effects_type)
+            setAttrs({
+                repeating_effects_icon: iconUrl
+            })
+        })
+    })
+</script>
+
 <rolltemplate class="sheet-rolltemplate-ability">
     <div class="sheet-ability-template">
         <div class="sheet-header sheet-list">
