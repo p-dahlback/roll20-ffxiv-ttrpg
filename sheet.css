@@ -16,6 +16,11 @@ span.sheet-bold{
 
 /* --------- Inputs ------------- */
 
+.ui-dialog .charsheet input,
+.ui-dialog .charsheet textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 input[type="text"],
 input[type="text"]:disabled {
   background-color: transparent;
@@ -321,10 +326,6 @@ h3.small.colored-in, h4.small.colored-in {
   padding-left: 8px;
 }
 
-.sub-stat .medium {
-  font-size: 1.0rem;
-}
-
 .sub-stat .medium.standard {
   font-size: 1.4rem;
 }
@@ -547,6 +548,7 @@ h3.small.colored-in, h4.small.colored-in {
 .stat-block button {
   padding-left: 16px;
   padding-right: 16px;
+  height: 100%;
   text-align: left;
   color: #766c4b;
   background: none;
@@ -561,9 +563,14 @@ h3.small.colored-in, h4.small.colored-in {
   color: lightgray;
 }
 
-input.stat {
+.ui-dialog .charsheet input.stat {
   font-size: 2.2em;
   text-align: right;
+  width: 2.5em;
+}
+
+.ui-dialog .charsheet input.stat.medium {
+  font-size: 1.8em;
 }
 
 .ui-dialog .charsheet input:hover, .ui-dialog .charsheet textarea:hover {
@@ -578,11 +585,11 @@ input.stat {
 }
 
 .main-stat {
-  padding: 8px 4px 8px 16px;
+  padding: 8px 8px 8px 16px;
 
 }
 .sub-stat {
-  padding: 8px 16px 8px 4px;
+  padding: 8px 16px 8px 8px;
 }
 
 .fortune.fancy.lowkey {
@@ -606,6 +613,7 @@ input.stat {
   display: flex;
   flex-direction: row;
   gap: 8px;
+  justify-content: space-between;
   padding: 8px;
 }
 
@@ -636,7 +644,7 @@ input.stat {
 
 .resource-point {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 0.5fr 0.1fr 0.5fr;
 }
 
 .resource-point span {
@@ -699,7 +707,13 @@ div[data-groupname=repeating_effects].repcontrol {
 input[type=text] {
   border-style: none none dotted none;
   border-width: 1px;
-  border-color: black;
+  border-color: #766c4b;
+}
+
+textarea {
+  border-style: none none dotted none;
+  border-width: 1px;
+  border-color: #766c4b;
 }
 
 /*
@@ -726,6 +740,15 @@ input.job-input {
   pointer-events: none;
   user-select: none;
   border-style: none;
+}
+
+.ui-dialog .charsheet .level .header {
+  height: 100%;
+}
+
+.ui-dialog .charsheet .level input.header {
+  height: 100%;
+  padding-bottom: 2px;
 }
 
 /* ABILITIES */
