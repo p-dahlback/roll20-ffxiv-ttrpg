@@ -3,36 +3,36 @@
 <!-- Character name and race -->
 
 <div class="sticky section">
-    <div class="top section">
+    <div class="top fancy section">
         <div class="type">
-            <img src="Images/WAR_Symbol_Token.png" width="50" />
+            <img src="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png" width="50" />
         </div>
 
-        <div class="name content vertical">
-            <label class="small">Name</label>
-            <input class="medium" name="attr_character_name" type="text" value="Kokopoko">
+        <div class="name content vertical tight">
+            <span class="header small bold">Name</span>
+            <input class="large" name="attr_character_name" type="text" value="Kokopoko">
         </div>
         
-        <div class="race content vertical">
-            <label class="small">Race</label>
-            <input class="medium" name="attr_character_race" type="text" value="Lalafell">
+        <div class="race content vertical tight">
+            <span class="header small bold">Race</span>
+            <input class="large" name="attr_character_race" type="text" value="Lalafell">
         </div>
     </div>
 
     <!-- Shortcut for HP/MP -->
 
-    <div class="stat-shortcut section">
+    <div class="stat-shortcut fancy lowkey section">
         <!-- HP -->
 
         <div class="points section">
             <div class="stat-header"></div>
             <div class="hit-point section">
                 <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                <span class="text large" style="width: 1em">HP</span>
+                <span class="text header large" style="width: 1em">HP</span>
                 <input class="stat" name="attr_hitPoints" type="number" min="0" value="30">
                 <span>/</span>
                 <input class="stat max" name="attr_hitPoints_max" type="number" min="0" value="30">
-                <span class="text large">Barrier</span>
+                <span class="text header large">Barrier</span>
                 <input class="stat" name="attr_barrierPoints" type="number" min="0" value="10">
             </div>
         </div>
@@ -40,7 +40,7 @@
         <!-- MP, Resource -->
 
         <div class="points section">
-            <div class="mini stat-header">
+            <div class="small header bold stat-header">
                 <span>Recover</span>
                 <span name="attr_mpRecovery"></span>
                 <span>MP at the end of the (Adventurer Step)</span>
@@ -48,12 +48,12 @@
             <div class="resource-point">
                 <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                 <input type="hidden" class="resourceSwitch" name="attr_resource" placeholder="placeholder" />
-                <span class="text large" style="width: 1em">MP</span>
+                <span class="text header large" style="width: 1em">MP</span>
                 <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
                 <span>/</span>
                 <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
 
-                <span class="text large resource" name="attr_resource"></span>
+                <span class="text header large resource" name="attr_resource"></span>
                 <input class="stat resource" name="attr_resourceValue" type="number" min="0">
                 <span class="resource">/</span>
                 <input class="stat max resource" name="attr_resourceValue_max" type="number" min="0">
@@ -63,7 +63,7 @@
         <!-- Advantage -->
 
         <div class="points advantage" style="width: 25%;">
-            <label class="large stat-header">Advantage</label>
+            <label class="header large stat-header">Advantage</label>
             <div class="horizontal">
                 <button class="math-button" type="action" name="act_decreaseAdvantage">-</button>
                 <span class="large" name="attr_advantage"></span>
@@ -77,23 +77,23 @@
 
     <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
     <div class="tab">
-        <button type="action" name="act_character" class="sheet-button0">Character</button>
-        <button type="action" name="act_abilities" class="sheet-button2">Abilities</button>
-        <button type="action" name="act_items" class="sheet-button1">Inventory</button>
-        <button type="action" name="act_override" class="sheet-button3 floatRight">...</button>
+        <button type="action" name="act_character" class="toggle sheet-button0 floatLeft">Character</button>
+        <button type="action" name="act_abilities" class="toggle sheet-button2 floatLeft">Abilities</button>
+        <button type="action" name="act_items" class="toggle sheet-button1 floatLeft">Inventory</button>
+        <button type="action" name="act_override" class="toggle sheet-button3 floatRight">y</button>
     </div>
 </div>
 
 <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
 
 <!-- Profile page -->
-<div class="character fancy">
-    <div class="grid">
+<div class="character fancy lowkey">
+    <div class="grid fill">
 
         <!-- Profile page, Level and Profile -->
 
         <div class="left section">
-            <div class="basic-info horizontal">
+            <div class="basic-info fancy horizontal">
                 <div class="level flex horizontal tight">
                     <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                     <label class="large">LV</label>
@@ -106,8 +106,8 @@
                 </div>
             </div>
         
-            <div class="image section">
-                <img name="attr_character_avatar">
+            <div class="image-container fancy section">
+                <img class="image" name="attr_character_avatar">
             </div>
 
             <!-- Profile -->
@@ -117,12 +117,12 @@
 
                 <!-- Title  -->
 
-                <div class="title horizontal">
-                    <span class="medium bold">Title:</span>
-                    <span class="medium" name="attr_selectedTitle">Select a title from Inventory</span>
+                <div class="title">
+                    <span class="header medium bold">Title:</span>
+                    <span class="medium" style="margin-left: 8px;" name="attr_selectedTitle">Select a title from Inventory</span>
                 </div>
                 <div class="title-effect list">
-                    <span class="medium bold">Effect: </span>
+                    <span class="header medium bold">Effect: </span>
                     <span class="medium" name="attr_selectedTitleEffect"></span>
                 </div> 
                 
@@ -130,27 +130,29 @@
 
                 <!-- Minion -->
                  
-                <div class="minion horizontal">
-                    <span class="medium bold">Minion:</span> 
-                    <span class="medium" name="attr_selectedMinion">Select a minion from Inventory</span>
+                <div class="minion">
+                    <span class="header medium bold">Minion:</span> 
+                    <span class="medium" style="margin-left: 8px;" name="attr_selectedMinion">Select a minion from Inventory</span>
                 </div>
                 <div class="minion-effect list">
-                    <span class="medium bold">Effect: </span>
+                    <span class="header medium bold">Effect: </span>
                     <span class="medium" name="attr_selectedMinionEffect"></span>
                 </div>
 
                 <hr />
+            </div>
 
-                <!-- Traits -->
+            <!-- Traits -->
 
-                <h3>Traits</h3>
+            <div class="traits fancy lowkey section">
+                <h3 class="small colored-in">Traits</h3>
                 <fieldset class="repeating_traits">
                     <div class="trait list">
                         <div class="horizontal">
-                            <span class="medium bold">Trait:</span>
+                            <span class="header medium bold">Trait:</span>
                             <input class="medium" type="text" name="attr_title" placeholder="Title"></span>
                         </div>
-                        <span class="medium bold">Effect:</span>
+                        <span class="header medium bold">Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
                             <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
                             <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The trait's effects"></textarea>
@@ -162,7 +164,7 @@
         
         <!-- Profile page, Attributes -->
 
-        <div class="right section">
+        <div class="right fancy lowkey section">
             <div class="stat section horizontal">
 
                 <!-- Primary -->
@@ -208,25 +210,25 @@
                     <h3 class="medium standard">Secondary Attributes</h3>
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <label class="medium oneline">Defense</label>
+                        <span class="header medium bold oneline">Defense</span>
                         <input class="stat" name="attr_defense" type="number" value="15">
                     </div>
                     
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <label class="medium oneline">Magic Defense</label>
+                        <span class="header medium bold oneline">Magic Defense</span>
                         <input class="stat" name="attr_magicDefense" type="number" value="12">
                     </div>
                     
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <label class="medium oneline">Vigilance</label>
+                        <span class="header medium bold oneline">Vigilance</span>
                         <input class="stat" name="attr_vigilance" type="number" value="11">
                     </div>
                     
                     <div class="stat-block">
                         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                        <label class="medium oneline">Speed</label>
+                        <span class="header medium bold oneline">Speed</span>
                         <input class="stat" name="attr_speed" type="number" value="5">
                     </div>
                 </div>
@@ -234,9 +236,9 @@
 
             <!-- Fortune -->
 
-            <div class="fortune section">
-                <div class="flex horizontal tight right-aligned">
-                <label class="text large">Fortune</label>
+            <div class="fortune fancy lowkey">
+                <div class="flex horizontal tight floatRight">
+                    <span class="header bold medium">Fortune</span>
                     <input class="stat" name="attr_fortune" type="number" min="0" value="3">
                 </div>
             </div>
@@ -244,13 +246,13 @@
             <!-- Effects -->
 
             <div class="effects section">
-                <h3 class="small">Effects</h3> 
+                <h3 class="small bold colored-in">Effects</h3> 
                 <fieldset class="repeating_effects">
                     <div class="horizontal semi-tight">
                         <img class="effect-icon" name="attr_icon" />
                         <select class="effect-type" name="attr_type">
                             <option value="none">--Select--</option>
-                            <option value="battle(x)">Roll Up(X)</option>
+                            <option value="roll(x)">Roll Up(X)</option>
                             <option value="critical(x)">Critical Up(X)</option>
                             <option value="attribute(x)">Attribute Up(X)</option>
                             <option value="regen(x)">Regen(X)</option>
@@ -358,7 +360,7 @@
 
 <!-- Abilities page -->
 
-<div class="char-abilities fancy">
+<div class="char-abilities">
     <div class="top">
 
         <!-- Limit Break -->
@@ -373,7 +375,7 @@
     <input class="job-type" type="hidden" name="attr_job">
 
     <div class="top-abilities">
-        <h3>Song Abilities</h3>
+        <h3 class="large">Song Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_song">
 
@@ -383,7 +385,7 @@
     <!-- Primary abilities -->
 
     <div class="primary-abilities">
-        <h3>Primary Abilities</h3>
+        <h3 class="large">Primary Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_primary">
             <div class="ability">
@@ -431,7 +433,7 @@
                         <button type="action" class="ability-action" name="act_info">i</button>
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
-                        <button type="action" name="act_rollbattlelitany" style="display: none;">d</button>
+                        <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
@@ -1278,11 +1280,11 @@
                 hitDie = addEffectsToRoll(effects, hitDie, section)
                 hitDefinition = `[[${hitDie}]]`
 
-                var battleButton = ""
-                if (effects.some((effect) => effect.type == "battle(x)")) {
-                    battleButton = ` [${damageType} + Roll Up(X)](~${values.character_name}|repeating_${section}_${rowId}_rollbattlelitany)`
+                var bonusButton = ""
+                if (effects.some((effect) => effect.type == "roll(x)")) {
+                    bonusButton = ` [${damageType} + Roll Up(X)](~${values.character_name}|repeating_${section}_${rowId}_rolldamagewithbonus)`
                 }
-                button = `[${damageType}](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)${battleButton}`
+                button = `[${damageType}](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)${bonusButton}`
                 console.log(button)
             } else if (cost > 0 || usesMax > 0 || restoration || combo) {
                 button = `[Effect](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`
@@ -1331,7 +1333,7 @@
         })
     }
 
-    function rollDamage(useLitany, eventInfo) {
+    function rollDamage(useRollBonus, eventInfo) {
         console.log("Roll damage " + JSON.stringify(eventInfo))
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
         const section = sourceAttributes[1]
@@ -1358,11 +1360,11 @@
             const combo = values[`repeating_${section}_${rowId}_combo`]
             const roll = parseInt(values[`repeating_${section}_${rowId}_currentRoll`])
 
-            var litanyValue = 0
-            if (useLitany) {
-                litanyValue = effects.reduce(
+            var bonusValue = 0
+            if (useRollBonus) {
+                bonusValue = effects.reduce(
                     (accumulator, currentValue) => {
-                        if (currentValue.type != "battle(x)") {
+                        if (currentValue.type != "roll(x)") {
                             return accumulator
                         }
                         if (currentValue.value) {
@@ -1376,7 +1378,7 @@
             var criticalMultiplier = 1
             if (roll) {
                 const criticalThreshold = getCriticalThreshold(effects)
-                criticalMultiplier = roll + litanyValue >= criticalThreshold ? 2 : 1
+                criticalMultiplier = roll + bonusValue >= criticalThreshold ? 2 : 1
             }
 
             // Add crit multiplier to other dice rolls
@@ -1606,31 +1608,31 @@
         rollDamage(false, eventInfo)
     })
 
-    on("clicked:repeating_limit:rollbattlelitany", eventInfo => {
+    on("clicked:repeating_limit:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
-    on("clicked:repeating_song:rollbattlelitany", eventInfo => {
+    on("clicked:repeating_song:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
-    on("clicked:repeating_primary:rollbattlelitany", eventInfo => {
+    on("clicked:repeating_primary:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
-    on("clicked:repeating_ninjutsu:rollbattlelitany", eventInfo => {
+    on("clicked:repeating_ninjutsu:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
-    on("clicked:repeating_secondary:rollbattlelitany", eventInfo => {
+    on("clicked:repeating_secondary:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
-    on("clicked:repeating_instant:rollbattlelitany", eventInfo => {
+    on("clicked:repeating_instant:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
-    on("clicked:repeating_technique:rollbattlelitany", eventInfo => {
+    on("clicked:repeating_technique:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
@@ -1694,31 +1696,12 @@
 
 <script type="text/worker">
     function getIconForEffectType(type) {
-        switch (type) {
-            case "advantage": return "https://xivapi.com/i/215000/215711.png"
-            case "attribute(x)": return "https://xivapi.com/i/215000/215075.png"
-            case "battle(x)": return "https://xivapi.com/i/215000/215612.png"
-            case "blind": return "https://xivapi.com/i/215000/215012.png"
-            case "bound": return "https://xivapi.com/i/215000/215003.png"
-            case "brink": return "https://xivapi.com/i/215000/215011.png"
-            case "comatose": return "https://xivapi.com/i/215000/215559.png"
-            case "critical(x)": return "https://xivapi.com/i/215000/215952.png"
-            case "dot(x)": return "https://xivapi.com/i/215000/215530.png"
-            case "enmity(x)": return "https://xivapi.com/i/214000/214155.png"
-            case "heavy": return "https://xivapi.com/i/215000/215002.png"
-            case "paralyzed": return "https://xivapi.com/i/215000/215006.png"
-            case "petrified": return "https://xivapi.com/i/215000/215001.png"
-            case "prone": return "https://xivapi.com/i/215000/215724.png"
-            case "ready(x)": return "https://xivapi.com/i/216000/216002.png"
-            case "regen(x)": return "https://xivapi.com/i/212000/212626.png"
-            case "silence": return "https://xivapi.com/i/215000/215005.png"
-            case "sleep": return "https://xivapi.com/i/215000/215013.png"
-            case "slow": return "https://xivapi.com/i/215000/215009.png"
-            case "stun": return "https://xivapi.com/i/215000/215004.png"
-            case "unstunnable": return "https://xivapi.com/i/215000/215540.png"
-            case "weak": return "https://xivapi.com/i/215000/215010.png"
-            default: return ""
+        if (type == "none") {
+            return ""
         }
+
+        let imageName = type.replace("(x)", "-x")
+        return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`
     }
 
     // Effect icon assignment

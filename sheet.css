@@ -53,7 +53,7 @@ textarea {
   */
 
 input[type="checkbox"].sheet-checkbox {
-  border-style: solid black;
+  border: solid black;
   border-radius: 0px;
 }
 
@@ -104,11 +104,18 @@ input {
   top: 0;
   width: 100%;
   z-index: 999;
-  background-color: white;
-  padding-bottom: 8px;
+  background-color: #f9f8f3;
 }
 
 /* TABS */
+
+.tab {
+  margin-top: -4px;
+  vertical-align: bottom;
+  height: 32px;
+  background: linear-gradient(to top, #c4b5a1, #c4b5a1) no-repeat 0 4px;
+  border-radius: 0 0 8px 8px;
+}
 
 /* configure the tab buttons */
 .character,
@@ -118,11 +125,43 @@ input {
     display: none;
 }
 
+.tab .toggle {
+  border-style: none solid solid solid;
+  border-width: 4px;
+  border-color: transparent;
+  background-color: transparent;
+  border-radius: 0 0 8px 8px;
+  padding-top: 8px;
+  height: 18px;
+}
+
+.tab .toggle:hover {
+  background: linear-gradient(to top, #f9f8f3, #f9f8f3) no-repeat 0 4px;
+  background-size: 100% 24px;
+  border-radius: 0 0 20px 20px;
+}
+
+.tab .toggle:active {
+  color: gray;
+}
+
+.sheet-button3 {
+  font-family: Pictos;
+  width: 40px;
+}
+
 /* style the active button */
-.tabstoggle[value="character"] ~ div .sheet-button0 {outline: 2px solid red;}
-.tabstoggle[value="items"] ~ div .sheet-button1 {outline: 2px solid red;}
-.tabstoggle[value="abilities"] ~ div .sheet-button2 {outline: 2px solid red;}
-.tabstoggle[value="override"] ~ div .sheet-button3 {outline: 2px solid red;}
+.tabstoggle[value="character"] ~ div .sheet-button0,
+.tabstoggle[value="items"] ~ div .sheet-button1,
+.tabstoggle[value="abilities"] ~ div .sheet-button2,
+.tabstoggle[value="override"] ~ div .sheet-button3 {
+  margin: 0;
+  border-style: none ridge ridge ridge;
+  border-width: 4px;
+  border-color: #c99c78;
+  border-radius: 0 0 8px 8px;
+  background-color: #f9f8f3;
+}
 
 /* show the selected tab */
 .tabstoggle[value="character"] ~ div.character,
@@ -248,6 +287,40 @@ input {
   font-size: 1.4rem;
 }
 
+.header.mini, .header.small, .header.medium, .header.large {
+  color: #766c4b;
+}
+
+h3.small, h4.small {
+  color: #766c4b;
+  border-color: #766c4b;
+  border-style: none none dotted none;
+  border-width: 2px;
+  text-align: center;
+}
+
+h3.medium, h4.medium {
+  color: #766c4b;
+  border-color: #766c4b;
+  border-style: none none solid none;
+  border-width: 2px;
+}
+
+h3.large, h4.large {
+  color: #766c4b;
+  border-color: #c99c78;
+  border-style: none none ridge none;
+  border-width: 4px;
+}
+
+h3.small.colored-in, h4.small.colored-in {
+  border-style: none;
+  color: black;
+  background-color: #c4b5a1;
+  text-align: left;
+  padding-left: 8px;
+}
+
 .sub-stat .medium {
   font-size: 1.0rem;
 }
@@ -267,16 +340,107 @@ input {
 
 /* SECTIONS */
 
+.fancy {
+  border-image: url("https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/fancy-border.png") 100 / 100;
+  border-style: solid;
+  border-width: 1px;
+  border-color: transparent;
+  z-index: 800;
+}
+
+.fancy::before, .fancy::after {
+  z-index: 800;
+}
+
+.fancy.lowkey {
+  border-image: none;
+  border-style: ridge;
+  border-color: #c99c78;
+  border-width: 4px;
+}
+
+.fancy.lowkey .fancy.lowkey {
+  margin-top: -4px;
+}
+
+.fancy.lowkey .left .fancy.lowkey {
+  margin-left: -4px;
+}
+.fancy.lowkey .right.fancy.lowkey {
+  margin-right: -4px;
+  margin-bottom: -4px;
+  height: 1fr;
+  width: 1fr;
+}
+
+.fancy.image-container {
+  padding: 0px;
+}
+
+.fancy .image {
+  z-index: 700;
+}
+
+.ui-dialog .nav-tabs {
+  border-bottom: ridge;
+  border-color: #c99c78;
+  border-width: 2px;
+}
+
+.ui-dialog .nav-tabs > li.active > a {
+  background-color: transparent;
+  border-style: ridge ridge none ridge;
+  border-color: #c99c78;
+  border-width: 4px;
+  border-radius: 8px 8px 0 0;
+}
+
+.ui-dialog .charsheet {
+  padding: 0;
+  margin: 10px 10px 30px 10px;
+}
+
+.ui-dialog {
+  background-color: #f9f8f3;
+  box-shadow: inset 0 0 40px #766c4b;
+}
+
+.paper {
+  background-color: #f9f8f3;
+  box-shadow: inset 0 0 40px #766c4b;
+}
+
 .top {
   display: grid;
   grid-template-columns: 50px 0.5fr 0.5fr;
   grid-gap: 16px;
-  padding: 8px 0px 16px 0px;
+  padding: 8px 24px 0px 12px;
+}
+
+.character {
+  margin-bottom: 8px;
+}
+
+.basic-info.fancy {
+  width: 1fr;
+  margin-left: -3px;
+  margin-top: -3px;
+  border-image: url("https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/fancy-border.png") 60 / 90;
+  padding: 8px 24px 8px 24px;
+}
+
+.profile {
+  padding: 8px 16px 8px 16px;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 360px 1fr;
+}
+
+.grid.fill {
+  width: 100%;
+  height: 100%;
 }
 
 .items.grid {
@@ -290,17 +454,16 @@ input {
 }
 
 .grid .left {
-  background-color: cadetblue;
-  padding: 8px 16px 8px 16px;
+  padding: 0px;
+  width: 1fr;
 }
 
 .grid .right {
+  padding: 0px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 32px;
-  background-color: blanchedalmond;
-  padding: 8px 16px 8px 16px;
 }
 
 .vertical {
@@ -377,14 +540,15 @@ input {
   justify-content: space-between;
   gap: 16px;
   border-style: none none solid none;
-  border-color: black;
+  border-width: 2px;
+  border-color: #766c4b;
 }
 
 .stat-block button {
   padding-left: 16px;
   padding-right: 16px;
   text-align: left;
-  color: black;
+  color: #766c4b;
   background: none;
   border: none;
 }
@@ -402,8 +566,36 @@ input.stat {
   text-align: right;
 }
 
+.ui-dialog .charsheet input:hover, .ui-dialog .charsheet textarea:hover {
+  background-color: #f3eadf;
+}
+.ui-dialog .charsheet input:focus, .ui-dialog .charsheet textarea:focus {
+  background-color: #e1d3c1;
+}
+
+.stat {
+  width: 100%;
+}
+
+.main-stat {
+  padding: 8px 4px 8px 16px;
+
+}
+.sub-stat {
+  padding: 8px 16px 8px 4px;
+}
+
+.fortune.fancy.lowkey {
+  width: 100%;
+  margin-left: -4px;
+}
+
+.fortune.fancy.lowkey .flex {
+  padding: 8px 16px 8px 16px;
+}
+
 .sub-stat input.stat {
-  font-size: 1.4em;
+  font-size: 1.8em;
 }
 
 .stat-block .medium {
@@ -414,7 +606,11 @@ input.stat {
   display: flex;
   flex-direction: row;
   gap: 8px;
-  padding-bottom: 8px;
+  padding: 8px;
+}
+
+.stat-shortcut.fancy.lowkey {
+  border-top: none;
 }
 
 .points {
@@ -447,11 +643,16 @@ input.stat {
   align-self: center;
 }
 
-.image {
+.image-container {
   width: 256px;
   height: 256px;
-  background-color: white;
   margin: auto;
+}
+
+.image-container .image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .ui-dialog .charsheet .resource {
@@ -462,12 +663,35 @@ input.stat {
   display: inline-block;
 }
 
+.traits.fancy.lowkey {
+  width: 100%;
+  margin-bottom: -4px;
+}
+
+.repcontainer[data-groupname=repeating_traits] {
+  padding: 8px 16px 8px 16px;
+}
+
+div[data-groupname=repeating_traits].repcontrol {
+  padding: 8px;
+}
+
 .trait {
   padding: 12px 0px 12px 0px;
 }
 
 .effects {
+  margin-top: -32px;
   width: 100%;
+}
+
+.repcontainer[data-groupname=repeating_effects] {
+  padding: 4px 8px 16px 8px;
+}
+
+div[data-groupname=repeating_effects].repcontrol {
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 /* INPUT */
@@ -850,6 +1074,7 @@ div[data-groupname=repeating_technique].repcontrol {
 }
 .ui-dialog .tab-content .charsheet .adaptive--text {
   min-height: 1.5rem;/* Define a minimum height for the container when it is being used for an adaptive textarea */
+  min-width: min(100%, 12rem);
 }
 .ui-dialog .tab-content .charsheet .adaptive--text__span {
   white-space: pre-wrap; /* When the span is being used to make a textarea adaptive, make sure that it allows wrapping of text */
