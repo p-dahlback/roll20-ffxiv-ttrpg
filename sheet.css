@@ -187,6 +187,7 @@ input {
 }
 
 .expand-checkbox:not(:checked) ~ .expanded-view,
+.expand-checkbox:not(:checked) ~ .repcontainer,
 .expand-checkbox:checked ~ .collapsed-view {
   max-height: 0px;
   overflow: hidden;
@@ -195,6 +196,8 @@ input {
 .expand-checkbox:checked ~ .expanded-view,
 .expand-checkbox[value="1"] ~ .expanded-view,
 .expand-checkbox[value="on"] ~ .expanded-view,
+.expand-checkbox[value="1"] ~ .repcontainer,
+.expand-checkbox[value="on"] ~ .repcontainer,
 .expand-checkbox:not(:checked) ~ .collapsed-view {
   max-height: 100vh;
 }
@@ -753,6 +756,12 @@ input.job-input {
 
 /* ABILITIES */
 
+.ability-top {
+  width: 100%;
+  margin-bottom: 8px;
+  height: 24px;
+}
+
 .ability {
   width: 20em;
   margin: 3px;
@@ -951,6 +960,27 @@ input.job-input {
   margin: 2px;
 }
 
+button.header-action {
+  color: #c4b5a1;
+  float: right;
+  font-size: 2rem;
+  font-family: Pictos;
+  background: none;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  height: 25px;
+}
+
+button.header-action:hover {
+  background-color: #c4b5a1;
+  color: white;
+}
+
+button.header-action:active {
+  background-color: lightgray;
+  color: white;
+}
+
 /* ABILITY VISIBILITY */
 /* Field visibility */
 .uses,
@@ -1079,8 +1109,23 @@ div[data-groupname=repeating_technique].repcontrol {
 .repcontainer[data-groupname="repeating_technique"] {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  min-height: 5rem;
+  min-height: 3rem;
   padding: 8px 0 16px 0;
+}
+
+.collapse-overlay {
+  position: relative;
+  height: 3rem;
+  margin-top: -3rem;
+  margin-bottom: 3rem;
+}
+
+.collapse-overlay::before {
+  background: linear-gradient(to top, #f9f8f3, transparent) no-repeat;
+  content: "\00a0";
+  height: 100%;
+  position: absolute;
+  width: 100%;
 }
 
 /* OVERRIDE */
