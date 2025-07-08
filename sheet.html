@@ -2,7 +2,7 @@
 
 <!-- Character name and race -->
 
-<div class="sticky section">
+<div class="sticky section" spellcheck="false">
     <div class="top fancy section">
         <div class="type">
             <img name="attr_jobIcon" width="50" />
@@ -90,7 +90,7 @@
 <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
 
 <!-- Profile page -->
-<div class="character fancy lowkey">
+<div class="character fancy lowkey" spellcheck="false">
     <div class="grid fill">
 
         <!-- Profile page, Level and Profile -->
@@ -119,6 +119,23 @@
             <div class="profile section list">
                 <h3 class="small">Profile</h3>
 
+                <!-- Origin  -->
+                <div class="origin">
+                    <span class="header medium bold">Origin:</span>
+                    <input class="medium" type="text" name="attr_origin" placeholder="Ex. Survivor, Urbanite"></span>
+                </div>
+
+                <!-- Bonds  -->
+                <div class="bonds list">
+                    <span class="header medium bold">Bonds:</span>
+                    <div class="adaptive adaptive--text floatLeft">
+                        <span class="mini-input adaptive--text__span"  name="attr_bonds"></span>
+                        <textarea class="mini-input adaptive--text__textarea" name="attr_bonds" placeholder="Ex. Debt, Momodi Modi"></textarea>
+                    </div>
+                </div>
+
+                <hr class="small-hr" />
+
                 <!-- Title  -->
 
                 <div class="title">
@@ -128,9 +145,9 @@
                 <div class="title-effect list">
                     <span class="header medium bold">Effect: </span>
                     <span class="medium" name="attr_selectedTitleEffect"></span>
-                </div> 
-                
-                <hr />
+                </div>
+
+                <hr class="small-hr" />
 
                 <!-- Minion -->
                  
@@ -142,8 +159,6 @@
                     <span class="header medium bold">Effect: </span>
                     <span class="medium" name="attr_selectedMinionEffect"></span>
                 </div>
-
-                <hr />
             </div>
 
             <!-- Traits -->
@@ -300,7 +315,7 @@
 
 <!-- Abilities page -->
 
-<div class="char-abilities">
+<div class="char-abilities" spellcheck="false">
     <!-- Top abilities (Bard songs) -->
     <input class="job-type" type="hidden" name="attr_job">
 
@@ -1681,7 +1696,7 @@
 
 <!-- Items page -->
 
-<div class="items fancy">
+<div class="items fancy" spellcheck="false">
     <div class="section grid">
         <div class="section list">
 
@@ -1746,7 +1761,7 @@
     </div>
 </div>
 
-<div class="override fancy">
+<div class="override fancy" spellcheck="false">
     <h3>Manual Override</h3>
     <p>Enables manual input for things the player would normally not mess with, primarily intended for setting up NPC sheets.</p>
     <p>Mess with at your own risk!</p>

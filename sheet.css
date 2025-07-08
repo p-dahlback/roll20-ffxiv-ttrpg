@@ -18,6 +18,7 @@ span.sheet-bold{
 
 .ui-dialog .charsheet input,
 .ui-dialog .charsheet textarea {
+  color: rgb(51, 51, 51);
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -426,7 +427,15 @@ h3.small.colored-in, h4.small.colored-in {
 }
 
 .profile {
-  padding: 8px 16px 8px 16px;
+  padding: 8px 16px 24px 16px;
+  gap: 6px;
+}
+
+.profile .small-hr {
+  border-style: none none dotted none;
+  border-width: 2px;
+  border-color: #766c4b;
+  margin: 18px 0 0 0;
 }
 
 .grid {
