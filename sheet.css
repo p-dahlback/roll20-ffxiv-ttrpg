@@ -1163,9 +1163,17 @@ div[data-groupname=repeating_technique].repcontrol {
   text-transform: initial;
   border-radius: 0px;
 }
+
+.ui-dialog .tab-content .charsheet .adaptive--input__input[type=number] {
+  min-width: 3rem;
+}
+.ui-dialog .tab-content .charsheet .adaptive--input__input[type=text] {
+  min-width: 8rem;
+}
+
 .ui-dialog .tab-content .charsheet .adaptive--text {
   min-height: 1.5rem;/* Define a minimum height for the container when it is being used for an adaptive textarea */
-  min-width: min(100%, 12rem);
+  min-width: 12rem;
 }
 .ui-dialog .tab-content .charsheet .adaptive--text__span {
   white-space: pre-wrap; /* When the span is being used to make a textarea adaptive, make sure that it allows wrapping of text */
