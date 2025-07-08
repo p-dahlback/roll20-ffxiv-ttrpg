@@ -836,6 +836,7 @@ input.job-input {
   padding: 4px;
 }
 
+
 .sheet-rolltemplate-hit .sheet-header {
   background-color: lightpink;
   border-radius: 6px 6px 0px 0px;
@@ -901,6 +902,11 @@ input.job-input {
   font-size: 1.2rem;
   font-weight: bolder;
   padding-right: 4px;
+}
+
+.sheet-rolltemplate-ability .sheet-header-subtitle,
+.sheet-rolltemplate-hit .sheet-header-subtitle {
+  padding-top: 8px;
 }
 
 .ui-dialog .charsheet .mini-input,

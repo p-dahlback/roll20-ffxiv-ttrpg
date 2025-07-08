@@ -2863,38 +2863,40 @@
                     <span class="sheet-bold">{{name}}</span>
                 </div>
             </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">Type:</span>
-                <span class="sheet-mini-input sheet-floatLeft sheet-italic">{{type}}</span>
-            </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{costTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft">{{cost}}</span>
-                <span class="sheet-mini-input sheet-floatLeft" style="margin-left: 4px;">{{resourceType}}</span>
-            </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{conditionTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft">{{condition}}</span>
-            </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{triggerTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft">{{trigger}}</span>
-            </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{targetTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft">{{target}}</span>
-            </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{rangeTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft">{{range}}</span>
-            </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{checkTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft sheet-bold">{{check}}</span>
-            </div>
-            <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{crTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft">{{cr}}</span>
+            <div class="sheet-header-subtitle sheet-list">
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">Type:</span>
+                    <span class="sheet-mini-input sheet-floatLeft sheet-italic">{{type}}</span>
+                </div>
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">{{costTitle}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft">{{cost}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft" style="margin-left: 4px;">{{resourceType}}</span>
+                </div>
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">{{conditionTitle}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft">{{condition}}</span>
+                </div>
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">{{triggerTitle}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft">{{trigger}}</span>
+                </div>
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">{{targetTitle}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft">{{target}}</span>
+                </div>
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">{{rangeTitle}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft">{{range}}</span>
+                </div>
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">{{checkTitle}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft sheet-bold">{{check}}</span>
+                </div>
+                <div>
+                    <span class="sheet-mini-title sheet-floatLeft">{{crTitle}}</span>
+                    <span class="sheet-mini-input sheet-floatLeft">{{cr}}</span>
+                </div>
             </div>
         </div>
         <div class="sheet-body">
@@ -2925,10 +2927,12 @@
                     <span class="sheet-bold">{{name}}</span>
                 </div>
             </div>
-            <h4>{{cost}}</h4>
-            <h4>{{type}}</h4>
+            <div class="sheet-header-subtitle">
+                <h4>{{cost}}</h4>
+                <h4>{{type}}</h4>
+            </div>
         </div>
-        <div class="sheet-body">
+        <div class="sheet-body sheet-list">
             <div>
                 <span class="sheet-mini-title">Base Effect:</span>
                 <span class="sheet-mini-input">{{baseEffect}}</span>
