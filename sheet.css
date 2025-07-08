@@ -1130,7 +1130,7 @@ div[data-groupname=repeating_technique].repcontrol {
 
 .collapse-overlay::before {
   background: linear-gradient(to top, #f9f8f3, transparent) no-repeat;
-  content: "\00a0";
+  content: " ";
   height: 100%;
   position: absolute;
   width: 100%;
