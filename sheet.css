@@ -213,6 +213,14 @@ input {
   grid-column: span 2;
 }
 
+.span3 {
+  grid-column: span 3;
+}
+
+.span4 {
+  grid-column: span 4;
+}
+
 .label-toggle {
   display: block;
 
@@ -450,22 +458,64 @@ body > .ui-dialog {
   height: 100%;
 }
 
-.items.grid {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  grid-template-rows: 0.5fr 0.5fr;
+.items > .grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  columns: 2;
+  width: 100%;
+  min-height: 25em;
+  gap: 12px;
 }
+
+.items .left {
+  width: 360px;
+  flex-wrap: nowrap;
+}
+
+.items .right {
+  flex-grow: 1;
+}
+
+.items .repcontainer .grid3 {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: 2em 1fr;
+}
+
+.items .repcontainer .grid4 {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  grid-template-rows: 2em 1fr;
+}
+
+.items .repcontainer input[type=text] {
+  margin-right: 8px;
+}
+
+.items .repcontainer .expanded-view {
+  padding-top: 8px;
+}
+
+.items .equip-container {
+  padding-top: 16px;
+}
+
 
 .vertical-span2 {
   grid-row: span 2;
 }
 
-.grid .left {
+.vertical-span3 {
+  grid-row: span 3;
+}
+
+.character .grid .left {
   padding: 0px;
   width: 1fr;
 }
 
-.grid .right {
+.character .grid .right {
   padding: 0px;
   display: flex;
   flex-direction: column;
@@ -689,16 +739,36 @@ body > .ui-dialog {
   margin-bottom: -4px;
 }
 
-.repcontainer[data-groupname=repeating_traits] {
+.repcontainer[data-groupname=repeating_traits] .repitem,
+.repcontainer[data-groupname=repeating_titles] .repitem,
+.repcontainer[data-groupname=repeating_minions] .repitem,
+.repcontainer[data-groupname=repeating_items] .repitem {
   padding: 8px 16px 8px 16px;
 }
 
-div[data-groupname=repeating_traits].repcontrol {
-  padding: 8px;
+.repcontainer[data-groupname=repeating_traits] .repitem:nth-child(odd),
+.repcontainer[data-groupname=repeating_titles] .repitem:nth-child(odd),
+.repcontainer[data-groupname=repeating_minions] .repitem:nth-child(odd),
+.repcontainer[data-groupname=repeating_items] .repitem:nth-child(odd) {
+  background-color: #f3eadf;
+}
+
+.repcontainer[data-groupname=repeating_traits] .repitem:nth-child(even),
+.repcontainer[data-groupname=repeating_titles] .repitem:nth-child(even),
+.repcontainer[data-groupname=repeating_minions] .repitem:nth-child(even),
+.repcontainer[data-groupname=repeating_items] .repitem:nth-child(even) {
+  background-color: #e1d3c1;
+}
+
+div[data-groupname=repeating_traits].repcontrol,
+div[data-groupname=repeating_titles].repcontrol,
+div[data-groupname=repeating_minions].repcontrol,
+div[data-groupname=repeating_items].repcontrol {
+  padding: 4px;
 }
 
 .trait {
-  padding: 12px 0px 12px 0px;
+  padding-bottom: 8px;
 }
 
 .effects {
@@ -785,7 +855,8 @@ input.job-input {
 .ability,
 .sheet-rolltemplate-ability .sheet-ability-template,
 .sheet-rolltemplate-hit .sheet-ability-template,
-.sheet-rolltemplate-damage .sheet-template-container {
+.sheet-rolltemplate-damage .sheet-template-container,
+.sheet-rolltemplate-item .sheet-template-container  {
   border-color: #766c4b;
   border-style: solid;
   border-radius: 6px;
@@ -865,6 +936,41 @@ input.job-input {
 .sheet-rolltemplate-ability .sheet-header,
 .sheet-rolltemplate-damage .sheet-header {
   padding: 4px 4px 8px 4px;
+}
+
+.sheet-rolltemplate-item {
+  background-color: #f9f8f3;
+  box-shadow: inset 0 0 15px #766c4b;
+}
+
+.sheet-rolltemplate-item .sheet-body {
+  padding: 0 8px 8px 8px;
+} 
+
+.sheet-rolltemplate-item .sheet-type {
+  border-radius: 3px 3px 0 0;
+  color: black;
+  background-color: #c4b5a1;
+  text-align: left;
+  padding-left: 8px;
+  font-size: 1.8rem;
+}
+
+.sheet-rolltemplate-item .sheet-title {
+  padding: 8px;
+  font-size: 2.2rem;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.sheet-rolltemplate-item .sheet-subtitle {
+  font-size: 1.6rem;
+  font-weight: bolder;
+}
+
+.sheet-rolltemplate-item .sheet-paragraph {
+  font-size: 1.6rem;
+  font-weight: italic;
 }
 
 .sheet-rolltemplate-damage .sheet-template-container {
@@ -959,6 +1065,7 @@ input.job-input {
   float: right;
   font-size: 2rem;
   font-family: Pictos;
+  min-height: 18px;
   margin: 2px;
 }
 
