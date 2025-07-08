@@ -397,9 +397,11 @@ h3.small.colored-in, h4.small.colored-in {
   margin: 10px 10px 30px 10px;
 }
 
-.ui-dialog {
+body > .ui-dialog {
   background-color: #f9f8f3;
   box-shadow: inset 0 0 40px #766c4b;
+  overflow-y: scroll;
+  scrollbar-color: #c4b5a1 #7C5A0B;
 }
 
 .paper {
