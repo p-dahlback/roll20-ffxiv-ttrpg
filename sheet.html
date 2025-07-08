@@ -83,7 +83,7 @@
         <button type="action" name="act_character" class="toggle sheet-button0 floatLeft">Character</button>
         <button type="action" name="act_abilities" class="toggle sheet-button2 floatLeft">Abilities</button>
         <button type="action" name="act_items" class="toggle sheet-button1 floatLeft">Inventory</button>
-        <button type="action" name="act_override" class="toggle sheet-button3 floatRight">y</button>
+        <button type="action" name="act_settings" class="toggle sheet-button3 floatRight">y</button>
     </div>
 </div>
 
@@ -1775,18 +1775,55 @@
     </div>
 </div>
 
-<div class="override fancy" spellcheck="false">
-    <h3>Manual Override</h3>
-    <p>Enables manual input for things the player would normally not mess with, primarily intended for setting up NPC sheets.</p>
-    <p>Mess with at your own risk!</p>
-    <input type="text" name="attr_override" placeholder="Enter 'auto' to disable manual editing" />
+<div class="char-settings" spellcheck="false">
+    <div class="override fancy lowkey">
+        <h3>Manual Override</h3>
+        <p class="medium" style="margin-top: 8px;">Enables manual input for things the player would normally not mess with, things used mostly during initial sheet creation.</p>
+        <p class="medium">Mess with at your own risk!</p>
+        <input type="text large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" />
+    </div>
+
+    <div class="job-assignment fancy lowkey">
+        <h3>Job icon selector</h3>
+        <p class="medium" style="margin-top: 8px;">Assigns the job icon in the header</p>
+        <select name="attr_jobIcon">
+            <option value="">--Select--</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png">Dark Knight</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/GNB.png">Gunbreaker</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png">Paladin</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png">Warrior</option>
+            <hr />
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png">Astrologian</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SGE.png">Sage</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png">Scholar</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png">White Mage</option>
+            <hr />
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png">Dragoon</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png">Monk</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png">Ninja</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RPR.png">Reaper</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SAM.png">Samurai</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/VIP.png">Viper</option>
+            <hr />
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png">Bard</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DNC.png">Dancer</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png">Machinist</option>
+            <hr />
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png">Black Mage</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PCT.png">Pictomancer</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RDM.png">Red Mage</option>
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png">Summoner</option>
+            <hr />
+            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLU.png">Blue Mage</option>
+        </select>
+    </div>
 </div>
 
 <!-- ---------------------------SHEET WORKERS----------------- -->
 
 <script type="text/worker">
     // Tabs
-    const buttonlist = ["character", "items", "abilities", "override"];
+    const buttonlist = ["character", "items", "abilities", "settings"];
     buttonlist.forEach(button => {
         on(`clicked:${button}`, () => {
             setAttrs({

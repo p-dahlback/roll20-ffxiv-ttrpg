@@ -127,7 +127,7 @@ input {
 .character,
 .items,
 .char-abilities,
-.override {
+.char-settings {
     display: none;
 }
 
@@ -160,7 +160,7 @@ input {
 .tabstoggle[value="character"] ~ div .sheet-button0,
 .tabstoggle[value="items"] ~ div .sheet-button1,
 .tabstoggle[value="abilities"] ~ div .sheet-button2,
-.tabstoggle[value="override"] ~ div .sheet-button3 {
+.tabstoggle[value="settings"] ~ div .sheet-button3 {
   margin: 0;
   border-style: none ridge ridge ridge;
   border-width: 4px;
@@ -173,7 +173,7 @@ input {
 .tabstoggle[value="character"] ~ div.character,
 .tabstoggle[value="items"] ~ div.items,
 .tabstoggle[value="abilities"] ~ div.char-abilities,
-.tabstoggle[value="override"] ~ div.override {
+.tabstoggle[value="settings"] ~ div.char-settings {
     display: block;
 }
 
@@ -1247,8 +1247,21 @@ div[data-groupname=repeating_technique].repcontrol {
 
 /* OVERRIDE */
 
+.char-settings {
+  flex-direction: row;
+  columns: 2;
+  gap: 32px;
+}
+
 .override {
-  max-width: 400px;
+  width: 400px;
+  padding: 4px 8px 8px 8px;
+  background-color: lightpink;
+}
+
+.job-assignment {
+  padding: 4px 8px 8px 8px;
+  flex-grow: 0;
 }
 
 /* ADAPTIVE CONTENT */
