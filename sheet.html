@@ -2843,174 +2843,29 @@
         rollStat("mnd", "Mind")
     })
 
-    on("clicked:repeating_limit:share", eventInfo => {
+    on("clicked:repeating_limit:share clicked:repeating_song:share clicked:repeating_primary:share clicked:repeating_ninjutsu:share clicked:repeating_secondary:share clicked:repeating_instant:share clicked:repeating_technique:share", eventInfo => {
         shareAbility(eventInfo)
     })
 
-    on("clicked:repeating_song:share", eventInfo => {
-        shareAbility(eventInfo)
-    })
-
-    on("clicked:repeating_primary:share", eventInfo => {
-        shareAbility(eventInfo)
-    })
-
-    on("clicked:repeating_ninjutsu:share", eventInfo => {
-        shareAbility(eventInfo)
-    })
-
-    on("clicked:repeating_secondary:share", eventInfo => {
-        shareAbility(eventInfo)
-    })
-
-    on("clicked:repeating_instant:share", eventInfo => {
-        shareAbility(eventInfo)
-    })
-
-    on("clicked:repeating_technique:share", eventInfo => { 
-        shareAbility(eventInfo)
-    })
-
-    on("clicked:repeating_limit:trigger", eventInfo => {
+    on("clicked:repeating_limit:trigger clicked:repeating_song:trigger clicked:repeating_primary:trigger clicked:repeating_ninjutsu:trigger clicked:repeating_secondary:trigger clicked:repeating_instant:trigger clicked:repeating_technique:trigger", eventInfo => {
         activateAbility(eventInfo)
     })
 
-    on("clicked:repeating_song:trigger", eventInfo => {
-        activateAbility(eventInfo)
-    })
-
-    on("clicked:repeating_primary:trigger", eventInfo => {
-        activateAbility(eventInfo)
-    })
-
-    on("clicked:repeating_ninjutsu:trigger", eventInfo => {
-        activateAbility(eventInfo)
-    })
-
-    on("clicked:repeating_secondary:trigger", eventInfo => {
-        activateAbility(eventInfo)
-    })
-
-    on("clicked:repeating_instant:trigger", eventInfo => {
-        activateAbility(eventInfo)
-    })
-
-    on("clicked:repeating_technique:trigger", eventInfo => {
-        activateAbility(eventInfo)
-    })
-
-    on("clicked:repeating_limit:rolldamage", eventInfo => {
+    on("clicked:repeating_limit:rolldamage clicked:repeating_song:rolldamage clicked:repeating_primary:rolldamage clicked:repeating_ninjutsu:rolldamage clicked:repeating_secondary:rolldamage clicked:repeating_instant:rolldamage clicked:repeating_technique:rolldamage", eventInfo => {
         rollDamage(false, eventInfo)
     })
 
-    on("clicked:repeating_song:rolldamage", eventInfo => {
-        rollDamage(false, eventInfo)
-    })
-
-    on("clicked:repeating_primary:rolldamage", eventInfo => {
-        rollDamage(false, eventInfo)
-    })
-
-    on("clicked:repeating_ninjutsu:rolldamage", eventInfo => {
-        rollDamage(false, eventInfo)
-    })
-
-    on("clicked:repeating_secondary:rolldamage", eventInfo => {
-        rollDamage(false, eventInfo)
-    })
-
-    on("clicked:repeating_instant:rolldamage", eventInfo => {
-        rollDamage(false, eventInfo)
-    })
-
-    on("clicked:repeating_technique:rolldamage", eventInfo => {
-        rollDamage(false, eventInfo)
-    })
-
-    on("clicked:repeating_limit:rolldamagewithbonus", eventInfo => {
+    on("clicked:repeating_limit:rolldamagewithbonus clicked:repeating_song:rolldamagewithbonus clicked:repeating_primary:rolldamagewithbonus clicked:repeating_ninjutsu:rolldamagewithbonus clicked:repeating_secondary:rolldamagewithbonus clicked:repeating_instant:rolldamagewithbonus clicked:repeating_technique:rolldamagewithbonus", eventInfo => {
         rollDamage(true, eventInfo)
     })
 
-    on("clicked:repeating_song:rolldamagewithbonus", eventInfo => {
-        rollDamage(true, eventInfo)
-    })
-
-    on("clicked:repeating_primary:rolldamagewithbonus", eventInfo => {
-        rollDamage(true, eventInfo)
-    })
-
-    on("clicked:repeating_ninjutsu:rolldamagewithbonus", eventInfo => {
-        rollDamage(true, eventInfo)
-    })
-
-    on("clicked:repeating_secondary:rolldamagewithbonus", eventInfo => {
-        rollDamage(true, eventInfo)
-    })
-
-    on("clicked:repeating_instant:rolldamagewithbonus", eventInfo => {
-        rollDamage(true, eventInfo)
-    })
-
-    on("clicked:repeating_technique:rolldamagewithbonus", eventInfo => {
-        rollDamage(true, eventInfo)
-    })
-
-    on("clicked:repeating_limit:runcombo1", eventInfo => {
+    on("clicked:repeating_limit:runcombo1 clicked:repeating_song:runcombo1 clicked:repeating_primary:runcombo1 clicked:repeating_ninjutsu:runcombo1 clicked:repeating_secondary:runcombo1 clicked:repeating_instant:runcombo1 clicked:repeating_technique:runcombo1", eventInfo => {
         activateCombo(eventInfo, 0)
     })
 
-    on("clicked:repeating_song:runcombo1", eventInfo => {
-        activateCombo(eventInfo, 0)
-    })
-
-    on("clicked:repeating_primary:runcombo1", eventInfo => {
-        activateCombo(eventInfo, 0)
-    })
-
-    on("clicked:repeating_ninjutsu:runcombo1", eventInfo => {
-        activateCombo(eventInfo, 0)
-    })
-
-    on("clicked:repeating_secondary:runcombo1", eventInfo => {
-        activateCombo(eventInfo, 0)
-    })
-
-    on("clicked:repeating_instant:runcombo1", eventInfo => {
-        activateCombo(eventInfo, 0)
-    })
-
-    on("clicked:repeating_technique:runcombo1", eventInfo => {
-        activateCombo(eventInfo, 0)
-    })
-
-    on("clicked:repeating_limit:runcombo2", eventInfo => {
+    on("clicked:repeating_limit:runcombo2 clicked:repeating_song:runcombo2 clicked:repeating_primary:runcombo2 clicked:repeating_ninjutsu:runcombo2 clicked:repeating_secondary:runcombo2 clicked:repeating_instant:runcombo2 clicked:repeating_technique:runcombo2", eventInfo => {
         activateCombo(eventInfo, 1)
     })
-
-    on("clicked:repeating_song:runcombo2", eventInfo => {
-        activateCombo(eventInfo, 1)
-    })
-
-    on("clicked:repeating_primary:runcombo2", eventInfo => {
-        activateCombo(eventInfo, 1)
-    })
-
-    on("clicked:repeating_ninjutsu:runcombo2", eventInfo => {
-        activateCombo(eventInfo, 1)
-    })
-
-    on("clicked:repeating_secondary:runcombo2", eventInfo => {
-        activateCombo(eventInfo, 1)
-    })
-
-    on("clicked:repeating_instant:runcombo2", eventInfo => {
-        activateCombo(eventInfo, 1)
-    })
-
-    on("clicked:repeating_technique:runcombo2", eventInfo => {
-        activateCombo(eventInfo, 1)
-    })
-
 </script>
 
 <script type="text/worker">
