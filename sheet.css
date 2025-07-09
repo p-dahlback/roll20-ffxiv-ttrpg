@@ -888,6 +888,7 @@ input.job-input {
 
 .sheet-rolltemplate-roll {
   background-color: #f9f8f3;
+  border-radius: 6px;
 }
 
 .sheet-rolltemplate-roll .sheet-body {
@@ -959,14 +960,14 @@ input.job-input {
 .ability .header,
 .sheet-rolltemplate-ability .sheet-header {
   background-color: #f8ede4;
-  border-radius: 6px 6px 0px 0px;
+  border-radius: 3px 3px 0px 0px;
   padding: 4px;
 }
 
 
 .sheet-rolltemplate-hit .sheet-header {
   background-color: lightpink;
-  border-radius: 6px 6px 0px 0px;
+  border-radius: 3px 3px 0px 0px;
   padding: 4px;
 }
 
@@ -977,6 +978,7 @@ input.job-input {
 
 .sheet-rolltemplate-item {
   background-color: #f9f8f3;
+  border-radius: 6px;
   box-shadow: inset 0 0 15px #766c4b;
 }
 
@@ -985,7 +987,7 @@ input.job-input {
 } 
 
 .sheet-rolltemplate-item .sheet-type {
-  border-radius: 3px 3px 0 0;
+  border-radius: 4px 4px 0 0;
   color: black;
   background-color: #c4b5a1;
   text-align: left;
