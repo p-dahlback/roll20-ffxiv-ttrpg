@@ -997,12 +997,20 @@ textarea {
 .sheet-rolltemplate-damage .sheet-body  {
   background-color: white;
   border-radius: 0px 0px 6px 6px;
-  padding: 4px;
+}
+
+.ability .body {
+  padding: 0 4px 0 4px;
+}
+
+.ability .body .spacer {
+  height: 8px;
 }
 
 .sheet-rolltemplate-ability .sheet-body,
+.sheet-rolltemplate-hit .sheet-body,
 .sheet-rolltemplate-damage .sheet-body {
-  padding: 16px 4px 8px 4px;
+  padding: 8px 4px 8px 4px;
 }
 
 .sheet-rolltemplate-damage .sheet-body h4 {
