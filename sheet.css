@@ -853,6 +853,7 @@ input.job-input {
 }
 
 .ability,
+.sheet-rolltemplate-roll .sheet-template-container,
 .sheet-rolltemplate-ability .sheet-ability-template,
 .sheet-rolltemplate-hit .sheet-ability-template,
 .sheet-rolltemplate-damage .sheet-template-container,
@@ -883,6 +884,42 @@ input.job-input {
 
 .effect-value {
   width: 6em;
+}
+
+.sheet-rolltemplate-roll {
+  background-color: #f9f8f3;
+}
+
+.sheet-rolltemplate-roll .sheet-body {
+  padding: 0 8px 8px 8px;
+} 
+
+.sheet-rolltemplate-roll .sheet-title {
+  border-radius: 3px 3px 0 0;
+  color: black;
+  background-color: #c4b5a1;
+  text-align: left;
+  padding-left: 8px;
+  font-size: 1.8rem;
+}
+
+.sheet-rolltemplate-roll .sheet-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 8px;
+  height: 4rem;
+}
+
+.sheet-rolltemplate-roll .sheet-subtitle {
+  font-size: 1.8rem;
+  font-weight: bolder;
+}
+
+.sheet-rolltemplate-roll .sheet-roll {
+  font-size: 2.6rem;
+  height: 2.6rem;
+  font-weight: bolder;
 }
 
 .ability-icon,
