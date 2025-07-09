@@ -7,10 +7,12 @@ on('ready', () => {
             return
         }
         let mpRecovery = getAttrByName(character.id, "mpRecovery") ?? "2"
+        if (mpRecovery <= 0) {
+            return
+        }
         let currentMp = parseInt(token.get("bar3_value") ?? "0")
         let maxMp = parseInt(token.get("bar3_max") ?? "0")
         if (maxMp <= 0) {
-            log(`EndOfStep: Invalid max MP ${maxMp}`)
             return
         }
 
