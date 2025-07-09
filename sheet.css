@@ -711,7 +711,14 @@ body > .ui-dialog {
   display: none;
 }
 
-.ui-dialog .charsheet .resourceSwitch:not([value=""]) ~ .resource {
+.ui-dialog .charsheet input.resourceSwitch {
+  color: #766c4b;
+  width: 5em;
+}
+
+.ui-dialog .charsheet .resourceSwitch:not(:placeholder-shown) ~ .resource,
+.ui-dialog .charsheet .resourceSwitch:not(:placeholder-shown) ~ .resource,
+.ui-dialog .charsheet .resourceSwitch:not(:placeholder-shown) ~ .resource {
   display: inline-block;
 }
 
@@ -784,7 +791,8 @@ textarea {
 
 .basic-info .overrideSwitch[value="auto"] ~ input,
 .stat .overrideSwitch[value="auto"] ~ input,
-.stat-shortcut .overrideSwitch[value="auto"] ~ input.max {
+.stat-shortcut .overrideSwitch[value="auto"] ~ input.max,
+.stat-shortcut .overrideSwitch[value="auto"] ~ input.resourceSwitch {
   pointer-events: none;
   user-select: none;
   border-style: none;
