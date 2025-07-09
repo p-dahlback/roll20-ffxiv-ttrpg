@@ -2502,7 +2502,10 @@
 
             console.log(`Rolling stat &{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`)
             startRoll(`&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`, results => {
-                finishRoll(results.rollId)
+                const rollResult = results.results.roll.result
+                finishRoll(results.rollId, {
+                    roll: Math.max(rollResult, 0)
+                })
             })
         })
     }
@@ -2677,6 +2680,7 @@
                     }
                 }
                 const hitValue = hitRoll.result
+                var computedValue = hitValue
                 if (hitRoll.dice) {
                     var die
                     if (hitRoll.expression.includes("kl")) {
@@ -2687,9 +2691,15 @@
                     }
                     attributes[`repeating_${section}_${rowId}_currentRoll`] = die
                 }
+                if (hitValue && parseInt(computedValue) < 0) {
+                    computedValue = 0
+                }
+
                 setAttrs(attributes)
 
-                finishRoll(results.rollId)
+                finishRoll(results.rollId, {
+                    hit: computedValue
+                })
             })
         })
     }
@@ -2937,7 +2947,7 @@
         </div>
         <div class="sheet-body">
             <span class="sheet-subtitle">Result:</span>
-            <span class="sheet-roll">{{roll}}</span>
+            <span class="sheet-roll">{{computed::roll}}</span>
         </div>
     </div>
 </rolltemplate>
@@ -3031,7 +3041,7 @@
                 <span class="sheet-mini-title">{{directHitTitle}}</span>
                 <span class="sheet-mini-input">{{directHit}}</span>
             </div>
-            <h4>{{hitTitle}}{{hit}}</h4>
+            <h4>{{hitTitle}}{{computed::hit}}</h4>
             <h4>{{cr}}</h4>
             <div>{{button}}</div>
         </div>
