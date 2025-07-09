@@ -257,12 +257,13 @@
             <div class="misc-stat fancy lowkey">
                 <div class="flex horizontal tight floatLeft">
                     <span class="header bold medium">Turn Order</span>
-                    <input class="stat" name="attr_turnOrder" type="number" min="0" value="0">
+                    <input class="stat medium" name="attr_turnOrder" type="number" min="0" value="1">
+                    <button class="turn-order" type="roll" value="&{template:roll} {{title=Turn Order}} {{roll=[[@{turnOrder} &{tracker}]]}}"></button>
                 </div>
 
                 <div class="fortune fancy lowkey flex horizontal tight floatRight">
                     <span class="header bold medium">Fortune</span>
-                    <input class="stat" name="attr_fortune" type="number" min="0" value="3">
+                    <input class="stat medium" name="attr_fortune" type="number" min="0" value="3">
                 </div>
             </div>
 

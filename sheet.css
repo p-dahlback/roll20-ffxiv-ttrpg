@@ -64,19 +64,28 @@ input[type=number].sheet-txtfield {
   -moz-appearance: textfield;
 }
 
-button[type=action] {
+button[type=action],
+.ui-dialog .charsheet button[type=roll].turn-order {
+  background: none;
+  border-radius: 0;
   background-color: #f8ede4;
   border-color: #766c4b;
   border-width: 2px;
   border-style: outset;
+  font-size: 1.2rem;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: rgb(51, 51, 51);
+  margin: 0;
+  padding: 2px 6px 2px 6px;
 }
 
-button[type=action]:hover {
+button[type=action]:hover,
+.ui-dialog .charsheet button[type=roll].turn-order:hover {
   background-color: white;
 }
 
-button[type=action]:active {
+button[type=action]:active,
+.ui-dialog .charsheet button[type=roll].turn-order:active {
   background-color: white;
   color: lightgray;
 }
@@ -132,7 +141,7 @@ input {
   color: gray;
 }
 
-.sheet-button3 {
+.ui-dialog .charsheet button.sheet-button3 {
   font-family: Pictos;
   width: 40px;
 }
@@ -1089,7 +1098,7 @@ textarea {
   margin: 4px;
 }
 
-.ability-action {
+.ui-dialog .charsheet button.ability-action {
   color: black;
   float: right;
   font-size: 2rem;
@@ -1098,7 +1107,7 @@ textarea {
   margin: 2px;
 }
 
-.ability-action-trigger {
+.ui-dialog .charsheet button.ability-action-trigger {
   color: black;
   float: left;
   font-size: 2rem;
