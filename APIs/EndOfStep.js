@@ -1,3 +1,14 @@
+/*
+    EndOfStep.js
+
+    An API that performs MP recovery for respective Adventurer and Enemy teams when encountering the following custom turn orders:
+    * End of Adventurer Step
+    * End of Enemy Step
+  
+    MP update is performed on token bar3. Tokens need to be attached to a sheet to check the attributes:
+    * mpRecovery - an integer value of how much MP will be recovered at the end of a given step
+    * team - string value controlling which steps will trigger recovery. Valid values are "adventurer" or "enemy".
+*/
 on('ready', () => {
 
     const resolver = (token, character) => {
@@ -24,7 +35,7 @@ on('ready', () => {
 
     const teamForStep = (step) => {
         switch (step.custom) {
-            case "End of Adventurer's Step":
+            case "End of Adventurer Step":
                 return "adventurer"
             case "End of Enemy Step":
                 return "enemy"
