@@ -1795,46 +1795,57 @@
 </div>
 
 <div class="char-settings" spellcheck="false">
+    <div class="grid">
+        <div class="entry fancy lowkey">
+            <h3>Character type</h3>
+            <p class="medium" style="margin-top: 8px;">Determines if calculations use the selected token or the character sheet.</p>
+            <select name="attr_sheet_type">
+                <option value="generic">Generic</option>
+                <option value="unique">Unique</option>
+            </select>
+        </div>
+
+        <div class="entry fancy lowkey">
+            <h3>Job icon selector</h3>
+            <p class="medium" style="margin-top: 8px;">Assigns the job icon in the header</p>
+            <select name="attr_jobIcon">
+                <option value="">--Select--</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png">Dark Knight</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/GNB.png">Gunbreaker</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png">Paladin</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png">Warrior</option>
+                <hr />
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png">Astrologian</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SGE.png">Sage</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png">Scholar</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png">White Mage</option>
+                <hr />
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png">Dragoon</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png">Monk</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png">Ninja</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RPR.png">Reaper</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SAM.png">Samurai</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/VIP.png">Viper</option>
+                <hr />
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png">Bard</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DNC.png">Dancer</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png">Machinist</option>
+                <hr />
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png">Black Mage</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PCT.png">Pictomancer</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RDM.png">Red Mage</option>
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png">Summoner</option>
+                <hr />
+                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLU.png">Blue Mage</option>
+            </select>
+        </div>
+    </div>
+
     <div class="override fancy lowkey">
         <h3>Manual Override</h3>
         <p class="medium" style="margin-top: 8px;">Enables manual input for things the player would normally not mess with, things used mostly during initial sheet creation.</p>
         <p class="medium">Mess with at your own risk!</p>
         <input type="text large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" />
-    </div>
-
-    <div class="job-assignment fancy lowkey">
-        <h3>Job icon selector</h3>
-        <p class="medium" style="margin-top: 8px;">Assigns the job icon in the header</p>
-        <select name="attr_jobIcon">
-            <option value="">--Select--</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png">Dark Knight</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/GNB.png">Gunbreaker</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png">Paladin</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png">Warrior</option>
-            <hr />
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png">Astrologian</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SGE.png">Sage</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png">Scholar</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png">White Mage</option>
-            <hr />
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png">Dragoon</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png">Monk</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png">Ninja</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RPR.png">Reaper</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SAM.png">Samurai</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/VIP.png">Viper</option>
-            <hr />
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png">Bard</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DNC.png">Dancer</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png">Machinist</option>
-            <hr />
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png">Black Mage</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PCT.png">Pictomancer</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RDM.png">Red Mage</option>
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png">Summoner</option>
-            <hr />
-            <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLU.png">Blue Mage</option>
-        </select>
     </div>
 </div>
 
@@ -1858,12 +1869,13 @@
 
     // Initial setup
     on("sheet:opened", () => {
-        getAttrs(["d20"], values => {
-            if (values.d20) {
-                return
-            }
+        getAttrs([
+            "d20",
+            "advantage"
+        ], values => {
             setAttrs({
-                d20: "1d20"
+                d20: values.d20 ?? "1d20",
+                advantage: values.advantage ?? 0
             })
         })
     })
@@ -2282,7 +2294,11 @@
         return ["", ""]
     }
 
-    function spendResource(cost, resourceType, value, value_max, attributeName) {
+    function spendResource(isGeneric, cost, resourceType, value, value_max, attributeName) {
+        if (isGeneric) {
+            return [true, `Spend ${cost} ${resourceType}`]
+        }
+
         if (cost > 0 && resourceType && value >= 0 && value_max >= 0) {
             if (value < cost) {
                 return [false, `${cost} ${resourceType} - Insufficient (${value}/${value_max})`]
@@ -2300,10 +2316,10 @@
         }
     }
 
-    function restoreResource(restoration, resourceType) {
+    function restoreResource(isGeneric, restoration, resourceType) {
         const values = restoration.split(",")
         var attributes = []
-        var summary = "Restored "
+        var summary = isGeneric ? "Restore " : "Restored "
         var didRestore = false
         for (let i = 0; i < values.length; i++) {
             const parts = values[i].trim().split(" ")
@@ -2340,19 +2356,21 @@
             return ""
         }
 
-        const attributeNames = attributes.flatMap((element) => [element.name, element.name + "_max"])
-        getAttrs(attributeNames, values => {
-            var newValues = {}
-            for (let attribute of attributes) {
-                const value = values[attribute.name]
-                const max = values[attribute.name + "_max"]
-                const sum = +value + +attribute.value
-                const newValue = Math.min(sum, max)
-                newValues[attribute.name] = newValue
-                console.log("Restored " + attribute.name + " to " + newValue)
-            }
-            setAttrs(newValues)
-        })
+        if (!isGeneric) {
+            const attributeNames = attributes.flatMap((element) => [element.name, element.name + "_max"])
+            getAttrs(attributeNames, values => {
+                var newValues = {}
+                for (let attribute of attributes) {
+                    const value = values[attribute.name]
+                    const max = values[attribute.name + "_max"]
+                    const sum = +value + +attribute.value
+                    const newValue = Math.min(sum, max)
+                    newValues[attribute.name] = newValue
+                    console.log("Restored " + attribute.name + " to " + newValue)
+                }
+                setAttrs(newValues)
+            })
+        }
 
         return summary.substring(0, summary.length - 2)
     }
@@ -2363,12 +2381,14 @@
         const uses = values[`repeating_${section}_${rowId}_uses`]
         const usesMax = values[`repeating_${section}_${rowId}_uses_max`]
         const restoration = values[`repeating_${section}_${rowId}_restore`]
+        const isGeneric = values.sheet_type != "unique"
         
         var resourceCost = ""
         var resourceResult = false
         if (cost > 0) {
             if (resourceType.toLowerCase() == "mp") {
                 let result = spendResource(
+                    isGeneric,
                     cost, 
                     resourceType, 
                     values.magicPoints, 
@@ -2379,6 +2399,7 @@
                 resourceCost = result[1]
             } else {
                 let result = spendResource(
+                    isGeneric,
                     cost,
                     resourceType,
                     values.resourceValue,
@@ -2393,6 +2414,7 @@
             // Spend uses if there are any
             if (usesMax > 0) {
                 let result = spendResource(
+                    isGeneric,
                     1,
                     "uses",
                     uses,
@@ -2411,7 +2433,7 @@
 
         // Restore resources
         if (restoration && (resourceResult || cost == 0)) {
-            const restorationSummary = restoreResource(restoration, resourceType)
+            const restorationSummary = restoreResource(isGeneric, restoration, resourceType)
             if (resourceCost) {
                 resourceCost += `\n${restorationSummary}`
             } else {
@@ -2478,6 +2500,7 @@
             var roll = `${values.d20} + @{${stat}}`
             roll = addEffectsToRoll(effects, roll, "stat")
 
+            console.log(`Rolling stat &{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`)
             startRoll(`&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`, results => {
                 finishRoll(results.rollId)
             })
@@ -2690,7 +2713,7 @@
             `repeating_${section}_${rowId}_resource`,
 
             "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
-            "character_name"
+            "character_name", "sheet_type"
         ], (values, effects) => {
             const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
             const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]

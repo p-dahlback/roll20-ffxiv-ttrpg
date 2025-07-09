@@ -1271,21 +1271,21 @@ div[data-groupname=repeating_technique].repcontrol {
 
 /* OVERRIDE */
 
-.char-settings {
-  flex-direction: row;
-  columns: 2;
-  gap: 32px;
+.char-settings > .grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
 .override {
-  width: 400px;
+  margin-top: 32px;
   padding: 4px 8px 8px 8px;
   background-color: lightpink;
+  column-span: 2;
 }
 
-.job-assignment {
+.char-settings .entry {
   padding: 4px 8px 8px 8px;
-  flex-grow: 0;
 }
 
 .attribution {
