@@ -18,7 +18,7 @@ on('ready', () => {
 
         let updatedMp = Math.min(currentMp + parseInt(mpRecovery), maxMp)
 
-        token.set("bar3_value", updatedMp);
+        token.set("bar3_value", updatedMp)
         return `Recovered ${mpRecovery} MP (${currentMp} -> ${updatedMp}/${maxMp})`
     }
 
@@ -29,7 +29,7 @@ on('ready', () => {
             case "End of Enemy Step":
                 return "enemy"
             default:
-                    return ""
+                return ""
         }
     }
 
@@ -71,5 +71,5 @@ on('ready', () => {
     on(
         'change:campaign:turnorder',
         (obj, prev) => setTimeout(() => checkTurnOrder(Campaign(), prev), 1000)
-    );
-});
+    )
+})
