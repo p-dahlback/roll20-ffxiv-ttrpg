@@ -1272,6 +1272,11 @@ div[data-groupname=repeating_technique].repcontrol {
   flex-grow: 0;
 }
 
+.attribution {
+  margin-top: 16px;
+  color: #766c4b;
+}
+
 /* ADAPTIVE CONTENT */
 
 .ui-dialog .tab-content .charsheet .adaptive {
