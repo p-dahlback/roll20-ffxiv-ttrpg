@@ -25,3 +25,46 @@ The project is a work in progress, but its capabilities are as follows:
 Automatic management of some job specific features (like Black Mage's Umbral/Astral modes and their effect on MP cost and damage rolls) are not yet developed.
 
 Further features like a Charactermancer for automatic setup of abilities and stats depending on job and level is in development.
+
+## APIs
+
+Included is an API EndOfStep that performs MP recovery on tokens in Turn Order at the appropriate step:
+
+* "End of Adventurer Step": All tokens with a sheet marked "adventurer" recover MP
+* "End of Enemy Step": All tokens with a sheet marked "enemy" recover MP
+
+Custom Turn Order entries need to be created that match the above names (without quotation marks).
+
+## Helpful Macros
+
+### Add marker
+
+Adds a marker to the end of the turn order, that will delete itself from the order once it arrives.
+
+Using `AddCustomTurn`:
+
+```bash
+!act -1 1 --index 99 --?{Marker name|Marker} --delete-on-zero
+```
+
+With `SpawnDefaultToken`, to simultaneously spawn a token for the marker:
+
+```bash
+!act -1 1 --index 99 --?{Marker name|Marker} --delete-on-zero
+!Spawn {{
+   --name| <character sheet for marker token>
+   --qty| 1
+   --offset| 0,1
+}}
+```
+
+### Add EndOfStep to turn order
+
+Adds the custom turn orders used by the EndOfStep API, with initiative values that should sort them correctly given 4 adventurers.
+
+Using `AddCustomTurn`:
+
+```bash
+!act +0 5 --index 4 --End of Adventurer Step
+!act +0 99 --index 99 --End of Enemy Step
+```
