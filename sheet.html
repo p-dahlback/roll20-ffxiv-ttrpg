@@ -2590,21 +2590,23 @@
             var hitTitle = ""
             var hitDefinition = ""
             var button = ""
-            if (hitType != "None" && hitDie) {
-                hitTitle = `${hitType}: `
-                if (statValue > 0) {
-                    hitDie = `${hitDie} + @{${statType}}`
-                }
-                hitDie = addEffectsToRoll(effects, hitDie, section)
-                hitDefinition = `[[${hitDie}]]`
-
+            if (hitDie || baseValue) {
                 var bonusButton = ""
-                if (effects.some((effect) => effect.type == "roll(x)")) {
-                    bonusButton = ` [${damageType} + Roll Up(X)](~${values.character_name}|repeating_${section}_${rowId}_rolldamagewithbonus)`
+                if (hitType != "None" && hitDie) {
+                    hitTitle = `${hitType}: `
+                    if (statValue > 0) {
+                        hitDie = `${hitDie} + @{${statType}}`
+                    }
+                    hitDie = addEffectsToRoll(effects, hitDie, section)
+                    hitDefinition = `[[${hitDie}]]`
+
+                    // Option to improve the hit roll
+                    if (effects.some((effect) => effect.type == "roll(x)")) {
+                        bonusButton = ` [${damageType} + Roll Up(X)](~${values.character_name}|repeating_${section}_${rowId}_rolldamagewithbonus)`
+                    }
                 }
                 button = `[${damageType}](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)${bonusButton}`
-                console.log(button)
-            } else if (cost > 0 || usesMax > 0 || restoration || combo || baseValue) {
+            } else if (cost > 0 || usesMax > 0 || restoration || combo) {
                 button = `[Effect](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`
             }
 
@@ -2865,7 +2867,7 @@
         shareAbility(eventInfo)
     })
 
-    on("clicked:repeating_technique:share", eventInfo => {
+    on("clicked:repeating_technique:share", eventInfo => { 
         shareAbility(eventInfo)
     })
 
