@@ -1697,7 +1697,13 @@
 <!-- Items page -->
 
 <div class="items" spellcheck="false">
-    <div class="items grid">
+
+    <div class="ability-top">
+        <button type="action" class="floatRight" name="act_expandAllItems">Expand All</button>
+        <button type="action" class="floatRight" name="act_collapseAllItems">Collapse All</button>
+    </div>
+
+    <div class="grid">
         <div class="left fancy lowkey section list">
 
             <!-- Title List -->
@@ -2037,6 +2043,7 @@
 <script type="text/worker">
     // Expand/collapse
     const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"]
+    const itemSections = ["titles", "minions", "items"]
 
     function toggleExpandedState(attributeName) {
         getAttrs([attributeName], values => {
@@ -2081,6 +2088,24 @@
         toggleExpandedStateInSection(eventInfo)
     })
 
+    on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+        const actionComponents = eventInfo.htmlAttributes.name.split("_")
+        const section = actionComponents[1]
+        toggleExpandedState(`${section}HeaderExpandItem`)
+    })
+
+    on("clicked:expandAllItems", eventInfo => {
+        for (let section of itemSections) {
+            setExpandedStateForSection(true, section)
+        }
+    })
+
+    on("clicked:collapseAllItems", eventInfo => {
+        for (let section of itemSections) {
+            setExpandedStateForSection(false, section)
+        }
+    })
+
     on("clicked:expandAllAbilities", eventInfo => {
         for (let section of abilitySections) {
             setExpandedStateForSection(true, section)
@@ -2105,12 +2130,6 @@
             instantHeaderExpandItem: "off",
             techniqueHeaderExpandItem: "off",
         })
-    })
-
-    on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-        const actionComponents = eventInfo.htmlAttributes.name.split("_")
-        const section = actionComponents[1]
-        toggleExpandedState(`${section}HeaderExpandItem`)
     })
 
 </script>
