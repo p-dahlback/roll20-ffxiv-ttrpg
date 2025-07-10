@@ -810,6 +810,8 @@ textarea {
   pointer-events: none;
   user-select: none;
   border-style: none;
+
+  -moz-appearance: textfield;
 }
 
 .ui-dialog .charsheet .level .header {
@@ -1182,6 +1184,8 @@ button.header-action:active {
   user-select: none;
   pointer-events: none;
   border: none;
+
+  -moz-appearance: textfield;
 }
 
 .titleFlag[value="e"] ~ textarea,
