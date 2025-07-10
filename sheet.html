@@ -2986,15 +2986,44 @@
         }
     }
 
+    const resetAttributeList = [
+        "hitPoints_max",
+        "magicPoints_max",
+        "resourceValue_max", "resourceReset"
+    ]
+    
+    function resetAttributes(values) {
+        log("Resetting HP/MP")
+        setAttrs({
+            hitPoints: values.hitPoints_max,
+            magicPoints: values.magicPoints_max,
+            // Some jobs start encounters/phases with full job resource
+            resourceValue: values.resourceReset == "full" ? values.resourceValue_max : 0,
+            // No jobs start with full secondary reset
+            resource2Value: 0,
+            barrierPoints: 0
+        })
+    }
+
+    const resetPhaseAttributeList = [
+        "resourceValue_max", "resourceReset"
+    ]
+
+    function resetPhaseAttributes(values) {
+        if (values.resourceReset != "full") {
+            return
+        }
+        log("Resetting job resource")
+        setAttrs({
+            resourceValue: values.resourceValue_max
+        })
+    }
+
     // Rest
 
     on("clicked:rest", eventInfo => {
         log("Initiating rest")
-        getAttrsAndEffects([
-            "hitPoints", "hitPoints_max",
-            "magicPoints", "magicPoints_max",
-            "resourceValue", "resourceValue_max"
-        ], (values, effects) => {
+        getAttrsAndEffects(resetAttributeList, (values, effects) => {
             log("Removing effects")
             for (let effect of effects) {
                 if (effect.expiry == "end" || effect.expiry == "permanent") {
@@ -3002,14 +3031,7 @@
                 }
                 removeRepeatingRow(effect.fullId)
             }
-
-            log("Resetting HP/MP")
-            setAttrs({
-                hitPoints: values.hitPoints_max,
-                magicPoints: values.magicPoints_max,
-                resourceValue: values.resourceValue_max,
-                barrierPoints: 0
-            })
+            resetAttributes(values)
         })
 
         resetAllAbilityUses()
@@ -3017,7 +3039,7 @@
 
     on("clicked:phase", eventInfo => {
         log("Initiating phase reset")
-        getEffects(effects => {
+        getAttrsAndEffects(resetPhaseAttributeList, (values, effects) => {
             console.log("Removing effects")
             for (let effect of effects) {
                 if (effect.expiry != "phase") {
@@ -3025,6 +3047,8 @@
                 }
                 removeRepeatingRow(effect.fullId)
             }
+
+            resetPhaseAttributes(values)
         })
 
         resetAllAbilityUses()
@@ -3032,11 +3056,7 @@
 
     on("clicked:end", eventInfo => {
         log("Initiating end of adventure reset")
-        getAttrsAndEffects([
-            "hitPoints", "hitPoints_max",
-            "magicPoints", "magicPoints_max",
-            "resourceValue", "resourceValue_max"
-        ], (values, effects) => {
+        getAttrsAndEffects(resetAttributeList, (values, effects) => {
             console.log("Removing effects")
             for (let effect of effects) {
                 if (effect.expiry == "permanent") {
@@ -3044,14 +3064,7 @@
                 }
                 removeRepeatingRow(effect.fullId)
             }
-
-            console.log("Resetting HP/MP")
-            setAttrs({
-                hitPoints: values.hitPoints_max,
-                magicPoints: values.magicPoints_max,
-                resourceValue: values.resourceValue_max,
-                barrierPoints: 0
-            })
+            resetAttributes(values)
         })
 
         resetAllAbilityUses()
