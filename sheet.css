@@ -387,11 +387,15 @@ h3.small.colored-in, h4.small.colored-in {
 .ui-dialog .nav-tabs {
   border-bottom: ridge;
   border-color: #c99c78;
-  border-width: 2px;
+  border-width: 3px;
+}
+
+.ui-dialog .nav-tabs > li > a {
+  margin-bottom: -2px;
 }
 
 .ui-dialog .nav-tabs > li.active > a {
-  background-color: transparent;
+  background-color: #f9f8f3;
   border-style: ridge ridge none ridge;
   border-color: #c99c78;
   border-width: 4px;
