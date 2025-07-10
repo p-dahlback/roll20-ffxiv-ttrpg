@@ -89,8 +89,8 @@
 <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
 
 <!-- Profile page -->
-<div class="character fancy lowkey" spellcheck="false">
-    <div class="grid fill">
+<div class="character" spellcheck="false">
+    <div class="grid fancy lowkey fill">
 
         <!-- Profile page, Level and Profile -->
 
@@ -307,12 +307,25 @@
                             <option value="phase">End of phase</option>
                             <option value="encounter">End of encounter</option>
                             <option value="rest">After rest</option>
+                            <option value="end">After adventure</option>
+                            <option value="permanent">Permanent</option>
                             <hr />
                             <option value="use">On use</option>
                             <option value="damage">On damage</option>
                         </select>
                     </div>
                 </fieldset>
+            </div>
+
+            <!-- Rest/End of phase -->
+
+            <div class="rest-container colored-in">
+                <span class="header medium bold">Resets</span>
+                <div class="button-container">
+                    <button type="action" class="end-button" name="act_end">End of adventure</button>
+                    <button type="action" class="rest-button" name="act_rest">Long rest</button>
+                    <button type="action" class="phase-button" name="act_phase">End of phase</button>
+                </div>
             </div>
         </div>
     </div>
@@ -2185,6 +2198,8 @@
 </script>
 
 <script type="text/worker">
+    const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"]
+
     // Abilities
     function getAttrsAndEffects(bonusAttributes, completion) {
         getSectionIDs("repeating_effects", ids => {
@@ -2201,7 +2216,10 @@
                     let id = components[2]
                     let attributeName = components[3]
                     if (!sortedValues[id]) {
-                        sortedValues[id] = {}
+                        sortedValues[id] = {
+                            id: id,
+                            fullId: `repeating_effects_${id}`
+                        }
                     }
                     sortedValues[id][attributeName] = values[attribute]
                 }
@@ -2893,6 +2911,99 @@
             })
         })
     }
+
+    function resetAbilityUses(section) {
+        getSectionIDs(`repeating_${section}`, ids => {
+            let attributes = ids.flatMap(id => [`repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`])
+            getAttrs(attributes, values => {
+                var updatedAttributes = {}
+                for (let id of ids) {
+                    if (parseInt(values[`repeating_${section}_${id}_uses_max`]) > 0) {
+                        updatedAttributes[`repeating_${section}_${id}_uses`] = values[`repeating_${section}_${id}_uses_max`]
+                    }
+                }
+                setAttrs(updatedAttributes)
+            })
+        })
+    }
+
+    function resetAllAbilityUses() {
+        log("Resetting ability uses")
+        for (let section of abilitySections) {
+            resetAbilityUses(section)
+        }
+    }
+
+    // Rest
+
+    on("clicked:rest", eventInfo => {
+        log("Initiating rest")
+        getAttrsAndEffects([
+            "hitPoints", "hitPoints_max",
+            "magicPoints", "magicPoints_max",
+            "resourceValue", "resourceValue_max"
+        ], (values, effects) => {
+            log("Removing effects")
+            for (let effect of effects) {
+                if (effect.expiry == "end" || effect.expiry == "permanent") {
+                    continue
+                }
+                removeRepeatingRow(effect.fullId)
+            }
+
+            log("Resetting HP/MP")
+            setAttrs({
+                hitPoints: values.hitPoints_max,
+                magicPoints: values.magicPoints_max,
+                resourceValue: values.resourceValue_max,
+                barrierPoints: 0
+            })
+        })
+
+        resetAllAbilityUses()
+    })
+
+    on("clicked:phase", eventInfo => {
+        log("Initiating phase reset")
+        getEffects(effects => {
+            console.log("Removing effects")
+            for (let effect of effects) {
+                if (effect.expiry != "phase") {
+                    continue
+                }
+                removeRepeatingRow(effect.fullId)
+            }
+        })
+
+        resetAllAbilityUses()
+    })
+
+    on("clicked:end", eventInfo => {
+        log("Initiating end of adventure reset")
+        getAttrsAndEffects([
+            "hitPoints", "hitPoints_max",
+            "magicPoints", "magicPoints_max",
+            "resourceValue", "resourceValue_max"
+        ], (values, effects) => {
+            console.log("Removing effects")
+            for (let effect of effects) {
+                if (effect.expiry == "permanent") {
+                    continue
+                }
+                removeRepeatingRow(effect.fullId)
+            }
+
+            console.log("Resetting HP/MP")
+            setAttrs({
+                hitPoints: values.hitPoints_max,
+                magicPoints: values.magicPoints_max,
+                resourceValue: values.resourceValue_max,
+                barrierPoints: 0
+            })
+        })
+
+        resetAllAbilityUses()
+    })
 
     on("clicked:rollStr", eventInfo => {
         rollStat("str", "Strength")

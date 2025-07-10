@@ -320,10 +320,18 @@ h3.large, h4.large {
   border-width: 4px;
 }
 
-h3.small.colored-in, h4.small.colored-in {
-  border-style: none;
+.colored-in {
   color: black;
   background-color: #c4b5a1;
+}
+
+.colored-in .header {
+  color: black;
+}
+
+h3.small.colored-in, h4.small.colored-in {
+  color: black;
+  border-style: none;
   text-align: left;
   padding-left: 8px;
 }
@@ -776,6 +784,7 @@ div[data-groupname=repeating_items].repcontrol {
 .effects {
   margin-top: -32px;
   width: 100%;
+  flex-grow: 1;
 }
 
 .repcontainer[data-groupname=repeating_effects] {
@@ -785,6 +794,41 @@ div[data-groupname=repeating_items].repcontrol {
 div[data-groupname=repeating_effects].repcontrol {
   padding-left: 8px;
   padding-right: 8px;
+}
+
+.rest-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 5px;
+  margin-top: 24px;
+  padding: 4px 0 8px 0;
+  border-style: ridge none none none;
+  border-color: #c99c78;
+  border-width: 4px;
+}
+
+.rest-container .button-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.rest-container .header {
+  padding-left: 8px;
+}
+
+.rest-container .end-button {
+  margin-left: 8px;
+}
+
+.rest-container .rest-button {
+  margin-left: auto;
+}
+
+.rest-container .phase-button {
+  margin-right: 8px;
 }
 
 /* INPUT */
