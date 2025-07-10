@@ -825,14 +825,15 @@ div[data-groupname=repeating_effects].repcontrol {
 
 .rest-container .end-button {
   margin-left: 8px;
-}
-
-.rest-container .rest-button {
   margin-left: auto;
 }
 
-.rest-container .phase-button {
+.rest-container .rest-button {
   margin-right: 8px;
+}
+
+.rest-container .phase-button {
+  margin-left: 8px;
 }
 
 /* INPUT */
