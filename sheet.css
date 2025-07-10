@@ -733,19 +733,40 @@ body > .ui-dialog {
   height: 256px;
 }
 
+.resource-point.single-resource,
 .ui-dialog .charsheet .resource {
   display: none;
 }
 
-.ui-dialog .charsheet input.resourceSwitch {
+.ui-dialog .charsheet .resource-point input.text {
   color: #766c4b;
-  width: 5em;
+  width: 115px;
 }
 
 .ui-dialog .charsheet .resourceSwitch:not(:placeholder-shown) ~ .resource,
 .ui-dialog .charsheet .resourceSwitch:not(:placeholder-shown) ~ .resource,
 .ui-dialog .charsheet .resourceSwitch:not(:placeholder-shown) ~ .resource {
   display: inline-block;
+}
+
+input.doubleResourceSwitch[value="none"] ~ .resource-point.single-resource {
+  display: grid;
+}
+input.doubleResourceSwitch[value="none"] ~ .resource-point.double-resource {
+  display: none;
+}
+
+.resource-point.double-resource {
+  grid-template-rows: repeat(3, 24px);
+  gap: 2px;
+}
+
+.resource-point.double-resource .large {
+  font-size: 1.4rem;
+}
+
+.ui-dialog .charsheet .resource-point.double-resource input[type=number].stat {
+  font-size: 2.2rem;
 }
 
 .traits.fancy.lowkey {
@@ -855,7 +876,7 @@ textarea {
 .basic-info .overrideSwitch[value="auto"] ~ input,
 .stat .overrideSwitch[value="auto"] ~ input,
 .stat-shortcut .overrideSwitch[value="auto"] ~ input.max,
-.stat-shortcut .overrideSwitch[value="auto"] ~ input.resourceSwitch {
+.stat-shortcut .overrideSwitch[value="auto"] ~ input.overridable {
   pointer-events: none;
   user-select: none;
   border-style: none;

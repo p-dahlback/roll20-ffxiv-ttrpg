@@ -13,26 +13,31 @@
     * resource - The name of the resource
     * resourceValue - The current and max values of the resource
     * resourceRecovery - an integer value of how much resource will be recovered at the end of the given step
+    
+    For jobs with additional resources like Monk, the additional resource can also be updated:
+    * resource2 - The name of the secondary resource
+    * resource2Value - The current and max values of the secondary resource
+    * resource2Recovery - an integer value of how much secondary resource will be recovered at the end of the given step
 */
 on('ready', () => {
 
-    const resourceResolver = (character) => {
+    const resourceResolver = (character, resource) => {
         let sheetType = getAttrByName(character.id, "sheet_type")
         if (sheetType != "unique") {
             return
         }
 
-        let resourceName = getAttrByName(character.id, "resource")
+        let resourceName = getAttrByName(character.id, resource)
         if (!resourceName) {
             return
         }
 
-        var resourceObject = findObjs({ type: "attribute", characterid: character.id, name: "resourceValue" })[0]
+        var resourceObject = findObjs({ type: "attribute", characterid: character.id, name: `${resource}Value` })[0]
         if (!resourceObject) {
             log("EndOfStep: No resource")
             return
         }
-        let recovery = getAttrByName(character.id, "resourceRecovery") ?? 0
+        let recovery = getAttrByName(character.id, `${resource}Recovery`) ?? 0
         if (recovery <= 0) {
             return
         }
@@ -71,12 +76,13 @@ on('ready', () => {
     }
 
     const resolver = (token, character) => {
-        let mpSummary = mpResolver(token, character)
-        let resourceSummary = resourceResolver(character)
-        if (mpSummary && resourceSummary) {
-            return `${mpSummary}\n${resourceSummary}`
-        }
-        return mpSummary ?? resourceSummary
+        let summaries = [
+            mpResolver(token, character),
+            resourceResolver(character, "resource"),
+            resourceResolver(character, "resource2")
+        ].filter(element => element)
+
+        return summaries.join("\n")
     }
 
     const teamForStep = (step) => {
