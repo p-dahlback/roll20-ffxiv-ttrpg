@@ -28,7 +28,7 @@ Further features like a Charactermancer for automatic setup of abilities and sta
 
 ## APIs
 
-Included is an API EndOfStep that performs MP recovery on tokens in Turn Order at the appropriate step:
+Included is an API EndOfStep that performs MP and job resource recovery on tokens in Turn Order at the appropriate step:
 
 * "End of Adventurer Step": All tokens with a sheet marked "adventurer" recover MP
 * "End of Enemy Step": All tokens with a sheet marked "enemy" recover MP

@@ -1888,12 +1888,14 @@
         getAttrs([
             "d20",
             "advantage",
-            "mpRecovery"
+            "mpRecovery",
+            "resourceRecovery"
         ], values => {
             setAttrs({
                 d20: values.d20 ?? "1d20",
                 advantage: values.advantage ?? 0,
-                mpRecovery: values.mpRecovery ?? 2
+                mpRecovery: values.mpRecovery ?? 2,
+                resourceRecovery: values.resourceRecovery ?? 0
             })
         })
     })
