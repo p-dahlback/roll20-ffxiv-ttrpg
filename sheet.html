@@ -2309,8 +2309,14 @@
         var hasParalysis = false
         var criticalUp = 0
         var attributeUp = {}
+        var blindPenalty = 0
+        var hasHawksEye = false
         for (let effect of effects) {
-            switch (effect.type) {
+            var effectName = effect.type
+            if (effect.type == "special") {
+                effectName = effect.specialType.trim().toLowerCase()
+            }
+            switch (effectName) {
                 case "attribute(x)":
                     const attributeDefinition = effect.value.trim()
                     var match = attributeDefinition.match(/^\-?\d+/)
@@ -2326,7 +2332,7 @@
                     attributeUp[attribute] = value
                     break
                 case "blind":
-                    penalty += 2
+                    blindPenalty = 2
                     break
                 case "brink":
                     penalty += 5
@@ -2335,6 +2341,9 @@
                     if (effect.value) {
                         criticalUp += parseInt(effect.value)
                     }
+                    break
+                case "hawk's eye":
+                    hasHawksEye = true
                     break
                 case "paralyzed":
                     if (rollType == "primary") {
@@ -2368,6 +2377,10 @@
         if (criticalUp > 0) {
             updatedMacro = updatedMacro.replace(/cs\>?20/, `cs>${20 - criticalUp}`)
         }
+        if (!hasHawksEye) {
+            // Hawk's Eye nullifies penalty from Blind
+            penalty += blindPenalty
+        }
         if (penalty > 0) {
             updatedMacro = `${updatedMacro} - ${penalty}[penalty]`
         }
@@ -2386,7 +2399,29 @@
         return updatedMacro
     }
 
-    function addEffectsToDamageRolls(effects, damageRolls) {
+    function addEffectsToPreDamageRolls(effects, level, type, damageRoll, directHitRoll) {
+        let hasAstralFire = effects.some(effect => effect.specialType.trim().toLowerCase() == "astral fire")
+        let isFireType = type.toLowerCase().includes("fire-aspect")
+        if (hasAstralFire && isFireType) {
+            let addedDamage = level >= 50 ? "2d6" : "1d6"
+            let updatedDamage
+            if (damageRoll) {
+                updatedDamage = `${damageRoll} + ${addedDamage}[Astral Fire]`
+            } else {
+                updatedDamage = `${addedDamage}[Astral Fire]`
+            }
+            return {
+                damage: updatedDamage,
+                directHit: directHitRoll
+            }
+        }
+        return {
+            damage: damageRoll,
+            directHit: directHitRoll
+        }
+    }
+
+    function addEffectsToPostDamageRolls(effects, damageRolls) {
         var result = {}
         let hasSurgingTempest = effects.some(effect => effect.specialType.toLowerCase() == "surging tempest")
         if (!hasSurgingTempest) {
@@ -3114,6 +3149,7 @@
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
         getAttrsAndEffects([
+            `repeating_${section}_${rowId}_type`,
             `repeating_${section}_${rowId}_damageType`,
             `repeating_${section}_${rowId}_baseValue`,
             `repeating_${section}_${rowId}_dhValue`,
@@ -3129,11 +3165,13 @@
             `repeating_${section}_${rowId}_effectSelf`,
             `repeating_${section}_${rowId}_effectTarget`,
 
+            "level",
             "magicPoints", "magicPoints_max",
             "resource", "resourceValue", "resourceValue_max",
             "resource2", "resource2Value", "resource2Value_max",
             "character_name", "sheet_type"
         ], (values, effects) => {
+            const type = values[`repeating_${section}_${rowId}_type`]
             const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
             const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]
             const damageType = values[`repeating_${section}_${rowId}_damageType`]
@@ -3173,23 +3211,24 @@
             if (directHitValue.includes("d")) {
                 directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1)
             }
+            let rolls = addEffectsToPreDamageRolls(effects, values.level, type, baseValueWithMultipliers, directHitValueWithMultipliers)
 
             var damageTitle = ""
             var damageDice = ""
-            if (baseValueWithMultipliers) {
+            if (rolls.damage) {
                 damageTitle = `${damageType}: `
-                damageDice = `[[${baseValueWithMultipliers}]]`
+                damageDice = `[[${rolls.damage}]]`
             }
             var directHitTitle = ""
             var directHitDice = ""
             var totalTitle = ""
-            if (directHitValueWithMultipliers) {
+            if (rolls.directHit) {
                 directHitTitle = "Direct Hit: "
-                directHitDice = `[[${directHitValueWithMultipliers}]]`
+                directHitDice = `[[${rolls.directHit}]]`
             }
 
             var totalTitle = ""
-            if (directHitValueWithMultipliers && baseValueWithMultipliers) {
+            if (rolls.damage && rolls.directHit) {
                 totalTitle = `Full ${damageTitle}`
             }
 
@@ -3226,7 +3265,7 @@
                 const damageRoll = results.results.damage
                 const directHitRoll = results.results.directHit
 
-                let computedResults = addEffectsToDamageRolls(effects, [damageRoll, directHitRoll])
+                let computedResults = addEffectsToPostDamageRolls(effects, [damageRoll, directHitRoll])
                 let total = computedResults.total
 
                 let effectSummary = addEffectsToSelf(selfEffects, effects).summary
