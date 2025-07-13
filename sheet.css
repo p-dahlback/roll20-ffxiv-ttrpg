@@ -554,7 +554,8 @@ body > .ui-dialog {
 }
 
 .list,
-.sheet-rolltemplate-ability .sheet-list {
+.sheet-rolltemplate-ability .sheet-list,
+.sheet-rolltemplate-damage .sheet-list {
   display: flex;
   flex-direction: column;
 }
@@ -1131,6 +1132,20 @@ textarea {
   padding-top: 16px;
 }
 
+.sheet-rolltemplate-damage .sheet-hideinline > .inlinerollresult {
+  background-color: transparent;
+  padding: 0px;
+  border: none;
+  cursor: auto;
+  pointer-events: none;
+}
+
+.sheet-rolltemplate-damage .sheet-hideinline.sheet-mini-input > .inlinerollresult {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1em;
+  font-weight: normal;
+}
+
 .header-title,
 .sheet-rolltemplate-ability .sheet-header-title,
 .sheet-rolltemplate-hit .sheet-header-title {
@@ -1163,7 +1178,7 @@ textarea {
 .ui-dialog .charsheet .mini-input,
 .sheet-rolltemplate-ability .sheet-mini-input,
 .sheet-rolltemplate-hitsheet-mini-input {
-  font-size: 1.5rem;
+  font-size: 1.5em;
 }
 
 .ui-dialog .charsheet .mini-input.bold,

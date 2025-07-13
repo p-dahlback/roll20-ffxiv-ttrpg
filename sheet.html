@@ -2236,6 +2236,7 @@
         getSectionIDs("repeating_effects", ids => {
             const attributes = ids.flatMap((element) => [
                 `repeating_effects_${element}_type`,
+                `repeating_effects_${element}_specialType`,
                 `repeating_effects_${element}_value`,
                 `repeating_effects_${element}_expiry`
             ])
@@ -2354,6 +2355,73 @@
             )
         }
         return updatedMacro
+    }
+
+    function addEffectsToDamageRolls(effects, damageRolls) {
+        var result = {}
+        let hasSurgingTempest = effects.some(effect => effect.specialType.toLowerCase() == "surging tempest")
+        if (!hasSurgingTempest) {
+            var rolls = damageRolls.map(roll => roll.result)
+            let total = rolls.reduce(
+                (accumulator, currentValue) => (currentValue ?? 0) + accumulator,
+                0
+            )
+            result.rolls = rolls
+            result.total = total
+            return result
+        }
+
+        var rolls = []
+        var total = 0
+        var appliedSurgingTempest = false
+        for (let roll of damageRolls) {
+            if (!roll || !roll.result) {
+                rolls.push("")
+                continue
+            }
+
+            let dice = roll.dice
+            if (!dice || dice.length == 0) {
+                total += roll.result
+                rolls.push(roll.result)
+                continue
+            }
+            let diceResult = dice.reduce(
+                (accumulator, currentValue) => {
+                    if (currentValue == 1) {
+                        appliedSurgingTempest = true
+                        return 2 + accumulator
+                    }
+                    return currentValue + accumulator
+                },
+                0
+            )
+            let rawAdditions = roll.expression.split("+").reduce(
+                (accumulator, currentValue) => {
+                    let trimmed = currentValue.trim()
+                    if (trimmed.includes("d")) {
+                        return accumulator
+                    }
+                    let value = parseInt(trimmed)
+                    if (isNaN(value)) {
+                        log(`Unexpected NaN ${trimmed} from expression ${expression}`)
+                        return accumulator
+                    }
+                    return accumulator + parseInt(trimmed)
+                },
+                0
+            )
+
+            let newResult = diceResult + rawAdditions
+            total += newResult
+            rolls.push(newResult)
+        }
+        result.rolls = rolls
+        result.total = total
+        if (appliedSurgingTempest) {
+            result.summary = "Surging Tempest proc!"
+        }
+        return result
     }
 
     function templateValues(title, value) {
@@ -2901,19 +2969,16 @@
             // Roll damage
             console.log(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}}`)
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=}}`)
             startRoll(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
-            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}}`, results => {
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}}`, results => {
                 const damageRoll = results.results.damage
                 const directHitRoll = results.results.directHit
-                var total = ""
-                if (damageRoll) {
-                    total = damageRoll.result
-                }
-                if (damageRoll && directHitRoll) {
-                    total = damageRoll.result + directHitRoll.result
-                }
+
+                let computedResults = addEffectsToDamageRolls(effects, [damageRoll, directHitRoll])
+                let total = computedResults.total
+
                 var attributes = {}
                 attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
                 setAttrs(attributes)
@@ -2921,7 +2986,10 @@
                 finishRoll(
                     results.rollId,
                     {
-                        damage: total
+                        proc: computedResults.summary ?? " ",
+                        damage: computedResults.rolls[0],
+                        directHit: computedResults.rolls[1],
+                        total: computedResults.total
                     }
                 )
             })
@@ -3125,8 +3193,8 @@
             return ""
         }
         if (type == "special") {
-            let imageName = specialType.replace("'", "").replace(" ", "-")
-            return imageName
+            let imageName = specialType.toLowerCase().replace("'", "").replace(" ", "-")
+            return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`
         }
 
         let imageName = type.replace("(x)", "-x")
@@ -3258,14 +3326,15 @@
 <rolltemplate class="sheet-rolltemplate-damage">
     <div class="sheet-template-container">
         <div class="sheet-header">
-            <div>
-                <span class="sheet-mini-input sheet-floatLeft">{{cost}}</span>
+            <div class="sheet-list">
+                <span class="sheet-mini-input">{{cost}}</span>
+                <span class="sheet-mini-input sheet-hideinline">{{computed::proc}}</span>
             </div>
-            <h4>{{damageTitle}}{{damage}}</h4>
-            <h4>{{directHitTitle}}{{directHit}}</h4>
+            <h4>{{damageTitle}}{{computed::damage}}</h4>
+            <h4>{{directHitTitle}}{{computed::directHit}}</h4>
         </div>
         <div class="sheet-body">
-            <h4>{{totalTitle}}{{computed::damage}}</h4>
+            <h4 class="sheet-hideinline">{{totalTitle}}{{computed::total}}</h4>
             <div class="sheet-button-container">
                 {{button}}
             </div>
