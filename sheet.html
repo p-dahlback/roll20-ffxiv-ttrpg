@@ -292,7 +292,9 @@
                 <fieldset class="repeating_effects">
                     <div class="horizontal semi-tight">
                         <img class="effect-icon" name="attr_icon" />
-                        <select class="effect-type" name="attr_type">
+                        <input type="hidden" class="typeSwitch" name="attr_type" />
+                        <input type="text" class="typeSwitchDisplayed" name="attr_specialType" placeholder="Effect" />
+                        <select class="effect-type typeSwitchHidden" name="attr_type">
                             <option value="none">--Select--</option>
                             <option value="roll(x)">Roll Up(X)</option>
                             <option value="critical(x)">Critical Up(X)</option>
@@ -318,9 +320,11 @@
                             <option value="weak">Weak</option>
                             <option value="brink">Brink of Death</option>
                             <option value="comatose">Comatose</option>
+                            <hr />
+                            <option value="special">Special</option>
                         </select>
-                        <input class="effect-value" type="text" name="attr_value" placeholder="X" />
-                        <select class="effect-type" name="attr_expiry">
+                        <input class="effect-value typeSwitchHidden" type="text" name="attr_value" placeholder="X" />
+                        <select class="effect-expiry" name="attr_expiry">
                             <option value="turn">End of turn</option>
                             <option value="phase">End of phase</option>
                             <option value="encounter">End of encounter</option>
@@ -3116,9 +3120,13 @@
 </script>
 
 <script type="text/worker">
-    function getIconForEffectType(type) {
+    function getIconForEffectType(type, specialType) {
         if (type == "none") {
             return ""
+        }
+        if (type == "special") {
+            let imageName = specialType.replace("'", "").replace(" ", "-")
+            return imageName
         }
 
         let imageName = type.replace("(x)", "-x")
@@ -3126,9 +3134,12 @@
     }
 
     // Effect icon assignment
-    on("change:repeating_effects:type", () => {
-        getAttrs(["repeating_effects_type"], values => {
-            const iconUrl = getIconForEffectType(values.repeating_effects_type)
+    on("change:repeating_effects:type change:repeating_effects:specialType", () => {
+        getAttrs(["repeating_effects_type", "repeating_effects_specialType"], values => {
+            const iconUrl = getIconForEffectType(
+                values.repeating_effects_type,
+                values.repeating_effects_specialType
+            )
             setAttrs({
                 repeating_effects_icon: iconUrl
             })

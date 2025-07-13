@@ -929,6 +929,18 @@ textarea {
   vertical-align: top;
 }
 
+.typeSwitchDisplayed {
+  display: none;
+}
+
+.typeSwitch[value="special"] ~ .typeSwitchDisplayed {
+  display: inline-block;
+}
+
+.typeSwitch[value="special"] ~ .typeSwitchHidden {
+  display: none;
+}
+
 .effect-icon {
   width: 24px;
   height: 32px;
@@ -939,10 +951,14 @@ textarea {
   flex-shrink: 0;
 }
 
-.effect-type {
+.effect-type, .effect-expiry {
   width: 10em;
   margin-top: 8px;
   margin-bottom: 8px;
+}
+
+.effect-expiry {
+  margin-left: auto;
 }
 
 .effect-value {
