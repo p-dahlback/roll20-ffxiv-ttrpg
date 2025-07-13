@@ -2400,19 +2400,21 @@
     }
 
     function addEffectsToPreDamageRolls(effects, level, type, damageRoll, directHitRoll) {
-        let hasAstralFire = effects.some(effect => effect.specialType.trim().toLowerCase() == "astral fire")
         let isFireType = type.toLowerCase().includes("fire-aspect")
-        if (hasAstralFire && isFireType) {
-            let addedDamage = level >= 50 ? "2d6" : "1d6"
-            let updatedDamage
-            if (damageRoll) {
-                updatedDamage = `${damageRoll} + ${addedDamage}[Astral Fire]`
-            } else {
-                updatedDamage = `${addedDamage}[Astral Fire]`
-            }
-            return {
-                damage: updatedDamage,
-                directHit: directHitRoll
+        if (isFireType) {
+            let hasAstralFire = effects.some(effect => effect.specialType.trim().toLowerCase() == "astral fire")
+            if (hasAstralFire) {
+                let addedDamage = level >= 50 ? "2d6" : "1d6"
+                let updatedDamage
+                if (damageRoll) {
+                    updatedDamage = `${damageRoll} + ${addedDamage}[Astral Fire]`
+                } else {
+                    updatedDamage = `${addedDamage}[Astral Fire]`
+                }
+                return {
+                    damage: updatedDamage,
+                    directHit: directHitRoll
+                }
             }
         }
         return {
@@ -2790,7 +2792,8 @@
         return summary.substring(0, summary.length - 2)
     }
 
-    function performAbilityResourceChanges(section, rowId, values) {
+    function performAbilityResourceChanges(section, rowId, values, effects) {
+        const type = values[`repeating_${section}_${rowId}_type`]
         const cost = values[`repeating_${section}_${rowId}_cost`]
         const resourceType = values[`repeating_${section}_${rowId}_resource`]
         const uses = values[`repeating_${section}_${rowId}_uses`]
@@ -2860,12 +2863,13 @@
 
         // Restore resources
         if (restoration && (resourceResult || cost == 0)) {
-            const restorationSummary = restoreResource(isGeneric, restoration, resourceType, resourceNames)
-            if (resourceCost) {
-                resourceCost += `\n${restorationSummary}`
-            } else {
-                resourceCost = restorationSummary
+            var summaries = [resourceCost]
+            summaries.push(restoreResource(isGeneric, restoration, resourceType, resourceNames))
+            let isIceType = type.toLowerCase().includes("ice-aspect")
+            if (isIceType && effects.some(effect => effect.specialType.trim().toLowerCase() == "umbral ice")) {
+                summaries.push(`${restoreResource(isGeneric, "5 mp", resourceType, resourceNames)} (Umbral Ice)`)
             }
+            return summaries.filter(element => element).join("\n")
         }
 
         return resourceCost
@@ -3248,7 +3252,7 @@
                 }
             }
 
-            const resourceCost = performAbilityResourceChanges(section, rowId, values)
+            const resourceCost = performAbilityResourceChanges(section, rowId, values, effects)
 
             if (!damageDice && !directHitDice && !combo && !resourceCost && !effectSummary) {
                 console.log("No reason to roll damage")
