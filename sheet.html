@@ -306,7 +306,7 @@
                             <hr />
                             <option value="blind">Blind</option>
                             <option value="bound">Bound</option>
-                            <option value="enmity(x)">Enmity to X</option>
+                            <option value="enmity(x)">Enmity(Penalty)</option>
                             <option value="dot(x)">DOT(X)</option>
                             <option value="heavy">Heavy</option>
                             <option value="paralyzed">Paralyzed</option>
@@ -326,6 +326,7 @@
                         <input class="effect-value typeSwitchHidden" type="text" name="attr_value" placeholder="X" />
                         <select class="effect-expiry" name="attr_expiry">
                             <option value="turn">End of turn</option>
+                            <option value="turn2">End of next turn</option>
                             <option value="phase">End of phase</option>
                             <option value="encounter">End of encounter</option>
                             <option value="rest">After rest</option>
@@ -2452,6 +2453,209 @@
         return result
     }
 
+    function addEffectsToSelf(effects, existingEffects) {
+        var attributes = {}
+        var summaries = []
+        var buttons = []
+        let existingEffectTypes = existingEffects.map(effect => {
+            if (effect.type == "special") {
+                return effect.specialType.toLowerCase()
+            }
+            return effect.type
+        })
+        log("Adding effects: " + JSON.stringify(effects))
+        for (let effect of effects) {
+            let initValues = {
+                id: generateRowID()
+            }
+            let adjustedEffect = effect.replace("(x)", "").trim().toLowerCase()
+            if (existingEffectTypes.includes(adjustedEffect)) {
+                log("Effect " + effect.trim() + " already exists, skipping")
+                continue
+            }
+
+            let value = effect.match(/\((][0-9]+)\)/)
+            switch (adjustedEffect) {
+                case "astral fire":
+                    initValues.type = "special"
+                    initValues.specialType = "Astral Fire"
+                    initValues.expiry = "turn2"
+                    summaries.push("Activated Astral Fire")
+                    buttons.push("Astral Fire")
+                    break
+                case "attribute":
+                    initValues.type = "attribute(x)"
+                    initValues.value = value
+                    initValues.expiry = "use"
+                    summaries.push(`Activated Attribute Up(${value})`)
+                    buttons.push(`Attribute Up(${value})`)
+                    break
+                case "blind":
+                    initValues.type = "blind"
+                    initValues.expiry = "encounter"
+                    initValues.curable = true
+                    summaries.push("Activated Blind")
+                    buttons.push("Blind")
+                    break
+                case "bound":
+                    initValues.type = "bound"
+                    initValues.expiry = "encounter"
+                    initValues.curable = true
+                    summaries.push("Activated Bound")
+                    buttons.push("Bound")
+                    break
+                case "brink":
+                    initValues.type = "brink"
+                    initValues.expiry = "rest"
+                    summaries.push("Activated Brink of Death")
+                    buttons.push("Brink of Death")
+                    break
+                case "critical":
+                    initValues.type = "critical(x)"
+                    initValues.value = value
+                    initValues.expiry = "use"
+                    summaries.push(`Activated Critical Up(${value})`)
+                    buttons.push(`Critical Up(${value})`)
+                    break
+                case "dot":
+                    initValues.type = "dot(x)"
+                    initValues.value = value
+                    initValues.expiry = "phase"
+                    initValues.curable = true
+                    summaries.push(`Activated DOT(${value})`)
+                    buttons.push(`DOT(${value})`)
+                    break
+                case "enmity":
+                    initValues.type = "enmity(x)"
+                    initValues.value = value
+                    initValues.expiry = "turn"
+                    summaries.push(`Activated Enmity(${value})`)
+                    buttons.push(`Enmity(${value})`)
+                    break
+                case "heavy":
+                    initValues.type = "heavy"
+                    initValues.expiry = "turn"
+                    initValues.curable = true
+                    summaries.push("Activated Heavy")
+                    buttons.push("Heavy")
+                    break
+                case "major arcana":
+                    initValues.type = "special"
+                    initValues.specialType = "Major Arcana"
+                    initValues.expiry = "use"
+                    summaries.push("Activated Major Arcana")
+                    buttons.push("Major Arcana")
+                    break
+                case "paralyzed":
+                    initValues.type = "paralyzed"
+                    initValues.expiry = "turn"
+                    initValues.curable = true
+                    summaries.push("Activated Paralysis")
+                    buttons.push("Paralysis")
+                    break
+                case "petrified":
+                    initValues.type = "petrified"
+                    initValues.expiry = "turn2"
+                    initValues.curable = true
+                    summaries.push("Activated Petrify")
+                    buttons.push("Petrify")
+                    break
+                case "prone":
+                    initValues.type = "prone"
+                    initValues.expiry = "encounter"
+                    initValues.curable = true
+                    summaries.push("Activated Prone")
+                    buttons.push("Prone")
+                    break
+                case "ready":
+                    initValues.type = "ready(x)"
+                    initValues.value = value
+                    initValues.expiry = "use"
+                    summaries.push(`Activated ${value} Ready`)
+                    buttons.push(`${value} Ready`)
+                    break
+                case "regen":
+                    initValues.type = "regen(x)"
+                    initValues.value = value
+                    initValues.expiry = "encounter"
+                    summaries.push(`Activated Regen(${value})`)
+                    buttons.push(`Regen(${value})`)
+                    break
+                case "roll":
+                    initValues.type = "roll(x)"
+                    initValues.value = value
+                    initValues.expiry = "use"
+                    summaries.push(`Activated Roll Up(${value})`)
+                    buttons.push(`Roll Up(${value})`)
+                    break
+                case "silence":
+                    initValues.type = "silence"
+                    initValues.expiry = "turn"
+                    initValues.curable = true
+                    summaries.push("Activated Silence")
+                    buttons.push("Silence")
+                    break
+                case "sleep":
+                    initValues.type = "sleep"
+                    initValues.expiry = "damage"
+                    initValues.curable = true
+                    summaries.push("Activated Sleep")
+                    buttons.push("Sleep")
+                    break
+                case "slow":
+                    initValues.type = "slow"
+                    initValues.expiry = "encounter"
+                    initValues.curable = true
+                    summaries.push("Activated Slow")
+                    buttons.push("Slow")
+                    break
+                case "stun":
+                    initValues.type = "stun"
+                    initValues.expiry = "turn"
+                    summaries.push("Activated Stun")
+                    buttons.push("Stun")
+                    break
+                case "surging tempest":
+                    initValues.type = "special"
+                    initValues.specialType = "Surging Tempest"
+                    initValues.expiry = "encounter"
+                    summaries.push("Activated Surging Tempest")
+                    buttons.push("Surging Tempest")
+                    break
+                case "umbral ice":
+                    initValues.type = "special"
+                    initValues.specialType = "Umbral Ice"
+                    initValues.expiry = "turn2"
+                    summaries.push("Activated Umbral Ice")
+                    buttons.push("Umbral Ice")
+                    break
+                case "weak":
+                    initValues.type = "weak"
+                    initValues.expiry = "rest"
+                    summaries.push("Activated Weak")
+                    buttons.push("Weak")
+                    break
+            }
+            attributes[`repeating_effects_${initValues.id}_type`] = initValues.type
+            if (initValues.specialType) {
+                attributes[`repeating_effects_${initValues.id}_specialType`] = initValues.specialType
+            }
+            if (initValues.value) {
+                attributes[`repeating_effects_${initValues.id}_value`] = initValues.value
+            }
+            attributes[`repeating_effects_${initValues.id}_expiry`] = initValues.expiry
+            attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off"
+            
+        }
+        if (attributes) {
+            setAttrs(attributes)
+        }
+        return {
+            summary: summaries.join("\n"),
+            buttons: buttons
+        }
+    }
+
     function templateValues(title, value) {
         if (value) {
             return [title, value]
@@ -2922,6 +3126,9 @@
             `repeating_${section}_${rowId}_restore`,
             `repeating_${section}_${rowId}_resource`,
 
+            `repeating_${section}_${rowId}_effectSelf`,
+            `repeating_${section}_${rowId}_effectTarget`,
+
             "magicPoints", "magicPoints_max",
             "resource", "resourceValue", "resourceValue_max",
             "resource2", "resource2Value", "resource2Value_max",
@@ -2932,6 +3139,9 @@
             const damageType = values[`repeating_${section}_${rowId}_damageType`]
             const combo = values[`repeating_${section}_${rowId}_combo`]
             const roll = parseInt(values[`repeating_${section}_${rowId}_currentRoll`])
+
+            const selfEffects = values[`repeating_${section}_${rowId}_effectSelf`].split(",")
+            const targetEffects = values[`repeating_${section}_${rowId}_effectTarget`].split(",")
 
             var bonusValue = 0
             if (useRollBonus) {
@@ -3001,7 +3211,7 @@
 
             const resourceCost = performAbilityResourceChanges(section, rowId, values)
 
-            if (!damageDice && !directHitDice && !combo && !resourceCost) {
+            if (!damageDice && !directHitDice && !combo && !resourceCost && !effectSummary) {
                 console.log("No reason to roll damage")
                 return
             }
@@ -3019,6 +3229,9 @@
                 let computedResults = addEffectsToDamageRolls(effects, [damageRoll, directHitRoll])
                 let total = computedResults.total
 
+                let effectSummary = addEffectsToSelf(selfEffects, effects).summary
+                let procSummary = [computedResults.summary, effectSummary].filter(element => element).join("\n")
+
                 var attributes = {}
                 attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
                 setAttrs(attributes)
@@ -3026,7 +3239,7 @@
                 finishRoll(
                     results.rollId,
                     {
-                        proc: computedResults.summary ?? " ",
+                        proc: procSummary,
                         damage: computedResults.rolls[0],
                         directHit: computedResults.rolls[1],
                         total: computedResults.total
