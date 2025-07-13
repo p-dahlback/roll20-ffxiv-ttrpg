@@ -2296,6 +2296,21 @@
         })
     }
 
+    function removeEffects(names, skipId) {
+        getEffects(effects => {
+            let matches = effects.effects.filter(effect => {
+                if (effect.id == skipId) {
+                    return false
+                }
+                return names.includes(effect.type) || names.includes(effect.specialType.trim().toLowerCase())
+            })
+            for (let match of matches) {
+                log(`Removing effect ${match.id} with the type ${match.specialType ?? match.type}`)
+                removeRepeatingRow(match.fullId)
+            }
+        })
+    }
+
     function classifyEffects(effects) {
         var result = {
             effects: [],
@@ -2509,7 +2524,7 @@
         result.rolls = rolls
         result.total = total
         if (appliedSurgingTempest) {
-            result.summary = "Surging Tempest proc!"
+            result.summary = "Surging Tempest proc"
         }
         return result
     }
@@ -2549,10 +2564,6 @@
                     summaries.push("Activated Astral Fire")
                     buttons.push("Astral Fire")
 
-                    log("Disabling MP recovery due to Astral Fire")
-                    setAttrs({
-                        mpRecovery: 0
-                    })
                     if (existingEffects.umbralIceId) {
                         summaries.push("Removed Umbral Ice")
                         removeRepeatingRow(existingEffects.umbralIceId)
@@ -3322,7 +3333,7 @@
                 let total = computedResults.total
 
                 let effectSummary = addEffectsToSelf(selfEffects, effects).summary
-                let procSummary = [computedResults.summary, effectSummary].filter(element => element).join("\n")
+                let procSummary = [computedResults.summary, effectSummary].filter(element => element).join(", ")
 
                 var attributes = {}
                 attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
@@ -3487,6 +3498,8 @@
         resetAllAbilityUses()
     })
 
+    // Stat rolls
+
     on("clicked:rollStr", eventInfo => {
         rollStat("str", "Strength")
     })
@@ -3506,6 +3519,8 @@
     on("clicked:rollMnd", eventInfo => {
         rollStat("mnd", "Mind")
     })
+
+    // Ability rolls
 
     on("clicked:repeating_limit:share clicked:repeating_song:share clicked:repeating_primary:share clicked:repeating_ninjutsu:share clicked:repeating_secondary:share clicked:repeating_instant:share clicked:repeating_technique:share", eventInfo => {
         shareAbility(eventInfo)
@@ -3530,9 +3545,8 @@
     on("clicked:repeating_limit:runcombo2 clicked:repeating_song:runcombo2 clicked:repeating_primary:runcombo2 clicked:repeating_ninjutsu:runcombo2 clicked:repeating_secondary:runcombo2 clicked:repeating_instant:runcombo2 clicked:repeating_technique:runcombo2", eventInfo => {
         activateCombo(eventInfo, 1)
     })
-</script>
 
-<script type="text/worker">
+    // Effect updates
     function getIconForEffectType(type, specialType) {
         if (type == "none") {
             return ""
@@ -3547,7 +3561,12 @@
     }
 
     // Effect icon assignment
-    on("change:repeating_effects:type change:repeating_effects:specialType", () => {
+    on("change:repeating_effects:type change:repeating_effects:specialType", eventInfo => {
+        log("Change effect!")
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+
         getAttrs(["repeating_effects_type", "repeating_effects_specialType"], values => {
             const iconUrl = getIconForEffectType(
                 values.repeating_effects_type,
@@ -3557,6 +3576,31 @@
                 repeating_effects_icon: iconUrl
             })
         })
+
+        if (eventInfo.triggerName.toLowerCase().includes("_specialtype")) {
+            let effectName = eventInfo.newValue.trim().toLowerCase()
+            log("Effect " + effectName)
+            if (["astral fire", "umbral ice"].includes(effectName)) {
+                log("Removing some stuff")
+                // Remove Astral Fire and Umbral Ice excepting the current instance.
+                // This ensures there's only one Astral Fire or Umbral Ice active at any point.
+                removeEffects(["astral fire", "umbral ice"], rowId)
+                if (effectName == "umbral ice") {
+                    log("Resetting MP recovery in case of Astral Fire removal")
+                    setAttrs({
+                        mpRecovery: 2
+                    })
+                } else {
+                    log("Disabling MP recovery due to Astral Fire")
+                    setAttrs({
+                        mpRecovery: 0
+                    })
+                }
+            } else {
+                // Remove duplicates of special effects
+                removeEffects([effectName], rowId)
+            }
+        }
     })
 
     // Reset MP recovery on Astral Fire deletion
