@@ -1250,6 +1250,7 @@ button.header-action:active {
 .check,
 .cr,
 .direct-hit,
+.ability-effect,
 .limitation {
   display: none;
 }
@@ -1272,6 +1273,8 @@ button.header-action:active {
 .overrideSwitch:not([value="auto"]) ~ .cr,
 .directHitFlag:not(:placeholder-shown) ~ .direct-hit,
 .overrideSwitch:not([value="auto"]) ~ .direct-hit,
+.effectFlag:not(:placeholder-shown) ~ .ability-effect,
+.overrideSwitch:not([value="auto"]) ~ .ability-effect,
 .limitationFlag:not(:placeholder-shown) ~ .limitation,
 .overrideSwitch:not([value="auto"]) ~ .limitation {
   display: block;
@@ -1291,6 +1294,8 @@ button.header-action:active {
 .cr input,
 .base-effect textarea,
 .direct-hit textarea,
+.ability-effect input,
+.ability-effect textarea,
 .limitation input {
   user-select: none;
   pointer-events: none;
