@@ -173,7 +173,7 @@ input {
 
 /* EXPAND/COLLAPSE */
 
-.expand-checkbox.hidden {
+.hidden {
   display: none;
 }
 
@@ -1178,7 +1178,7 @@ textarea {
 .ui-dialog .charsheet .mini-input,
 .sheet-rolltemplate-ability .sheet-mini-input,
 .sheet-rolltemplate-hitsheet-mini-input {
-  font-size: 1.5em;
+  font-size: 1.5rem;
 }
 
 .ui-dialog .charsheet .mini-input.bold,
@@ -1254,16 +1254,26 @@ button.header-action:active {
   display: none;
 }
 
-.usesFlag:not(:placeholder-shown) ~ .uses,
-.costFlag:not(:placeholder-shown) ~ .cost,
+.usesFlag:not([value="0"]):not([value=""]) ~ .uses,
+.overrideSwitch:not([value="auto"]) ~ .uses,
+.costFlag:not([value="0"]):not([value=""]) ~ .cost,
+.overrideSwitch:not([value="auto"]) ~ .cost,
 .conditionFlag:not(:placeholder-shown) ~ .condition,
+.overrideSwitch:not([value="auto"]) ~ .condition,
 .triggerFlag:not(:placeholder-shown) ~ .trigger,
+.overrideSwitch:not([value="auto"]) ~ .trigger,
 .targetFlag:not(:placeholder-shown) ~ .target,
+.overrideSwitch:not([value="auto"]) ~ .target,
 .targetFlag:not(:placeholder-shown) ~ .range,
-.checkFlag:not(:placeholder-shown)~ .check,
+.overrideSwitch:not([value="auto"]) ~ .range,
+.checkFlag:not(:placeholder-shown) ~ .check,
+.overrideSwitch:not([value="auto"]) ~ .check, 
 .checkFlag:not(:placeholder-shown) ~ .cr,
+.overrideSwitch:not([value="auto"]) ~ .cr,
 .directHitFlag:not(:placeholder-shown) ~ .direct-hit,
-.limitationFlag:not(:placeholder-shown) ~ .limitation {
+.overrideSwitch:not([value="auto"]) ~ .direct-hit,
+.limitationFlag:not(:placeholder-shown) ~ .limitation,
+.overrideSwitch:not([value="auto"]) ~ .limitation {
   display: block;
 }
 
@@ -1289,17 +1299,8 @@ button.header-action:active {
   -moz-appearance: textfield;
 }
 
-.titleFlag[value="e"] ~ textarea,
-.typeFlag[value="e"] ~ input,
-.usesFlag[value="e"] ~ .max, 
-.costFlag[value="e"]  ~ input,
-.conditionFlag[value="e"]  ~ textarea,
-.triggerFlag[value="e"] ~ textarea,
-.targetFlag[value="e"] ~ textarea,
-.checkFlag[value="e"] ~ input,
-.baseEffectFlag[value="e"] ~ textarea,
-.directHitFlag[value="e"] ~ textarea,
-.limitationFlag[value="e"] ~ input {
+.ability .overrideSwitch:not([value="auto"]) ~ textarea,
+.ability .overrideSwitch:not([value="auto"]) ~ input {
   user-select: auto;
   pointer-events: initial;
 }

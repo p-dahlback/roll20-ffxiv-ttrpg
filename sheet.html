@@ -376,29 +376,20 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_songExpandItem" />
+                    <input type="hidden" class="usesFlag" name="attr_uses_max" />
+                    <input type="hidden" class="costFlag" name="attr_cost" />
+                    <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+                    <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+                    <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+                    <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+                    <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
-                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
                     <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
-                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                         <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
@@ -407,7 +398,7 @@
                     <div class="header-title">
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
-                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="bold adaptive--text__span"  name="attr_title"></span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
@@ -427,7 +418,7 @@
                     <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
@@ -435,12 +426,12 @@
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
@@ -448,7 +439,7 @@
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
@@ -456,7 +447,7 @@
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
@@ -464,7 +455,7 @@
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_target"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
@@ -472,7 +463,7 @@
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_range"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
@@ -480,7 +471,7 @@
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
@@ -488,7 +479,7 @@
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
@@ -497,21 +488,16 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_songExpandItem" />
+                    <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+                    <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
                     <div class="spacer expanded-view"></div>
-
-                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
@@ -519,7 +505,7 @@
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
@@ -527,7 +513,7 @@
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
@@ -576,29 +562,20 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input type="hidden" class="usesFlag" name="attr_uses_max" />
+                    <input type="hidden" class="costFlag" name="attr_cost" />
+                    <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+                    <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+                    <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+                    <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+                    <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
-                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
                     <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
-                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                         <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
@@ -607,7 +584,7 @@
                     <div class="header-title">
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
-                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="bold adaptive--text__span"  name="attr_title"></span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
@@ -627,7 +604,7 @@
                     <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
@@ -635,12 +612,12 @@
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
@@ -648,7 +625,7 @@
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
@@ -656,7 +633,7 @@
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
@@ -664,7 +641,7 @@
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_target"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
@@ -672,7 +649,7 @@
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_range"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
@@ -680,7 +657,7 @@
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
@@ -688,7 +665,7 @@
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
@@ -697,21 +674,16 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                    <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+                    <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
                     <div class="spacer expanded-view"></div>
 
-                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
-
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
@@ -719,7 +691,7 @@
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
@@ -727,7 +699,7 @@
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
@@ -774,29 +746,20 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_ninjutsuExpandItem" />
+                    <input type="hidden" class="usesFlag" name="attr_uses_max" />
+                    <input type="hidden" class="costFlag" name="attr_cost" />
+                    <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+                    <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+                    <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+                    <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+                    <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
-                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
                     <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
-                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                         <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
@@ -805,7 +768,7 @@
                     <div class="header-title">
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
-                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="bold adaptive--text__span"  name="attr_title"></span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
@@ -825,7 +788,7 @@
                     <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
@@ -833,12 +796,12 @@
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
@@ -846,7 +809,7 @@
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
@@ -854,7 +817,7 @@
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
@@ -862,7 +825,7 @@
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_target"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
@@ -870,7 +833,7 @@
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_range"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
@@ -878,7 +841,7 @@
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
@@ -886,7 +849,7 @@
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
@@ -895,21 +858,16 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_ninjutsuExpandItem" />
+                    <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+                    <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
                     <div class="spacer expanded-view"></div>
-
-                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
@@ -917,7 +875,7 @@
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
@@ -925,7 +883,7 @@
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
@@ -972,29 +930,20 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_secondaryExpandItem" />
+                    <input type="hidden" class="usesFlag" name="attr_uses_max" />
+                    <input type="hidden" class="costFlag" name="attr_cost" />
+                    <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+                    <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+                    <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+                    <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+                    <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
-                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
                     <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
-                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                         <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
@@ -1003,7 +952,7 @@
                     <div class="header-title">
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
-                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="bold adaptive--text__span"  name="attr_title"></span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
@@ -1023,7 +972,7 @@
                     <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
@@ -1031,12 +980,12 @@
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
@@ -1044,7 +993,7 @@
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
@@ -1052,7 +1001,7 @@
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
@@ -1060,7 +1009,7 @@
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_target"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
@@ -1068,7 +1017,7 @@
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_range"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
@@ -1076,7 +1025,7 @@
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
@@ -1084,7 +1033,7 @@
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
@@ -1093,21 +1042,16 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_secondaryExpandItem" />
+                    <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+                    <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
                     <div class="spacer expanded-view"></div>
-
-                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
@@ -1115,7 +1059,7 @@
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
@@ -1123,7 +1067,7 @@
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
@@ -1170,29 +1114,20 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_instantExpandItem" />
+                    <input type="hidden" class="usesFlag" name="attr_uses_max" />
+                    <input type="hidden" class="costFlag" name="attr_cost" />
+                    <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+                    <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+                    <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+                    <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+                    <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
-                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
                     <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
-                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                         <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
@@ -1201,7 +1136,7 @@
                     <div class="header-title">
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
-                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="bold adaptive--text__span"  name="attr_title"></span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
@@ -1221,7 +1156,7 @@
                     <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
@@ -1229,12 +1164,12 @@
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
@@ -1242,7 +1177,7 @@
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
@@ -1250,7 +1185,7 @@
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
@@ -1258,7 +1193,7 @@
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_target"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
@@ -1266,7 +1201,7 @@
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_range"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
@@ -1274,7 +1209,7 @@
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
@@ -1282,7 +1217,7 @@
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
@@ -1291,21 +1226,16 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_instantExpandItem" />
+                    <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+                    <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
                     <div class="spacer expanded-view"></div>
-
-                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
@@ -1313,7 +1243,7 @@
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
@@ -1321,7 +1251,7 @@
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
@@ -1368,29 +1298,20 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_techniqueExpandItem" />
+                    <input type="hidden" class="usesFlag" name="attr_uses_max" />
+                    <input type="hidden" class="costFlag" name="attr_cost" />
+                    <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+                    <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+                    <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+                    <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+                    <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
-                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
                     <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
-                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                         <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
@@ -1399,7 +1320,7 @@
                     <div class="header-title">
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
-                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="bold adaptive--text__span"  name="attr_title"></span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
@@ -1419,7 +1340,7 @@
                     <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
@@ -1427,12 +1348,12 @@
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
@@ -1440,7 +1361,7 @@
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
@@ -1448,7 +1369,7 @@
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
@@ -1456,7 +1377,7 @@
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_target"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
@@ -1464,7 +1385,7 @@
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_range"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
@@ -1472,7 +1393,7 @@
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
@@ -1480,7 +1401,7 @@
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
@@ -1489,21 +1410,16 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_techniqueExpandItem" />
+                    <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+                    <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
                     <div class="spacer expanded-view"></div>
-
-                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
@@ -1511,7 +1427,7 @@
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
@@ -1519,7 +1435,7 @@
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
@@ -1564,29 +1480,20 @@
             <div class="ability">
                 <div class="header list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_limitExpandItem" />
+                    <input type="hidden" class="usesFlag" name="attr_uses_max" />
+                    <input type="hidden" class="costFlag" name="attr_cost" />
+                    <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+                    <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+                    <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+                    <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+                    <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
-                    <span class="mini flagTitle expanded-view floatLeft">Title flag:</span>
-                    <input type="text" class="titleFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasTitle" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Type flag:</span>
-                    <input type="text" class="typeFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasType" title="Type flag" placeholder="'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Cost flag:</span>
-                    <input type="text" class="costFlag overrideContent expanded-view mini-input floatLeft" name="attr_hasCost" title="Cost flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Condition flag:</span>
-                    <input type="text" class="conditionFlag overrideContent expanded-view mini-input" name="attr_hasCondition" title="Condition flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Trigger flag:</span>
-                    <input type="text" class="triggerFlag overrideContent expanded-view mini-input" name="attr_hasTrigger" title="Trigger flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Target flag:</span>
-                    <input type="text" class="targetFlag overrideContent expanded-view mini-input" name="attr_hasTarget" title="Target flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Check flag:</span>
-                    <input type="text" class="checkFlag overrideContent expanded-view mini-input" name="attr_hasCheck" title="Check flag" placeholder="'1' to display, 'e' for editable" />
-                    <span class="mini flagTitle expanded-view floatLeft">Uses flag:</span>
-                    <input type="text" class="usesFlag overrideContent expanded-view mini-input" name="attr_hasUses" title="Uses flag" placeholder="'1' to display, 'e' for editable" />
                     <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
                     <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
 
                     <div class="uses">
-                        <input type="hidden" class="usesFlag" name="attr_hasUses" />
+                        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                         <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
                         <span class="floatRight">/</span>
                         <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
@@ -1595,7 +1502,7 @@
                     <div class="header-title">
                         <img class="ability-icon" name="attr_icon" />
                         <div class="title adaptive adaptive--text">
-                            <input type="hidden" class="titleFlag" name="attr_hasTitle" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="bold adaptive--text__span"  name="attr_title"></span>
                             <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
                         </div>
@@ -1615,7 +1522,7 @@
                     <div class="type expanded-view">
                         <span class="mini-title floatLeft">Type:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="typeFlag" name="attr_hasType" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input italic adaptive--input__span"  name="attr_type"></span>
                             <input class="mini-input italic adaptive--input__input" type="text" name="attr_type" placeholder="Primary, Physical" />
                         </div>
@@ -1623,12 +1530,12 @@
                     <div class="cost expanded-view">
                         <span class="mini-title floatLeft">Cost:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cost"></span>
-                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="2" />
+                            <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
                         </div>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="costFlag" name="attr_hasCost" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
                         </div>
@@ -1636,7 +1543,7 @@
                     <div class="condition expanded-view">
                         <span class="mini-title floatLeft">Condition:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="conditionFlag" name="attr_hasCondition" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_condition"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
                         </div>
@@ -1644,7 +1551,7 @@
                     <div class="trigger expanded-view">
                         <span class="mini-title floatLeft">Trigger:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="triggerFlag" name="attr_hasTrigger" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_trigger"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
                         </div>
@@ -1652,7 +1559,7 @@
                     <div class="target expanded-view">
                         <span class="mini-title floatLeft">Target:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_target"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
                         </div>
@@ -1660,7 +1567,7 @@
                     <div class="range expanded-view">
                         <span class="mini-title floatLeft">Range:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="targetFlag" name="attr_hasTarget" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_range"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
                         </div>
@@ -1668,7 +1575,7 @@
                     <div class="check expanded-view">
                         <span class="mini-title floatLeft">Check:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input bold adaptive--input__span"  name="attr_check"></span>
                             <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
                         </div>
@@ -1676,7 +1583,7 @@
                     <div class="cr expanded-view">
                         <span class="mini-title floatLeft">CR:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="checkFlag" name="attr_hasCheck" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_cr"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
                         </div>
@@ -1685,21 +1592,16 @@
 
                 <div class="body list">
                     <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
-                    <input class="expand-checkbox hidden" type="checkbox" name="attr_limitExpandItem" />
+                    <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+                    <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_primaryExpandItem" />
 
                     <div class="spacer expanded-view"></div>
-
-                    <span class="mini flagTitle expanded-view floatLeft">Base effect flag:</span>
-                    <input type="text" class="baseEffectFlag overrideContent expanded-view mini-input" name="attr_hasBaseEffect" title="Base effect flag" placeholder="'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Direct hit flag:</span>
-                    <input type="text" class="directHitFlag overrideContent expanded-view mini-input" name="attr_hasDirectHit" title="Direct hit flag" placeholder="'1' to display, 'e' for editable"/>
-                    <span class="mini flagTitle expanded-view floatLeft">Limitation flag:</span>
-                    <input type="text" class="limitationFlag overrideContent expanded-view mini-input" name="attr_hasLimitation" title="Limitation flag" placeholder="'1' to display, 'e' for editable" />
 
                     <div class="base-effect expanded-view">
                         <span class="mini-title floatLeft">Base Effect:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="baseEffectFlag" name="attr_hasBaseEffect" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_baseEffect"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
                         </div>
@@ -1707,7 +1609,7 @@
                     <div class="direct-hit expanded-view">
                         <span class="mini-title floatLeft">Direct Hit:</span>
                         <div class="adaptive adaptive--text floatLeft">
-                            <input type="hidden" class="directHitFlag" name="attr_hasDirectHit" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--text__span"  name="attr_directHit"></span>
                             <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
                         </div>
@@ -1715,7 +1617,7 @@
                     <div class="limitation expanded-view">
                         <span class="mini-title floatLeft">Limitation:</span>
                         <div class="adaptive adaptive--input floatLeft">
-                            <input type="hidden" class="limitationFlag" name="attr_hasLimitation" />
+                            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
                             <span class="mini-input adaptive--input__span"  name="attr_limitation"></span>
                             <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
                         </div>
