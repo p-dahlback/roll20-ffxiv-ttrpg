@@ -2285,7 +2285,7 @@
                     sortedValues[id][attributeName] = values[attribute]
                 }
                 const valueObjects = Object.values(sortedValues)
-                completion(values, valueObjects)
+                completion(values, classifyEffects(valueObjects))
             })
         })
     }
@@ -2296,12 +2296,40 @@
         })
     }
 
-    function getCriticalThreshold(effects) {
-        let criticalUp = effects.find((effect) => effect.type == "critical(x)")
-        if (criticalUp && criticalUp.value) {
-            return 20 - parseInt(criticalUp.value)
+    function classifyEffects(effects) {
+        var result = {
+            effects: [],
+            criticalThreshold: 20
         }
-        return 20
+        for (let effect of effects) {
+            result.effects.push(effect)
+
+            if (effect.type == "special") {
+                switch (effect.specialType.trim().toLowerCase()) {
+                    case "astral fire":
+                        result.astralFireId = effect.fullId
+                        break
+                    case "hawk's eye":
+                        result.hawksEyeId = effect.fullId
+                        break
+                    case "surging tempest":
+                        result.surgingTempestId = effect.fullId
+                        break
+                    case "umbral ice":
+                        result.umbralIceId = effect.fullId
+                        break
+                }
+            } else {
+                switch (effect.type) {
+                    case "critical(x)":
+                        if (effect.value) {
+                            result.criticalThreshold -= parseInt(criticalUp.value)
+                        }
+                        break
+                }
+            }
+        }
+        return result
     }
 
     function addEffectsToRoll(effects, rollMacro, rollType) {
@@ -2311,7 +2339,7 @@
         var attributeUp = {}
         var blindPenalty = 0
         var hasHawksEye = false
-        for (let effect of effects) {
+        for (let effect of effects.effects) {
             var effectName = effect.type
             if (effect.type == "special") {
                 effectName = effect.specialType.trim().toLowerCase()
@@ -2401,20 +2429,17 @@
 
     function addEffectsToPreDamageRolls(effects, level, type, damageRoll, directHitRoll) {
         let isFireType = type.toLowerCase().includes("fire-aspect")
-        if (isFireType) {
-            let hasAstralFire = effects.some(effect => effect.specialType.trim().toLowerCase() == "astral fire")
-            if (hasAstralFire) {
-                let addedDamage = level >= 50 ? "2d6" : "1d6"
-                let updatedDamage
-                if (damageRoll) {
-                    updatedDamage = `${damageRoll} + ${addedDamage}[Astral Fire]`
-                } else {
-                    updatedDamage = `${addedDamage}[Astral Fire]`
-                }
-                return {
-                    damage: updatedDamage,
-                    directHit: directHitRoll
-                }
+        if (isFireType && effects.astralFireId) {
+            let addedDamage = level >= 50 ? "2d6" : "1d6"
+            let updatedDamage
+            if (damageRoll) {
+                updatedDamage = `${damageRoll} + ${addedDamage}[Astral Fire]`
+            } else {
+                updatedDamage = `${addedDamage}[Astral Fire]`
+            }
+            return {
+                damage: updatedDamage,
+                directHit: directHitRoll
             }
         }
         return {
@@ -2425,8 +2450,7 @@
 
     function addEffectsToPostDamageRolls(effects, damageRolls) {
         var result = {}
-        let hasSurgingTempest = effects.some(effect => effect.specialType.toLowerCase() == "surging tempest")
-        if (!hasSurgingTempest) {
+        if (!effects.surgingTempestId) {
             var rolls = damageRolls.map(roll => roll.result)
             let total = rolls.reduce(
                 (accumulator, currentValue) => (currentValue ?? 0) + accumulator,
@@ -2494,12 +2518,14 @@
         var attributes = {}
         var summaries = []
         var buttons = []
-        let existingEffectTypes = existingEffects.map(effect => {
+
+        let existingEffectTypes = existingEffects.effects.map(effect => {
             if (effect.type == "special") {
                 return effect.specialType.toLowerCase()
             }
             return effect.type
         })
+
         log("Adding effects: " + JSON.stringify(effects))
         for (let effect of effects) {
             let initValues = {
@@ -2514,11 +2540,23 @@
             let value = effect.match(/\((][0-9]+)\)/)
             switch (adjustedEffect) {
                 case "astral fire":
+                    if (existingEffects.astralFireId) {
+                        continue
+                    }
                     initValues.type = "special"
                     initValues.specialType = "Astral Fire"
                     initValues.expiry = "turn2"
                     summaries.push("Activated Astral Fire")
                     buttons.push("Astral Fire")
+
+                    log("Disabling MP recovery due to Astral Fire")
+                    setAttrs({
+                        mpRecovery: 0
+                    })
+                    if (existingEffects.umbralIceId) {
+                        summaries.push("Removed Umbral Ice")
+                        removeRepeatingRow(existingEffects.umbralIceId)
+                    }
                     break
                 case "attribute":
                     initValues.type = "attribute(x)"
@@ -2660,11 +2698,21 @@
                     buttons.push("Surging Tempest")
                     break
                 case "umbral ice":
+                    if (existingEffects.umbralIceId) {
+                        continue
+                    }
                     initValues.type = "special"
                     initValues.specialType = "Umbral Ice"
                     initValues.expiry = "turn2"
                     summaries.push("Activated Umbral Ice")
                     buttons.push("Umbral Ice")
+                    if (existingEffects.astralFireId) {
+                        summaries.push("Removed Astral Fire")
+                        removeRepeatingRow(existingEffects.astralFireId)
+                        setAttrs({
+                            mpRecovery: 2
+                        })
+                    }
                     break
                 case "weak":
                     initValues.type = "weak"
@@ -2688,7 +2736,7 @@
             setAttrs(attributes)
         }
         return {
-            summary: summaries.join("\n"),
+            summary: summaries.join(", "),
             buttons: buttons
         }
     }
@@ -2861,18 +2909,20 @@
             }
         }
 
+        var summaries = [resourceCost]
+            
         // Restore resources
-        if (restoration && (resourceResult || cost == 0)) {
-            var summaries = [resourceCost]
-            summaries.push(restoreResource(isGeneric, restoration, resourceType, resourceNames))
+        if (resourceResult || cost == 0) {
+            if (restoration) {
+                summaries.push(restoreResource(isGeneric, restoration, resourceType, resourceNames))
+            }
             let isIceType = type.toLowerCase().includes("ice-aspect")
-            if (isIceType && effects.some(effect => effect.specialType.trim().toLowerCase() == "umbral ice")) {
+            if (isIceType && effects.umbralIceId) {
                 summaries.push(`${restoreResource(isGeneric, "5 mp", resourceType, resourceNames)} (Umbral Ice)`)
             }
-            return summaries.filter(element => element).join("\n")
         }
 
-        return resourceCost
+        return summaries.filter(element => element).join("\n")
     }
 
     function stringWithTitle(title, value) {
@@ -3086,7 +3136,7 @@
                     hitDefinition = `[[${hitDie}]]`
 
                     // Option to improve the hit roll
-                    if (effects.some((effect) => effect.type == "roll(x)")) {
+                    if (effects.effects.some((effect) => effect.type == "roll(x)")) {
                         bonusButton = ` [${damageType} + Roll Up(X)](~${values.character_name}|repeating_${section}_${rowId}_rolldamagewithbonus)`
                     }
                 }
@@ -3202,8 +3252,7 @@
 
             var criticalMultiplier = 1
             if (roll) {
-                const criticalThreshold = getCriticalThreshold(effects)
-                criticalMultiplier = roll + bonusValue >= criticalThreshold ? 2 : 1
+                criticalMultiplier = roll + bonusValue >= effects.criticalThreshold ? 2 : 1
             }
 
             // Add crit multiplier to other dice rolls
@@ -3393,7 +3442,7 @@
         log("Initiating rest")
         getAttrsAndEffects(resetAttributeList, (values, effects) => {
             log("Removing effects")
-            for (let effect of effects) {
+            for (let effect of effects.effects) {
                 if (effect.expiry == "end" || effect.expiry == "permanent") {
                     continue
                 }
@@ -3409,7 +3458,7 @@
         log("Initiating phase reset")
         getAttrsAndEffects(resetPhaseAttributeList, (values, effects) => {
             console.log("Removing effects")
-            for (let effect of effects) {
+            for (let effect of effects.effects) {
                 if (effect.expiry != "phase") {
                     continue
                 }
@@ -3426,7 +3475,7 @@
         log("Initiating end of adventure reset")
         getAttrsAndEffects(resetAttributeList, (values, effects) => {
             console.log("Removing effects")
-            for (let effect of effects) {
+            for (let effect of effects.effects) {
                 if (effect.expiry == "permanent") {
                     continue
                 }
@@ -3508,6 +3557,21 @@
                 repeating_effects_icon: iconUrl
             })
         })
+    })
+
+    // Reset MP recovery on Astral Fire deletion
+    on("remove:repeating_effects", eventInfo => {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+        
+        let specialType = eventInfo.removedInfo[`repeating_effects_${rowId}_specialType`]
+        if (specialType.trim().toLowerCase() == "astral fire") {
+            log("Astral Fire removed; resetting mp recovery")
+            setAttrs({
+                mpRecovery: 2
+            })
+        }
     })
 </script>
 
