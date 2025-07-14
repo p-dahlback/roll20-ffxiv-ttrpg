@@ -2338,7 +2338,7 @@
                 switch (effect.type) {
                     case "critical(x)":
                         if (effect.value) {
-                            result.criticalThreshold -= parseInt(criticalUp.value)
+                            result.criticalThreshold -= parseInt(effect.value)
                         }
                         break
                 }
@@ -2546,13 +2546,17 @@
             let initValues = {
                 id: generateRowID()
             }
-            let adjustedEffect = effect.replace("(x)", "").trim().toLowerCase()
+            let adjustedEffect = effect.replace(/\(([0-9]+)\)/, "").trim().toLowerCase()
             if (existingEffectTypes.includes(adjustedEffect)) {
                 log("Effect " + effect.trim() + " already exists, skipping")
                 continue
             }
 
-            let value = effect.match(/\((][0-9]+)\)/)
+            var value = null
+            let match = effect.match(/\(([0-9]+)\)/)
+            if (match && match.length >= 2) {
+                value = match[1]
+            }
             switch (adjustedEffect) {
                 case "astral fire":
                     if (existingEffects.astralFireId) {
@@ -2731,6 +2735,9 @@
                     summaries.push("Activated Weak")
                     buttons.push("Weak")
                     break
+                default:
+                    log("Unhandled effect " + adjustedEffect)
+                    continue
             }
             attributes[`repeating_effects_${initValues.id}_type`] = initValues.type
             if (initValues.specialType) {
@@ -2743,7 +2750,7 @@
             attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off"
             
         }
-        if (attributes) {
+        if (Object.keys(attributes).length > 0) {
             setAttrs(attributes)
         }
         return {
@@ -3326,8 +3333,8 @@
             startRoll(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
             `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}}`, results => {
-                const damageRoll = results.results.damage
-                const directHitRoll = results.results.directHit
+                const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" }
+                const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" }
 
                 let computedResults = addEffectsToPostDamageRolls(effects, [damageRoll, directHitRoll])
                 let total = computedResults.total
@@ -3567,14 +3574,14 @@
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
 
-        getAttrs(["repeating_effects_type", "repeating_effects_specialType"], values => {
+        getAttrs([`repeating_effects_${rowId}_type`, `repeating_effects_${rowId}_specialType`], values => {
             const iconUrl = getIconForEffectType(
-                values.repeating_effects_type,
-                values.repeating_effects_specialType
+                values[`repeating_effects_${rowId}_type`],
+                values[`repeating_effects_${rowId}_specialType`]
             )
-            setAttrs({
-                repeating_effects_icon: iconUrl
-            })
+            var attributes = {}
+            attributes[`repeating_effects_${rowId}_icon`] = iconUrl
+            setAttrs(attributes)
         })
 
         if (eventInfo.triggerName.toLowerCase().includes("_specialtype")) {
@@ -3610,7 +3617,7 @@
         const rowId = sourceAttributes[2]
         
         let specialType = eventInfo.removedInfo[`repeating_effects_${rowId}_specialType`]
-        if (specialType.trim().toLowerCase() == "astral fire") {
+        if (specialType && specialType.trim().toLowerCase() == "astral fire") {
             log("Astral Fire removed; resetting mp recovery")
             setAttrs({
                 mpRecovery: 2
