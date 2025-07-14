@@ -2543,7 +2543,8 @@
         return result
     }
 
-    function addEffectsToSelf(effects, existingEffects) {
+    // Adds the given effects. Values should contain level, barrierPoints.
+    function addEffectsToSelf(values, effects, existingEffects) {
         var attributes = {}
         var summaries = []
         var buttons = []
@@ -2650,6 +2651,8 @@
                     buttons.push("Heavy")
                     break
                 case "major arcana":
+                    let barrier = values.level >= 40 ? 2 : 1
+                    attributes.barrierPoints = Math.max(values.barrierPoints ?? 0, barrier)
                     initValues.type = "special"
                     initValues.specialType = "Major Arcana"
                     initValues.expiry = "use"
@@ -3259,7 +3262,7 @@
             `repeating_${section}_${rowId}_effectSelf`,
             `repeating_${section}_${rowId}_effectTarget`,
 
-            "level",
+            "level", "barrierPoints",
             "magicPoints", "magicPoints_max",
             "resource", "resourceValue", "resourceValue_max",
             "resource2", "resource2Value", "resource2Value_max",
@@ -3361,7 +3364,7 @@
                 let computedResults = addEffectsToPostDamageRolls(effects, [damageRoll, directHitRoll])
                 let total = computedResults.total
 
-                let effectSummary = addEffectsToSelf(selfEffects, effects).summary
+                let effectSummary = addEffectsToSelf(values, selfEffects, effects).summary
                 let procSummary = [computedResults.summary, effectSummary].filter(element => element).join(", ")
 
                 var attributes = {}
@@ -3608,9 +3611,8 @@
 
         if (eventInfo.triggerName.toLowerCase().includes("_specialtype")) {
             let effectName = eventInfo.newValue.trim().toLowerCase()
-            log("Effect " + effectName)
             if (["astral fire", "umbral ice"].includes(effectName)) {
-                log("Removing some stuff")
+                log("Removing astral/umbral to ensure a single instance of " + effectName)
                 // Remove Astral Fire and Umbral Ice excepting the current instance.
                 // This ensures there's only one Astral Fire or Umbral Ice active at any point.
                 removeEffects(["astral fire", "umbral ice"], rowId)
