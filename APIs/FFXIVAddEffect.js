@@ -144,6 +144,41 @@ const FFXIVAddEffect = (() => {
         return intValue
     }
 
+    const unpackAttribute = (character, name, defaultValue) => {
+        let attribute = findObjs({ type: "attribute", characterid: character.id, name: name })
+        if (!attribute || attribute.length == 0) {
+            return {
+                fake: {
+                    name: name,
+                    characterid: character.id
+                },
+                get: (key) => {
+                    if (key == "name") {
+                        return name
+                    }
+                    if (key == "current") {
+                        return defaultValue
+                    }
+                    return ""
+                }
+            }
+        }
+        return attribute[0]
+    }
+
+    const setAttribute = (attribute, key, value) => {
+        if (attribute.fake) {
+            var settings = {
+                name: attribute.fake.name,
+                characterid: attribute.fake.characterid
+            }
+            settings[key] = value
+            createObj("attribute", settings)
+        } else {
+            attribute.set(key, value)
+        }
+    }
+
     const timer = (name) => {
         var start = new Date()
         return {
@@ -177,27 +212,35 @@ const FFXIVAddEffect = (() => {
         switch (effect.specialType.toLowerCase()) {
             case "astral fire": {
                 // Clear MP recovery
-                let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: `mpRecovery` })[0]
-                mpRecovery.set("current", 0)
+                let mpRecovery = unpackAttribute(character, "mpRecovery", 2)
+                setAttribute(mpRecovery, "current", 0)
                 break
             }
             case "major arcana": {
-                let level = findObjs({ type: "attribute", characterid: character.id, name: `level` })[0]
-                let barrierPoints = findObjs({ type: "attribute", characterid: character.id, name: `barrierPoints` })[0]
+                let barrierPoints = unpackAttribute(character, "barrierPoints", 0)
                 let currentPoints = unpackNaN(barrierPoints.get("current"))
-                let currentLevel = unpackNaN(level.get("current"))
+
+                let currentLevel
+                if (effect.level) {
+                    // Use the level of the effect
+                    currentLevel = effect.level
+                } else {
+                    // Use your own level as backup
+                    let level = unpackAttribute(character, "level", 30)
+                    currentLevel = unpackNaN(level.get("current"))
+                }
 
                 if (currentLevel >= 40) {
-                    barrierPoints.set("current", Math.max(currentPoints, 2))
+                    setAttribute(barrierPoints, "current", Math.max(currentPoints, 2))
                 } else {
-                    barrierPoints.set("current", Math.max(currentPoints, 1))
+                    setAttribute(barrierPoints, "current", Math.max(currentPoints, 1))
                 }
                 break
             }
             case "umbral ice": {
                 // Reset MP recovery
-                let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: `mpRecovery` })[0]
-                mpRecovery.set("current", 2)
+                let mpRecovery = unpackAttribute(character, "mpRecovery", 2)
+                setAttribute(mpRecovery, "current", 2)
                 break
             }
         }
@@ -248,22 +291,14 @@ const FFXIVAddEffect = (() => {
                     continue
                 }
 
-                var completed = false
                 if (update) {
-                    let objects = findObjs({
-                        type: "attribute",
-                        characterid: character.id,
-                        name: `repeating_effects_${id}_${entry[0]}`
-                    })
-
-                    if (objects && objects.length > 0) {
-                        objects[0].set("current", entry[1])
-                        completed = true
-                    }
-                    // Fall through to create missing attribute
-                }
-
-                if (!completed) {
+                    let object = unpackAttribute(
+                        character, 
+                        `repeating_effects_${id}_${entry[0]}`, 
+                        null
+                    )
+                    setAttribute(object, "current", entry[1])
+                } else {
                     createObj("attribute", {
                         name: `repeating_effects_${id}_${entry[0]}`,
                         current: entry[1],
@@ -312,7 +347,8 @@ const FFXIVAddEffect = (() => {
                     characters: [],
                     player: msg.playerid,
                     who: who,
-                    origin: "FFXIVAddEffect"
+                    origin: "FFXIVAddEffect",
+                    level: null
                 }
 
                 log("FFXIVAddEffect: Parsing command " + msg.content)
@@ -366,6 +402,15 @@ const FFXIVAddEffect = (() => {
                         case "t":
                             let target = parts.slice(1).join(" ")
                             effect.target = target
+                            break
+                        
+                        case "l":
+                            let parsedLevel = parseInt(parts[1])
+                            if (isNaN(parsedLevel)) {
+                                log("FFXIVAddEffect: Invalid level value " + parts[1])
+                                return
+                            }
+                            effect.level = parsedLevel
                             break
 
                         default:

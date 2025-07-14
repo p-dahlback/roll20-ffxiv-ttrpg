@@ -2580,7 +2580,7 @@
             .trim().toLowerCase()
     }
 
-    function buttonsForTargetEffects(effects) {
+    function buttonsForTargetEffects(effects, level) {
         var buttons = []
 
         log("Preparing target effects: " + JSON.stringify(effects))
@@ -2595,7 +2595,7 @@
             let valueDefinition = data.value ? `--v ${data.value}` : ""
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : ""
             let button = `[${data.name}](!ffe --${data.specialType ?? data.type} ${valueDefinition} --expire ${data.expiry} ` + 
-                `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition})`
+                `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`
             buttons.push(button)
         }
         return buttons.join("\n")
@@ -3267,7 +3267,7 @@
                 return
             }
 
-            let targetEffectButtons = buttonsForTargetEffects(targetEffects)
+            let targetEffectButtons = buttonsForTargetEffects(targetEffects, values.level)
             if (targetEffectButtons) {
                 targetEffectTitle = "Effects"
             }
