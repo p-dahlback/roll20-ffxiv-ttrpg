@@ -2261,6 +2261,36 @@
 
 <script type="text/worker">
     const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"]
+    const effectData = {
+        advantage: { type: "advantage", name: "Advantage", expiry: "use" },
+        astral_fire: { type: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "block" },
+        attribute: { type: "attribute(x)", name: "Attribute Up(X)", expiry: "use" },
+        blind: { type: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
+        bound: { type: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
+        brink: { type: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
+        comatose: { type: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
+        critical: { type: "critical(x)", name: "Critical Up(X)", expiry: "use" },
+        damage: { type: "damage", name: "Damage Reroll", expiry: "use" },
+        dot: { type: "dot(x)", name: "DOT(X)", expiry: "phase", curable: true },
+        enmity: { type: "enmity(x)", name: "Enmity(X)", expiry: "turn", duplicate: "replace" },
+        hawks_eye: { type: "special", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
+        heavy: { type: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
+        major_arcana: { type: "special", specialType: "Major Arcana", name: "Major Arcana", expiry: "use", duplicate: "replace" },
+        paralyzed: { type: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
+        petrified: { type: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
+        prone: { type: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
+        ready: { type: "ready", name: "X Ready", expiry: "use", duplicate: "block" },
+        regen: { type: "regen(x)", name: "Regen(X)", expiry: "phase" },
+        roll: { type: "roll(x)", name: "Roll Up(X)", expiry: "use" },
+        silence: { type: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block" },
+        sleep: { type: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block" },
+        slow: { type: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block" },
+        stun: { type: "stun", name: "Stun", expiry: "turn", duplicate: "block" },
+        surging_tempest: { type: "special", specialType: "Surging Tempest", name: "Surging Tempest", expiry: "encounter", duplicate: "block" },
+        unstunnable: { type: "unstunnable", name: "Unstunnable", expiry: "phase", duplicate: "block" },
+        umbral_ice: { type: "special", specialType: "Umbral Ice", name: "Umbral Ice", expiry: "turn2", duplicate: "block" },
+        weak: { type: "weak", name: "Weak", expiry: "rest", duplicate: "block" }
+    }
 
     // Abilities
     function getAttrsAndEffects(bonusAttributes, completion) {
@@ -2543,28 +2573,66 @@
         return result
     }
 
+    function searchableEffectName(name) {
+        return name
+            .replace(/\(([0-9]+)\)/, "")
+            .replace(" ", "_")
+            .trim().toLowerCase()
+    }
+
+    function buttonsForTargetEffects(effects) {
+        var buttons = []
+
+        log("Preparing target effects: " + JSON.stringify(effects))
+        for (let effect of effects) {
+            let adjustedEffect = searchableEffectName(effect)
+            let data = effectData[adjustedEffect]
+            if (!data) {
+                log("Unhandled effect " + adjustedEffect)
+                continue
+            }
+
+            let valueDefinition = data.value ? `--v ${data.value}` : ""
+            let button = `[${data.name}](!ffe --${data.specialType ?? data.type} ${valueDefinition} --expire ${data.expiry} --edit ${0} --curable ${data.curable ? 1 : 0})`
+            buttons.push(button)
+        }
+        return buttons.join("\n")
+    }
+
     // Adds the given effects. Values should contain level, barrierPoints.
     function addEffectsToSelf(values, effects, existingEffects) {
         var attributes = {}
         var summaries = []
-        var buttons = []
 
         let existingEffectTypes = existingEffects.effects.map(effect => {
             if (effect.type == "special") {
-                return effect.specialType.toLowerCase()
+                return effect.specialType.replace(" ", "_").toLowerCase()
             }
             return effect.type
         })
 
-        log("Adding effects: " + JSON.stringify(effects))
+        log("Adding effects to self: " + JSON.stringify(effects))
         for (let effect of effects) {
-            let initValues = {
-                id: generateRowID()
+            let adjustedEffect = searchableEffectName(effect)
+            let data = effectData[adjustedEffect]
+            if (!data) {
+                log("Unhandled effect " + adjustedEffect)
+                continue
             }
-            let adjustedEffect = effect.replace(/\(([0-9]+)\)/, "").trim().toLowerCase()
-            if (existingEffectTypes.includes(adjustedEffect)) {
+
+            // Manage duplicate effects
+            if (data.duplicate == "block" && existingEffectTypes.includes(adjustedEffect)) {
                 log("Effect " + effect.trim() + " already exists, skipping")
                 continue
+            }
+
+            if (data.duplicate == "replace") {
+                for (let replacable of existingEffects) {
+                    if (replacable.type == data.type && replacable.specialType == data.specialType) {
+                        summaries.push(`Removed existing ${data.name}`)
+                        removeRepeatingRow(replacable.fullId)
+                    }
+                }
             }
 
             var value = null
@@ -2572,194 +2640,42 @@
             if (match && match.length >= 2) {
                 value = match[1]
             }
-            switch (adjustedEffect) {
-                case "astral fire":
-                    if (existingEffects.astralFireId) {
-                        continue
-                    }
-                    initValues.type = "special"
-                    initValues.specialType = "Astral Fire"
-                    initValues.expiry = "turn2"
-                    summaries.push("Activated Astral Fire")
-                    buttons.push("Astral Fire")
+            let initValues = {
+                id: generateRowID(),
+                type: data.type,
+                specialType: data.specialType,
+                value: value,
+                expiry: data.expiry,
+                curable: data.curable
+            }
 
+            // Handle special conditions for certain effects
+            switch (adjustedEffect) {
+                case "astral_fire":
+                    // Clear MP recovery
+                    attributes.mpRecovery = 0
+
+                    // Remove Umbral Ice
                     if (existingEffects.umbralIceId) {
                         summaries.push("Removed Umbral Ice")
                         removeRepeatingRow(existingEffects.umbralIceId)
                     }
                     break
-                case "attribute":
-                    initValues.type = "attribute(x)"
-                    initValues.value = value
-                    initValues.expiry = "use"
-                    summaries.push(`Activated Attribute Up(${value})`)
-                    buttons.push(`Attribute Up(${value})`)
-                    break
-                case "blind":
-                    initValues.type = "blind"
-                    initValues.expiry = "encounter"
-                    initValues.curable = true
-                    summaries.push("Activated Blind")
-                    buttons.push("Blind")
-                    break
-                case "bound":
-                    initValues.type = "bound"
-                    initValues.expiry = "encounter"
-                    initValues.curable = true
-                    summaries.push("Activated Bound")
-                    buttons.push("Bound")
-                    break
-                case "brink":
-                    initValues.type = "brink"
-                    initValues.expiry = "rest"
-                    summaries.push("Activated Brink of Death")
-                    buttons.push("Brink of Death")
-                    break
-                case "critical":
-                    initValues.type = "critical(x)"
-                    initValues.value = value
-                    initValues.expiry = "use"
-                    summaries.push(`Activated Critical Up(${value})`)
-                    buttons.push(`Critical Up(${value})`)
-                    break
-                case "damage":
-                    initValues.type = "damage"
-                    initValues.expiry = "use"
-                    summaries.push(`Activated Damage Reroll(${value})`)
-                    buttons.push(`Damage Reroll(${value})`)
-                    break
-                case "dot":
-                    initValues.type = "dot(x)"
-                    initValues.value = value
-                    initValues.expiry = "phase"
-                    initValues.curable = true
-                    summaries.push(`Activated DOT(${value})`)
-                    buttons.push(`DOT(${value})`)
-                    break
-                case "enmity":
-                    initValues.type = "enmity(x)"
-                    initValues.value = value
-                    initValues.expiry = "turn"
-                    summaries.push(`Activated Enmity(${value})`)
-                    buttons.push(`Enmity(${value})`)
-                    break
-                case "heavy":
-                    initValues.type = "heavy"
-                    initValues.expiry = "turn"
-                    initValues.curable = true
-                    summaries.push("Activated Heavy")
-                    buttons.push("Heavy")
-                    break
-                case "major arcana":
+                case "major_arcana":
+                    // Add barrier
                     let barrier = values.level >= 40 ? 2 : 1
                     attributes.barrierPoints = Math.max(values.barrierPoints ?? 0, barrier)
-                    initValues.type = "special"
-                    initValues.specialType = "Major Arcana"
-                    initValues.expiry = "use"
-                    summaries.push("Activated Major Arcana")
-                    buttons.push("Major Arcana")
                     break
-                case "paralyzed":
-                    initValues.type = "paralyzed"
-                    initValues.expiry = "turn"
-                    initValues.curable = true
-                    summaries.push("Activated Paralysis")
-                    buttons.push("Paralysis")
-                    break
-                case "petrified":
-                    initValues.type = "petrified"
-                    initValues.expiry = "turn2"
-                    initValues.curable = true
-                    summaries.push("Activated Petrify")
-                    buttons.push("Petrify")
-                    break
-                case "prone":
-                    initValues.type = "prone"
-                    initValues.expiry = "encounter"
-                    initValues.curable = true
-                    summaries.push("Activated Prone")
-                    buttons.push("Prone")
-                    break
-                case "ready":
-                    initValues.type = "ready(x)"
-                    initValues.value = value
-                    initValues.expiry = "use"
-                    summaries.push(`Activated ${value} Ready`)
-                    buttons.push(`${value} Ready`)
-                    break
-                case "regen":
-                    initValues.type = "regen(x)"
-                    initValues.value = value
-                    initValues.expiry = "encounter"
-                    summaries.push(`Activated Regen(${value})`)
-                    buttons.push(`Regen(${value})`)
-                    break
-                case "roll":
-                    initValues.type = "roll(x)"
-                    initValues.value = value
-                    initValues.expiry = "use"
-                    summaries.push(`Activated Roll Up(${value})`)
-                    buttons.push(`Roll Up(${value})`)
-                    break
-                case "silence":
-                    initValues.type = "silence"
-                    initValues.expiry = "turn"
-                    initValues.curable = true
-                    summaries.push("Activated Silence")
-                    buttons.push("Silence")
-                    break
-                case "sleep":
-                    initValues.type = "sleep"
-                    initValues.expiry = "damage"
-                    initValues.curable = true
-                    summaries.push("Activated Sleep")
-                    buttons.push("Sleep")
-                    break
-                case "slow":
-                    initValues.type = "slow"
-                    initValues.expiry = "encounter"
-                    initValues.curable = true
-                    summaries.push("Activated Slow")
-                    buttons.push("Slow")
-                    break
-                case "stun":
-                    initValues.type = "stun"
-                    initValues.expiry = "turn"
-                    summaries.push("Activated Stun")
-                    buttons.push("Stun")
-                    break
-                case "surging tempest":
-                    initValues.type = "special"
-                    initValues.specialType = "Surging Tempest"
-                    initValues.expiry = "encounter"
-                    summaries.push("Activated Surging Tempest")
-                    buttons.push("Surging Tempest")
-                    break
-                case "umbral ice":
-                    if (existingEffects.umbralIceId) {
-                        continue
-                    }
-                    initValues.type = "special"
-                    initValues.specialType = "Umbral Ice"
-                    initValues.expiry = "turn2"
-                    summaries.push("Activated Umbral Ice")
-                    buttons.push("Umbral Ice")
+                case "umbral_ice":
                     if (existingEffects.astralFireId) {
                         summaries.push("Removed Astral Fire")
                         removeRepeatingRow(existingEffects.astralFireId)
-                        setAttrs({
-                            mpRecovery: 2
-                        })
+
+                        // Reset MP recovery
+                        attributes.mpRecovery = 2
                     }
                     break
-                case "weak":
-                    initValues.type = "weak"
-                    initValues.expiry = "rest"
-                    summaries.push("Activated Weak")
-                    buttons.push("Weak")
-                    break
                 default:
-                    log("Unhandled effect " + adjustedEffect)
                     continue
             }
             attributes[`repeating_effects_${initValues.id}_type`] = initValues.type
@@ -2773,15 +2689,13 @@
             attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off"
             attributes[`repeating_effects_${initValues.id}_editable`] = "off"
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic"
-            
+
+            summaries.push(`Activated ${data.name}`)
         }
         if (Object.keys(attributes).length > 0) {
             setAttrs(attributes)
         }
-        return {
-            summary: summaries.join(", "),
-            buttons: buttons
-        }
+        return summaries.join(", ")
     }
 
     function templateValues(title, value) {
@@ -3351,20 +3265,22 @@
                 return
             }
 
+            let targetEffectButtons = buttonsForTargetEffects(targetEffects)
+
             // Roll damage
             console.log(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=}}`)
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=}} {{targetEffects=${targetEffectButtons}}}`)
             startRoll(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}}`, results => {
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} {{targetEffects=${targetEffectButtons}}}`, results => {
                 const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" }
                 const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" }
 
                 let computedResults = addEffectsToPostDamageRolls(effects, [damageRoll, directHitRoll])
                 let total = computedResults.total
 
-                let effectSummary = addEffectsToSelf(values, selfEffects, effects).summary
+                let effectSummary = addEffectsToSelf(values, selfEffects, effects)
                 let procSummary = [computedResults.summary, effectSummary].filter(element => element).join(", ")
 
                 var attributes = {}
@@ -3778,6 +3694,9 @@
         </div>
         <div class="sheet-body">
             <h4 class="sheet-hideinline">{{totalTitle}}{{computed::total}}</h4>
+            <div class="sheet-button-container">
+                {{targetEffects}}
+            </div>
             <div class="sheet-button-container">
                 {{button}}
             </div>

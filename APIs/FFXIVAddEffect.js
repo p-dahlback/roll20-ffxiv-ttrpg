@@ -150,6 +150,7 @@ const FFXIVAddEffect = (() => {
                 value: effect.value,
                 expiry: effect.expiry,
                 editable: effect.editable == "1" ? "on" : "off",
+                curable: effect.curable == "1" ? "on" : "off",
                 origin: effect.origin
             }
             for (let entry of Object.entries(attributes)) {
@@ -202,6 +203,7 @@ const FFXIVAddEffect = (() => {
                     origin: "FFXIVAddEffect"
                 }
 
+                log("FFXIVAddEffect: Parsing command " + msg.content)
                 args.forEach(a => {
                     let parts = a.split(/\s+/)
                     switch (parts[0].toLowerCase()) {
@@ -227,6 +229,15 @@ const FFXIVAddEffect = (() => {
                                 effect.editable = parts[1]
                             } else {
                                 log("FFXIVAddEffect: Unrecognized editable type " + parts[1])
+                                return
+                            }
+                            break
+                        
+                        case "curable":
+                            if (["0", "1"].includes(parts[1])) {
+                                effect.curable = parts[1]
+                            } else {
+                                log("FFXIVAddEffect: Unrecognized curable type " + parts[1])
                                 return
                             }
                             break
@@ -265,7 +276,6 @@ const FFXIVAddEffect = (() => {
 
                 effect.characters = targetResult.result
                 let event = addEffect(effect)
-                if (!playerIsGM(msg.playerid)) {
                     outputEvent("add", event)
                 }
             }
@@ -277,6 +287,9 @@ const FFXIVAddEffect = (() => {
     }
 
     on("ready", () => {
+        state[scriptName] = {
+            version: version
+        }
         registerEventHandlers()
     })
 })()

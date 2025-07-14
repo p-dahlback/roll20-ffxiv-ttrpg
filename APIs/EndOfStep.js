@@ -149,6 +149,9 @@ const EndOfStep = (() => {
     }
 
     on("ready", () => {
+        state[scriptName] = {
+            version: version
+        }
         registerEventHandlers()
     })
 })()
