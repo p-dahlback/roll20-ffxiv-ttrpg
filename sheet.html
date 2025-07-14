@@ -413,9 +413,9 @@
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
                         <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
-                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo3" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -617,9 +617,9 @@
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
                         <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
-                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo3" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -819,9 +819,9 @@
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
                         <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
-                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo3" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -1021,9 +1021,9 @@
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
                         <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
-                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo3" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -1223,9 +1223,9 @@
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
                         <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
-                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo3" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -1425,9 +1425,9 @@
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
                         <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
-                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo3" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -1625,9 +1625,9 @@
                         <button type="action" class="ability-action" name="act_share">q</button>
                         <button type="action" name="act_rolldamage" style="display: none;">d</button>
                         <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
-                        <button type="action" name="act_runcombo2" style="display: none;">d</button>
                         <button type="action" name="act_runcombo1" style="display: none;">d</button>
                         <button type="action" name="act_runcombo2" style="display: none;">d</button>
+                        <button type="action" name="act_runcombo3" style="display: none;">d</button>
                     </div>
 
                     <div class="type expanded-view">
@@ -3477,29 +3477,25 @@
 
     // Ability rolls
 
-    on("clicked:repeating_limit:share clicked:repeating_song:share clicked:repeating_primary:share clicked:repeating_ninjutsu:share clicked:repeating_secondary:share clicked:repeating_instant:share clicked:repeating_technique:share", eventInfo => {
-        shareAbility(eventInfo)
-    })
-
-    on("clicked:repeating_limit:trigger clicked:repeating_song:trigger clicked:repeating_primary:trigger clicked:repeating_ninjutsu:trigger clicked:repeating_secondary:trigger clicked:repeating_instant:trigger clicked:repeating_technique:trigger", eventInfo => {
-        activateAbility(eventInfo)
-    })
-
-    on("clicked:repeating_limit:rolldamage clicked:repeating_song:rolldamage clicked:repeating_primary:rolldamage clicked:repeating_ninjutsu:rolldamage clicked:repeating_secondary:rolldamage clicked:repeating_instant:rolldamage clicked:repeating_technique:rolldamage", eventInfo => {
-        rollDamage(false, eventInfo)
-    })
-
-    on("clicked:repeating_limit:rolldamagewithbonus clicked:repeating_song:rolldamagewithbonus clicked:repeating_primary:rolldamagewithbonus clicked:repeating_ninjutsu:rolldamagewithbonus clicked:repeating_secondary:rolldamagewithbonus clicked:repeating_instant:rolldamagewithbonus clicked:repeating_technique:rolldamagewithbonus", eventInfo => {
-        rollDamage(true, eventInfo)
-    })
-
-    on("clicked:repeating_limit:runcombo1 clicked:repeating_song:runcombo1 clicked:repeating_primary:runcombo1 clicked:repeating_ninjutsu:runcombo1 clicked:repeating_secondary:runcombo1 clicked:repeating_instant:runcombo1 clicked:repeating_technique:runcombo1", eventInfo => {
-        activateCombo(eventInfo, 0)
-    })
-
-    on("clicked:repeating_limit:runcombo2 clicked:repeating_song:runcombo2 clicked:repeating_primary:runcombo2 clicked:repeating_ninjutsu:runcombo2 clicked:repeating_secondary:runcombo2 clicked:repeating_instant:runcombo2 clicked:repeating_technique:runcombo2", eventInfo => {
-        activateCombo(eventInfo, 1)
-    })
+    for (let section of abilitySections) {
+        on(`clicked:repeating_${section}:share`, eventInfo => {
+            shareAbility(eventInfo)
+        })
+        on(`clicked:repeating_${section}:trigger`, eventInfo => {
+            activateAbility(eventInfo)
+        })
+        on(`clicked:repeating_${section}:rolldamage`, eventInfo => {
+            rollDamage(false, eventInfo)
+        })
+        on(`clicked:repeating_${section}:rolldamagewithbonus`, eventInfo => {
+            rollDamage(true, eventInfo)
+        })
+        for (let i = 0; i < 3; i++) {
+            on(`clicked:repeating_${section}:runcombo${i + 1}`, eventInfo => {
+                activateCombo(eventInfo, i)
+            })
+        }
+    }
 
     // Effect updates
     function getIconForEffectType(type, specialType) {
