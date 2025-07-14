@@ -2593,7 +2593,9 @@
             }
 
             let valueDefinition = data.value ? `--v ${data.value}` : ""
-            let button = `[${data.name}](!ffe --${data.specialType ?? data.type} ${valueDefinition} --expire ${data.expiry} --edit ${0} --curable ${data.curable ? 1 : 0})`
+            let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : ""
+            let button = `[${data.name}](!ffe --${data.specialType ?? data.type} ${valueDefinition} --expire ${data.expiry} ` + 
+                `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition})`
             buttons.push(button)
         }
         return buttons.join("\n")

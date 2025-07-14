@@ -96,7 +96,7 @@ const FFXIVAddEffect = (() => {
         if (target == "selected") {
             let tokens = msg.selected
             if (!tokens) {
-                return { result: [], error: "No selected tokens" }
+                return { result: [], error: "Select a token to apply an status effect." }
             }
 
             var characters = []
@@ -121,7 +121,7 @@ const FFXIVAddEffect = (() => {
                 return { result: characters, error: null }
             } else {
                 log("FFXIVAddEffect: No characters controlled by player")
-                return { result: [], error: "No available controlled characters" }
+                return { result: [], error: "No available controlled characters to apply status effects to." }
             }
         } else {
             log("FFXIVAddEffect: Searching for character " + target)
@@ -136,13 +136,103 @@ const FFXIVAddEffect = (() => {
         }
     }
 
+    const unpackNaN = (value) => {
+        let intValue = parseInt(value)
+        if (isNaN(intValue)) {
+            return 0
+        }
+        return intValue
+    }
+
+    const timer = (name) => {
+        var start = new Date()
+        return {
+            stop: () => {
+                var end = new Date()
+                var time = end.getTime() - start.getTime()
+                log(`Timer: ${name} finished in ${time}ms`)
+            }
+        }
+    }
+
+    const getEffectsWithName = (name, character) => {
+        let objects = findObjs({ type: "attribute", characterid: character.id, current: name })
+        let effects = objects.reduce((accumulator, object) => {
+            let objectName = object.get("name")
+            let normalizedName = objectName.toLowerCase()
+            if (!normalizedName.includes("repeating_effects") || !normalizedName.includes("type")) {
+                return accumulator
+            }
+            let id = objectName.replace("repeating_effects_", "").replace(/_\w*[Tt]{1}ype/, "")
+            accumulator.push({
+                id: id,
+                characterid: character.id
+            })
+            return accumulator
+        }, [])
+        return effects
+    }
+
+    const performAdditionalEffectChanges = (effect, character) => {
+        switch (effect.specialType.toLowerCase()) {
+            case "astral fire": {
+                // Clear MP recovery
+                let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: `mpRecovery` })[0]
+                mpRecovery.set("current", 0)
+                break
+            }
+            case "major arcana": {
+                let level = findObjs({ type: "attribute", characterid: character.id, name: `level` })[0]
+                let barrierPoints = findObjs({ type: "attribute", characterid: character.id, name: `barrierPoints` })[0]
+                let currentPoints = unpackNaN(barrierPoints.get("current"))
+                let currentLevel = unpackNaN(level.get("current"))
+
+                if (currentLevel >= 40) {
+                    barrierPoints.set("current", Math.max(currentPoints, 2))
+                } else {
+                    barrierPoints.set("current", Math.max(currentPoints, 1))
+                }
+                break
+            }
+            case "umbral ice": {
+                // Reset MP recovery
+                let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: `mpRecovery` })[0]
+                mpRecovery.set("current", 2)
+                break
+            }
+        }
+    }
+
     const addEffect = (effect) => {
-        let summaryIntro = `${effect.typeName} to `
+        let summaryIntro = `${effect.typeName.replace("X", effect.value)} to `
         var summaries = []
 
         log(`FFXIVAddEffect: Adding effect ${effect.typeName} to ${effect.characters.length} character(s)`)
         for (let character of effect.characters) {
-            let id = generateRowID()
+            let existingEffects = getEffectsWithName(effect.specialType ?? effect.type, character)
+            if (effect.duplicate === "block") {
+                if (existingEffects.some(element => element.characterid === character.id)) {
+                    log(`FFXIVAddEffect: Skipping ${character.get("name")} due to duplicate effect`)
+                    continue
+                }
+            }
+
+            var update = false
+            var id = ""
+            if (effect.duplicate == "replace") {
+                let duplicate = existingEffects.find(element => element.characterid == character.id)
+                if (duplicate) {
+                    // Overwrite the contents of the effect with the new specification
+                    id = duplicate.id
+                    update = true
+                    log(`FFXIVAddEffect: Replacing existing effect`)
+                } else {
+                    id = generateRowID()
+                }
+            } else {
+                id = generateRowID()
+            }
+
             let attributes = {
                 icon: effect.icon,
                 type: effect.type,
@@ -154,13 +244,35 @@ const FFXIVAddEffect = (() => {
                 origin: effect.origin
             }
             for (let entry of Object.entries(attributes)) {
-                createObj("attribute", {
-                    name: `repeating_effects_${id}_${entry[0]}`,
-                    current: entry[1],
-                    characterid: character.id
-                })
+                if (!entry[1]) {
+                    continue
+                }
+
+                var completed = false
+                if (update) {
+                    let objects = findObjs({
+                        type: "attribute",
+                        characterid: character.id,
+                        name: `repeating_effects_${id}_${entry[0]}`
+                    })
+
+                    if (objects && objects.length > 0) {
+                        objects[0].set("current", entry[1])
+                        completed = true
+                    }
+                    // Fall through to create missing attribute
+                }
+
+                if (!completed) {
+                    createObj("attribute", {
+                        name: `repeating_effects_${id}_${entry[0]}`,
+                        current: entry[1],
+                        characterid: character.id
+                    })
+                }
             }
-            summaries.push(character.get("name").replace("X", effect.value))
+            summaries.push(character.get("name"))
+            performAdditionalEffectChanges(effect, character)
         }
         let summary = summaryIntro + summaries.join(", ")
         return { who: effect.who, summary: summary }
@@ -232,12 +344,21 @@ const FFXIVAddEffect = (() => {
                                 return
                             }
                             break
-                        
+
                         case "curable":
                             if (["0", "1"].includes(parts[1])) {
                                 effect.curable = parts[1]
                             } else {
                                 log("FFXIVAddEffect: Unrecognized curable type " + parts[1])
+                                return
+                            }
+                            break
+
+                        case "dupe":
+                            if (["block", "replace", "allow"].includes(parts[1])) {
+                                effect.duplicate = parts[1]
+                            } else {
+                                log("FFXIVAddEffect: Unrecognized dupe type " + parts[1])
                                 return
                             }
                             break
@@ -276,6 +397,7 @@ const FFXIVAddEffect = (() => {
 
                 effect.characters = targetResult.result
                 let event = addEffect(effect)
+                if (!playerIsGM(msg.playerid)) {
                     outputEvent("add", event)
                 }
             }
