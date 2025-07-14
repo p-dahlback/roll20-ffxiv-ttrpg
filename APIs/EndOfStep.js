@@ -19,9 +19,19 @@
     * resource2Value - The current and max values of the secondary resource
     * resource2Recovery - an integer value of how much secondary resource will be recovered at the end of the given step
 */
-on('ready', () => {
+const EndOfStep = (() => {
+    const scriptName = "EndOfStep";
+    const version = "0.1.0";
 
-    const resourceResolver = (character, resource) => {
+    const unpackNaN = (value) => {
+        let intValue = parseInt(value)
+        if (isNaN(intValue)) {
+            return 0
+        }
+        return intValue
+    }
+
+    const recoverResource = (character, resource) => {
         let sheetType = getAttrByName(character.id, "sheet_type")
         if (sheetType != "unique") {
             return
@@ -41,19 +51,19 @@ on('ready', () => {
         if (recovery <= 0) {
             return
         }
-        let currentValue = parseInt(resourceObject.get("current") ?? "0")
-        let max = parseInt(resourceObject.get("max") ?? "0")
+        let currentValue = unpackNaN(resourceObject.get("current"))
+        let max = unpackNaN(resourceObject.get("max"))
         if (max <= 0) {
             return
         }
 
-        let updatedValue = Math.min(currentValue + parseInt(recovery), max)
+        let updatedValue = Math.min(currentValue + unpackNaN(recovery), max)
 
         resourceObject.set("current", updatedValue)
         return `Recovered ${recovery} ${resourceName} (${currentValue} -> ${updatedValue}/${max})`
     }
 
-    const mpResolver = (token, character) => {
+    const recoverMp = (token, character) => {
         var mpObject = findObjs({ type: "attribute", characterid: character.id, name: "magicPoints" })[0]
         if (!mpObject) {
             log("EndOfStep: No MP")
@@ -63,23 +73,23 @@ on('ready', () => {
         if (mpRecovery <= 0) {
             return
         }
-        let currentMp = parseInt(token.get("bar3_value") ?? "0")
-        let maxMp = parseInt(token.get("bar3_max") ?? "0")
+        let currentMp = unpackNaN(token.get("bar3_value"))
+        let maxMp = unpackNaN(token.get("bar3_max"))
         if (maxMp <= 0) {
             return
         }
 
-        let updatedMp = Math.min(currentMp + parseInt(mpRecovery), maxMp)
+        let updatedMp = Math.min(currentMp + unpackNaN(mpRecovery), maxMp)
 
         token.set("bar3_value", updatedMp)
         return `Recovered ${mpRecovery} MP (${currentMp} -> ${updatedMp}/${maxMp})`
     }
 
-    const resolver = (token, character) => {
+    const performStartOfTurn = (token, character) => {
         let summaries = [
-            mpResolver(token, character),
-            resourceResolver(character, "resource"),
-            resourceResolver(character, "resource2")
+            recoverMp(token, character),
+            recoverResource(character, "resource"),
+            recoverResource(character, "resource2")
         ].filter(element => element)
 
         return summaries.join("\n")
@@ -96,7 +106,7 @@ on('ready', () => {
         }
     }
 
-    function checkTurnOrder(obj, prev) {
+    const checkTurnOrder = (obj, prev) => {
         let turnOrder = JSON.parse(obj.get("turnorder") ?? "[]")
         let previousTurnOrder = JSON.parse(prev.turnorder ?? "[]")
         let firstInTurn = turnOrder.length > 0 ? turnOrder[0] : { id: "-1" }
@@ -121,7 +131,7 @@ on('ready', () => {
             if (team != affectedTeam) {
                 continue
             }
-            let content = resolver(token, character)
+            let content = performStartOfTurn(token, character)
             try {
                 sendChat(token.get("name"), content)
             } catch(e){
@@ -131,8 +141,14 @@ on('ready', () => {
         }
     }
 
-    on(
-        'change:campaign:turnorder',
-        (obj, prev) => setTimeout(() => checkTurnOrder(Campaign(), prev), 1000)
-    )
-})
+    const registerEventHandlers = () => {
+        on(
+            "change:campaign:turnorder",
+            (obj, prev) => setTimeout(() => checkTurnOrder(Campaign(), prev), 1000)
+        )
+    }
+
+    on("ready", () => {
+        registerEventHandlers()
+    })
+})()
