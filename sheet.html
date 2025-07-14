@@ -3249,7 +3249,7 @@
                     currentCombo: combo
                 })
                 var choices = [combo]
-                comboTitle = "Combo:"
+                comboTitle = "Combo"
                 if (combo.includes(",")) {
                     choices = combo.split(",")
                 }
@@ -3266,14 +3266,19 @@
             }
 
             let targetEffectButtons = buttonsForTargetEffects(targetEffects)
+            if (targetEffectButtons) {
+                targetEffectTitle = "Effects"
+            }
 
             // Roll damage
             console.log(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
-            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=}} {{targetEffects=${targetEffectButtons}}}`)
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} ` +
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` + 
+            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`)
             startRoll(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} {{targetEffects=${targetEffectButtons}}}`, results => {
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` + 
+            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`, results => {
                 const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" }
                 const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" }
 
@@ -3694,10 +3699,12 @@
         </div>
         <div class="sheet-body">
             <h4 class="sheet-hideinline">{{totalTitle}}{{computed::total}}</h4>
-            <div class="sheet-button-container">
+            <div class="sheet-effects sheet-button-container">
+                <h4>{{targetEffectTitle}}</h4>
                 {{targetEffects}}
             </div>
-            <div class="sheet-button-container">
+            <div class="sheet-combo sheet-button-container">
+                <h4>{{comboTitle}}</h4>
                 {{button}}
             </div>
         </div>

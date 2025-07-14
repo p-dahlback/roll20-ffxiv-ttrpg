@@ -1143,6 +1143,11 @@ textarea {
   padding-top: 16px;
 }
 
+.sheet-rolltemplate-damage .sheet-effects > a {
+  background-color: green;
+  border-radius: 6px;
+}
+
 .sheet-rolltemplate-damage .sheet-hideinline > .inlinerollresult {
   background-color: transparent;
   padding: 0px;
