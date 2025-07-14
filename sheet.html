@@ -297,6 +297,7 @@
                         <select class="effect-type typeSwitchHidden" name="attr_type">
                             <option value="none">--Select--</option>
                             <option value="roll(x)">Roll Up(X)</option>
+                            <option value="damage">Damage Reroll</option>
                             <option value="critical(x)">Critical Up(X)</option>
                             <option value="attribute(x)">Attribute Up(X)</option>
                             <option value="regen(x)">Regen(X)</option>
@@ -2341,6 +2342,9 @@
                             result.criticalThreshold -= parseInt(effect.value)
                         }
                         break
+                    case "damage":
+                        result.hasDamageReroll = true
+                        break
                 }
             }
         }
@@ -2465,17 +2469,12 @@
 
     function addEffectsToPostDamageRolls(effects, damageRolls) {
         var result = {}
-        if (!effects.surgingTempestId) {
-            var rolls = damageRolls.map(roll => roll.result)
-            let total = rolls.reduce(
-                (accumulator, currentValue) => (currentValue ?? 0) + accumulator,
-                0
-            )
-            result.rolls = rolls
-            result.total = total
-            return result
+        var summaries = []
+        if (effects.hasDamageReroll && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
+            summaries.push("--Damage reroll available--")
         }
 
+        if (effects.surgingTempestId) {
         var rolls = []
         var total = 0
         var appliedSurgingTempest = false
@@ -2524,8 +2523,19 @@
         result.rolls = rolls
         result.total = total
         if (appliedSurgingTempest) {
-            result.summary = "Surging Tempest proc"
+                summaries.push("Surging Tempest proc")
+            }
+        } else {
+            var rolls = damageRolls.map(roll => roll.result)
+            let total = rolls.reduce(
+                (accumulator, currentValue) => (currentValue ?? 0) + accumulator,
+                0
+            )
+            result.rolls = rolls
+            result.total = total
         }
+        result.summary = summaries.join(", ")
+
         return result
     }
 
@@ -2606,6 +2616,12 @@
                     initValues.expiry = "use"
                     summaries.push(`Activated Critical Up(${value})`)
                     buttons.push(`Critical Up(${value})`)
+                    break
+                case "damage":
+                    initValues.type = "damage"
+                    initValues.expiry = "use"
+                    summaries.push(`Activated Damage Reroll(${value})`)
+                    buttons.push(`Damage Reroll(${value})`)
                     break
                 case "dot":
                     initValues.type = "dot(x)"
