@@ -293,8 +293,9 @@
                     <div class="horizontal semi-tight">
                         <img class="effect-icon" name="attr_icon" />
                         <input type="hidden" class="typeSwitch" name="attr_type" />
-                        <input type="text" class="typeSwitchDisplayed" name="attr_specialType" placeholder="Effect" />
-                        <select class="effect-type typeSwitchHidden" name="attr_type">
+                        <input type="hidden" class="editSwitch" name="attr_editable" />
+                        <input type="text" class="typeSwitchDisplayed editSwitchBlocked" name="attr_specialType" placeholder="Effect" />
+                        <select class="effect-type typeSwitchHidden editSwitchBlocked" name="attr_type">
                             <option value="none">--Select--</option>
                             <option value="roll(x)">Roll Up(X)</option>
                             <option value="damage">Damage Reroll</option>
@@ -324,7 +325,7 @@
                             <hr />
                             <option value="special">Special</option>
                         </select>
-                        <input class="effect-value typeSwitchHidden" type="text" name="attr_value" placeholder="X" />
+                        <input class="effect-value typeSwitchHidden editSwitchBlocked" type="text" name="attr_value" placeholder="X" />
                         <select class="effect-expiry" name="attr_expiry">
                             <option value="turn">End of turn</option>
                             <option value="turn2">End of next turn</option>
@@ -2764,6 +2765,8 @@
             }
             attributes[`repeating_effects_${initValues.id}_expiry`] = initValues.expiry
             attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off"
+            attributes[`repeating_effects_${initValues.id}_editable`] = "off"
+            attributes[`repeating_effects_${initValues.id}_origin`] = "automatic"
             
         }
         if (Object.keys(attributes).length > 0) {

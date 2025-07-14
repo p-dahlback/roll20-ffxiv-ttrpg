@@ -942,6 +942,17 @@ textarea {
   display: none;
 }
 
+.editSwitch[value="off"] ~ .editSwitchBlocked {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  user-select: none;
+  pointer-events: none;
+  border: none;
+  background-color: transparent;
+  color: #766c4b;
+}
+
 .effect-icon {
   width: 24px;
   height: 32px;
