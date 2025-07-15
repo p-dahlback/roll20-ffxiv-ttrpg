@@ -2745,7 +2745,7 @@
             }
 
             if (data.duplicate == "replace") {
-                for (let replacable of existingEffects) {
+                for (let replacable of existingEffects.effects) {
                     if (replacable.type == data.type && replacable.specialType == data.specialType) {
                         summaries.push(`Removed existing ${data.name}`)
                         removeRepeatingRow(replacable.fullId)
