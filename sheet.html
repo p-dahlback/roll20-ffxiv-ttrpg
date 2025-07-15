@@ -2596,19 +2596,27 @@
             .trim().toLowerCase()
     }
 
-    function consumeEffectsOnAbility(name, type, effects) {
+    function consumeEffectsOnAbility(name, condition, effects) {
         var summaries = []
-        let types = type.split(",").map(type => type.trim().toLowerCase())
+        log("Consuming effects for " + name + ", condition " + condition)
         for (let effect of effects.effects) {
             let normalizedName = name.toLowerCase()
+            let normalizedCondition = condition.toLowerCase()
             let specialType = (effect.specialType ?? "").toLowerCase()
             let value = (effect.value ?? "").toLowerCase()
+            let isReadyType = effect.type == "ready(x)"
+            
+            if (!isReadyType && !specialType.includes(" ready")) {
+                continue
+            }
+
             if (
                 specialType.includes(normalizedName) ||
-                types.some(type => specialType.includes(type)) ||
-                (effect.type == "ready(x)" && value == normalizedName) ||
-                (effect.type == "ready(x)" && types.includes(value))
+                normalizedCondition.includes(specialType) ||
+                (isReadyType && value == normalizedName) ||
+                (isReadyType && normalizedCondition.includes(value))
             ) {
+                log("Consuming effect " + JSON.stringify(effect))
                 // Consume X Ready
                 removeRepeatingRow(effect.fullId)
 
@@ -3240,6 +3248,7 @@
 
             `repeating_${section}_${rowId}_effectSelf`,
             `repeating_${section}_${rowId}_effectTarget`,
+            `repeating_${section}_${rowId}_condition`,
 
             "level", "barrierPoints",
             "magicPoints", "magicPoints_max",
@@ -3257,6 +3266,7 @@
 
             const selfEffects = values[`repeating_${section}_${rowId}_effectSelf`].split(",")
             const targetEffects = values[`repeating_${section}_${rowId}_effectTarget`].split(",")
+            const condition = values[`repeating_${section}_${rowId}_condition`]
 
             var bonusValue = 0
             if (useRollBonus) {
@@ -3352,7 +3362,7 @@
                 let computedResults = addEffectsToPostDamageRolls(effects, [damageRoll, directHitRoll])
                 let total = computedResults.total
 
-                let consumedEffectSummary = consumeEffectsOnAbility(name, type, effects)
+                let consumedEffectSummary = consumeEffectsOnAbility(name, condition, effects)
 
                 let effectSummary = addEffectsToSelf(values, selfEffects, effects)
                 let procSummary = [computedResults.summary, consumedEffectSummary, effectSummary].filter(element => element).join(", ")
