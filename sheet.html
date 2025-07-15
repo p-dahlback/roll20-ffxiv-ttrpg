@@ -2279,7 +2279,7 @@
         paralyzed: { type: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
         petrified: { type: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
         prone: { type: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
-        ready: { type: "ready", name: "X Ready", expiry: "use", duplicate: "block" },
+        ready: { type: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
         regen: { type: "regen(x)", name: "Regen(X)", expiry: "phase" },
         roll: { type: "roll(x)", name: "Roll Up(X)", expiry: "use" },
         silence: { type: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block" },
@@ -2575,7 +2575,7 @@
 
     function searchableEffectName(name) {
         return name
-            .replace(/\(([0-9]+)\)/, "")
+            .replace(/\((\w+)\)/, "")
             .replace(" ", "_")
             .trim().toLowerCase()
     }
@@ -2704,7 +2704,7 @@
             attributes[`repeating_effects_${initValues.id}_editable`] = "off"
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic"
 
-            summaries.push(`Activated ${data.name}`)
+            summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`)
         }
         if (Object.keys(attributes).length > 0) {
             setAttrs(attributes)
