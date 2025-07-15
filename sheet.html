@@ -2290,7 +2290,7 @@
         hawks_eye: { type: "special", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
         heavy: { type: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
         major_arcana: { type: "special", specialType: "Major Arcana", name: "Major Arcana", expiry: "use", duplicate: "replace" },
-        mpregen: { type: "special", specialType: "MPRegen (X)", name: "MPRegen(X)", expiry: "turn", duplicate: "allow" },
+        lucid_dreaming: { type: "special", specialType: "Lucid Dreaming", name: "Lucid Dreaming", expiry: "turn", duplicate: "replace" },
         paralyzed: { type: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
         petrified: { type: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
         prone: { type: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
@@ -2341,7 +2341,7 @@
                         { title: "Transpose", type: "Secondary", cost: 0, uses: 0, uses_max: 0, baseEffect: "Removes Umbral Ice and grants Astral Fire, or removes Astral Fire and grants Umbral Ice. Transpose can only be used once per turn.", hitType: "None", damageType: "Effect", effectSelf: "Transpose", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/transpose.png" },
                         { title: "Thunder", type: "Secondary, Magic, Lightning-Aspected, Thunder-Spell", condition: "Under the effect of Thunderhead Ready", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Deals 2 damage and inflicts a DOT (3) on the target.", hitType: "None", damageType: "Damage", baseValue: "2", effectTarget: "DOT(3)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/thunder.png" },
                         { title: "Manafont", type: "Secondary", condition: "Under the effect of Astral Fire", cost: 0, uses: 1, uses_max: 1, baseEffect: "Fully restores MP and grants Thunderhead Ready.", limitation: "Once per phase.", hitType: "None", damageType: "Effect", restore: "5 MP", effectSelf: "Thunderhead Ready", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/manafont.png" },
-                        { title: "Lucid Dreaming", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Recover an additional 1 MP at the end of this round's [Adventurer Step].", limitation: "Once per phase.", hitType: "None", damageType: "Effect", effectSelf: "MPRegen(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/lucid-dreaming.png" },
+                        { title: "Lucid Dreaming", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Recover an additional 1 MP at the end of this round's [Adventurer Step].", limitation: "Once per phase.", hitType: "None", damageType: "Effect", effectSelf: "Lucid Dreaming", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/lucid-dreaming.png" },
                         { title: "Thunder II", type: "Secondary, Magic, Lightning-Aspected, Thunder Spell", condition: "Under the effect of Thunderhead Ready", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character.", baseEffect: "Inflicts a DOT (3) on all targets.", hitType: "None", damageType: "Effect", effectTarget: "DOT(3)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/thunder-ii.png" },
                         { title: "Manaward", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Grants a barrier of 2 HP.", limitation: "Once per phase.", hitType: "None", damageType: "Effect", effectSelf: "Barrier(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/manaward.png" },
                         { title: "Scathe", type: "Secondary, Magic", cost: 1, resource: "MP", uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Deals 4 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "4", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/scathe.png" }
@@ -2792,8 +2792,8 @@
                     let barrier = values.level >= 40 ? 2 : 1
                     attributes.barrierPoints = Math.max(values.barrierPoints ?? 0, barrier)
                     break
-                case "mpregen":
-                    attributes.mpRecovery = 2 + parseInt(value) 
+                case "lucid_dreaming":
+                    attributes.mpRecovery = 3
                     break
                 case "umbral_ice":
                     if (existingEffects.astralFireId) {
@@ -3812,8 +3812,8 @@
                     mpRecoveryBlock: "off"
                 })
                 break
-            case "mpregen(x)":
-                log("MPRegen removed; resetting mp recovery")
+            case "lucid dreaming":
+                log("Lucid Dreaming removed; resetting mp recovery")
                 setAttrs({
                     mpRecovery: 2
                 })
