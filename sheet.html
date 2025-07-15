@@ -2277,26 +2277,26 @@
     const effectData = {
         advantage: { type: "advantage", name: "Advantage", expiry: "use" },
         astral_fire: { type: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "block" },
-        attribute: { type: "attribute(x)", name: "Attribute Up(X)", expiry: "use" },
-        barrier: { type: "special", specialType: "Barrier(X)", name: "Barrier(X)", expiry: "turn", duplicate: "allow" }, 
+        attribute: { type: "attribute(x)", name: "Attribute Up (X)", expiry: "use" },
+        barrier: { type: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "turn", duplicate: "allow" }, 
         blind: { type: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
         bound: { type: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
         brink: { type: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
         comatose: { type: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
-        critical: { type: "critical(x)", name: "Critical Up(X)", expiry: "use" },
+        critical: { type: "critical(x)", name: "Critical Up (X)", expiry: "use" },
         damage: { type: "damage", name: "Damage Reroll", expiry: "use" },
-        dot: { type: "dot(x)", name: "DOT(X)", expiry: "phase", curable: true },
-        enmity: { type: "enmity(x)", name: "Enmity(X)", expiry: "turn", duplicate: "replace" },
+        dot: { type: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
+        enmity: { type: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
         hawks_eye: { type: "special", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
         heavy: { type: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
         major_arcana: { type: "special", specialType: "Major Arcana", name: "Major Arcana", expiry: "use", duplicate: "replace" },
-        mpregen: { type: "special", specialType: "MPRegen(X)", name: "MPRegen(X)", expiry: "turn", duplicate: "allow" },
+        mpregen: { type: "special", specialType: "MPRegen (X)", name: "MPRegen(X)", expiry: "turn", duplicate: "allow" },
         paralyzed: { type: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
         petrified: { type: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
         prone: { type: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
         ready: { type: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
-        regen: { type: "regen(x)", name: "Regen(X)", expiry: "phase" },
-        roll: { type: "roll(x)", name: "Roll Up(X)", expiry: "use" },
+        regen: { type: "regen(x)", name: "Regen (X)", expiry: "phase" },
+        roll: { type: "roll(x)", name: "Roll Up (X)", expiry: "use" },
         silence: { type: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block" },
         sleep: { type: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block" },
         slow: { type: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block" },
@@ -2639,9 +2639,16 @@
                 continue
             }
 
-            let valueDefinition = data.value ? `--v ${data.value}` : ""
+            var value = ""
+            let match = effect.match(/\((\w+)\)/)
+            if (match && match.length >= 2) {
+                value = match[1]
+            }
+
+            let valueDefinition = value ? `--v ${value}` : ""
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : ""
-            let button = `[${data.name}](!ffe --${data.specialType ?? data.type} ${valueDefinition} --expire ${data.expiry} ` + 
+            let effectName = data.specialType ?? data.type.replace("(x)", "")
+            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --expire ${data.expiry} ` + 
                 `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`
             buttons.push(button)
         }
@@ -3105,6 +3112,8 @@
 
             `repeating_${section}_${rowId}_effectName`,
             `repeating_${section}_${rowId}_effect`,
+            `repeating_${section}_${rowId}_effectSelf`,
+            `repeating_${section}_${rowId}_effectTarget`,
             
             `repeating_${section}_${rowId}_stat`,
             `repeating_${section}_${rowId}_damageType`,
@@ -3137,6 +3146,8 @@
             const directHit = values[`repeating_${section}_${rowId}_directHit`]
             const effectName = values[`repeating_${section}_${rowId}_effectName`]
             const effect = values[`repeating_${section}_${rowId}_effect`]
+            const effectSelf = values[`repeating_${section}_${rowId}_effectSelf`]
+            const effectTarget = values[`repeating_${section}_${rowId}_effectTarget`]
 
             const combo = values[`repeating_${section}_${rowId}_combo`]
 
@@ -3170,7 +3181,7 @@
                     }
                 }
                 button = `[${damageType}](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)${bonusButton}`
-            } else if (cost > 0 || usesMax > 0 || restoration || combo) {
+            } else if (cost > 0 || usesMax > 0 || restoration || combo || effectSelf || effectTarget) {
                 button = `[Effect](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`
             }
 
@@ -3336,7 +3347,7 @@
 
             const resourceCost = performAbilityResourceChanges(section, rowId, values, effects)
 
-            if (!damageDice && !directHitDice && !combo && !resourceCost && !effectSummary) {
+            if (!damageDice && !directHitDice && !combo && !resourceCost && !selfEffects && !targetEffects) {
                 console.log("No reason to roll damage")
                 return
             }
@@ -3377,7 +3388,7 @@
                         proc: procSummary,
                         damage: computedResults.rolls[0],
                         directHit: computedResults.rolls[1],
-                        total: computedResults.total
+                        total: totalTitle ? computedResults.total : ""
                     }
                 )
             })
