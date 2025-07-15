@@ -2287,6 +2287,7 @@
         slow: { type: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block" },
         stun: { type: "stun", name: "Stun", expiry: "turn", duplicate: "block" },
         surging_tempest: { type: "special", specialType: "Surging Tempest", name: "Surging Tempest", expiry: "encounter", duplicate: "block" },
+        thunderhead_ready: { type: "special", specialType: "Thunderhead Ready", name: "Thunderhead Ready", expiry: "use", duplicate: "block" },
         unstunnable: { type: "unstunnable", name: "Unstunnable", expiry: "phase", duplicate: "block" },
         umbral_ice: { type: "special", specialType: "Umbral Ice", name: "Umbral Ice", expiry: "turn2", duplicate: "block" },
         weak: { type: "weak", name: "Weak", expiry: "rest", duplicate: "block" }
@@ -2674,6 +2675,7 @@
                         summaries.push("Removed Umbral Ice")
                         removeRepeatingRow(existingEffects.umbralIceId)
                     }
+                    summaries.push(addEffectsToSelf(values, ["Thunderhead Ready"], existingEffects))
                     break
                 case "major_arcana":
                     // Add barrier
@@ -2688,9 +2690,10 @@
                         // Reset MP recovery
                         attributes.mpRecovery = 2
                     }
+                    summaries.push(addEffectsToSelf(values, ["Thunderhead Ready"], existingEffects))
                     break
                 default:
-                    continue
+                    break
             }
             attributes[`repeating_effects_${initValues.id}_type`] = initValues.type
             if (initValues.specialType) {
