@@ -212,8 +212,8 @@ const FFXIVAddEffect = (() => {
         switch (effect.specialType.toLowerCase()) {
             case "astral fire": {
                 // Clear MP recovery
-                let mpRecovery = unpackAttribute(character, "mpRecovery", 2)
-                setAttribute(mpRecovery, "current", 0)
+                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off")
+                setAttribute(mpRecoveryBlock, "current", "on")
                 break
             }
             case "major arcana": {
@@ -239,8 +239,8 @@ const FFXIVAddEffect = (() => {
             }
             case "umbral ice": {
                 // Reset MP recovery
-                let mpRecovery = unpackAttribute(character, "mpRecovery", 2)
-                setAttribute(mpRecovery, "current", 2)
+                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off")
+                setAttribute(mpRecoveryBlock, "current", "off")
                 break
             }
         }

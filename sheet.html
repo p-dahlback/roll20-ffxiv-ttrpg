@@ -1958,6 +1958,7 @@
             "d20",
             "advantage",
             "mpRecovery",
+            "mpRecoveryBlock",
             "resourceRecovery",
             "resource2Recovery",
             "resource",
@@ -1967,6 +1968,7 @@
                 d20: values.d20 ?? "1d20",
                 advantage: values.advantage ?? 0,
                 mpRecovery: values.mpRecovery ?? 2,
+                mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
                 resourceRecovery: values.resourceRecovery ?? 0,
                 resource2Recovery: values.resource2Recovery ?? 0,
                 resource: values.resource ?? "",
@@ -2265,6 +2267,7 @@
         advantage: { type: "advantage", name: "Advantage", expiry: "use" },
         astral_fire: { type: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "block" },
         attribute: { type: "attribute(x)", name: "Attribute Up(X)", expiry: "use" },
+        barrier: { type: "special", specialType: "Barrier(X)", name: "Barrier(X)", expiry: "turn", duplicate: "allow" }, 
         blind: { type: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
         bound: { type: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
         brink: { type: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
@@ -2276,6 +2279,7 @@
         hawks_eye: { type: "special", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
         heavy: { type: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
         major_arcana: { type: "special", specialType: "Major Arcana", name: "Major Arcana", expiry: "use", duplicate: "replace" },
+        mpregen: { type: "special", specialType: "MPRegen(X)", name: "MPRegen(X)", expiry: "turn", duplicate: "allow" },
         paralyzed: { type: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
         petrified: { type: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
         prone: { type: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
@@ -2691,7 +2695,7 @@
             switch (adjustedEffect) {
                 case "astral_fire":
                     // Clear MP recovery
-                    attributes.mpRecovery = 0
+                    attributes.mpRecoveryBlock = "on"
 
                     // Remove Umbral Ice
                     if (existingEffects.umbralIceId) {
@@ -2700,10 +2704,19 @@
                     }
                     summaries.push(addEffectsToSelf(values, ["Thunderhead Ready"], existingEffects))
                     break
+                case "barrier":
+                    // Don't add to effect list, just update the barrier
+                    setAttrs({
+                        barrierPoints: Math.max(values.barrierPoints ?? 0, parseInt(value))
+                    })
+                    continue
                 case "major_arcana":
                     // Add barrier
                     let barrier = values.level >= 40 ? 2 : 1
                     attributes.barrierPoints = Math.max(values.barrierPoints ?? 0, barrier)
+                    break
+                case "mpregen":
+                    attributes.mpRecovery = 2 + parseInt(value) 
                     break
                 case "umbral_ice":
                     if (existingEffects.astralFireId) {
@@ -2711,7 +2724,7 @@
                         removeRepeatingRow(existingEffects.astralFireId)
 
                         // Reset MP recovery
-                        attributes.mpRecovery = 2
+                        attributes.mpRecoveryBlock = "off"
                     }
                     summaries.push(addEffectsToSelf(values, ["Thunderhead Ready"], existingEffects))
                     break
@@ -3581,12 +3594,12 @@
                 if (effectName == "umbral ice") {
                     log("Resetting MP recovery in case of Astral Fire removal")
                     setAttrs({
-                        mpRecovery: 2
+                        mpRecoveryBlock: "off"
                     })
                 } else {
                     log("Disabling MP recovery due to Astral Fire")
                     setAttrs({
-                        mpRecovery: 0
+                        mpRecoveryBlock: "on"
                     })
                 }
             } else {
@@ -3603,11 +3616,23 @@
         const rowId = sourceAttributes[2]
         
         let specialType = eventInfo.removedInfo[`repeating_effects_${rowId}_specialType`]
-        if (specialType && specialType.trim().toLowerCase() == "astral fire") {
+        if (!specialType) {
+            return
+        }
+        switch (specialType.trim().toLowerCase) {
+            case "astral fire":
             log("Astral Fire removed; resetting mp recovery")
+                setAttrs({
+                    mpRecoveryBlock: "off"
+                })
+                break
+            case "mpregen(x)":
+                log("MPRegen removed; resetting mp recovery")
             setAttrs({
                 mpRecovery: 2
             })
+                break
+
         }
     })
 </script>

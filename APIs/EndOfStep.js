@@ -69,6 +69,10 @@ const EndOfStep = (() => {
             log("EndOfStep: No MP")
             return
         }
+        let mpRecoveryBlock = getAttrByName(character.id, "mpRecoveryBlock") ?? "off"
+        if (mpRecoveryBlock == "on") {
+            return
+        }
         let mpRecovery = getAttrByName(character.id, "mpRecovery") ?? "2"
         if (mpRecovery <= 0) {
             return
