@@ -2581,6 +2581,29 @@
             .trim().toLowerCase()
     }
 
+    function consumeEffectsOnAbility(name, type, effects) {
+        var summaries = []
+        let types = type.split(",").map(type => type.trim().toLowerCase())
+        for (let effect of effects.effects) {
+            let normalizedName = name.toLowerCase()
+            let specialType = (effect.specialType ?? "").toLowerCase()
+            let value = (effect.value ?? "").toLowerCase()
+            if (
+                specialType.includes(normalizedName) ||
+                types.some(type => specialType.includes(type)) ||
+                (effect.type == "ready(x)" && value == normalizedName) ||
+                (effect.type == "ready(x)" && types.includes(value))
+            ) {
+                // Consume X Ready
+                removeRepeatingRow(effect.fullId)
+
+                let effectName = effect.specialType ?? effectData[effect.type.replace("(x)", "")].typeName
+                summaries.push(`Consumed ${(effectName.replace("(X)", effect.value))}`)
+            }
+        }
+        return summaries.join(", ")
+    }
+
     function buttonsForTargetEffects(effects, level) {
         var buttons = []
 
@@ -3177,6 +3200,7 @@
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
         getAttrsAndEffects([
+            `repeating_${section}_${rowId}_title`,
             `repeating_${section}_${rowId}_type`,
             `repeating_${section}_${rowId}_damageType`,
             `repeating_${section}_${rowId}_baseValue`,
@@ -3199,6 +3223,7 @@
             "resource2", "resource2Value", "resource2Value_max",
             "character_name", "sheet_type"
         ], (values, effects) => {
+            const name = values[`repeating_${section}_${rowId}_title`]
             const type = values[`repeating_${section}_${rowId}_type`]
             const baseValue = values[`repeating_${section}_${rowId}_baseValue`]
             const directHitValue = values[`repeating_${section}_${rowId}_dhValue`]
@@ -3303,8 +3328,10 @@
                 let computedResults = addEffectsToPostDamageRolls(effects, [damageRoll, directHitRoll])
                 let total = computedResults.total
 
+                let consumedEffectSummary = consumeEffectsOnAbility(name, type, effects)
+
                 let effectSummary = addEffectsToSelf(values, selfEffects, effects)
-                let procSummary = [computedResults.summary, effectSummary].filter(element => element).join(", ")
+                let procSummary = [computedResults.summary, consumedEffectSummary, effectSummary].filter(element => element).join(", ")
 
                 var attributes = {}
                 attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
