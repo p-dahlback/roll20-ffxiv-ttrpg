@@ -2735,6 +2735,7 @@
                     setAttrs({
                         barrierPoints: Math.max(values.barrierPoints ?? 0, parseInt(value))
                     })
+                    summaries.push(`Granted ${value} HP barrier`)
                     continue
                 case "major_arcana":
                     // Add barrier
