@@ -894,6 +894,15 @@ textarea {
   padding-bottom: 2px;
 }
 
+.job .header {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.job-input {
+  text-align: center;
+}
+
 /* ABILITIES */
 
 .ability-top {
