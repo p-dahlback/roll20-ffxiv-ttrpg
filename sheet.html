@@ -2615,12 +2615,24 @@
 
         log("Adding effects to self: " + JSON.stringify(effects))
         for (let effect of effects) {
-            let adjustedEffect = searchableEffectName(effect)
+            var adjustedEffect = searchableEffectName(effect)
+            if (adjustedEffect == "transpose") {
+                if (existingEffects.astralFireId) {
+                    adjustedEffect = "umbral_ice"
+                } else if (existingEffects.umbralIceId) {
+                    adjustedEffect = "astral_fire"
+                } else {
+                    log("Cannot use transpose when missing both astral fire/umbral ice")
+                    continue
+                }
+            }
+
             let data = effectData[adjustedEffect]
             if (!data) {
                 log("Unhandled effect " + adjustedEffect)
                 continue
             }
+
 
             // Manage duplicate effects
             if (data.duplicate == "block" && existingEffectTypes.includes(adjustedEffect)) {
@@ -2638,7 +2650,7 @@
             }
 
             var value = null
-            let match = effect.match(/\(([0-9]+)\)/)
+            let match = effect.match(/\((\w+)\)/)
             if (match && match.length >= 2) {
                 value = match[1]
             }
