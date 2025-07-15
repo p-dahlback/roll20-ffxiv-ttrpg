@@ -122,7 +122,7 @@
                 <div class="job vertical">
                     <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
                     <span class="header medium bold">Role / Job</span>
-                    <input class="job-input header medium" name="attr_job" type="text">
+                    <input class="job-input header medium" name="attr_role" type="text">
                 </div>
             </div>
         
@@ -549,6 +549,7 @@
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
                         <option value="Defense">Defense</option>
+                        <option value="Effect">Effect</option>
                     </select>
                     <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
                     <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
@@ -753,6 +754,7 @@
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
                         <option value="Defense">Defense</option>
+                        <option value="Effect">Effect</option>
                     </select>
                     <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
                     <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
@@ -955,6 +957,7 @@
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
                         <option value="Defense">Defense</option>
+                        <option value="Effect">Effect</option>
                     </select>
                     <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
                     <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
@@ -1157,6 +1160,7 @@
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
                         <option value="Defense">Defense</option>
+                        <option value="Effect">Effect</option>
                     </select>
                     <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
                     <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
@@ -1359,6 +1363,7 @@
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
                         <option value="Defense">Defense</option>
+                        <option value="Effect">Effect</option>
                     </select>
                     <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
                     <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
@@ -1561,6 +1566,7 @@
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
                         <option value="Defense">Defense</option>
+                        <option value="Effect">Effect</option>
                     </select>
                     <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
                     <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
@@ -1761,6 +1767,7 @@
                         <option value="Damage">Damage</option>
                         <option value="Healing">Healing</option>
                         <option value="Defense">Defense</option>
+                        <option value="Effect">Effect</option>
                     </select>
                     <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
                     <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
@@ -1891,37 +1898,41 @@
         </div>
 
         <div class="entry fancy lowkey">
-            <h3>Job icon selector</h3>
-            <p class="medium" style="margin-top: 8px;">Assigns the job icon in the header</p>
-            <select name="attr_jobIcon">
+            <h3>Job selector</h3>
+            <p class="medium" style="margin-top: 8px;">Assigns the job, with automatically added actions (only some jobs supported)</p>
+            <select name="attr_job">
                 <option value="">--Select--</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png">Dark Knight</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/GNB.png">Gunbreaker</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png">Paladin</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png">Warrior</option>
+                <!--
+                <option value="DRK">Dark Knight</option>
+                <option value="GNB">Gunbreaker</option>
+                <option value="PLD">Paladin</option>
+                <option value="WAR">Warrior</option>
                 <hr />
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png">Astrologian</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SGE.png">Sage</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png">Scholar</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png">White Mage</option>
+                <option value="AST">Astrologian</option>
+                <option value="SGE">Sage</option>
+                <option value="SCH">Scholar</option>
+                <option value="WHM">White Mage</option>
                 <hr />
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png">Dragoon</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png">Monk</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png">Ninja</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RPR.png">Reaper</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SAM.png">Samurai</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/VIP.png">Viper</option>
+                <option value="DRG">Dragoon</option>
+                <option value="MNK">Monk</option>
+                <option value="NIN">Ninja</option>
+                <option value="RPR">Reaper</option>
+                <option value="SAM">Samurai</option>
+                <option value="VIP">Viper</option>
                 <hr />
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png">Bard</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DNC.png">Dancer</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png">Machinist</option>
+                <option value="BRD">Bard</option>
+                <option value="DNC">Dancer</option>
+                <option value="MCH">Machinist</option>
                 <hr />
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png">Black Mage</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PCT.png">Pictomancer</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/RDM.png">Red Mage</option>
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png">Summoner</option>
+                !-->
+                <option value="BLM">Black Mage</option>
+                <!--
+                <option value="PCT">Pictomancer</option>
+                <option value="RDM">Red Mage</option>
+                <option value="SMN">Summoner</option>
                 <hr />
-                <option value="https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLU.png">Blue Mage</option>
+                <option value="BLU">Blue Mage</option>
+                -->
             </select>
         </div>
     </div>
