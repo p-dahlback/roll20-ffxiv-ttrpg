@@ -983,6 +983,10 @@ textarea {
   margin: 3px;
 }
 
+.ability-sub-category .ability {
+  width: 19.5em;
+}
+
 .repitem button[type=action] {
   background-color: #f5f5f5;
 }
@@ -1470,6 +1474,41 @@ div[data-groupname=repeating_technique].repcontrol,
   grid-template-columns: repeat(3, 1fr);
   min-height: 3rem;
   padding: 8px 0 16px 0;
+}
+
+.ability-sub-category {
+  background-color: #7b745d;
+  border-radius: 8px;
+  padding: 16px 16px 8px 16px;
+  margin-bottom: 16px;
+}
+
+.ability-sub-category > div > h3.large {
+  border: none;
+  color: white;
+  font-size: 1.5em;
+}
+
+.ability-sub-category > div > span {
+  color: white;
+  font-size: 1.0em;
+  font-weight: bold;
+  margin: auto 8px auto 8px;
+}
+
+.ui-dialog .charsheet .ability-sub-category > div > button.header-action {
+  color: white;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+.ui-dialog .charsheet .ability-sub-category > div > button.header-action:active {
+  color: #7b745d;
+  background-color: white;
+}
+
+.ability-sub-category .collapse-overlay::before {
+  background: linear-gradient(to top, #7b745d, transparent) no-repeat;
 }
 
 .collapse-overlay {

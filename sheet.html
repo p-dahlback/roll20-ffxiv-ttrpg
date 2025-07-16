@@ -389,10 +389,13 @@
         <button type="action" class="floatRight" name="act_collapseAllAbilities">Collapse All</button>
     </div>
 
-    <div class="top-abilities">
+    <div class="top-abilities ability-sub-category">
         <input class="expand-checkbox hidden" type="checkbox" name="attr_songHeaderExpandItem" />
-        <button type="action" class="header-action" name="act_song_info">i</button>
-        <h3 class="large">Song Abilities</h3>
+        <div class="horizontal">
+            <h3 class="large">Song Abilities</h3>
+            <span class="medium">Song abilities can only be used after resolving <b>Bardsong</b>.</span>
+            <button type="action" class="header-action" name="act_song_info">i</button>
+        </div>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_song">
             <div class="ability">
@@ -797,10 +800,12 @@
 
     <!-- Sub-abilities (Ninja jutsu) -->
 
-    <div class="sub-abilities">
+    <div class="sub-abilities ability-sub-category">
         <input class="expand-checkbox hidden" type="checkbox" name="attr_ninjutsuHeaderExpandItem" />
-        <button type="action" class="header-action" name="act_ninjutsu_info">i</button>
-        <h3 class="large">Ninjutsu Abilities</h3>
+        <div class="horizontal">
+            <h3 class="large">Ninjutsu Abilities</h3>
+            <button type="action" class="header-action" name="act_ninjutsu_info">i</button>
+        </div>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
         <fieldset class="repeating_ninjutsu">
             <div class="ability">
