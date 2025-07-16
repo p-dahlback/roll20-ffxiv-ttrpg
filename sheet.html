@@ -2246,7 +2246,7 @@
         toggleExpandedState(`repeating_${section}_${rowId}_${section}ExpandItem`)
     }
 
-    function setExpandedStateForSection(isExpanded, section) {
+    function setCollapsedStateForSection(isExpanded, section) {
         getSectionIDs(`repeating_${section}`, ids => {
             var attributes = {}
             for (let id of ids) {
@@ -2272,41 +2272,28 @@
     })
 
     on("clicked:expandAllTraits", eventInfo => {
-        setExpandedStateForSection(true, "traits")
+        setCollapsedStateForSection(false, "traits")
     })
 
     on("clicked:collapseAllTraits", eventInfo => {
-        setExpandedStateForSection(false, "traits")
+        setCollapsedStateForSection(true, "traits")
     })
 
     on("clicked:expandAllItems", eventInfo => {
         for (let section of itemSections) {
-            setExpandedStateForSection(true, section)
+            setCollapsedStateForSection(false, section)
         }
     })
 
     on("clicked:collapseAllItems", eventInfo => {
         for (let section of itemSections) {
-            setExpandedStateForSection(false, section)
+            setCollapsedStateForSection(true, section)
         }
     })
 
     on("clicked:expandAllAbilities", eventInfo => {
         for (let section of abilitySections) {
-            setExpandedStateForSection(true, section)
-        }
-        setAttrs({
-            songHeaderExpandItem: "on",
-            primaryHeaderExpandItem: "on",
-            secondaryHeaderExpandItem: "on",
-            instantHeaderExpandItem: "on",
-            techniqueHeaderExpandItem: "on",
-        })
-    })
-
-    on("clicked:collapseAllAbilities", eventInfo => {
-        for (let section of abilitySections) {
-            setExpandedStateForSection(false, section)
+            setCollapsedStateForSection(false, section)
         }
         setAttrs({
             songHeaderExpandItem: "off",
@@ -2314,6 +2301,19 @@
             secondaryHeaderExpandItem: "off",
             instantHeaderExpandItem: "off",
             techniqueHeaderExpandItem: "off",
+        })
+    })
+
+    on("clicked:collapseAllAbilities", eventInfo => {
+        for (let section of abilitySections) {
+            setCollapsedStateForSection(true, section)
+        }
+        setAttrs({
+            songHeaderExpandItem: "on",
+            primaryHeaderExpandItem: "on",
+            secondaryHeaderExpandItem: "on",
+            instantHeaderExpandItem: "on",
+            techniqueHeaderExpandItem: "on",
         })
     })
 

@@ -180,19 +180,19 @@ input {
   display: none;
 }
 
-.expand-checkbox:not(:checked) ~ .expanded-view,
-.expand-checkbox:not(:checked) ~ .repcontainer,
-.expand-checkbox:checked ~ .collapsed-view {
+.expand-checkbox:checked ~ .expanded-view,
+.expand-checkbox:checked ~ .repcontainer,
+.expand-checkbox:not(:checked) ~ .collapsed-view {
   max-height: 0px;
   overflow: hidden;
 }
 
-.expand-checkbox:checked ~ .expanded-view,
-.expand-checkbox[value="1"] ~ .expanded-view,
-.expand-checkbox[value="on"] ~ .expanded-view,
-.expand-checkbox[value="1"] ~ .repcontainer,
-.expand-checkbox[value="on"] ~ .repcontainer,
-.expand-checkbox:not(:checked) ~ .collapsed-view {
+.expand-checkbox:not(:checked) ~ .expanded-view,
+.expand-checkbox[value="0"] ~ .expanded-view,
+.expand-checkbox[value="off"] ~ .expanded-view,
+.expand-checkbox[value="0"] ~ .repcontainer,
+.expand-checkbox[value="off"] ~ .repcontainer,
+.expand-checkbox:checked ~ .collapsed-view {
   max-height: 100vh;
 }
 
