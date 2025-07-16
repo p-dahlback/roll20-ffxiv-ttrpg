@@ -3451,7 +3451,7 @@
             })
             const crString = stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`])
             const typeString = stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`])
-            const conditionString = stringWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`])
+            const condition = templateValues("Condition:", values[`repeating_${section}_${rowId}_condition`])
             const triggerString = stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`])
 
             var hitDie = values[`repeating_${section}_${rowId}_hitDie`]
@@ -3489,16 +3489,13 @@
             attributes[`repeating_${section}_${rowId}_currentRoll`] = ""
             setAttrs(attributes)
 
-            console.log(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
-            `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}} ` +
-            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
-            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
-            `{{button=${button}}}`)
-            startRoll(`&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
-            `{{type=${typeString}}} {{condition=${conditionString}}} {{trigger=${triggerString}}} ` +
-            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
-            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
-            `{{button=${button}}}`, results => {
+            let rollTemplate = `&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
+                `{{type=${typeString}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}} {{trigger=${triggerString}}} ` +
+                `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
+                `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
+                `{{button=${button}}}`
+            console.log(rollTemplate)
+            startRoll(rollTemplate, results => {
                 var hitRoll = results.results.hit
                 if (!hitRoll) {
                     hitRoll = {
@@ -3654,14 +3651,12 @@
             }
 
             // Roll damage
-            console.log(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
-            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} ` +
-            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` + 
-            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`)
-            startRoll(`&{template:damage} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
+            let rollTemplate = `&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` + 
             `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
             `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` + 
-            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`, results => {
+            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`
+            console.log(rollTemplate)
+            startRoll(rollTemplate, results => {
                 const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" }
                 const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" }
 
@@ -4139,12 +4134,12 @@
                 <span class="sheet-mini-input sheet-floatLeft">{{baseEffect}}</span>
             </div>
             <div>
-                <span class="sheet-mini-title sheet-floatLeft">{{directHitTitle}}</span>
-                <span class="sheet-mini-input sheet-floatLeft">{{directHit}}</span>
-            </div>
-            <div>
                 <span class="sheet-mini-title sheet-floatLeft">{{effectTitle}}</span>
                 <span class="sheet-mini-input sheet-floatLeft">{{effect}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title sheet-floatLeft">{{directHitTitle}}</span>
+                <span class="sheet-mini-input sheet-floatLeft">{{directHit}}</span>
             </div>
             <div>
                 <span class="sheet-mini-title sheet-floatLeft">{{limitationTitle}}</span>
@@ -4168,6 +4163,10 @@
             <div class="sheet-header-subtitle">
                 <h4>{{cost}}</h4>
                 <h4>{{type}}</h4>
+                <div>
+                    <span class="sheet-mini-title">{{conditionTitle}}</span>
+                    <span class="sheet-mini-input">{{condition}}</span>
+                </div>
             </div>
         </div>
         <div class="sheet-body sheet-list">
@@ -4176,12 +4175,12 @@
                 <span class="sheet-mini-input">{{baseEffect}}</span>
             </div>
             <div>
-                <span class="sheet-mini-title">{{directHitTitle}}</span>
-                <span class="sheet-mini-input">{{directHit}}</span>
-            </div>
-            <div>
                 <span class="sheet-mini-title sheet-floatLeft">{{effectTitle}}</span>
                 <span class="sheet-mini-input sheet-floatLeft">{{effect}}</span>
+            </div>
+            <div>
+                <span class="sheet-mini-title">{{directHitTitle}}</span>
+                <span class="sheet-mini-input">{{directHit}}</span>
             </div>
             <h4>{{hitTitle}}{{computed::hit}}</h4>
             <h4>{{cr}}</h4>
@@ -4193,6 +4192,7 @@
 <rolltemplate class="sheet-rolltemplate-damage">
     <div class="sheet-template-container">
         <div class="sheet-header">
+            <h4 class="sheet-title">{{title}}</h4>
             <div class="sheet-list">
                 <span class="sheet-mini-input">{{cost}}</span>
                 <span class="sheet-mini-input sheet-hideinline">{{computed::proc}}</span>
@@ -4200,14 +4200,19 @@
             <h4>{{damageTitle}}{{computed::damage}}</h4>
             <h4>{{directHitTitle}}{{computed::directHit}}</h4>
         </div>
-        <div class="sheet-body">
-            <h4 class="sheet-hideinline">{{totalTitle}}{{computed::total}}</h4>
+        <span class="sheet-hidden-switch">{{totalTitle}}{{targetEffectTitle}}{{comboTitle}}</span>
+        <div class="sheet-body sheet-hidable">
+            <div class="sheet-total-container">
+                <h4 class="sheet-top-header">{{totalTitle}}</h4><h4 class="sheet-hideinline" style="margin-top: auto; margin-bottom: auto;">{{computed::total}}</h4>
+            </div>
+            <span class="sheet-hidden-switch sheet-effect-switch">{{targetEffectTitle}}</span>
             <div class="sheet-effects sheet-button-container">
-                <h4>{{targetEffectTitle}}</h4>
+                <h4 class="sheet-button-header">{{targetEffectTitle}}</h4>
                 {{targetEffects}}
             </div>
+            <span class="sheet-hidden-switch sheet-combo-switch">{{comboTitle}}</span>
             <div class="sheet-combo sheet-button-container">
-                <h4>{{comboTitle}}</h4>
+                <h4 class="sheet-button-header">{{comboTitle}}</h4>
                 {{button}}
             </div>
         </div>

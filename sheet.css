@@ -577,12 +577,14 @@ body > .ui-dialog {
 }
 
 .floatLeft,
-.sheet-rolltemplate-ability .sheet-floatLeft {
+.sheet-rolltemplate-ability .sheet-floatLeft,
+.sheet-rolltemplate-damage .sheet-floatLeft {
   float: left;
 }
 
 .floatRight,
-.sheet-rolltemplate-ability .sheet-floatRight {
+.sheet-rolltemplate-ability .sheet-floatRight,
+.sheet-rolltemplate-damage .sheet-floatRight {
   float: right;
 }
 
@@ -1215,12 +1217,33 @@ textarea {
   padding: 8px 4px 8px 4px;
 }
 
+.sheet-rolltemplate-damage .sheet-body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0;
+  padding: 0 4px 0 4px;
+}
+
 .sheet-rolltemplate-damage .sheet-body h4 {
   font-size: 1.8rem;
 }
 
+.sheet-rolltemplate-damage .sheet-top-header {
+  padding: 8px 4px 8px 0;
+}
+
+.sheet-rolltemplate-damage .sheet-total-container {
+  display: flex;
+  flex-direction: row;
+}
+
 .sheet-rolltemplate-damage .sheet-button-container {
-  padding-top: 16px;
+  padding: 8px 0 8px 0;
+}
+
+.sheet-rolltemplate-damage .sheet-button-header {
+  padding-bottom: 8px;
 }
 
 .sheet-rolltemplate-damage .sheet-effects > a {
@@ -1252,7 +1275,8 @@ textarea {
 
 .header-title .title,
 .sheet-rolltemplate-ability .sheet-title,
-.sheet-rolltemplate-hit .sheet-title {
+.sheet-rolltemplate-hit .sheet-title,
+.sheet-rolltemplate-damage .sheet-title  {
   border-style: solid;
   border-width: 0 0 3px 0;
   border-color: #7C5A0B;
@@ -1264,6 +1288,29 @@ textarea {
   font-size: 1.2rem;
   font-weight: bolder;
   padding-right: 4px;
+}
+
+.sheet-rolltemplate-damage .sheet-hidden-switch {
+  display: none;
+}
+
+.sheet-rolltemplate-damage .sheet-hidden-switch:empty ~ .sheet-hidable,
+.sheet-rolltemplate-damage .sheet-effect-switch:empty ~ .sheet-effects,
+.sheet-rolltemplate-damage .sheet-combo-switch:empty ~ .sheet-combo {
+  display: none;
+}
+
+.sheet-rolltemplate-ability span.sheet-mini-title:empty,
+.sheet-rolltemplate-ability span.sheet-mini-input:empty,
+.sheet-rolltemplate-ability h4:empty,
+.sheet-rolltemplate-hit span.sheet-mini-title:empty,
+.sheet-rolltemplate-hit span.sheet-mini-input:empty,
+.sheet-rolltemplate-hit h4:empty,
+.sheet-rolltemplate-damage span.sheet-mini-input:empty, 
+.sheet-rolltemplate-damage span.sheet-mini-input:empty,
+.sheet-rolltemplate-damage h4:empty,
+.sheet-rolltemplate-damage .inlinerollresult:empty {
+  display: none;
 }
 
 .sheet-rolltemplate-ability .sheet-header-subtitle,
