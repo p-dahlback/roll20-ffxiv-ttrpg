@@ -1217,6 +1217,13 @@ textarea {
   padding: 8px 4px 8px 4px;
 }
 
+.sheet-rolltemplate-ability .sheet-body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0;
+}
+
 .sheet-rolltemplate-damage .sheet-body {
   display: flex;
   flex-direction: column;
@@ -1236,6 +1243,10 @@ textarea {
 .sheet-rolltemplate-damage .sheet-total-container {
   display: flex;
   flex-direction: row;
+}
+
+.sheet-rolltemplate-hit .sheet-button-container {
+  padding-top: 8px;
 }
 
 .sheet-rolltemplate-damage .sheet-button-container {
@@ -1290,10 +1301,12 @@ textarea {
   padding-right: 4px;
 }
 
+.sheet-rolltemplate-hit .sheet-hidden-switch,
 .sheet-rolltemplate-damage .sheet-hidden-switch {
   display: none;
 }
 
+.sheet-rolltemplate-hit .sheet-hidden-switch:empty ~ .sheet-hidable,
 .sheet-rolltemplate-damage .sheet-hidden-switch:empty ~ .sheet-hidable,
 .sheet-rolltemplate-damage .sheet-effect-switch:empty ~ .sheet-effects,
 .sheet-rolltemplate-damage .sheet-combo-switch:empty ~ .sheet-combo {
