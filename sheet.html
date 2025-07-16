@@ -1879,7 +1879,7 @@
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_itemsExpandItem" />
                     <div class="grid4 item-header">
                         <input class="medium" name="attr_title" type="text" placeholder="Item name" />
-                        <input class="medium stat" name="attr_count" type="number" value="1" min="1" />
+                        <input class="medium stat" name="attr_count" type="number" value="1" min="0" />
                         <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
                         <button type="action" class="ability-action" name="act_info">i</button>
                     </div>
@@ -2046,6 +2046,23 @@
             })
         })
     }
+
+    // Remove items with zero content
+    on("change:repeating_items:count", eventInfo => {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+
+        let newValue = parseInt(eventInfo.newValue)
+        if (isNaN(newValue)) {
+            log("Cannot manage items with NaN count")
+            return
+        }
+        if (newValue <= 0) {
+            log("Removing consumed item")
+            removeRepeatingRow(`repeating_${section}_${rowId}`)
+        }
+    })
 
     on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
         shareItemToChat(eventInfo)
