@@ -2335,6 +2335,7 @@
         critical: { type: "critical(x)", maskedType: "critical(x)", name: "Critical Up (X)", expiry: "use" },
         damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use" },
         dot: { type: "dot(x)", maskedType: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
+        dps: { type: "dps(x)", maskedType: "dps(x)", name: "Damage Up (X)", expiry: "turn", duplicate: "allow" },
         enmity: { type: "enmity(x)", maskedType: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
         hawks_eye: { type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
         heavy: { type: "heavy", maskedType: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
@@ -2344,6 +2345,7 @@
         paralyzed: { type: "paralyzed", maskedType: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
         petrified: { type: "petrified", maskedType: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
         prone: { type: "prone", maskedType: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
+        raging_strikes: { type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", name: "Raging Strikes", expiry: "turn", duplicate: "block" },
         ready: { type: "ready(x)", maskedType: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
         regen: { type: "regen(x)", maskedType: "regen(x)", name: "Regen (X)", expiry: "phase" },
         restore: { type: "restore(x)", maskedType: "restore(x)", name: "Restore uses of Y by (X)", expiry: "use", duplicate: "allow"},
@@ -2438,7 +2440,7 @@
                         { title: "Quick Nock", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 3x3 area adjacent to this character", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 3 damage to all targets. If the die rolled for this ability check lands on a 15 or higher, the following proc effect triggers.", effectName: "Enhanced Quick Nock", effect: "Grant's Hawk's Eye", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Hawk's Eye[d>15]", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/quick-nock.png" },
                     ],
                     secondary: [
-                        { title: "Raging Strikes", type: "Secondary", cost: 0, uses: 2, uses_max: 2, baseEffect: "Your primary abilities deal an additional 2 damage until the end of this turn.", limitation: "Twice per phase", hitType: "None", damageType: "Effect", effectSelf: "Raging Strikes", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/raging-strikes.png" },
+                        { title: "Raging Strikes", type: "Secondary", cost: 0, uses: 2, uses_max: 2, baseEffect: "Your primary abilities deal an additional 2 damage until the end of this turn.", limitation: "Twice per phase", hitType: "None", damageType: "Effect", effectSelf: "Raging Strikes(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/raging-strikes.png" },
                     ],
                     instant: [
                         { title: "Leg Graze", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an enemy makes an ability check", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Reduces the total of the ability check that triggered Leg Graze by 1d6.", limitation: "Once per phase", hitType: "None", damageType: "Effect", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/leg-graze.png" },
@@ -2518,6 +2520,7 @@
             effect.data = effectData[adjustedName]
             result.effects.push(effect)
 
+            log("Checking masked type " + effect.data.maskedType + " for " + effect.data.name)
             switch (effect.data.maskedType || effect.type) {
                 case "critical(x)":
                     if (effect.value) {
@@ -2530,6 +2533,14 @@
                     } else {
                         result.damageRerolls = [effect.data.name]
                     }
+                    break
+                case "dps(x)":
+                    if (result.dpsIncrements) {
+                        result.dpsIncrements.push(effect)
+                    } else {
+                        result.dpsIncrements = [effect]
+                    }
+                    log("dpsIncrements: " + JSON.stringify(result.dpsIncrements))
                     break
                 default:
                     break
@@ -2653,22 +2664,30 @@
 
     function addEffectsToPreDamageRolls(effects, level, type, damageRoll, directHitRoll) {
         let isFireType = type.toLowerCase().includes("fire-aspect")
+        var adds = []
         if (isFireType && effects.astralFireId) {
             let addedDamage = level >= 50 ? "2d6" : "1d6"
-            let updatedDamage
-            if (damageRoll) {
-                updatedDamage = `${damageRoll} + ${addedDamage}[Astral Fire]`
-            } else {
-                updatedDamage = `${addedDamage}[Astral Fire]`
-            }
-            return {
-                damage: updatedDamage,
-                directHit: directHitRoll
+            adds.push(`${addedDamage}[Astral Fire]`)
+        }
+
+        if (effects.dpsIncrements) { 
+            for (let effect of effects.dpsIncrements) {
+                adds.push(`${effect.value}[${effect.data.name}]`)
             }
         }
-        return {
-            damage: damageRoll,
-            directHit: directHitRoll
+
+        if (adds.length > 0) {
+            log("Adding damage to roll")
+            let damage = damageRoll ? `${damageRoll} + ${adds.join(" + ")}` : adds.join(" + ")
+            return {
+                damage: damage,
+                directHit: directHitRoll
+            }
+        } else {
+            return {
+                damage: damageRoll,
+                directHit: directHitRoll
+            }
         }
     }
 
