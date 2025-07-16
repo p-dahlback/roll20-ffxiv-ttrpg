@@ -339,6 +339,14 @@ h3.small.colored-in, h4.small.colored-in {
   padding-left: 8px;
 }
 
+span.small.colored-in {
+  color: black;
+  font-weight: bolder;
+  padding-left: 8px;
+  height: 100%;
+  align-content: center;
+}
+
 .sub-stat .medium.standard {
   font-size: 1.4rem;
 }
@@ -776,9 +784,18 @@ input.doubleResourceSwitch[value="none"] ~ .resource-point.double-resource {
 .traits.fancy.lowkey {
   width: 100%;
   margin-bottom: -4px;
+  background-color: #c4b5a1;
 }
 
-.repcontainer[data-groupname=repeating_traits] .repitem,
+.item-header {
+  background-color: #c4b5a1;
+  padding: 4px 8px 4px 16px;
+}
+
+.item-body {
+  padding: 0 16px 0 16px;
+}
+
 .repcontainer[data-groupname=repeating_titles] .repitem,
 .repcontainer[data-groupname=repeating_minions] .repitem,
 .repcontainer[data-groupname=repeating_items] .repitem {
@@ -804,10 +821,6 @@ div[data-groupname=repeating_titles].repcontrol,
 div[data-groupname=repeating_minions].repcontrol,
 div[data-groupname=repeating_items].repcontrol {
   padding: 4px;
-}
-
-.trait {
-  padding-bottom: 8px;
 }
 
 .effects {

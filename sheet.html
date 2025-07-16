@@ -191,17 +191,25 @@
             <!-- Traits -->
 
             <div class="traits fancy lowkey section">
-                <h3 class="small colored-in">Traits</h3>
+                <div style="height: 27px; padding-bottom: 4px;">
+                    <span class="small colored-in floatLeft">Traits</span>
+                    <button type="action" class="floatRight" name="act_expandAllTraits">Expand All</button>
+                    <button type="action" class="floatRight" name="act_collapseAllTraits">Collapse All</button>
+                </div>
                 <fieldset class="repeating_traits">
                     <div class="trait list">
-                        <div class="horizontal">
+                        <input class="expand-checkbox hidden" type="checkbox" name="attr_traitsExpandItem" />
+                        <div class="horizontal item-header">
                             <span class="header medium bold">Trait:</span>
                             <input class="medium" type="text" name="attr_title" placeholder="Title"></span>
+                            <button type="action" class="ability-action" style="margin-left: auto;" name="act_info">i</button>
                         </div>
-                        <span class="header medium bold">Effect:</span>
-                        <div class="adaptive adaptive--text floatLeft">
-                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
-                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The trait's effects"></textarea>
+                        <div class="item-body list expanded-view">
+                            <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                            <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                                <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                                <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The trait's effects"></textarea>
+                            </div>
                         </div>
                     </div>
                 </fieldset>
@@ -2228,18 +2236,25 @@
         })
     }
 
-    on("clicked:repeating_titles:info clicked:repeating_minions:info clicked:repeating_items:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
-
-    on("clicked:repeating_limit:info clicked:repeating_song:info clicked:repeating_primary:info clicked:repeating_ninjutsu:info clicked:repeating_secondary:info clicked:repeating_instant:info clicked:repeating_technique:info", eventInfo => {
-        toggleExpandedStateInSection(eventInfo)
-    })
+    const toggleSections = ["traits"].concat(itemSections).concat(abilitySections)
+    for (let section of toggleSections) {
+        on(`clicked:repeating_${section}:info`, eventInfo => {
+            toggleExpandedStateInSection(eventInfo)
+        })
+    }
 
     on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
         const actionComponents = eventInfo.htmlAttributes.name.split("_")
         const section = actionComponents[1]
         toggleExpandedState(`${section}HeaderExpandItem`)
+    })
+
+    on("clicked:expandAllTraits", eventInfo => {
+        setExpandedStateForSection(true, "traits")
+    })
+
+    on("clicked:collapseAllTraits", eventInfo => {
+        setExpandedStateForSection(false, "traits")
     })
 
     on("clicked:expandAllItems", eventInfo => {
