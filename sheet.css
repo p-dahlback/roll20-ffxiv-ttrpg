@@ -1375,7 +1375,7 @@ textarea {
 /* Field editable setting */
 
 .title textarea,
-.type input,
+.type textarea,
 .uses .max,
 .cost input,
 .condition textarea,
