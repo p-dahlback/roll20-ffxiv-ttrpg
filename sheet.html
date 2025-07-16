@@ -199,10 +199,11 @@
                 <fieldset class="repeating_traits">
                     <div class="trait list">
                         <input class="expand-checkbox hidden" type="checkbox" name="attr_traitsExpandItem" />
-                        <div class="horizontal item-header">
+                        <div class="grid4 item-header">
                             <span class="header medium bold">Trait:</span>
                             <input class="medium" type="text" name="attr_title" placeholder="Title"></span>
-                            <button type="action" class="ability-action" style="margin-left: auto;" name="act_info">i</button>
+                            <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                            <button type="action" class="ability-action" name="act_info">i</button>
                         </div>
                         <div class="item-body list expanded-view">
                             <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
@@ -1823,21 +1824,21 @@
 
             <h3 class="small colored-in">Titles</h3> 
             <fieldset class="repeating_titles">
-                <div class="expandable-section grid3">
-                    <input class="medium" name="attr_title" type="text" placeholder="Enter the title name" />
-                    <button type="action" class="ability-action" name="act_share">q</button>
-                    <button type="action" class="ability-action" name="act_info">i</button>
+                <div class="trait list">
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_titlesExpandItem" />
-                    <div class="expanded-view span3">
-                        <div class="title-effect list">
-                            <span class="medium header bold">Effect:</span>
-                            <div class="adaptive adaptive--text floatLeft">
-                                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
-                                <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The effect provided by the Title"></textarea>
-                            </div>
-                            <div class="equip-container">
-                                <button type="action" class="select floatRight" name="act_select">Equip</button>
-                            </div>
+                    <div class="grid3 item-header">
+                        <input class="medium" type="text" name="attr_title" placeholder="Enter the title name"></span>
+                        <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                    </div>
+                    <div class="item-body list expanded-view">
+                        <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The effect provided by the Title"></textarea>
+                        </div>
+                        <div class="equip-container">
+                            <button type="action" class="select floatRight" name="act_select">Equip</button>
                         </div>
                     </div>
                 </div>
@@ -1847,21 +1848,21 @@
 
             <h3 class="small colored-in">Minions</h3>
             <fieldset class="repeating_minions">
-                <div class="expandable-section grid3">
-                    <input class="medium" name="attr_title" type="text" placeholder="Enter the title name" />
-                    <button type="action" class="ability-action" name="act_share">q</button>
-                    <button type="action" class="ability-action" name="act_info">i</button>
+                <div class="trait list">
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_minionsExpandItem" />
-                    <div class="expanded-view span3">
-                        <div class="title-effect list">
-                            <span class="medium header bold">Effect:</span>
-                            <div class="adaptive adaptive--text floatLeft">
-                                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
-                                <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The effect provided by the Minion"></textarea>
-                            </div>
-                            <div class="equip-container">
-                                <button type="action" class="select floatRight" name="act_select">Equip</button>
-                            </div>
+                    <div class="grid3 item-header">
+                        <input class="medium" type="text" name="attr_title" placeholder="Enter the minion's name"></span>
+                        <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                    </div>
+                    <div class="item-body list expanded-view">
+                        <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The effect provided by the Minion"></textarea>
+                        </div>
+                        <div class="equip-container">
+                            <button type="action" class="select floatRight" name="act_select">Equip</button>
                         </div>
                     </div>
                 </div>
@@ -1873,19 +1874,20 @@
         <div class="right fancy lowkey section list vertical-span2">
             <h3 class="small colored-in">Items</h3>
             <fieldset class="repeating_items">
-                <div class="expandable-section grid4">
-                    <input class="medium" name="attr_title" type="text" placeholder="Item name" />
-                    <input class="medium stat" name="attr_count" type="number" value="1" min="1" />
-                    <button type="action" class="ability-action" name="act_share">q</button>
-                    <button type="action" class="ability-action" name="act_info">i</button>
+
+                <div class="trait list">
                     <input class="expand-checkbox hidden" type="checkbox" name="attr_itemsExpandItem" />
-                    <div class="expanded-view span4">
-                        <div class="title-effect list">
-                            <span class="medium header bold">Effect:</span>
-                            <div class="adaptive adaptive--text floatLeft">
-                                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
-                                <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The item's effect"></textarea>
-                            </div>
+                    <div class="grid4 item-header">
+                        <input class="medium" name="attr_title" type="text" placeholder="Item name" />
+                        <input class="medium stat" name="attr_count" type="number" value="1" min="1" />
+                        <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                    </div>
+                    <div class="item-body list expanded-view">
+                        <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The item's effect"></textarea>
                         </div>
                     </div>
                 </div>
@@ -2031,6 +2033,9 @@
                 case "minions":
                     type = "Minion"
                     break
+                case "traits":
+                    type = "Trait"
+                    break
                 default:
                     console.log("Unrecognized item type " + section)
                     return
@@ -2042,7 +2047,7 @@
         })
     }
 
-    on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share", eventInfo => {
+    on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
         shareItemToChat(eventInfo)
     })
 
@@ -2340,18 +2345,11 @@
                 jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
                 role: "DPS / Black Mage",
                 level: 30,
-                attributes: {
-                    str: 0, dex: 2, vit: 1, int: 5, mnd: 4,
-                    defense: 11, magicDefense: 15, vigilance: 14,
-                    hitPoints: 21, hitPoints_max: 21,
-                    magicPoints: 5, magicPoints_max: 5,
-                    resource: "", resourceValue: 0, resourceValue_max: 0,
-                    resource2: "none", resourceValue2: 0, resourceValue2_max: 0
-                },
+                attributes: { str: 0, dex: 2, vit: 1, int: 5, mnd: 4, defense: 11, magicDefense: 15, vigilance: 14, hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
                 traits: [
                     { title: "Consecutive Invocation", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may forgo all standard movement until the end of your turn to use a additional invoked primary ability. You may choose a new target when using this additional ability. Consecutive Invocation can only be used once per turn, and does not prevent you from using focus to perform additional secondary action." },
                     { title: "Umbral Ice", effect: "Certain effects grant you Umbral Ice. While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage. Umbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
-                    { title: "Astral Fire", effect: "Certain effects grant you Astral Fire. While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage and you do not recover MP at the end of the [Adventurer Step]. Astral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn." },
+                    { title: "Astral Fire", effect: "Certain effects grant you Astral Fire. While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn." },
                     { title: "Thunderhead Ready", effect: "Whenever you are granted Umbral Ice while not under the effect of Umbral Ice, or Astral Fire while not under the effect of Astral Fire grant Thunderhead Ready*.\n\n*You cannot use a thunder spell ability to inflict a DOT on a character already suffering from a DOT inflicted by one of your thunder spell abilities."}
                 ],
                 abilities: {
