@@ -79,12 +79,12 @@ button[type=action],
   padding: 2px 6px 2px 6px;
 }
 
-button[type=action]:hover,
+.ui-dialog .charsheet button[type=action]:hover,
 .ui-dialog .charsheet button[type=roll].turn-order:hover {
   background-color: white;
 }
-
-button[type=action]:active,
+ 
+.ui-dialog .charsheet button[type=action]:active,
 .ui-dialog .charsheet button[type=roll].turn-order:active {
   background-color: white;
   color: lightgray;
@@ -124,7 +124,7 @@ input {
     display: none;
 }
 
-.tab .toggle {
+.ui-dialog .charsheet .tab button.toggle {
   border-style: none solid solid solid;
   border-width: 4px;
   border-color: transparent;
@@ -134,13 +134,13 @@ input {
   height: 18px;
 }
 
-.tab .toggle:hover {
+.ui-dialog .charsheet .tab button.toggle:hover {
   background: linear-gradient(to top, #f9f8f3, #f9f8f3) no-repeat 0 4px;
   background-size: 100% 24px;
   border-radius: 0 0 20px 20px;
 }
 
-.tab .toggle:active {
+.ui-dialog .charsheet .tab button.toggle:active {
   color: gray;
 }
 
@@ -150,10 +150,10 @@ input {
 }
 
 /* style the active button */
-.tabstoggle[value="character"] ~ div .sheet-button0,
-.tabstoggle[value="items"] ~ div .sheet-button1,
-.tabstoggle[value="abilities"] ~ div .sheet-button2,
-.tabstoggle[value="settings"] ~ div .sheet-button3 {
+.ui-dialog .charsheet .tabstoggle[value="character"] ~ button.sheet-button0,
+.ui-dialog .charsheet .tabstoggle[value="items"] ~ button.sheet-button1,
+.ui-dialog .charsheet .tabstoggle[value="abilities"] ~ button.sheet-button2,
+.ui-dialog .charsheet .tabstoggle[value="settings"] ~ button.sheet-button3 {
   margin: 0;
   border-style: none ridge ridge ridge;
   border-width: 4px;
@@ -625,11 +625,11 @@ body > .ui-dialog {
   border: none;
 }
 
-.stat-block button:hover {
+.ui-dialog .charsheet .stat-block button:hover {
   color: gray;
 }
 
-.stat-block button:active {
+.ui-dialog .charsheet .stat-block button:active {
   color: lightgray;
 }
 
@@ -1301,7 +1301,7 @@ textarea {
   margin: 2px;
 }
 
-button.header-action {
+.ui-dialog .charsheet button.header-action {
   color: #c4b5a1;
   float: right;
   font-size: 2rem;
@@ -1312,12 +1312,12 @@ button.header-action {
   height: 25px;
 }
 
-button.header-action:hover {
+.ui-dialog .charsheet button.header-action:hover {
   background-color: #c4b5a1;
   color: white;
 }
 
-button.header-action:active {
+.ui-dialog .charsheet button.header-action:active {
   background-color: lightgray;
   color: white;
 }
