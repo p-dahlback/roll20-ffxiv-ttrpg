@@ -2324,39 +2324,39 @@
 <script type="text/worker">
     const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"]
     const effectData = {
-        advantage: { type: "advantage", name: "Advantage", expiry: "use" },
-        astral_fire: { type: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "block" },
-        attribute: { type: "attribute(x)", name: "Attribute Up (X)", expiry: "use" },
-        barrier: { type: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "turn", duplicate: "allow" }, 
-        blind: { type: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
-        bound: { type: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
-        brink: { type: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
-        comatose: { type: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
-        critical: { type: "critical(x)", name: "Critical Up (X)", expiry: "use" },
-        damage: { type: "damage", name: "Damage Reroll", expiry: "use" },
-        dot: { type: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
-        enmity: { type: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
-        hawks_eye: { type: "special", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
-        heavy: { type: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
-        lucid_dreaming: { type: "special", specialType: "Lucid Dreaming", name: "Lucid Dreaming", expiry: "turn", duplicate: "replace" },
-        mages_ballad: { type: "special", specialType: "Mage's Ballad", name: "Mages' Ballad", expiry: "use", duplicate: "block" },
-        major_arcana: { type: "special", specialType: "Major Arcana", name: "Major Arcana", expiry: "use", duplicate: "replace" },
-        paralyzed: { type: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
-        petrified: { type: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
-        prone: { type: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
-        ready: { type: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
-        regen: { type: "regen(x)", name: "Regen (X)", expiry: "phase" },
-        restore: { type: "restore(x)", name: "Restore uses of Y by (X)", expiry: "use", duplicate: "allow"},
-        roll: { type: "roll(x)", name: "Roll Up (X)", expiry: "use" },
-        silence: { type: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block" },
-        sleep: { type: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block" },
-        slow: { type: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block" },
-        stun: { type: "stun", name: "Stun", expiry: "turn", duplicate: "block" },
-        surging_tempest: { type: "special", specialType: "Surging Tempest", name: "Surging Tempest", expiry: "encounter", duplicate: "block" },
-        thunderhead_ready: { type: "special", specialType: "Thunderhead Ready", name: "Thunderhead Ready", expiry: "use", duplicate: "block" },
-        unstunnable: { type: "unstunnable", name: "Unstunnable", expiry: "phase", duplicate: "block" },
-        umbral_ice: { type: "special", specialType: "Umbral Ice", name: "Umbral Ice", expiry: "turn2", duplicate: "block" },
-        weak: { type: "weak", name: "Weak", expiry: "rest", duplicate: "block" }
+        advantage: { type: "advantage", maskedType: "advantage", name: "Advantage", expiry: "use" },
+        astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "block" },
+        attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "use" },
+        barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "turn", duplicate: "allow" }, 
+        blind: { type: "blind", maskedType: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
+        bound: { type: "bound", maskedType: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
+        brink: { type: "brink", maskedType: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
+        comatose: { type: "comatose", maskedType: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
+        critical: { type: "critical(x)", maskedType: "critical(x)", name: "Critical Up (X)", expiry: "use" },
+        damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use" },
+        dot: { type: "dot(x)", maskedType: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
+        enmity: { type: "enmity(x)", maskedType: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
+        hawks_eye: { type: "special", maskedType: "special", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
+        heavy: { type: "heavy", maskedType: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
+        lucid_dreaming: { type: "special", maskedType: "special", specialType: "Lucid Dreaming", name: "Lucid Dreaming", expiry: "turn", duplicate: "replace" },
+        mages_ballad: { type: "special", maskedType: "damage", specialType: "Mage's Ballad", name: "Mage's Ballad", expiry: "use", duplicate: "block" },
+        major_arcana: { type: "special", maskedType: "damage", specialType: "Major Arcana", name: "Major Arcana", expiry: "use", duplicate: "replace" },
+        paralyzed: { type: "paralyzed", maskedType: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
+        petrified: { type: "petrified", maskedType: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
+        prone: { type: "prone", maskedType: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
+        ready: { type: "ready(x)", maskedType: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
+        regen: { type: "regen(x)", maskedType: "regen(x)", name: "Regen (X)", expiry: "phase" },
+        restore: { type: "restore(x)", maskedType: "restore(x)", name: "Restore uses of Y by (X)", expiry: "use", duplicate: "allow"},
+        roll: { type: "roll(x)", maskedType: "roll(x)", name: "Roll Up (X)", expiry: "use" },
+        silence: { type: "silence", maskedType: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block" },
+        sleep: { type: "sleep", maskedType: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block" },
+        slow: { type: "slow", maskedType: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block" },
+        stun: { type: "stun", maskedType: "stun", name: "Stun", expiry: "turn", duplicate: "block" },
+        surging_tempest: { type: "special", maskedType: "special", specialType: "Surging Tempest", name: "Surging Tempest", expiry: "encounter", duplicate: "block" },
+        thunderhead_ready: { type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", name: "Thunderhead Ready", expiry: "use", duplicate: "block" },
+        unstunnable: { type: "unstunnable", maskedType: "unstunnable", name: "Stun Immunity", expiry: "phase", duplicate: "block" },
+        umbral_ice: { type: "special", maskedType: "special", specialType: "Umbral Ice", name: "Umbral Ice", expiry: "turn2", duplicate: "block" },
+        weak: { type: "weak", maskedType: "weak", name: "Weak", expiry: "rest", duplicate: "block" }
     }
 
     const sheets = {
@@ -2428,7 +2428,7 @@
                 abilities: {
                     song: [
                         { title: "Minstrel's Refrain", type: "Magic, Song", cost: 0, uses: 0, uses_max: 0, baseEffect: "Grants the song effect of a single song ability of your choosing that you have already used this phase.", hitType: "None", damageType: "Effect", effectTarget: "Mage's Ballad", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/minstrels-refrain.png" },
-                        { title: "Mage's Ballad", type: "Magic, Song", cost: 0, uses: 1, uses_max: 1, baseEffect: "Restores one use of Bloodletter and grants the following song effect.", effectName: "Mages' Ballad", effect: "All allies may each reroll a single die when determining the amount of damage dealt by an ability.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "restore(Bloodletter-1)", effectTarget: "Mage's Ballad", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/mages-ballad.png" }
+                        { title: "Mage's Ballad", type: "Magic, Song", cost: 0, uses: 1, uses_max: 1, baseEffect: "Restores one use of Bloodletter and grants the following song effect.", effectName: "Mage's Ballad", effect: "All allies may each reroll a single die when determining the amount of damage dealt by an ability.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "restore(instant-Bloodletter-1)", effectTarget: "Mage's Ballad", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/mages-ballad.png" }
                     ],
                     primary: [
                         { title: "Heavy Shot", type: "Primary, Physical, Ranged, Flurry", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target and enables Arrow Flurry. If the die rolled for this ability check lands on a 15 or higher, the following proc effect triggers.", effectName: "Heavier Shot", effect: "Grants Hawk's Eye.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Hawk's Eye[d>15]", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/heavy-shot.png" },
@@ -2512,9 +2512,28 @@
             effects: [],
             criticalThreshold: 20
         }
-        for (let effect of effects) {
+        for (var effect of effects) {
+            let adjustedName = searchableEffectName(effect.specialType || effect.type)
+            effect.adjustedName = adjustedName
+            effect.data = effectData[adjustedName]
             result.effects.push(effect)
 
+            switch (effect.data.maskedType || effect.type) {
+                case "critical(x)":
+                    if (effect.value) {
+                        result.criticalThreshold -= parseInt(effect.value)
+                    }
+                    break
+                case "damage":
+                    if (result.damageRerolls) {
+                        result.damageRerolls.push(effect.data.name)
+                    } else {
+                        result.damageRerolls = [effect.data.name]
+                    }
+                    break
+                default:
+                    break
+            }
             if (effect.type == "special") {
                 switch (effect.specialType.trim().toLowerCase()) {
                     case "astral fire":
@@ -2523,25 +2542,13 @@
                     case "hawk's eye":
                         result.hawksEyeId = effect.fullId
                         break
-                    case "major arcana":
-                        result.hasDamageReroll = true
-                        break
                     case "surging tempest":
                         result.surgingTempestId = effect.fullId
                         break
                     case "umbral ice":
                         result.umbralIceId = effect.fullId
                         break
-                }
-            } else {
-                switch (effect.type) {
-                    case "critical(x)":
-                        if (effect.value) {
-                            result.criticalThreshold -= parseInt(effect.value)
-                        }
-                        break
-                    case "damage":
-                        result.hasDamageReroll = true
+                    default:
                         break
                 }
             }
@@ -2668,60 +2675,60 @@
     function addEffectsToPostDamageRolls(effects, damageRolls) {
         var result = {}
         var summaries = []
-        if (effects.hasDamageReroll && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
-            summaries.push("--Damage reroll available--")
+        if (effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
+            summaries.push(`Damage reroll available (${effects.damageRerolls.join(", ")})`)
         }
 
         if (effects.surgingTempestId) {
-        var rolls = []
-        var total = 0
-        var appliedSurgingTempest = false
-        for (let roll of damageRolls) {
-            if (!roll || !roll.result) {
-                rolls.push("")
-                continue
-            }
+            var rolls = []
+            var total = 0
+            var appliedSurgingTempest = false
+            for (let roll of damageRolls) {
+                if (!roll || !roll.result) {
+                    rolls.push("")
+                    continue
+                }
 
-            let dice = roll.dice
-            if (!dice || dice.length == 0) {
-                total += roll.result
-                rolls.push(roll.result)
-                continue
-            }
-            let diceResult = dice.reduce(
-                (accumulator, currentValue) => {
-                    if (currentValue == 1) {
-                        appliedSurgingTempest = true
-                        return 2 + accumulator
-                    }
-                    return currentValue + accumulator
-                },
-                0
-            )
-            let rawAdditions = roll.expression.split("+").reduce(
-                (accumulator, currentValue) => {
-                    let trimmed = currentValue.trim()
-                    if (trimmed.includes("d")) {
-                        return accumulator
-                    }
-                    let value = parseInt(trimmed)
-                    if (isNaN(value)) {
-                        log(`Unexpected NaN ${trimmed} from expression ${expression}`)
-                        return accumulator
-                    }
-                    return accumulator + parseInt(trimmed)
-                },
-                0
-            )
+                let dice = roll.dice
+                if (!dice || dice.length == 0) {
+                    total += roll.result
+                    rolls.push(roll.result)
+                    continue
+                }
+                let diceResult = dice.reduce(
+                    (accumulator, currentValue) => {
+                        if (currentValue == 1) {
+                            appliedSurgingTempest = true
+                            return 2 + accumulator
+                        }
+                        return currentValue + accumulator
+                    },
+                    0
+                )
+                let rawAdditions = roll.expression.split("+").reduce(
+                    (accumulator, currentValue) => {
+                        let trimmed = currentValue.trim()
+                        if (trimmed.includes("d")) {
+                            return accumulator
+                        }
+                        let value = parseInt(trimmed)
+                        if (isNaN(value)) {
+                            log(`Unexpected NaN ${trimmed} from expression ${expression}`)
+                            return accumulator
+                        }
+                        return accumulator + parseInt(trimmed)
+                    },
+                    0
+                )
 
-            let newResult = diceResult + rawAdditions
-            total += newResult
-            rolls.push(newResult)
-        }
-        result.rolls = rolls
-        result.total = total
-        if (appliedSurgingTempest) {
-                summaries.push("Surging Tempest proc")
+                let newResult = diceResult + rawAdditions
+                total += newResult
+                rolls.push(newResult)
+            }
+            result.rolls = rolls
+            result.total = total
+            if (appliedSurgingTempest) {
+                    summaries.push("Surging Tempest proc")
             }
         } else {
             var rolls = damageRolls.map(roll => roll.result)
@@ -2739,14 +2746,13 @@
 
     function searchableEffectName(name) {
         return name
-            .replace(/\(([\-\w]+)\)/, "")
+            .replace(/(\([\-\w]+\))|'/, "")
             .replace(" ", "_")
             .trim().toLowerCase()
     }
 
     function consumeEffectsOnAbility(name, condition, effects) {
         var summaries = []
-        log("Consuming effects for " + name + ", condition " + condition)
         for (let effect of effects.effects) {
             let normalizedName = name.toLowerCase()
             let normalizedCondition = condition.toLowerCase()
@@ -2879,11 +2885,12 @@
                     summaries.push(addEffectsToSelf(values, ["Thunderhead Ready"], existingEffects))
                     break
                 case "barrier":
-                    // Don't add to effect list, just update the barrier
                     setAttrs({
                         barrierPoints: Math.max(values.barrierPoints ?? 0, parseInt(value))
                     })
                     summaries.push(`Granted ${value} HP barrier`)
+
+                    // Don't add to effect list, just update the barrier
                     continue
                 case "major_arcana":
                     // Add barrier
@@ -2893,6 +2900,42 @@
                 case "lucid_dreaming":
                     attributes.mpRecovery = 3
                     break
+                case "restore": {
+                    let components = value.split("-")
+                    let section = components[0].toLowerCase()
+                    let abilityName = components[1]
+                    let normalizedName = abilityName.toLowerCase()
+                    let increment = parseInt(components[2])
+                    if (isNaN(increment)) {
+                        log("Cannot read value for effect " + effect)
+                    }
+
+                    summaries.push(`Restored ${increment} use(s) of ${abilityName}`)
+                    log("Restoring uses of " + abilityName)
+                    getSectionIDs(`repeating_${section}`, ids => {
+                        let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`])
+                        getAttrs(attributes, values => {
+                            for (let id of ids) {
+                                let title = values[`repeating_${section}_${id}_title`]
+                                if (title.toLowerCase() === normalizedName) {
+                                    let uses = values[`repeating_${section}_${id}_uses`]
+                                    let max = values[`repeating_${section}_${id}_uses_max`]
+                                    if (uses < max) {
+                                        log("Restored " + abilityName)
+                                        var attributes = {}
+                                        attributes[`repeating_${section}_${id}_uses`] = Math.min(uses + increment, max)
+                                        setAttrs(attributes)
+                                    }
+                                    return
+                                }
+                            }
+                            log("Failed to find " + abilityName)
+                        })
+                    })
+
+                    // Don't add to effect list, just update the uses
+                    continue
+                }
                 case "umbral_ice":
                     if (existingEffects.astralFireId) {
                         summaries.push("Removed Astral Fire")
