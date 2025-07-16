@@ -97,10 +97,20 @@
 
     <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
     <div class="tab">
-        <button type="action" name="act_character" class="toggle sheet-button0 floatLeft">Character</button>
-        <button type="action" name="act_abilities" class="toggle sheet-button2 floatLeft">Abilities</button>
-        <button type="action" name="act_items" class="toggle sheet-button1 floatLeft">Inventory</button>
-        <button type="action" name="act_settings" class="toggle sheet-button3 floatRight">y</button>
+        <button type="action" name="act_character" class="toggle sheet-button0">Character</button>
+        <button type="action" name="act_abilities" class="toggle sheet-button2">Abilities</button>
+        <button type="action" name="act_items" class="toggle sheet-button1">Inventory</button>
+
+        <div class="mini-effects hidden-controls">
+            <fieldset class="repeating_effects">
+                <span class="sheet-tooltip">
+                    <img class="icon" name="attr_icon" />
+                    <span name="attr_name" class="floatLeft"></span>
+                </span>
+            </fieldset>
+        </div>
+
+        <button type="action" name="act_settings" class="toggle sheet-button3">y</button>
     </div>
 </div>
 
@@ -2403,7 +2413,7 @@
                 return names.includes(effect.type) || names.includes(effect.specialType.trim().toLowerCase())
             })
             for (let match of matches) {
-                log(`Removing effect ${match.id} with the type ${match.specialType ?? match.type}`)
+                log(`Removing effect ${match.id} with the type ${match.specialType || match.type}`)
                 removeRepeatingRow(match.fullId)
             }
         })
@@ -2670,7 +2680,7 @@
                 // Consume X Ready
                 removeRepeatingRow(effect.fullId)
 
-                let effectName = effect.specialType ?? effectData[effect.type.replace("(x)", "")].typeName
+                let effectName = effect.specialType || effectData[effect.type.replace("(x)", "")].name
                 summaries.push(`Consumed ${(effectName.replace("(X)", effect.value))}`)
             }
         }
@@ -2697,7 +2707,7 @@
 
             let valueDefinition = value ? `--v ${value}` : ""
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : ""
-            let effectName = data.specialType ?? data.type.replace("(x)", "")
+            let effectName = data.specialType || data.type.replace("(x)", "")
             let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --expire ${data.expiry} ` + 
                 `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`
             buttons.push(button)
@@ -3761,12 +3771,16 @@
         const rowId = sourceAttributes[2]
 
         getAttrs([`repeating_effects_${rowId}_type`, `repeating_effects_${rowId}_specialType`], values => {
-            const iconUrl = getIconForEffectType(
-                values[`repeating_effects_${rowId}_type`],
-                values[`repeating_effects_${rowId}_specialType`]
-            )
+            let type = values[`repeating_effects_${rowId}_type`]
+            let specialType = values[`repeating_effects_${rowId}_specialType`]
+            let adjustedName = searchableEffectName(specialType || type)
+            let data = effectData[adjustedName]
+
+            const iconUrl = getIconForEffectType(type, specialType)
+
             var attributes = {}
             attributes[`repeating_effects_${rowId}_icon`] = iconUrl
+            attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type
             setAttrs(attributes)
         })
 
