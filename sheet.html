@@ -2336,7 +2336,7 @@
         damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use" },
         dot: { type: "dot(x)", maskedType: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
         enmity: { type: "enmity(x)", maskedType: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
-        hawks_eye: { type: "special", maskedType: "special", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
+        hawks_eye: { type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
         heavy: { type: "heavy", maskedType: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
         lucid_dreaming: { type: "special", maskedType: "special", specialType: "Lucid Dreaming", name: "Lucid Dreaming", expiry: "turn", duplicate: "replace" },
         mages_ballad: { type: "special", maskedType: "damage", specialType: "Mage's Ballad", name: "Mage's Ballad", expiry: "use", duplicate: "block" },
@@ -2746,7 +2746,7 @@
 
     function searchableEffectName(name) {
         return name
-            .replace(/(\([\-\w]+\))|'/, "")
+            .replaceAll(/(\([\-\w]+\))|(\[[\-\+\>\<\=\w]+\])|'/g, "")
             .replace(" ", "_")
             .trim().toLowerCase()
     }
@@ -2757,10 +2757,11 @@
             let normalizedName = name.toLowerCase()
             let normalizedCondition = condition.toLowerCase()
             let specialType = (effect.specialType ?? "").toLowerCase()
+            let maskedType = effect.data.maskedType.toLowerCase()
             let value = (effect.value ?? "").toLowerCase()
             let isReadyType = effect.type == "ready(x)"
             
-            if (!isReadyType && !specialType.includes(" ready")) {
+            if (!isReadyType && !specialType.includes(" ready") && !maskedType.includes(" ready")) {
                 continue
             }
 
@@ -2809,52 +2810,200 @@
         return buttons.join("\n")
     }
 
+    function matchesEffectCondition(effect, dice) {
+        let conditionMatch = effect.match(/\[([\-\+\>\<\=\w]+)\]/)
+        if (!conditionMatch || conditionMatch.length < 2) {
+            return true
+        }
+
+        let operator = conditionMatch[1].match(/[\>\<\=]+/)[0]
+        let operands = conditionMatch[1].split(operator)
+        var value
+        if (operands[0].toLowerCase() == "d") {
+            value = dice.hit
+        } else {
+            log("Unrecognized operand " + operands[0])
+            return false 
+        }
+
+        let compareTo = parseInt(operands[1])
+        if (isNaN(value) || isNaN(compareTo)) {
+            log("Unrecognized operands " + conditionMatch[1])
+            return false
+        }
+
+        switch (operator) {
+            case ">": return value > compareTo
+            case "<": return value < compareTo
+            case ">=": return value >= compareTo
+            case "<=": return value <= compareTo
+            case "=":
+            case "==":
+                return value == compareTo
+            default:
+                log("Unrecognized operand " + operand)
+                return false
+        }
+    }
+
+    function replacementEffect(effect, existingEffects) {
+        if (effect == "transpose") {
+            if (existingEffects.astralFireId) {
+                return { name: "umbral_ice", valid: true }
+            } else if (existingEffects.umbralIceId) {
+                return { name: "astral_fire", valid: true }
+            } else {
+                log("Cannot use transpose when missing both astral fire/umbral ice")
+                return { valid: false }
+            }
+        }
+        return { name: effect, valid: true }
+    }
+
+    function resolveDuplicates(name, effect, existingEffectTypes, existingEffects) {
+        if (effect.duplicate == "block" && existingEffectTypes.includes(name)) {
+            log("Effect " + effect.name + " already exists, skipping")
+            return false
+        }
+
+        if (effect.duplicate == "replace") {
+            for (let replacable of existingEffects.effects) {
+                if (replacable.type == effect.type && replacable.specialType == effect.specialType) {
+                    summaries.push(`Removed existing ${effect.name}`)
+                    removeRepeatingRow(replacable.fullId)
+                }
+            }
+        }
+        return true
+    }
+
+    function resolveSpecialEffects(effect, value, existingEffects) {
+        var attributes = {}
+        var summaries = []
+        var skip = false
+        switch (effect) {
+            case "astral_fire":
+                // Clear MP recovery
+                attributes.mpRecoveryBlock = "on"
+
+                // Remove Umbral Ice
+                if (existingEffects.umbralIceId) {
+                    summaries.push("Removed Umbral Ice")
+                    removeRepeatingRow(existingEffects.umbralIceId)
+                }
+                summaries.push(addEffectsToSelf(values, dice, ["Thunderhead Ready"], existingEffects))
+                break
+            case "barrier":
+                setAttrs({
+                    barrierPoints: Math.max(values.barrierPoints ?? 0, parseInt(value))
+                })
+                summaries.push(`Granted ${value} HP barrier`)
+
+                // Don't add to effect list, just update the barrier
+                skip = true
+                break
+            case "major_arcana":
+                // Add barrier
+                let barrier = values.level >= 40 ? 2 : 1
+                attributes.barrierPoints = Math.max(values.barrierPoints ?? 0, barrier)
+                break
+            case "lucid_dreaming":
+                attributes.mpRecovery = 3
+                break
+            case "restore": {
+                let components = value.split("-")
+                let section = components[0].toLowerCase()
+                let abilityName = components[1]
+                let normalizedName = abilityName.toLowerCase()
+                let increment = parseInt(components[2])
+                if (isNaN(increment)) {
+                    log("Cannot read value for effect " + effect)
+                }
+
+                summaries.push(`Restored ${increment} use(s) of ${abilityName}`)
+                log("Restoring uses of " + abilityName)
+                getSectionIDs(`repeating_${section}`, ids => {
+                    let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`])
+                    getAttrs(attributes, values => {
+                        for (let id of ids) {
+                            let title = values[`repeating_${section}_${id}_title`]
+                            if (title.toLowerCase() === normalizedName) {
+                                let uses = values[`repeating_${section}_${id}_uses`]
+                                let max = values[`repeating_${section}_${id}_uses_max`]
+                                if (uses < max) {
+                                    log("Restored " + abilityName)
+                                    var attributes = {}
+                                    attributes[`repeating_${section}_${id}_uses`] = Math.min(uses + increment, max)
+                                    setAttrs(attributes)
+                                }
+                                return
+                            }
+                        }
+                        log("Failed to find " + abilityName)
+                    })
+                })
+
+                // Don't add to effect list, just update the uses
+                skip = true
+                break
+            }
+            case "umbral_ice":
+                if (existingEffects.astralFireId) {
+                    summaries.push("Removed Astral Fire")
+                    removeRepeatingRow(existingEffects.astralFireId)
+
+                    // Reset MP recovery
+                    attributes.mpRecoveryBlock = "off"
+                }
+                summaries.push(addEffectsToSelf(values, dice, ["Thunderhead Ready"], existingEffects))
+                break
+            default:
+                break
+        }
+
+        return { attributes: attributes, summaries: summaries, skip: skip }
+    }
+
     // Adds the given effects. Values should contain level, barrierPoints.
-    function addEffectsToSelf(values, effects, existingEffects) {
+    function addEffectsToSelf(values, dice, effects, existingEffects) {
         var attributes = {}
         var summaries = []
 
         let existingEffectTypes = existingEffects.effects.map(effect => {
             if (effect.type == "special") {
-                return effect.specialType.replace(" ", "_").toLowerCase()
+                return effect.specialType
+                    .replace("'", "")
+                    .replace(" ", "_")
+                    .toLowerCase()
             }
             return effect.type
         })
 
         log("Adding effects to self: " + JSON.stringify(effects))
         for (let effect of effects) {
-            var adjustedEffect = searchableEffectName(effect)
-            if (adjustedEffect == "transpose") {
-                if (existingEffects.astralFireId) {
-                    adjustedEffect = "umbral_ice"
-                } else if (existingEffects.umbralIceId) {
-                    adjustedEffect = "astral_fire"
-                } else {
-                    log("Cannot use transpose when missing both astral fire/umbral ice")
-                    continue
-                }
+            if (!effect) {
+                continue
             }
 
+            if (!matchesEffectCondition(effect, dice)) {
+                log("Condition not fulfilled; skipping effect " + effect)
+                continue
+            }
+
+            let searchableName = searchableEffectName(effect)
+            let replacement = replacementEffect(searchableName, existingEffects)
+            if (!replacement.valid) {
+                continue
+            }
+            let adjustedEffect = replacement.name
+            log("Adjusted effect " + adjustedEffect)
             let data = effectData[adjustedEffect]
             if (!data) {
                 log("Unhandled effect " + adjustedEffect)
                 continue
             }
-
-
-            // Manage duplicate effects
-            if (data.duplicate == "block" && existingEffectTypes.includes(adjustedEffect)) {
-                log("Effect " + effect.trim() + " already exists, skipping")
+            if (!resolveDuplicates(adjustedEffect, data, existingEffectTypes, existingEffects)) {
                 continue
-            }
-
-            if (data.duplicate == "replace") {
-                for (let replacable of existingEffects.effects) {
-                    if (replacable.type == data.type && replacable.specialType == data.specialType) {
-                        summaries.push(`Removed existing ${data.name}`)
-                        removeRepeatingRow(replacable.fullId)
-                    }
-                }
             }
 
             var value = null
@@ -2862,6 +3011,7 @@
             if (match && match.length >= 2) {
                 value = match[1]
             }
+
             let initValues = {
                 id: generateRowID(),
                 type: data.type,
@@ -2871,84 +3021,13 @@
                 curable: data.curable
             }
 
-            // Handle special conditions for certain effects
-            switch (adjustedEffect) {
-                case "astral_fire":
-                    // Clear MP recovery
-                    attributes.mpRecoveryBlock = "on"
-
-                    // Remove Umbral Ice
-                    if (existingEffects.umbralIceId) {
-                        summaries.push("Removed Umbral Ice")
-                        removeRepeatingRow(existingEffects.umbralIceId)
-                    }
-                    summaries.push(addEffectsToSelf(values, ["Thunderhead Ready"], existingEffects))
-                    break
-                case "barrier":
-                    setAttrs({
-                        barrierPoints: Math.max(values.barrierPoints ?? 0, parseInt(value))
-                    })
-                    summaries.push(`Granted ${value} HP barrier`)
-
-                    // Don't add to effect list, just update the barrier
-                    continue
-                case "major_arcana":
-                    // Add barrier
-                    let barrier = values.level >= 40 ? 2 : 1
-                    attributes.barrierPoints = Math.max(values.barrierPoints ?? 0, barrier)
-                    break
-                case "lucid_dreaming":
-                    attributes.mpRecovery = 3
-                    break
-                case "restore": {
-                    let components = value.split("-")
-                    let section = components[0].toLowerCase()
-                    let abilityName = components[1]
-                    let normalizedName = abilityName.toLowerCase()
-                    let increment = parseInt(components[2])
-                    if (isNaN(increment)) {
-                        log("Cannot read value for effect " + effect)
-                    }
-
-                    summaries.push(`Restored ${increment} use(s) of ${abilityName}`)
-                    log("Restoring uses of " + abilityName)
-                    getSectionIDs(`repeating_${section}`, ids => {
-                        let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`])
-                        getAttrs(attributes, values => {
-                            for (let id of ids) {
-                                let title = values[`repeating_${section}_${id}_title`]
-                                if (title.toLowerCase() === normalizedName) {
-                                    let uses = values[`repeating_${section}_${id}_uses`]
-                                    let max = values[`repeating_${section}_${id}_uses_max`]
-                                    if (uses < max) {
-                                        log("Restored " + abilityName)
-                                        var attributes = {}
-                                        attributes[`repeating_${section}_${id}_uses`] = Math.min(uses + increment, max)
-                                        setAttrs(attributes)
-                                    }
-                                    return
-                                }
-                            }
-                            log("Failed to find " + abilityName)
-                        })
-                    })
-
-                    // Don't add to effect list, just update the uses
-                    continue
-                }
-                case "umbral_ice":
-                    if (existingEffects.astralFireId) {
-                        summaries.push("Removed Astral Fire")
-                        removeRepeatingRow(existingEffects.astralFireId)
-
-                        // Reset MP recovery
-                        attributes.mpRecoveryBlock = "off"
-                    }
-                    summaries.push(addEffectsToSelf(values, ["Thunderhead Ready"], existingEffects))
-                    break
-                default:
-                    break
-            }
+            let specialEffectResult = resolveSpecialEffects(adjustedEffect)
+            summaries = summaries.concat(specialEffectResult.summaries)
+            if (specialEffectResult.skip) {
+                continue
+            } 
+            
+            var attributes = specialEffectResult.attributes
             attributes[`repeating_effects_${initValues.id}_type`] = initValues.type
             if (initValues.specialType) {
                 attributes[`repeating_effects_${initValues.id}_specialType`] = initValues.specialType
@@ -3475,7 +3554,7 @@
             if (useRollBonus) {
                 bonusValue = effects.reduce(
                     (accumulator, currentValue) => {
-                        if (currentValue.type != "roll(x)") {
+                        if (currentValue.data.maskedType != "roll(x)") {
                             return accumulator
                         }
                         if (currentValue.value) {
@@ -3567,7 +3646,10 @@
 
                 let consumedEffectSummary = consumeEffectsOnAbility(name, condition, effects)
 
-                let effectSummary = addEffectsToSelf(values, selfEffects, effects)
+                let dice = {
+                    hit: roll
+                }
+                let effectSummary = addEffectsToSelf(values, dice, selfEffects, effects)
                 let procSummary = [computedResults.summary, consumedEffectSummary, effectSummary].filter(element => element).join(", ")
 
                 var attributes = {}
