@@ -2352,21 +2352,21 @@
         curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Curecast Focus", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
         damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use" },
         defenders_boon: { type: "special", maskedType: "augment", specialType: "Defender's Boon", name: "Defender's Boon", expiry: "end", duplicate: "block", description: "Increases Defense or Magic Defense by 1. This applies to the lower of the two attributes; if they have the same value, this augmentation has no effect." },
-        deflecting_edge: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Deflecting Edge", name: "Deflecting Edge", expiry: "end", duplicate: "block", description: "Grants the Parry ability." },
+        deflecting_edge: { type: "special", maskedType: "augment", augmentType: "ability", ability: "parry", specialType: "Deflecting Edge", name: "Deflecting Edge", expiry: "end", duplicate: "block", description: "Grants the Parry ability." },
         dot: { type: "dot(x)", maskedType: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
         dps: { type: "dps(x)", maskedType: "dps(x)", name: "Damage Up (X)", expiry: "turn", duplicate: "allow" },
         elemental_veil: { type: "special", maskedType: "augment", specialType: "Elemental Veil", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
         elemental_veil_ii: { type: "special", maskedType: "augment", specialType: "Elemental Veil", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
         enmity: { type: "enmity(x)", maskedType: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
-        flamecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Flamecast Focus", name: "Flamecast Focus", expiry: "end", duplicate: "block", description: "Grants the Fire ability." },
+        flamecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability: "fire", specialType: "Flamecast Focus", name: "Flamecast Focus", expiry: "end", duplicate: "block", description: "Grants the Fire ability." },
         hawks_eye: { type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block", description: "While under the effect of Hawk's Eye, you ignore the penalty incurred on ability checks made while Blinded." },
         heavy: { type: "heavy", maskedType: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
-        icecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Icecast Focus", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
+        icecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability: "ice", specialType: "Icecast Focus", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
         improved_padding: { type: "special", maskedType: "augment", specialType: "Improved Padding", name: "Improved Padding", expiry: "end", duplicate: "block", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
         lightweight_refit: { type: "special", maskedType: "augment", specialType: "Lightweight Refit", name: "Lightweight Refit", expiry: "end", duplicate: "block", description: "Increases Speed by 1 during this character's first turn of an encounter." },
         lucid_dreaming: { type: "special", maskedType: "special", specialType: "Lucid Dreaming", name: "Lucid Dreaming", expiry: "turn", duplicate: "replace", description: "Recover an additional 1 MP at the end of this round's [Adventurer Step)." },
         mages_ballad: { type: "special", maskedType: "damage", specialType: "Mage's Ballad", name: "Mage's Ballad", expiry: "use", duplicate: "block", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
-        magic_damper: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Magic Damper", name: "Magic Damper", expiry: "end", duplicate: "block", description: "Grants the Aetherwall ability." },
+        magic_damper: { type: "special", maskedType: "augment", augmentType: "ability", ability: "aetherwall", specialType: "Magic Damper", name: "Magic Damper", expiry: "end", duplicate: "block", description: "Grants the Aetherwall ability." },
         major_arcana: { type: "special", maskedType: "damage", specialType: "Major Arcana", name: "Major Arcana", expiry: "turn", duplicate: "replace", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
         mana_conduit: { type: "special", maskedType: "augment", specialType: "Mana Conduit", name: "Mana Conduit", expiry: "end", duplicate: "block", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
         masterwork_ornamentation: { type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
@@ -2403,6 +2403,34 @@
         permanent: "Permanent",
         use: "On use",
         damage: "On damage"
+    }
+
+    const effectAbilities = {
+        aetherwall: {
+            instant: [
+                { title: "Aetherwall", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Magic Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Magic Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        cure: {
+            secondary: [
+                { title: "Cure", type: "Secondary, Magic, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        fire: {
+            primary: [
+                { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        ice: {
+            primary: [
+                { title: "Ice", type: "Primary, Magic, Ice-Aspected, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        parry: {
+            instant: [
+                { title: "Parry", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
     }
 
     const sheets = {
@@ -3016,11 +3044,70 @@
         }
         return true
     }
+    
+    function resolveEffectAbilities(effect) {
+        let data = effectData[effect]
+        if (!data || !data.ability) {
+            return
+        }
+
+        let abilityDefinition = effectAbilities[data.ability]
+        if (!abilityDefinition) {
+            return
+        }
+        var attributes = {}
+        for (let section of Object.entries(abilityDefinition)) {
+            for (let ability of section[1]) {
+                log("Generating effect ability " + ability.title)
+                let id = generateRowID()
+                for (let entry of Object.entries(ability)) {
+                    attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1]
+                }
+                attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto"
+                attributes[`repeating_${section[0]}_${id}_augment`] = "1"
+            }
+        }
+        setAttrs(attributes)
+    }
+
+    function removeEffectAbility(effect) {
+        let data = effectData[effect]
+        if (!data || !data.ability) {
+            return
+        }
+        let abilityDefinition = effectAbilities[data.ability]
+        if (!abilityDefinition) {
+            return
+        }
+
+        log("Removing ability " + JSON.stringify(data))
+        // Delete ability
+        for (let section of Object.keys(abilityDefinition)) {
+            let titles = abilityDefinition[section].map(ability => ability.title)
+            getSectionIDs(`repeating_${section}`, ids => {
+                let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_augment`])
+                getAttrs(attributes, values => {
+                    for (let id of ids) {
+                        let title = values[`repeating_${section}_${id}_title`]
+                        let augment = values[`repeating_${section}_${id}_augment`]
+
+                        if (augment === "1" && titles.includes(title)) {
+                            log("Removed augment ability " + title)
+                            removeRepeatingRow(`repeating_${section}_${id}`)
+                        }
+                    }
+                })
+            })
+        }
+    }
 
     function resolveSpecialEffects(effect, dice, values, existingEffects) {
         var attributes = {}
         var summaries = []
         var skip = false
+
+        resolveEffectAbilities(effect)
+        
         switch (effect) {
             case "astral_fire":
                 // Clear MP recovery
@@ -4207,13 +4294,38 @@
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
         
-        if (eventInfo.triggerName.toLowerCase().includes("_specialtype") && eventInfo.newValue.trim().toLowerCase() == "none") {
+        let triggerName = eventInfo.triggerName.toLowerCase()
+        let newValue = eventInfo.newValue.trim().toLowerCase()
+        if (triggerName.includes("_specialtype") && newValue === "none") {
             // Reset
             var attributes = {}
             attributes[`repeating_effects_${rowId}_type`] = ""
             attributes[`repeating_effects_${rowId}_specialType`] = ""
             setAttrs(attributes)
             return
+        }
+
+        if (triggerName.includes("_specialtype")) {
+            if (["astral fire", "umbral ice"].includes(newValue)) {
+                log("Removing astral/umbral to ensure a single instance of " + newValue)
+                // Remove Astral Fire and Umbral Ice excepting the current instance.
+                // This ensures there's only one Astral Fire or Umbral Ice active at any point.
+                removeEffects(["astral fire", "umbral ice"], rowId)
+                if (newValue === "umbral ice") {
+                    log("Resetting MP recovery in case of Astral Fire removal")
+                    setAttrs({
+                        mpRecoveryBlock: "off"
+                    })
+                } else {
+                    log("Disabling MP recovery due to Astral Fire")
+                    setAttrs({
+                        mpRecoveryBlock: "on"
+                    })
+                }
+            } else {
+                // Remove duplicates of special effects
+                removeEffects([newValue], rowId)
+            }
         }
 
         getAttrs([`repeating_effects_${rowId}_type`, `repeating_effects_${rowId}_specialType`, `repeating_effects_${rowId}_expiry`], values => {
@@ -4233,32 +4345,10 @@
                 attributes[`repeating_effects_${rowId}_icon`] = ""
             }
 
+            resolveEffectAbilities(adjustedName)
+
             setAttrs(attributes)
         })
-
-        if (eventInfo.triggerName.toLowerCase().includes("_specialtype")) {
-            let effectName = eventInfo.newValue.trim().toLowerCase()
-            if (["astral fire", "umbral ice"].includes(effectName)) {
-                log("Removing astral/umbral to ensure a single instance of " + effectName)
-                // Remove Astral Fire and Umbral Ice excepting the current instance.
-                // This ensures there's only one Astral Fire or Umbral Ice active at any point.
-                removeEffects(["astral fire", "umbral ice"], rowId)
-                if (effectName == "umbral ice") {
-                    log("Resetting MP recovery in case of Astral Fire removal")
-                    setAttrs({
-                        mpRecoveryBlock: "off"
-                    })
-                } else {
-                    log("Disabling MP recovery due to Astral Fire")
-                    setAttrs({
-                        mpRecoveryBlock: "on"
-                    })
-                }
-            } else {
-                // Remove duplicates of special effects
-                removeEffects([effectName], rowId)
-            }
-        }
     })
 
     // Reset MP recovery on Astral Fire deletion
@@ -4267,18 +4357,22 @@
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
         
+        let type = eventInfo.removedInfo[`repeating_effects_${rowId}_type`]
         let specialType = eventInfo.removedInfo[`repeating_effects_${rowId}_specialType`]
+        let adjustedName = searchableEffectName(specialType || type)
+        removeEffectAbility(adjustedName)
+
         if (!specialType) {
             return
         }
-        switch (specialType.trim().toLowerCase()) {
-            case "astral fire":
+        switch (adjustedName) {
+            case "astral_fire":
                 log("Astral Fire removed; resetting mp recovery")
                 setAttrs({
                     mpRecoveryBlock: "off"
                 })
                 break
-            case "lucid dreaming":
+            case "lucid_dreaming":
                 log("Lucid Dreaming removed; resetting mp recovery")
                 setAttrs({
                     mpRecovery: 2
