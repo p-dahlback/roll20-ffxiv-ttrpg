@@ -2368,6 +2368,7 @@
         stun: { type: "stun", maskedType: "stun", name: "Stun", expiry: "turn", duplicate: "block" },
         surging_tempest: { type: "special", maskedType: "special", specialType: "Surging Tempest", name: "Surging Tempest", expiry: "encounter", duplicate: "block" },
         transcendent: { type: "transcendent", maskedType: "transcendent", name: "Transcendent", expiry: "turn", duplicate: "block" },
+        thrill_of_battle: { type: "special", maskedType: "special", specialType: "Thrill of Battle", name: "Thrill of Battle", expiry: "ephemeral", duplicate: "allow" },
         thunderhead_ready: { type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", name: "Thunderhead Ready", expiry: "use", duplicate: "block" },
         unstunnable: { type: "unstunnable", maskedType: "unstunnable", name: "Stun Immunity", expiry: "phase", duplicate: "block" },
         umbral_ice: { type: "special", maskedType: "special", specialType: "Umbral Ice", name: "Umbral Ice", expiry: "turn2", duplicate: "block" },
@@ -2852,7 +2853,7 @@
     function searchableEffectName(name) {
         return name
             .replaceAll(/(\([\-\w]+\))|(\[[\-\+\>\<\=\w]+\])|'/g, "")
-            .replace(" ", "_")
+            .replaceAll(" ", "_")
             .trim().toLowerCase()
     }
 
@@ -2982,7 +2983,7 @@
         return true
     }
 
-    function resolveSpecialEffects(effect, value, existingEffects) {
+    function resolveSpecialEffects(effect, dice, values, existingEffects) {
         var attributes = {}
         var summaries = []
         var skip = false
@@ -3047,6 +3048,36 @@
                 skip = true
                 break
             }
+            case "thrill_of_battle": {
+                // Heal by roll total and add a barrier for anything that exceeds max HP
+                let result = parseInt(dice.damage.result)
+                if (isNaN(result)) {
+                    log("Invalid dice roll for Thrill of Battle: " + JSON.stringify(dice.damage))
+                } else {
+                    let difference = values.hitPoints_max - values.hitPoints
+                    var hitPointsToAdd = Math.min(result, difference)
+
+                    if (hitPointsToAdd > 0) {
+                        var barrierPoints = values.barrierPoints
+                        if (difference > 0) {
+                            summaries.push(`Healed ${hitPointsToAdd} HP`)
+                        }
+                        if (result > difference) {
+                            let remainder = result - difference
+                            barrierPoints = Math.max(barrierPoints, remainder)
+                            summaries.push(`Added a ${remainder} HP barrier`)
+                        }
+                        setAttrs({
+                            hitPoints: hitPointsToAdd + values.hitPoints,
+                            barrierPoints: barrierPoints
+                        })
+                    }
+                }
+
+                // Don't add to effect list, just update the HP/Barrier
+                skip = true
+                break
+            }
             case "umbral_ice":
                 if (existingEffects.astralFireId) {
                     summaries.push("Removed Astral Fire")
@@ -3072,8 +3103,8 @@
         let existingEffectTypes = existingEffects.effects.map(effect => {
             if (effect.type == "special") {
                 return effect.specialType
-                    .replace("'", "")
-                    .replace(" ", "_")
+                    .replaceAll("'", "")
+                    .replaceAll(" ", "_")
                     .toLowerCase()
             }
             return effect.type
@@ -3120,7 +3151,7 @@
                 curable: data.curable
             }
 
-            let specialEffectResult = resolveSpecialEffects(adjustedEffect)
+            let specialEffectResult = resolveSpecialEffects(adjustedEffect, dice, values, existingEffects)
             summaries = summaries.concat(specialEffectResult.summaries)
             if (specialEffectResult.skip) {
                 continue
@@ -3629,6 +3660,7 @@
             `repeating_${section}_${rowId}_condition`,
 
             "level", "barrierPoints",
+            "hitPoints", "hitPoints_max",
             "magicPoints", "magicPoints_max",
             "resource", "resourceValue", "resourceValue_max",
             "resource2", "resource2Value", "resource2Value_max",
@@ -3741,7 +3773,9 @@
                 let consumedEffectSummary = consumeEffectsOnAbility(name, condition, effects)
 
                 let dice = {
-                    hit: roll
+                    hit: roll,
+                    damage: damageRoll,
+                    directHit: directHitRoll
                 }
                 let effectSummary = addEffectsToSelf(values, dice, selfEffects, effects)
                 let procSummary = rolls.summaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ")
@@ -4064,7 +4098,7 @@
             return ""
         }
         if (type == "special") {
-            let imageName = specialType.toLowerCase().replace("'", "").replace(" ", "-")
+            let imageName = specialType.toLowerCase().replaceAll("'", "").replaceAll(" ", "-")
             return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`
         }
 
