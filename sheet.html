@@ -200,18 +200,20 @@
                     <div class="trait list">
                         <input class="expand-checkbox hidden" type="checkbox" name="attr_traitsExpandItem" />
                         <div class="item-header">
+                            <input class="editSwitch" type="hidden" name="attr_editable" />
                             <input type="hidden" class="trait-icon-switch" name="attr_icon" placeholder="I" />
                             <img class="trait-icon" name="attr_icon" />
                             <span class="header medium bold">Trait:</span>
-                            <input class="medium" type="text" name="attr_title" placeholder="Title"></span>
+                            <input class="medium editSwitchBlocked" type="text" name="attr_title" placeholder="Title"></span>
                             <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
                             <button type="action" class="ability-action" name="act_info">i</button>
                         </div>
                         <div class="item-body list expanded-view">
                             <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
                             <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                                <input class="editSwitch" type="hidden" name="attr_editable" />
                                 <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
-                                <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The trait's effects"></textarea>
+                                <textarea class="mini-input adaptive--text__textarea editSwitchBlocked" name="attr_effect" placeholder="The trait's effects"></textarea>
                             </div>
                         </div>
                     </div>
@@ -3882,6 +3884,7 @@
                         attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1]
                         attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon
                         attributes[`repeating_traits_${id}_automatic`] = "1"
+                        attributes[`repeating_traits_${id}_editable`] = "off"
                     }
                 }
 
