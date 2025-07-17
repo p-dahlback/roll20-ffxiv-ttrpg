@@ -3064,7 +3064,6 @@
                 continue
             }
             let adjustedEffect = replacement.name
-            log("Adjusted effect " + adjustedEffect)
             let data = effectData[adjustedEffect]
             if (!data) {
                 log("Unhandled effect " + adjustedEffect)
@@ -4097,7 +4096,7 @@
         if (!specialType) {
             return
         }
-        switch (specialType.trim().toLowerCase) {
+        switch (specialType.trim().toLowerCase()) {
             case "astral fire":
                 log("Astral Fire removed; resetting mp recovery")
                 setAttrs({
@@ -4110,7 +4109,8 @@
                     mpRecovery: 2
                 })
                 break
-
+            default:
+                break
         }
     })
 </script>
