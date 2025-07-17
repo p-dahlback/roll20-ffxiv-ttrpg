@@ -43,7 +43,8 @@ const FFXIVAddEffect = (() => {
         "encounter",
         "rest",
         "end",
-        "permanent"
+        "permanent",
+        "ephemeral"
     ]
 
     const generateUUID = (() => {
@@ -216,25 +217,12 @@ const FFXIVAddEffect = (() => {
                 setAttribute(mpRecoveryBlock, "current", "on")
                 break
             }
-            case "major arcana": {
+            case "barrier": {
                 let barrierPoints = unpackAttribute(character, "barrierPoints", 0)
                 let currentPoints = unpackNaN(barrierPoints.get("current"))
+                let value = unpackNaN(effect.value)
 
-                let currentLevel
-                if (effect.level) {
-                    // Use the level of the effect
-                    currentLevel = effect.level
-                } else {
-                    // Use your own level as backup
-                    let level = unpackAttribute(character, "level", 30)
-                    currentLevel = unpackNaN(level.get("current"))
-                }
-
-                if (currentLevel >= 40) {
-                    setAttribute(barrierPoints, "current", Math.max(currentPoints, 2))
-                } else {
-                    setAttribute(barrierPoints, "current", Math.max(currentPoints, 1))
-                }
+                setAttribute(barrierPoints, "current", Math.max(currentPoints, value))
                 break
             }
             case "umbral ice": {
@@ -276,34 +264,36 @@ const FFXIVAddEffect = (() => {
                 id = generateRowID()
             }
 
-            let attributes = {
-                icon: effect.icon,
-                type: effect.type,
-                specialType: effect.specialType,
-                value: effect.value,
-                expiry: effect.expiry,
-                editable: effect.editable == "1" ? "on" : "off",
-                curable: effect.curable == "1" ? "on" : "off",
-                origin: effect.origin
-            }
-            for (let entry of Object.entries(attributes)) {
-                if (!entry[1]) {
-                    continue
+            if (effect.expiry != "ephemeral") {
+                let attributes = {
+                    icon: effect.icon,
+                    type: effect.type,
+                    specialType: effect.specialType,
+                    value: effect.value,
+                    expiry: effect.expiry,
+                    editable: effect.editable == "1" ? "on" : "off",
+                    curable: effect.curable == "1" ? "on" : "off",
+                    origin: effect.origin
                 }
+                for (let entry of Object.entries(attributes)) {
+                    if (!entry[1]) {
+                        continue
+                    }
 
-                if (update) {
-                    let object = unpackAttribute(
-                        character, 
-                        `repeating_effects_${id}_${entry[0]}`, 
-                        null
-                    )
-                    setAttribute(object, "current", entry[1])
-                } else {
-                    createObj("attribute", {
-                        name: `repeating_effects_${id}_${entry[0]}`,
-                        current: entry[1],
-                        characterid: character.id
-                    })
+                    if (update) {
+                        let object = unpackAttribute(
+                            character, 
+                            `repeating_effects_${id}_${entry[0]}`, 
+                            null
+                        )
+                        setAttribute(object, "current", entry[1])
+                    } else {
+                        createObj("attribute", {
+                            name: `repeating_effects_${id}_${entry[0]}`,
+                            current: entry[1],
+                            characterid: character.id
+                        })
+                    }
                 }
             }
             summaries.push(character.get("name"))

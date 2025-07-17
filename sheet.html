@@ -1935,7 +1935,9 @@
                 <option value="PLD">Paladin</option>
                 <option value="WAR">Warrior</option>
                 <hr />
+                !-->
                 <option value="AST">Astrologian</option>
+                <!--
                 <option value="SGE">Sage</option>
                 <option value="SCH">Scholar</option>
                 <option value="WHM">White Mage</option>
@@ -2334,7 +2336,7 @@
         advantage: { type: "advantage", maskedType: "advantage", name: "Advantage", expiry: "use" },
         astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "block" },
         attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "use" },
-        barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "turn", duplicate: "allow" }, 
+        barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "ephemeral", duplicate: "allow" }, 
         blind: { type: "blind", maskedType: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
         bound: { type: "bound", maskedType: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
         brink: { type: "brink", maskedType: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
@@ -2348,7 +2350,7 @@
         heavy: { type: "heavy", maskedType: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
         lucid_dreaming: { type: "special", maskedType: "special", specialType: "Lucid Dreaming", name: "Lucid Dreaming", expiry: "turn", duplicate: "replace" },
         mages_ballad: { type: "special", maskedType: "damage", specialType: "Mage's Ballad", name: "Mage's Ballad", expiry: "use", duplicate: "block" },
-        major_arcana: { type: "special", maskedType: "damage", specialType: "Major Arcana", name: "Major Arcana", expiry: "use", duplicate: "replace" },
+        major_arcana: { type: "special", maskedType: "damage", specialType: "Major Arcana", name: "Major Arcana", expiry: "turn", duplicate: "replace" },
         paralyzed: { type: "paralyzed", maskedType: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
         petrified: { type: "petrified", maskedType: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
         prone: { type: "prone", maskedType: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
@@ -2385,6 +2387,41 @@
             }
         },
         level30: {
+            ast: {
+                job: "AST",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
+                role: "Healer / Astrologian",
+                level: 30,
+                attributes: { str: 2, dex: 2, vit: 2, int: 2, mnd: 4, defense: 12, magicDefense: 13, vigilance: 14, speed: 5, hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+                traits: [
+                    { title: "Play Arcana", effect: "At the start of your turn, grant a single ally of your choosing within 10 squares Major Arcana and a barrier of 1 HP." },
+                    { title: "Major Arcana", effect: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." }
+                ],
+                abilities: {
+                    primary: [
+                        { title: "Play Arcana", type: "Trait, Free action", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", condition: "May only be used at the start of your turn", baseEffect: "Grants the target Major Arcana and a barrier of 1 HP.", hitType: "None", damageType: "Effect", effectTarget: "Major Arcana, Barrier(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/play-arcana.png" },
+                        { title: "Malefic", type: "Primary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/malefic.png" },
+                        { title: "Helios", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All allies within range", range: "A 5x5 area centered on this character", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 + 2 HP to all targets.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/helios.png" },
+                        { title: "Ascend", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 2 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", effectTarget: "Weak, Transcendent", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/ascend.png" },
+                        { title: "Repose", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Inflicts Sleep on target.", directHit: "Removes all markers generated by the target.", stat: "MND", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", effectTarget: "Sleep", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Healer/repose.png" },
+                        { title: "Benefic II", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 2d6 + 4 HP to the target.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "2d6 + 4", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/benefic-ii.png" },
+                    ],
+                    secondary: [
+                        { title: "Benefic", type: "Secondary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 HP to the target.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/benefic.png" },
+                        { title: "Lightspeed", type: "Secondary", cost: 0, uses: 2, uses_max: 2, baseEffect: "Immediately use one of your magic abilities.", limitation: "Twice per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/lightspeed.png" },
+                        { title: "Lucid Dreaming", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Recover an additional 1 MP at the end of this round's [Adventurer Step].", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Lucid Dreaming", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/lucid-dreaming.png" },
+                        { title: "Combust", type: "Secondary, Magic", cost: 1, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Inflicts a DOT (3) on the target.", hitType: "None", damageType: "Effect", effectTarget: "DOT(3)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/combust.png" },
+                        { title: "Esuna", type: "Secondary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, target: "Single", baseEffect: "Removes a single enfeeblement of the target's choosing.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Healer/esuna.png" },
+                    ],
+                    instant: [
+                        { title: "Swiftcast", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Immediately use one of your magic abilities.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/swiftcast.png" },
+                        { title: "Essential Dignity", type: "Instant, Magic", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 HP to the target. If the target's HP is less than or equal to half of their Max HP (rounded up), restores 2d6 + 2HP instead.", limitation: "Once per phase", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6", dhValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/essential-dignity.png" },
+                    ],
+                    limit: [
+                        { title: "Astral Stasis", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", condition: "Limit Breaks have been made available for this encounter.", target: "All allied adventurers within range", range: "The entire encounter map*", baseEffect: "Removes all enfeeblements from all targets, fully restores their HP, and grants them Major Arcana. Astral Stasis can remove Knocked Out, Weakness and Brink of Death. *This ability also targets characters outside the encounter map. When doing so, move these targets to an empty square within 5 squares of this character after resolving the ability's effects.", hitType: "None", damageType: "Effect", effectTarget: "Major Arcana", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" },
+                    ]
+                }
+            },
             blm: {
                 job: "BLM",
                 jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
@@ -2419,7 +2456,7 @@
                         { title: "Swiftcast", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Immediately use on of your magic abilities.", limitation: "Once per phase", hitType: "None", damageType: "Damage", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/swiftcast.png" }
                     ],
                     limit: [
-                        { title: "Meteor", type: "Limit Break, Magic, Fire-Aspected", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks are available", trigger: "Any time", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", baseEffect: "Deals 4d6 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "4d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                        { title: "Meteor", type: "Limit Break, Magic, Fire-Aspected", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", baseEffect: "Deals 4d6 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "4d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
                     ]
                 }
             },
@@ -2458,7 +2495,7 @@
                         { title: "Head Graze", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy within 10 squares of this character uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Interrupts the invoked ability that triggered Head Graze, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/head-graze.png" },
                     ],
                     limit: [
-                        { title: "Sagittarius Arrow", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Break available", trigger: "Any time", target: "All enemies within range", range: "A 5x area extending in a straight line from 1 square adjacent to this character.", baseEffect: "Deals 6d6 damage divided evenly (rounded up) amongst all targets and inflicts a DOT (4) on all targets.", hitType: "None", damageType: "Damage", baseValue: "6d6", effectTarget: "DOT(4)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" },
+                        { title: "Sagittarius Arrow", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "All enemies within range", range: "A 5x area extending in a straight line from 1 square adjacent to this character.", baseEffect: "Deals 6d6 damage divided evenly (rounded up) amongst all targets and inflicts a DOT (4) on all targets.", hitType: "None", damageType: "Damage", baseValue: "6d6", effectTarget: "DOT(4)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" },
                     ]
                 }
             }
@@ -2813,7 +2850,7 @@
 
         log("Preparing target effects: " + JSON.stringify(effects))
         for (let effect of effects) {
-            let adjustedEffect = searchableEffectName(effect)
+            let adjustedEffect = searchableEffectName(effect.trim())
             let data = effectData[adjustedEffect]
             if (!data) {
                 log("Unhandled effect " + adjustedEffect)
@@ -2828,7 +2865,7 @@
 
             let valueDefinition = value ? `--v ${value}` : ""
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : ""
-            let effectName = data.specialType || data.type.replace("(x)", "")
+            let effectName = data.specialType.replace("(X)", "") || data.type.replace("(x)", "")
             let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --expire ${data.expiry} ` + 
                 `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`
             buttons.push(button)
@@ -2927,11 +2964,6 @@
 
                 // Don't add to effect list, just update the barrier
                 skip = true
-                break
-            case "major_arcana":
-                // Add barrier
-                let barrier = values.level >= 40 ? 2 : 1
-                attributes.barrierPoints = Math.max(values.barrierPoints ?? 0, barrier)
                 break
             case "lucid_dreaming":
                 attributes.mpRecovery = 3
