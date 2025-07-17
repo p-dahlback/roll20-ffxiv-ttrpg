@@ -2349,7 +2349,7 @@
         brink: { type: "brink", maskedType: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
         comatose: { type: "comatose", maskedType: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
         critical: { type: "critical(x)", maskedType: "critical(x)", name: "Critical Up (X)", expiry: "use" },
-        curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Curecast Focus", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
+        curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability:"cure", specialType: "Curecast Focus", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
         damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use" },
         defenders_boon: { type: "special", maskedType: "augment", specialType: "Defender's Boon", name: "Defender's Boon", expiry: "end", duplicate: "block", description: "Increases Defense or Magic Defense by 1. This applies to the lower of the two attributes; if they have the same value, this augmentation has no effect." },
         deflecting_edge: { type: "special", maskedType: "augment", augmentType: "ability", ability: "parry", specialType: "Deflecting Edge", name: "Deflecting Edge", expiry: "end", duplicate: "block", description: "Grants the Parry ability." },
@@ -2408,27 +2408,27 @@
     const effectAbilities = {
         aetherwall: {
             instant: [
-                { title: "Aetherwall", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Magic Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Magic Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Aetherwall", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Magic Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Magic Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
             ]
         },
         cure: {
             secondary: [
-                { title: "Cure", type: "Secondary, Magic, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Cure", type: "Secondary, Magic, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
             ]
         },
         fire: {
             primary: [
-                { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
             ]
         },
         ice: {
             primary: [
-                { title: "Ice", type: "Primary, Magic, Ice-Aspected, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Ice", type: "Primary, Magic, Ice-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
             ]
         },
         parry: {
             instant: [
-                { title: "Parry", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Parry", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
             ]
         },
     }
@@ -4163,6 +4163,10 @@
             for (let effect of effects.effects) {
                 if (effect.expiry == "permanent") {
                     continue
+                }
+                if (effect.data.ability) {
+                    let adjustedName = searchableEffectName(effect.specialType)
+                    removeEffectAbility(adjustedName)
                 }
                 removeRepeatingRow(effect.fullId)
             }
