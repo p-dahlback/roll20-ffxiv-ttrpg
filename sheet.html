@@ -3940,7 +3940,10 @@
                     job: sheet.job,
                     jobIcon: sheet.jobIcon,
                     level: sheet.level ?? 30,
-                    role: sheet.role
+                    role: sheet.role,
+                    sheet_type: "unique",
+                    team: "adventurer",
+                    override: "auto"
                 }
 
                 log("Preparing base attributes")
@@ -3968,7 +3971,7 @@
                         for (let entry of Object.entries(ability)) {
                             attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1]
                         }
-                        attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = values.override
+                        attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto"
                     }
                 }
                 setAttrs(attributes)
