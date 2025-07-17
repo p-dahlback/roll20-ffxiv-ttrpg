@@ -1936,9 +1936,9 @@
                 <option value="DRK">Dark Knight</option>
                 <option value="GNB">Gunbreaker</option>
                 <option value="PLD">Paladin</option>
+                !-->
                 <option value="WAR">Warrior</option>
                 <hr />
-                !-->
                 <option value="AST">Astrologian</option>
                 <!--
                 <option value="SGE">Sage</option>
@@ -2500,6 +2500,38 @@
                     ],
                     limit: [
                         { title: "Sagittarius Arrow", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "All enemies within range", range: "A 5x area extending in a straight line from 1 square adjacent to this character.", baseEffect: "Deals 6d6 damage divided evenly (rounded up) amongst all targets and inflicts a DOT (4) on all targets.", hitType: "None", damageType: "Damage", baseValue: "6d6", effectTarget: "DOT(4)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" },
+                    ]
+                }
+            },
+            war: {
+                job: "WAR",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
+                role: "Tank / Warrior",
+                level: 30,
+                attributes: { str: 4, dex: 2, vit: 5, int: 0, mnd: 1, defense: 15, magicDefense: 12, vigilance: 11, speed: 5, hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+                traits: [
+                    { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." },
+                ],
+                abilities: {
+                    primary: [
+                        { title: "Warrior Combo (Heavy Swing + Maim)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Combo: Storm's Path", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(2)", combo: "Storm's Path", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/warrior-combo.png" },
+                        { title: "Overpower", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All targets within range", range: "A 5x5 area centered on this character", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts Enmity on all targets.", directHit: "Deals 2 damage to all targets.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "2", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/overpower.png" },
+                        { title: "Tomahawk", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/tomahawk.png" },
+                        { title: "Storm's Path", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Restores 2 HP.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", restore: "2 HP", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/storms-path.png" },
+                    ],
+                    secondary: [
+                        { title: "Berserk", type: "Secondary", cost: 0, uses: 3, uses_max: 3, baseEffect: "Your abilities deal an additional 2 damage until the end of this turn.", limitation: "Three times per phase", hitType: "None", damageType: "Effect", hitDie: "1d20cs20", effectSelf: "Berserk(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/berserk.png" },
+                        { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
+                        { title: "Low Blow", type: "Secondary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/low-blow.png" },
+                    ],
+                    instant: [ 
+                        { title: "Provoke", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy begins their turn", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Inflicts Enmity on the target.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/provoke.png" },
+                        { title: "Reprisal", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy within 2 squares is resolved", target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Reduces the damage dealt by the abilities of all targets by 2 until the end of this round.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/reprisal.png" },
+                        { title: "Thrill of Battle", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before you take damage", baseEffect: "Restores 1d6 + 2 HP and grants a barrier equaling the amount of HP restored that exceeds your Max HP.", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", effectSelf: "Thrill of Battle", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/thrill-of-battle.png" },
+                        { title: "Interject", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an adjacent enemy uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "1 square", baseEffect: "Interrupts the invoked ability that triggered Interject, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/interject.png" },
+                    ],
+                    limit: [
+                        { title: "Land Waker", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Immediately before 1 or more allied adventurers take damage", baseEffect: "Makes you the sole target of all damage inflicted by the effect that triggered Land Waker and halves the damage you take (rounded up). If Land Waker was triggered by an effect caused by a character, you may deal damage equaling the amount of HP you lost to that character.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" },
                     ]
                 }
             }
