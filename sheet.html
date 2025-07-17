@@ -351,6 +351,7 @@
                         </select>
                         <input class="effect-value typeSwitchHidden editSwitchBlocked" type="text" name="attr_value" placeholder="X" />
                         <select class="effect-expiry" name="attr_expiry">
+                            <option value="start">Start of next turn</option>
                             <option value="turn">End of turn</option>
                             <option value="turn2">End of next turn</option>
                             <option value="phase">End of phase</option>
@@ -2336,6 +2337,7 @@
 <script type="text/worker">
     const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"]
     const effectData = {
+        aetherial_focus: { type: "special", maskedType: "augment", specialType: "Aetherial Focus", name: "Aetherial Focus", expiry: "end", duplicate: "block" },
         advantage: { type: "advantage", maskedType: "advantage", name: "Advantage", expiry: "use" },
         astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "block" },
         attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "use" },
@@ -2346,17 +2348,29 @@
         brink: { type: "brink", maskedType: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
         comatose: { type: "comatose", maskedType: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
         critical: { type: "critical(x)", maskedType: "critical(x)", name: "Critical Up (X)", expiry: "use" },
+        curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Curecast Focus", name: "Curecast Focus", expiry: "end", duplicate: "block" },
         damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use" },
+        defenders_boon: { type: "special", maskedType: "augment", specialType: "Defender's Boon", name: "Defender's Boon", expiry: "end", duplicate: "block" },
+        deflecting_edge: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Deflecting Edge", name: "Deflecting Edge", expiry: "end", duplicate: "block" },
         dot: { type: "dot(x)", maskedType: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
         dps: { type: "dps(x)", maskedType: "dps(x)", name: "Damage Up (X)", expiry: "turn", duplicate: "allow" },
+        elemental_veil: { type: "special", maskedType: "augment", specialType: "Elemental Veil", name: "Elemental Veil", expiry: "end", duplicate: "block" },
         enmity: { type: "enmity(x)", maskedType: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
+        flamecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Flamecast Focus", name: "Flamecast Focus", expiry: "end", duplicate: "block" },
         hawks_eye: { type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block" },
         heavy: { type: "heavy", maskedType: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
+        icecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Icecast Focus", name: "Icecast Focus", expiry: "end", duplicate: "block"},
+        improved_padding: { type: "special", maskedType: "augment", specialType: "Improved Padding", name: "Improved Padding", expiry: "end", duplicate: "block" },
+        lightweight_refit: { type: "special", maskedType: "augment", specialType: "Lightweight Refit", name: "Lightweight Refit", expiry: "end", duplicate: "block" },
         lucid_dreaming: { type: "special", maskedType: "special", specialType: "Lucid Dreaming", name: "Lucid Dreaming", expiry: "turn", duplicate: "replace" },
         mages_ballad: { type: "special", maskedType: "damage", specialType: "Mage's Ballad", name: "Mage's Ballad", expiry: "use", duplicate: "block" },
+        magic_damper: { type: "special", maskedType: "augment", augmentType: "ability", specialType: "Magic Damper", name: "Magic Damper", expiry: "end", duplicate: "block" },
         major_arcana: { type: "special", maskedType: "damage", specialType: "Major Arcana", name: "Major Arcana", expiry: "turn", duplicate: "replace" },
+        mana_conduit: { type: "special", maskedType: "augment", specialType: "Mana Conduit", name: "Mana Conduit", expiry: "end", duplicate: "block" },
+        masterwork_ornamentation: { type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block" },
         paralyzed: { type: "paralyzed", maskedType: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block" },
         petrified: { type: "petrified", maskedType: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block" },
+        precision_opener: { type: "special", maskedType: "augment", specialType: "Precision Opener", name: "Precision Opener", expiry: "end", duplicate: "block" },
         prone: { type: "prone", maskedType: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block" },
         raging_strikes: { type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", name: "Raging Strikes", expiry: "turn", duplicate: "block" },
         ready: { type: "ready(x)", maskedType: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
@@ -4117,13 +4131,20 @@
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
 
-        getAttrs([`repeating_effects_${rowId}_type`, `repeating_effects_${rowId}_specialType`], values => {
+        getAttrs([`repeating_effects_${rowId}_type`, `repeating_effects_${rowId}_specialType`, `repeating_effects_${rowId}_maskedType`], values => {
             let type = values[`repeating_effects_${rowId}_type`]
             let specialType = values[`repeating_effects_${rowId}_specialType`]
-            let adjustedName = searchableEffectName(specialType || type)
-            let data = effectData[adjustedName]
+            let maskedType = values[`repeating_effects_${rowId}_maskedType`]
 
-            const iconUrl = getIconForEffectType(type, specialType)
+            let iconUrl
+            if (maskedType == "augment") {
+                iconUrl = `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/augment.png`
+            } else {
+                let adjustedName = searchableEffectName(specialType || type)
+                let data = effectData[adjustedName]
+
+                iconUrl = getIconForEffectType(type, specialType)
+            }
 
             var attributes = {}
             attributes[`repeating_effects_${rowId}_icon`] = iconUrl

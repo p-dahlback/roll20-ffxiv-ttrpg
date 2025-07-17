@@ -38,6 +38,7 @@ const FFXIVAddEffect = (() => {
     const expiries = [
         "use",
         "damage",
+        "start",
         "turn",
         "turn2",
         "phase",
