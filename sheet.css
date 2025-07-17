@@ -797,7 +797,7 @@ input.doubleResourceSwitch[value="none"] ~ .resource-point.double-resource {
   display: none;
 }
 
-.trait-icon[src] {
+.trait-icon-switch[value] ~ .trait-icon {
   display: inline-block;
   width: 20px;
   height: 20px;
