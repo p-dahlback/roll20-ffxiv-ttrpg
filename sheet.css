@@ -1440,7 +1440,7 @@ textarea {
 .overrideSwitch:not([value="auto"]) ~ .range,
 .checkFlag:not(:placeholder-shown) ~ .check,
 .overrideSwitch:not([value="auto"]) ~ .check, 
-.checkFlag:not(:placeholder-shown) ~ .cr,
+.crFlag:not(:placeholder-shown) ~ .cr,
 .overrideSwitch:not([value="auto"]) ~ .cr,
 .directHitFlag:not(:placeholder-shown) ~ .direct-hit,
 .overrideSwitch:not([value="auto"]) ~ .direct-hit,
