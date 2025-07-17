@@ -1175,12 +1175,30 @@ textarea {
 } 
 
 .sheet-rolltemplate-item .sheet-type {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
   border-radius: 4px 4px 0 0;
   color: black;
   background-color: #c4b5a1;
   text-align: left;
   padding-left: 8px;
   font-size: 1.8rem;
+}
+
+.sheet-rolltemplate-item .sheet-type > span {
+  margin: auto 0 auto 0;
+}
+
+.sheet-rolltemplate-item .sheet-ability-icon {
+  width: 24px;
+  height: 32px;
+  padding: 4px 0 4px 0;
+}
+
+.sheet-rolltemplate-item .sheet-ability-icon:empty {
+  display: none;
 }
 
 .sheet-rolltemplate-item .sheet-title {
@@ -1205,7 +1223,8 @@ textarea {
 }
 
 .sheet-rolltemplate-ability .sheet-ability-icon a,
-.sheet-rolltemplate-hit .sheet-ability-icon a {
+.sheet-rolltemplate-hit .sheet-ability-icon a,
+.sheet-rolltemplate-item .sheet-ability-icon a {
   pointer-events: none;
   user-select: none;
 }
