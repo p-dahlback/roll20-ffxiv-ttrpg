@@ -30,6 +30,7 @@ const FFXIVAddEffect = (() => {
         { matches: ["silence"], type: "silence", name: "Silence" },
         { matches: ["sleep"], type: "sleep", name: "Sleep" },
         { matches: ["stun"], type: "stun", name: "Stun" },
+        { matches: ["transcendent"], type: "transcendent", name: "Transcendent" },
         { matches: ["unstunnable"], type: "unstunnable", name: "Unstunnable" },
         { matches: ["weak"], type: "weak", name: "Weak" }
     ]

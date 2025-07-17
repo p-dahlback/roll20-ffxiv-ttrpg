@@ -2366,6 +2366,7 @@
         slow: { type: "slow", maskedType: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block" },
         stun: { type: "stun", maskedType: "stun", name: "Stun", expiry: "turn", duplicate: "block" },
         surging_tempest: { type: "special", maskedType: "special", specialType: "Surging Tempest", name: "Surging Tempest", expiry: "encounter", duplicate: "block" },
+        transcendent: { type: "transcendent", maskedType: "transcendent", name: "Transcendent", expiry: "turn", duplicate: "block" },
         thunderhead_ready: { type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", name: "Thunderhead Ready", expiry: "use", duplicate: "block" },
         unstunnable: { type: "unstunnable", maskedType: "unstunnable", name: "Stun Immunity", expiry: "phase", duplicate: "block" },
         umbral_ice: { type: "special", maskedType: "special", specialType: "Umbral Ice", name: "Umbral Ice", expiry: "turn2", duplicate: "block" },
@@ -2709,16 +2710,20 @@
     }
 
     function addEffectsToPreDamageRolls(effects, level, type, damageRoll, directHitRoll) {
-        let isFireType = type.toLowerCase().includes("fire-aspect")
         var adds = []
+        var summaries = []
+
+        let isFireType = type.toLowerCase().includes("fire-aspect")
         if (isFireType && effects.astralFireId) {
             let addedDamage = level >= 50 ? "2d6" : "1d6"
             adds.push(`${addedDamage}[Astral Fire]`)
+            summaries.push("Astral Fire proc")
         }
 
         if (effects.dpsIncrements) { 
             for (let effect of effects.dpsIncrements) {
                 adds.push(`${effect.value}[${effect.data.name}]`)
+                summaries.push(`${effect.data.name} proc`)
             }
         }
 
@@ -2727,20 +2732,22 @@
             let damage = damageRoll ? `${damageRoll} + ${adds.join(" + ")}` : adds.join(" + ")
             return {
                 damage: damage,
-                directHit: directHitRoll
+                directHit: directHitRoll,
+                summaries: summaries
             }
         } else {
             return {
                 damage: damageRoll,
-                directHit: directHitRoll
+                directHit: directHitRoll,
+                summaries: summaries
             }
         }
     }
 
-    function addEffectsToPostDamageRolls(effects, damageRolls) {
+    function addEffectsToPostDamageRolls(effects, damageType, damageRolls) {
         var result = {}
         var summaries = []
-        if (effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
+        if (damageType == "Damage" && effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
             summaries.push(`Damage reroll available (${effects.damageRerolls.join(", ")})`)
         }
 
@@ -2867,7 +2874,7 @@
 
             let valueDefinition = value ? `--v ${value}` : ""
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : ""
-            let effectName = data.specialType.replace("(X)", "") || data.type.replace("(x)", "")
+            let effectName = (data.specialType || data.type).replace(/\([Xx]{1}\)/, "")
             let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --expire ${data.expiry} ` + 
                 `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`
             buttons.push(button)
@@ -3696,7 +3703,7 @@
                 const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" }
                 const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" }
 
-                let computedResults = addEffectsToPostDamageRolls(effects, [damageRoll, directHitRoll])
+                let computedResults = addEffectsToPostDamageRolls(effects, damageType, [damageRoll, directHitRoll])
                 let total = computedResults.total
 
                 let consumedEffectSummary = consumeEffectsOnAbility(name, condition, effects)
@@ -3705,7 +3712,7 @@
                     hit: roll
                 }
                 let effectSummary = addEffectsToSelf(values, dice, selfEffects, effects)
-                let procSummary = [computedResults.summary, consumedEffectSummary, effectSummary].filter(element => element).join(", ")
+                let procSummary = rolls.summaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ")
 
                 var attributes = {}
                 attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1
