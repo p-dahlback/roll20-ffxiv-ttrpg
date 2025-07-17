@@ -331,7 +331,7 @@ const FFXIVAddEffect = (() => {
                     type: "none",
                     typeName: "",
                     specialType: "",
-                    value: "1",
+                    value: " ",
                     expiry: "turn",
                     editable: "1",
                     target: "selected",
