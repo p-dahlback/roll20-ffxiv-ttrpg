@@ -497,7 +497,6 @@ body > .ui-dialog {
   grid-template-columns: 1fr auto auto;
   grid-template-rows: 2em 1fr;
 }
-
 .repcontainer .grid4 {
   display: grid;
   grid-template-columns: auto 1fr auto auto;
@@ -794,15 +793,31 @@ input.doubleResourceSwitch[value="none"] ~ .resource-point.double-resource {
   background-color: #c4b5a1;
 }
 
+.trait-icon {
+  display: none;
+}
+
+.trait-icon[src] {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin: auto 4px auto 0;
+}
+
+.traits .item-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0;
+}
+
 .item-header {
   background-color: #c4b5a1;
   padding: 4px 8px 4px 16px;
 }
 
 .item-header > span {
-  height: 100%;
-  align-content: center;
-  margin-right: 8px;
+  margin: auto 8px auto 0;
 }
 
 .item-header > input {
