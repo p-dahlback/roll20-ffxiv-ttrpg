@@ -66,6 +66,23 @@ const EndOfStep = (() => {
         return { token: token, character: character };
     };
 
+    const handleSpecialEffects = (character, effectName) => {
+        switch (effectName.trim().toLowerCase()) {
+            case "astral fire": {
+                logger.d("Cancelling MP recovery block from Astral Fire");
+                let mpRecoveryBlock = findObjs({ type: "attribute", characterid: character.id, name: "mpRecoveryBlock" })[0];
+                mpRecoveryBlock.set("current", "off");
+                break;
+            }
+            case "lucid dreaming": {
+                logger.d("Cancelling extra MP recovery from Lucid Dreaming");
+                let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: "mpRecovery" })[0];
+                mpRecovery.set("current", "2");
+                break;
+            }
+        }
+    };
+
     const clearEffects = (character, expiries, updateNextTurnExpiries) => {
         logger.d(`Clearing effects for ${character.get("name")} matching ${expiries}`);
         let attributes = findObjs({ type: "attribute", characterid: character.id });
@@ -113,6 +130,7 @@ const EndOfStep = (() => {
                 var summaryForId = summaries[id];
                 if (!summaryForId || nameMatch[0] === "specialType") {
                     summaries[id] = { attribute: nameMatch[0], summary: attribute.get("current") };
+                    handleSpecialEffects(character, attribute.get("current"));
                 }
             }
 
