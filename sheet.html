@@ -2587,7 +2587,7 @@
                     ],
                     secondary: [
                         { title: "Berserk", type: "Secondary", cost: 0, uses: 3, uses_max: 3, baseEffect: "Your abilities deal an additional 2 damage until the end of this turn.", limitation: "Three times per phase", hitType: "None", damageType: "Effect", hitDie: "1d20cs20", effectSelf: "Berserk(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/berserk.png" },
-                        { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
+                        { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Defense", effectSelf: "Rampart(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
                         { title: "Low Blow", type: "Secondary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/low-blow.png" },
                     ],
                     instant: [ 
@@ -4339,6 +4339,15 @@
             } else {
                 // Remove duplicates of special effects
                 removeEffects([newValue], rowId)
+
+                switch (newValue) {
+                    case "lucid dreaming":
+                        log("Incrementing MP recovery due to Lucid Dreaming")
+                        setAttrs({
+                            mpRecovery: 3
+                        })
+                        break;
+                }
             }
         }
 
