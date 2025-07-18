@@ -4,10 +4,11 @@
     An API that enables adding FFXIV TTRPG effects to any given character from Macros.
 
 */
+// eslint-disable-next-line no-unused-vars
 const FFXIVAddEffect = (() => {
 
-    const scriptName = "FFXIVAddEffect"
-    const version = "0.1.0"
+    const scriptName = "FFXIVAddEffect";
+    const version = "0.1.0";
 
     const types = [
         { matches: ["advantage"], type: "advantage", name: "Advantage" },
@@ -33,7 +34,7 @@ const FFXIVAddEffect = (() => {
         { matches: ["transcendent"], type: "transcendent", name: "Transcendent" },
         { matches: ["unstunnable"], type: "unstunnable", name: "Unstunnable" },
         { matches: ["weak"], type: "weak", name: "Weak" }
-    ]
+    ];
 
     const expiries = [
         "use",
@@ -47,108 +48,108 @@ const FFXIVAddEffect = (() => {
         "end",
         "permanent",
         "ephemeral"
-    ]
+    ];
 
     const generateUUID = (() => {
-        let a = 0
-        let b = []
+        let a = 0;
+        let b = [];
         return () => {
-            let c = (new Date()).getTime() + 0
-            let f = 7
-            let e = new Array(8)
-            let d = c === a
-            a = c
+            let c = (new Date()).getTime() + 0;
+            let f = 7;
+            let e = new Array(8);
+            let d = c === a;
+            a = c;
             for (; 0 <= f; f--) {
-                e[f] = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".charAt(c % 64)
-                c = Math.floor(c / 64)
+                e[f] = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".charAt(c % 64);
+                c = Math.floor(c / 64);
             }
-            c = e.join("")
+            c = e.join("");
             if (d) {
                 for (f = 11; 0 <= f && 63 === b[f]; f--) {
-                    b[f] = 0
+                    b[f] = 0;
                 }
-                b[f]++
+                b[f]++;
             } else {
                 for (f = 0; 12 > f; f++) {
-                    b[f] = Math.floor(64 * Math.random())
+                    b[f] = Math.floor(64 * Math.random());
                 }
             }
             for (f = 0; 12 > f; f++) {
-                c += "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".charAt(b[f])
+                c += "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".charAt(b[f]);
             }
-            return c
-        }
-    })()
+            return c;
+        };
+    })();
 
-    const generateRowID = () => generateUUID().replace(/_/g, "Z")
+    const generateRowID = () => generateUUID().replace(/_/g, "Z");
 
     const getIconForEffectType = (type, specialType) => {
         if (type == "none") {
-            return ""
+            return "";
         }
         if (type == "special") {
-            let imageName = specialType.toLowerCase().replace("'", "").replace(" ", "-")
-            return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`
+            let imageName = specialType.toLowerCase().replace("'", "").replace(" ", "-");
+            return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
         }
 
-        let imageName = type.replace("(x)", "-x")
-        return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`
-    }
+        let imageName = type.replace("(x)", "-x");
+        return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
+    };
 
     const getCharacters = (msg, target) => {
         if (target == "selected") {
-            let tokens = msg.selected
+            let tokens = msg.selected;
             if (!tokens) {
-                return { result: [], error: "Select a token to apply an status effect." }
+                return { result: [], error: "Select a token to apply an status effect." };
             }
 
-            var characters = []
+            var characters = [];
             for (let token of tokens) {
                 if (token._type != "graphic") {
-                    continue
+                    continue;
                 }
-                let object = getObj("graphic", token._id)
+                let object = getObj("graphic", token._id);
                 if (!object || !object.get("represents")) {
-                    log("FFXIVAddEffect: No representation for token; skipping")
-                    continue
+                    log("FFXIVAddEffect: No representation for token; skipping");
+                    continue;
                 }
-                let character = getObj("character", object.get("represents"))
-                characters.push(character)
-                log("FFXIVAddEffect: Adding character " + JSON.stringify(character))
+                let character = getObj("character", object.get("represents"));
+                characters.push(character);
+                log("FFXIVAddEffect: Adding character " + JSON.stringify(character));
             }
-            return { result: characters, error: null }
+            return { result: characters, error: null };
         } else if (target == "mine") {
-            let characters = findObjs({ type: "character", controlledby: msg.playerid })
+            let characters = findObjs({ type: "character", controlledby: msg.playerid });
             if (characters) {
-                log("FFXIVAddEffect: Adding characters " + JSON.stringify(characters))
-                return { result: characters, error: null }
+                log("FFXIVAddEffect: Adding characters " + JSON.stringify(characters));
+                return { result: characters, error: null };
             } else {
-                log("FFXIVAddEffect: No characters controlled by player")
-                return { result: [], error: "No available controlled characters to apply status effects to." }
+                log("FFXIVAddEffect: No characters controlled by player");
+                return { result: [], error: "No available controlled characters to apply status effects to." };
             }
         } else {
-            log("FFXIVAddEffect: Searching for character " + target)
-            let characters = findObjs({ type: "character", name: target })
+            log("FFXIVAddEffect: Searching for character " + target);
+            let characters = findObjs({ type: "character", name: target });
             if (characters) {
-                log("FFXIVAddEffect: Adding characters " + JSON.stringify(characters))
-                return { result: characters, error: null }
+                log("FFXIVAddEffect: Adding characters " + JSON.stringify(characters));
+                return { result: characters, error: null };
             } else {
-                log("FFXIVAddEffect: No characters named " + target)
-                return { result: [], error: `No characters named ${target}` }
+                log("FFXIVAddEffect: No characters named " + target);
+                return { result: [], error: `No characters named ${target}` };
             }
         }
-    }
+    };
 
     const unpackNaN = (value) => {
-        let intValue = parseInt(value)
+        let intValue = parseInt(value);
         if (isNaN(intValue)) {
-            return 0
+            return 0;
         }
-        return intValue
-    }
+        return intValue;
+    };
 
     const unpackAttribute = (character, name, defaultValue) => {
-        let attribute = findObjs({ type: "attribute", characterid: character.id, name: name })
+        let attribute = findObjs({ type: "attribute", characterid: character.id, name: name });
         if (!attribute || attribute.length == 0) {
             return {
                 fake: {
@@ -157,31 +158,32 @@ const FFXIVAddEffect = (() => {
                 },
                 get: (key) => {
                     if (key == "name") {
-                        return name
+                        return name;
                     }
                     if (key == "current") {
-                        return defaultValue
+                        return defaultValue;
                     }
-                    return ""
+                    return "";
                 }
-            }
+            };
         }
-        return attribute[0]
-    }
+        return attribute[0];
+    };
 
     const setAttribute = (attribute, key, value) => {
         if (attribute.fake) {
             var settings = {
                 name: attribute.fake.name,
                 characterid: attribute.fake.characterid
-            }
-            settings[key] = value
-            createObj("attribute", settings)
+            };
+            settings[key] = value;
+            createObj("attribute", settings);
         } else {
-            attribute.set(key, value)
+            attribute.set(key, value);
         }
-    }
+    };
 
+    /*
     const timer = (name) => {
         var start = new Date()
         return {
@@ -192,78 +194,79 @@ const FFXIVAddEffect = (() => {
             }
         }
     }
+    */
 
     const getEffectsWithName = (name, character) => {
-        let objects = findObjs({ type: "attribute", characterid: character.id, current: name })
+        let objects = findObjs({ type: "attribute", characterid: character.id, current: name });
         let effects = objects.reduce((accumulator, object) => {
-            let objectName = object.get("name")
-            let normalizedName = objectName.toLowerCase()
+            let objectName = object.get("name");
+            let normalizedName = objectName.toLowerCase();
             if (!normalizedName.includes("repeating_effects") || !normalizedName.includes("type")) {
-                return accumulator
+                return accumulator;
             }
-            let id = objectName.replace("repeating_effects_", "").replace(/_\w*[Tt]{1}ype/, "")
+            let id = objectName.replace("repeating_effects_", "").replace(/_\w*[Tt]{1}ype/, "");
             accumulator.push({
                 id: id,
                 characterid: character.id
-            })
-            return accumulator
-        }, [])
-        return effects
-    }
+            });
+            return accumulator;
+        }, []);
+        return effects;
+    };
 
     const performAdditionalEffectChanges = (effect, character) => {
         switch (effect.specialType.toLowerCase()) {
             case "astral fire": {
                 // Clear MP recovery
-                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off")
-                setAttribute(mpRecoveryBlock, "current", "on")
-                break
+                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off");
+                setAttribute(mpRecoveryBlock, "current", "on");
+                break;
             }
             case "barrier": {
-                let barrierPoints = unpackAttribute(character, "barrierPoints", 0)
-                let currentPoints = unpackNaN(barrierPoints.get("current"))
-                let value = unpackNaN(effect.value)
+                let barrierPoints = unpackAttribute(character, "barrierPoints", 0);
+                let currentPoints = unpackNaN(barrierPoints.get("current"));
+                let value = unpackNaN(effect.value);
 
-                setAttribute(barrierPoints, "current", Math.max(currentPoints, value))
-                break
+                setAttribute(barrierPoints, "current", Math.max(currentPoints, value));
+                break;
             }
             case "umbral ice": {
                 // Reset MP recovery
-                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off")
-                setAttribute(mpRecoveryBlock, "current", "off")
-                break
+                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off");
+                setAttribute(mpRecoveryBlock, "current", "off");
+                break;
             }
         }
-    }
+    };
 
     const addEffect = (effect) => {
-        let summaryIntro = `${effect.typeName.replace("X", effect.value)} to `
-        var summaries = []
+        let summaryIntro = `${effect.typeName.replace("X", effect.value)} to `;
+        var summaries = [];
 
-        log(`FFXIVAddEffect: Adding effect ${effect.typeName} to ${effect.characters.length} character(s)`)
+        log(`FFXIVAddEffect: Adding effect ${effect.typeName} to ${effect.characters.length} character(s)`);
         for (let character of effect.characters) {
-            let existingEffects = getEffectsWithName(effect.specialType ?? effect.type, character)
+            let existingEffects = getEffectsWithName(effect.specialType ?? effect.type, character);
             if (effect.duplicate === "block") {
                 if (existingEffects.some(element => element.characterid === character.id)) {
-                    log(`FFXIVAddEffect: Skipping ${character.get("name")} due to duplicate effect`)
-                    continue
+                    log(`FFXIVAddEffect: Skipping ${character.get("name")} due to duplicate effect`);
+                    continue;
                 }
             }
 
-            var update = false
-            var id = ""
+            var update = false;
+            var id = "";
             if (effect.duplicate == "replace") {
-                let duplicate = existingEffects.find(element => element.characterid == character.id)
+                let duplicate = existingEffects.find(element => element.characterid == character.id);
                 if (duplicate) {
                     // Overwrite the contents of the effect with the new specification
-                    id = duplicate.id
-                    update = true
-                    log(`FFXIVAddEffect: Replacing existing effect`)
+                    id = duplicate.id;
+                    update = true;
+                    log(`FFXIVAddEffect: Replacing existing effect`);
                 } else {
-                    id = generateRowID()
+                    id = generateRowID();
                 }
             } else {
-                id = generateRowID()
+                id = generateRowID();
             }
 
             if (effect.expiry != "ephemeral") {
@@ -276,56 +279,56 @@ const FFXIVAddEffect = (() => {
                     editable: effect.editable == "1" ? "on" : "off",
                     curable: effect.curable == "1" ? "on" : "off",
                     origin: effect.origin
-                }
+                };
                 for (let entry of Object.entries(attributes)) {
                     if (!entry[1]) {
-                        continue
+                        continue;
                     }
 
                     if (update) {
                         let object = unpackAttribute(
-                            character, 
-                            `repeating_effects_${id}_${entry[0]}`, 
+                            character,
+                            `repeating_effects_${id}_${entry[0]}`,
                             null
-                        )
-                        setAttribute(object, "current", entry[1])
+                        );
+                        setAttribute(object, "current", entry[1]);
                     } else {
                         createObj("attribute", {
                             name: `repeating_effects_${id}_${entry[0]}`,
                             current: entry[1],
                             characterid: character.id
-                        })
+                        });
                     }
                 }
             }
-            summaries.push(character.get("name"))
-            performAdditionalEffectChanges(effect, character)
+            summaries.push(character.get("name"));
+            performAdditionalEffectChanges(effect, character);
         }
-        let summary = summaryIntro + summaries.join(", ")
-        return { who: effect.who, summary: summary }
-    }
+        let summary = summaryIntro + summaries.join(", ");
+        return { who: effect.who, summary: summary };
+    };
 
     const outputEvent = (type, event) => {
         switch (type) {
             case "add":
-                sendChat(event.who, `Added effect: <b>${event.summary}</b>. <i>(FFXIVAddEffect)</i>`)
-                break
+                sendChat(event.who, `Added effect: <b>${event.summary}</b>. <i>(FFXIVAddEffect)</i>`);
+                break;
 
             case "error":
-                sendChat("FFXIV Effects", `/w gm ${event}`)
-                break
+                sendChat("FFXIV Effects", `/w gm ${event}`);
+                break;
 
             default:
-                log(`FFXIVAddEffect: Unrecognized type: ${type}`)
-                break
+                log(`FFXIVAddEffect: Unrecognized type: ${type}`);
+                break;
         }
-    }
+    };
 
     const handleInput = (msg) => {
         if ("api" === msg.type) {
             if (msg.content.match(/^!ffe(\b\s|$)/)) {
-                let who = (getObj("player", msg.playerid) || { get: () => "API" }).get("_displayname")
-                let args = msg.content.split(/\s+--/)
+                let who = (getObj("player", msg.playerid) || { get: () => "API" }).get("_displayname");
+                let args = msg.content.split(/\s+--/);
 
                 let effect = {
                     id: "-1",
@@ -341,114 +344,118 @@ const FFXIVAddEffect = (() => {
                     who: who,
                     origin: "FFXIVAddEffect",
                     level: null
-                }
+                };
 
-                log("FFXIVAddEffect: Parsing command " + msg.content)
+                log("FFXIVAddEffect: Parsing command " + msg.content);
                 args.forEach(a => {
-                    let parts = a.split(/\s+/)
+                    let parts = a.split(/\s+/);
                     switch (parts[0].toLowerCase()) {
                         case "help":
-                            return
+                            return;
 
                         case "v":
-                            effect.value = parts[1]
-                            break
+                            effect.value = parts[1];
+                            break;
 
-                        case "expire":
-                            let expiry = parts[1].toLowerCase()
+                        case "expire": {
+                            let expiry = parts[1].toLowerCase();
                             if (expiries.includes(expiry)) {
-                                effect.expiry = expiry
+                                effect.expiry = expiry;
                             } else {
-                                log("FFXIVAddEffect: Unrecognized expiry type " + expiry)
-                                return
+                                log("FFXIVAddEffect: Unrecognized expiry type " + expiry);
+                                return;
                             }
-                            break
+                            break;
+                        }
 
                         case "edit":
                             if (["0", "1"].includes(parts[1])) {
-                                effect.editable = parts[1]
+                                effect.editable = parts[1];
                             } else {
-                                log("FFXIVAddEffect: Unrecognized editable type " + parts[1])
-                                return
+                                log("FFXIVAddEffect: Unrecognized editable type " + parts[1]);
+                                return;
                             }
-                            break
+                            break;
 
                         case "curable":
                             if (["0", "1"].includes(parts[1])) {
-                                effect.curable = parts[1]
+                                effect.curable = parts[1];
                             } else {
-                                log("FFXIVAddEffect: Unrecognized curable type " + parts[1])
-                                return
+                                log("FFXIVAddEffect: Unrecognized curable type " + parts[1]);
+                                return;
                             }
-                            break
+                            break;
 
                         case "dupe":
                             if (["block", "replace", "allow"].includes(parts[1])) {
-                                effect.duplicate = parts[1]
+                                effect.duplicate = parts[1];
                             } else {
-                                log("FFXIVAddEffect: Unrecognized dupe type " + parts[1])
-                                return
+                                log("FFXIVAddEffect: Unrecognized dupe type " + parts[1]);
+                                return;
                             }
-                            break
+                            break;
 
-                        case "t":
-                            let target = parts.slice(1).join(" ")
-                            effect.target = target
-                            break
-                        
-                        case "l":
-                            let parsedLevel = parseInt(parts[1])
+                        case "t": {
+                            let target = parts.slice(1).join(" ");
+                            effect.target = target;
+                            break;
+                        }
+
+                        case "l": {
+                            let parsedLevel = parseInt(parts[1]);
                             if (isNaN(parsedLevel)) {
-                                log("FFXIVAddEffect: Invalid level value " + parts[1])
-                                return
+                                log("FFXIVAddEffect: Invalid level value " + parts[1]);
+                                return;
                             }
-                            effect.level = parsedLevel
-                            break
+                            effect.level = parsedLevel;
+                            break;
+                        }
 
-                        default:
-                            let name = parts.join(" ")
-                            let match = types.find(type => type.matches.includes(name.toLowerCase())) ?? { type: "special" }
-                            let specialType
+                        default: {
+                            let name = parts.join(" ");
+                            let match = types.find(type => type.matches.includes(name.toLowerCase())) ?? { type: "special" };
+                            let specialType;
                             if (match.type == "special") {
-                                specialType = name
-                                effect.typeName = name
+                                specialType = name;
+                                effect.typeName = name;
                             } else {
-                                specialType = ""
-                                effect.typeName = match.name
+                                specialType = "";
+                                effect.typeName = match.name;
                             }
-                            effect.type = match.type
-                            effect.specialType = specialType
-                            break
+                            effect.type = match.type;
+                            effect.specialType = specialType;
+                            break;
+                        }
                     }
-                })
+                });
                 if (effect.type == "none") {
-                    log("FFXIVAddEffect: Found no matching effect for " + msg.content)
-                    return
+                    log("FFXIVAddEffect: Found no matching effect for " + msg.content);
+                    return;
                 }
-                effect.icon = getIconForEffectType(effect.type, effect.specialType)
-                let targetResult = getCharacters(msg, effect.target)
+                effect.icon = getIconForEffectType(effect.type, effect.specialType);
+                let targetResult = getCharacters(msg, effect.target);
                 if (targetResult.error) {
-                    outputEvent("error", targetResult.error)
-                    return
+                    outputEvent("error", targetResult.error);
+                    return;
                 }
 
-                effect.characters = targetResult.result
-                let event = addEffect(effect)
+                effect.characters = targetResult.result;
+                let event = addEffect(effect);
                 if (!playerIsGM(msg.playerid)) {
-                    outputEvent("add", event)
+                    outputEvent("add", event);
                 }
             }
         }
-    }
+    };
 
     const registerEventHandlers = () => {
-        on("chat:message", handleInput)
-    }
+        on("chat:message", handleInput);
+    };
 
     on("ready", () => {
         state[scriptName] = {
             version: version
-        }
-        registerEventHandlers()
-    })
-})()
+        };
+        registerEventHandlers();
+    });
+})();
