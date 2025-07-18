@@ -49,6 +49,8 @@ const EndOfStep = (() => {
         }
     }(true);
 
+    var lastTurnOrder = "";
+
     const unpackNaN = (value) => {
         let intValue = parseInt(value);
         if (isNaN(intValue)) {
@@ -84,25 +86,135 @@ const EndOfStep = (() => {
         }
     };
 
-    const clearEffects = (character, expiries, updateNextTurnExpiries) => {
-        logger.d(`Clearing effects for ${character.get("name")} matching ${expiries}`);
-        let attributes = findObjs({ type: "attribute", characterid: character.id });
-        let actionables = attributes.reduce(
+    const isEffectTypeExecutable = (type, expiries) => {
+        switch (type.trim().toLowerCase()) {
+            case "dot(x)":
+                return expiries.includes("step");
+            case "regen(x)":
+                return expiries.includes("step");
+            default:
+                return false;
+        }
+    };
+
+    const actionableEffects = (character, attributes, expiries, updateNextTurnExpiries) => {
+        return attributes.reduce(
             (accumulator, currentValue) => {
-                let match = currentValue.get("name").match(/^repeating_effects_([-\w]+)_expiry$/);
-                if (!match || match.length < 2) {
+                let match = currentValue.get("name").match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
+                if (!match || match.length < 3) {
                     return accumulator;
                 }
-                let expiry = currentValue.get("current");
-                if (expiries.includes(expiry)) {
-                    accumulator.ids.push(match[1]);
-                } else if (updateNextTurnExpiries && expiry === "turn2") {
-                    accumulator.toUpdate.push(currentValue);
+                let id = match[1];
+
+                switch (match[2]) {
+                    case "expiry": {
+                        let expiry = currentValue.get("current");
+                        if (expiries.includes(expiry)) {
+                            accumulator.ids.push(id);
+                        } else if (updateNextTurnExpiries && expiry === "turn2") {
+                            accumulator.toUpdate.push(currentValue);
+                        }
+                        break;
+                    }
+                    case "type":
+                    case "specialType": {
+                        let type = currentValue.get("current");
+                        if (isEffectTypeExecutable(type, expiries)) {
+                            if (accumulator.toExecute[id]) {
+                                accumulator.toExecute[id].name = type;
+                            } else {
+                                accumulator.toExecute[id] = {
+                                    name: type
+                                };
+                            }
+                        }
+                        break;
+                    }
+                    case "value": {
+                        if (accumulator.toExecute[id]) {
+                            accumulator.toExecute[id].value = currentValue.get("current");
+                        } else {
+                            // Assign into toExecute just in case
+                            accumulator.toExecute[id] = {
+                                value: currentValue.get("current")
+                            };
+                        }
+                        break;
+                    }
                 }
                 return accumulator;
             },
-            { ids: [], toUpdate: [] }
+            { ids: [], toUpdate: [], toExecute: {} }
         );
+    };
+
+    const executeEffect = (character, name, value) => {
+        switch (name.trim().toLowerCase()) {
+            case "dot(x)": {
+                var damage = parseInt(value);
+                if (isNaN(damage) || damage < 1) {
+                    logger.i("Unable to perform dot(x); no value given");
+                    return [];
+                }
+                let hitPoints = findObjs({ type: "attribute", characterid: character.id, name: "hitPoints" })[0];
+                if (!hitPoints) {
+                    logger.i("Unable to perform dot(x); no hitPoints");
+                    return [];
+                }
+
+                let barrierPoints = findObjs({ type: "attribute", characterid: character.id, name: "barrierPoints" })[0];
+                var barrierDefinition = "";
+                if (barrierPoints) {
+                    let barrierValue = parseInt(barrierPoints.get("current"));
+                    if (!isNaN(barrierValue) && barrierValue > 0) {
+                        var newBarrierValue = barrierValue - damage;
+                        damage = -newBarrierValue;
+
+                        newBarrierValue = Math.max(newBarrierValue, 0);
+                        barrierPoints.set("current", newBarrierValue);
+                        barrierDefinition = `${barrierValue} to ${newBarrierValue} Barrier`;
+                    }
+                }
+
+                var hitPointDefinition = "";
+                if (damage > 0) {
+                    let hitPointValue = parseInt(hitPoints.get("current"));
+                    let max = parseInt(hitPoints.get("max"));
+                    let newValue = Math.max(hitPointValue - damage, 0);
+                    hitPoints.set("current", newValue);
+                    hitPointDefinition = `${hitPointValue} to ${newValue}/${max} HP`;
+                }
+                let changeSummary = [barrierDefinition, hitPointDefinition].filter(element => element).join(", ");
+                return [`DOT (${value}) (${changeSummary})`];
+            }
+            case "regen(x)": {
+                var healing = parseInt(value);
+                if (isNaN(healing) || healing < 1) {
+                    logger.i("Unable to perform regen(x); no value given");
+                    return [];
+                }
+                let hitPoints = findObjs({ type: "attribute", characterid: character.id, name: "hitPoints" })[0];
+                if (!hitPoints) {
+                    logger.i("Unable to perform regen(x); no hitPoints");
+                    return [];
+                }
+
+                let hitPointValue = parseInt(hitPoints.get("current"));
+                let max = parseInt(hitPoints.get("max"));
+                let newValue = Math.min(hitPointValue + healing, max);
+
+                hitPoints.set("current", newValue);
+                return [`Regen (${value}) (${hitPointValue} to ${newValue}/${max} HP)`];
+            }
+            default:
+                return [];
+        }
+    };
+
+    const manageEffects = (character, expiries, updateNextTurnExpiries) => {
+        logger.d(`Clearing effects for ${character.get("name")} matching ${expiries}`);
+        let attributes = findObjs({ type: "attribute", characterid: character.id });
+        let actionables = actionableEffects(character, attributes, expiries, updateNextTurnExpiries);
         logger.d(`Found ${actionables.ids.length} removable and ${actionables.toUpdate.length} updateable effects.`);
 
         // Update turn expiry
@@ -111,7 +223,17 @@ const EndOfStep = (() => {
             attribute.set("current", "turn");
         }
 
-        var summaries = {};
+        var executionSummaries = [];
+        // Execute effects
+        for (let effect of Object.entries(actionables.toExecute)) {
+            if (!effect[1].name) {
+                continue;
+            }
+            logger.d(`Executing effect ${effect[1].name}`);
+            executionSummaries = executionSummaries.concat(executeEffect(character, effect[1].name, effect[1].value));
+        }
+
+        var removalSummaries = {};
         // Remove effects
         for (let attribute of attributes) {
             let name = attribute.get("name");
@@ -128,10 +250,13 @@ const EndOfStep = (() => {
 
             let nameMatch = name.match(/(special)?[tT]ype$/);
             if (nameMatch) {
-                var summaryForId = summaries[id];
+                var summaryForId = removalSummaries[id];
                 if (!summaryForId || nameMatch[0] === "specialType") {
-                    summaries[id] = { attribute: nameMatch[0], summary: attribute.get("current") };
-                    handleSpecialEffects(character, attribute.get("current"));
+                    let value = attribute.get("current");
+                    if (value.trim().toLowerCase() !== "none") {
+                        removalSummaries[id] = { attribute: nameMatch[0], summary: attribute.get("current") };
+                        handleSpecialEffects(character, attribute.get("current"));
+                    }
                 }
             }
 
@@ -139,14 +264,20 @@ const EndOfStep = (() => {
             logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
             attribute.remove();
         }
-        let summary = Object.entries(summaries).map(entry => entry[1].summary).join(", ");
-        if (summary) {
-            return `Removed ${summary}`;
+
+        var finalSummaries = [];
+        let executionSummary = executionSummaries.join(", ");
+        if (executionSummary) {
+            finalSummaries.push(`Executed ${executionSummary}`);
         }
-        return "";
+        let removalSummary = Object.entries(removalSummaries).map(entry => entry[1].summary).join(" ,");
+        if (removalSummary) {
+            finalSummaries(`Removed ${removalSummary}`);
+        }
+        return finalSummaries.join(" ,");
     };
 
-    const performEffectsOnTurnChange = (turn, expiries, turnChange, updateNextTurnExpiries) => {
+    const manageEffectsOnTurnChange = (turn, expiries, turnChange, updateNextTurnExpiries) => {
         if (!config.manageEffects) {
             logger.d("Skipping effect changes; disabled in config.");
             return;
@@ -158,7 +289,7 @@ const EndOfStep = (() => {
             return;
         }
         logger.d(`Perform ${turnChange} for ${tokenCharacter.token.get("name")}`);
-        let summary = clearEffects(tokenCharacter.character, expiries, updateNextTurnExpiries);
+        let summary = manageEffects(tokenCharacter.character, expiries, updateNextTurnExpiries);
         if (!summary) {
             logger.d("No effects removed.");
             return;
@@ -169,8 +300,8 @@ const EndOfStep = (() => {
         try {
             sendChat(tokenCharacter.token.get("name"), fullSummary);
         } catch (e) {
-            log(`EndOfStep: ERROR PARSING: ${fullSummary}`);
-            log(`EndOfStep: ERROR: ${e}`);
+            logger.i(`ERROR PARSING: ${fullSummary}`);
+            logger.i(`ERROR: ${e}`);
         }
     };
 
@@ -249,7 +380,7 @@ const EndOfStep = (() => {
         return summary;
     };
 
-    const performEndOfStepForToken = (token, character) => {
+    const performRecoveryForToken = (token, character) => {
         let summaries = [
             recoverMp(token, character),
             recoverResource(character, "resource"),
@@ -271,11 +402,11 @@ const EndOfStep = (() => {
             if (team != affectedTeam) {
                 if (affectedTeam === "enemy") {
                     // Enemies go last, so this ends the round for everyone
-                    performEffectsOnTurnChange(turn, ["round"], "end of round", false);
+                    manageEffectsOnTurnChange(turn, ["round"], "end of round", false);
                 }
                 continue;
             }
-            let content = performEndOfStepForToken(token, character);
+            let content = performRecoveryForToken(token, character);
             try {
                 sendChat(token.get("name"), content);
             } catch (e) {
@@ -288,16 +419,16 @@ const EndOfStep = (() => {
             } else {
                 expiries = ["step"];
             }
-            performEffectsOnTurnChange(turn, expiries, "end of step", false);
+            manageEffectsOnTurnChange(turn, expiries, "end of step", false);
         }
     };
 
     const performStartOfTurn = (turn) => {
-        performEffectsOnTurnChange(turn, ["start"], "start of turn", false);
+        manageEffectsOnTurnChange(turn, ["start"], "start of turn", false);
     };
 
     const performEndOfTurn = (turn) => {
-        performEffectsOnTurnChange(turn, ["turn"], "end of turn", true);
+        manageEffectsOnTurnChange(turn, ["turn"], "end of turn", true);
     };
 
     const teamForStep = (step) => {
@@ -518,7 +649,16 @@ const EndOfStep = (() => {
     const registerEventHandlers = () => {
         on(
             "change:campaign:turnorder",
-            (obj, prev) => setTimeout(() => checkTurnOrder(Campaign(), prev, false), 500)
+            (obj, prev) => {
+                let campaign = Campaign();
+                let turnorder = campaign.get("turnorder");
+                if (turnorder === lastTurnOrder) {
+                    logger.d("Duplicate request, ignoring");
+                    return;
+                }
+                lastTurnOrder = turnorder;
+                checkTurnOrder(Campaign(), prev, false);
+            }
         );
         on("chat:message", handleInput);
     };
