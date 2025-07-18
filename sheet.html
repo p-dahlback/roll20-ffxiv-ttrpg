@@ -3031,9 +3031,10 @@
     function resolveDuplicates(name, effect, existingEffectTypes, existingEffects) {
         if (effect.duplicate == "block" && existingEffectTypes.includes(name)) {
             log("Effect " + effect.name + " already exists, skipping")
-            return false
+            return { result: false, summaries: [] }
         }
 
+        var summaries = []
         if (effect.duplicate == "replace") {
             for (let replacable of existingEffects.effects) {
                 if (replacable.type == effect.type && replacable.specialType == effect.specialType) {
@@ -3042,7 +3043,7 @@
                 }
             }
         }
-        return true
+        return { result: true, summaries: summaries }
     }
     
     function resolveEffectAbilities(effect) {
@@ -3253,9 +3254,11 @@
                 log("Unhandled effect " + adjustedEffect)
                 continue
             }
-            if (!resolveDuplicates(adjustedEffect, data, existingEffectTypes, existingEffects)) {
+            let duplicatesResult = resolveDuplicates(adjustedEffect, data, existingEffectTypes, existingEffects)
+            if (!duplicatesResult.result) {
                 continue
             }
+            summaries = summaries.concat(duplicatesResult.summaries)
 
             var value = null
             let match = effect.match(/\(([\-\w]+)\)/)
@@ -3273,7 +3276,7 @@
             }
 
             let specialEffectResult = resolveSpecialEffects(adjustedEffect, dice, values, existingEffects)
-            summaries = summaries.concat(specialEffectResult.summaries)
+            summaries = summaries.concat(specialEffectResult.summaries.filter(element => element))
             if (specialEffectResult.skip) {
                 continue
             } 
