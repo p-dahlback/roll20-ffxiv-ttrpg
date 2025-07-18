@@ -24,7 +24,14 @@ const EndOfStep = (() => {
     const scriptName = "EndOfStep";
     const version = "0.1.0";
 
-    const logger = new class {
+    let config = {
+        recover: true,
+        manageEffects: true,
+        blockUntilEmpty: false,
+        blockTurn: 0
+    };
+
+    let logger = new class {
 
         constructor(debug) {
             this.debug = debug;
@@ -121,6 +128,11 @@ const EndOfStep = (() => {
     };
 
     const performEffectRemovalOnTurnChange = (turn, expiries, turnChange, updateNextTurnExpiries) => {
+        if (!config.manageEffects) {
+            logger.d("Skipping effect changes; disabled in config.");
+            return;
+        }
+
         let tokenCharacter = tokenCharacterForTurn(turn);
         if (!tokenCharacter || !tokenCharacter.character) {
             logger.d("No token/character found");
@@ -144,6 +156,11 @@ const EndOfStep = (() => {
     };
 
     const recoverResource = (character, resource) => {
+        if (!config.recover) {
+            logger.d(`Skipping ${resource} recovery for ${character.get("name")}; disabled in config.`);
+            return;
+        }
+
         let sheetType = getAttrByName(character.id, "sheet_type");
         if (sheetType != "unique") {
             return;
@@ -275,7 +292,7 @@ const EndOfStep = (() => {
         }
     };
 
-    const checkTurnOrder = (obj, prev) => {
+    const checkTurnOrder = (obj, prev, force) => {
         logger.d("==============================================");
         logger.d("Checking turn order");
         logger.d("==============================================");
@@ -284,10 +301,46 @@ const EndOfStep = (() => {
         let firstInTurn = turnOrder.length > 0 ? turnOrder[0] : { id: "-1" };
         let previousFirstInTurn = previousTurnOrder.length > 0 ? previousTurnOrder[0] : { id: "-1" };
 
-        if (firstInTurn.id === previousFirstInTurn.id && firstInTurn.id !== "-1") {
-            // No change in which character has a turn, ignore
-            logger.d("Same character; ignore");
-            return;
+        if (force) {
+            logger.d("Forcing start of turn for current token");
+        } else {
+            if (config.blockUntilEmpty) {
+                logger.d("Mod configured to block all activity until the turn order is emptied");
+                if (turnOrder.length === 0) {
+                    logger.d("Empty turn order; lifting block");
+                    config.blockUntilEmpty = false;
+                }
+                return;
+            }
+
+            if (turnOrder.length > previousTurnOrder.length) {
+                logger.d("Turn added; not performing any actions.");
+                logger.d("----------");
+                return;
+            }
+
+            if (
+                turnOrder[0].id === previousTurnOrder[previousTurnOrder.length - 1].id &&
+                turnOrder[0].custom === previousTurnOrder[previousTurnOrder.length - 1].custom
+            ) {
+                logger.d("Running turn backwards; not performing any actions.");
+                logger.d("----------");
+                return;
+            }
+
+            if (config.blockTurn > 0) {
+                logger.d(`Blocking changes for ${config.blockTurn} turns; not performing any actions.`);
+                logger.d("----------");
+                config.blockTurn--;
+                return;
+            }
+
+            if (firstInTurn.id === previousFirstInTurn.id && firstInTurn.id !== "-1") {
+                // No change in which character has a turn, ignore
+                logger.d("Same character; ignore");
+                logger.d("----------");
+                return;
+            }
         }
 
         if (previousFirstInTurn.id != "-1") {
@@ -306,14 +359,128 @@ const EndOfStep = (() => {
         } else if (firstInTurn.id != "-1") {
             performStartOfTurn(firstInTurn);
         }
-        logger.d("----------")
+        logger.d("----------");
+    };
+
+    const handleInput = (msg) => {
+        if ("api" !== msg.type) {
+            return;
+        }
+        if (!msg.content.match(/^!eos(\b\s|$)/)) {
+            return;
+        }
+
+        logger.d("==============================================");
+        logger.d(`Parsing command ${msg.content}`);
+        logger.d("==============================================");
+        let args = msg.content.split(/\s+--/);
+
+        args.forEach(a => {
+            let parts = a.split(/\s+/);
+            switch (parts[0].toLowerCase()) {
+                case "!eos":
+                    // Do nothing for the API keyword
+                    break;
+
+                case "block": {
+                    if (parts.length === 1) {
+                        logger.d("Blocking all future activity.");
+                        config.blockTurn = 10000;
+                        return;
+                    }
+
+                    let turns = parseInt(parts[1]);
+                    if (isNaN(turns)) {
+                        logger.i(`Unrecognized --block value ${parts[1]}`);
+
+                        try {
+                            sendChat(scriptName, `Unrecognized block value in ${msg.content}`);
+                        } catch (e) {
+                            logger.i(`ERROR: ${e}`);
+                        }
+                        return;
+                    } else {
+                        logger.d(`Blocking activity for ${turns} turns.`);
+                        config.blockTurn = turns;
+                    }
+                    break;
+                }
+                case "config":
+                    try {
+                        sendChat(scriptName, `<h4>Current ${scriptName} configuration</h4><ul><li>Auto-recovery: ${config.recover}</li><li>Effect management: ${config.manageEffects}</li><li>Number of turns to block activity: ${config.blockTurn}</li><li>Block until turn order is empty: ${config.blockUntilEmpty}</li></ul>`);
+                    } catch (e) {
+                        logger.i(`ERROR: ${e}`);
+                    }
+                    break;
+                case "end": {
+                    logger.d("Blocking activity funtil the turn order has been cleared.");
+                    config.blockUntilEmpty = true;
+                    break;
+                }
+                case "force":
+                    logger.d("Forcing a repeat of starting the current turn");
+                    checkTurnOrder(Campaign(), { turnorder: "[]" }, true);
+                    break;
+                case "fx":
+                    if (parts[1] === "1" || parts[1] === "on") {
+                        logger.d("Enabling effect management");
+                        config.manageEffects = true;
+                    } else if (parts[1] === "0" || parts[1] === "off") {
+                        logger.d("Disabling effect management");
+                        config.manageEffects = false;
+                    } else {
+                        logger.i(`Unrecognized --fx setting ${parts[1]}`);
+
+                        try {
+                            sendChat(scriptName, `Unrecognized fx value in ${msg.content}`);
+                        } catch (e) {
+                            logger.i(`ERROR: ${e}`);
+                        }
+                        return;
+                    }
+                    break;
+                case "recover":
+                    if (parts[1] === "1" || parts[1] === "on") {
+                        logger.d("Enabling resource recovery");
+                        config.recover = true;
+                    } else if (parts[1] === "0" || parts[1] === "off") {
+                        logger.d("Disabling resource recovery");
+                        config.recover = false;
+                    } else {
+                        logger.i(`Unrecognized --recover setting ${parts[1]}`);
+
+                        try {
+                            sendChat(scriptName, `Unrecognized recover value in ${msg.content}`);
+                        } catch (e) {
+                            logger.i(`ERROR: ${e}`);
+                        }
+                        return;
+                    }
+                    break;
+                case "reset":
+                    logger.d("Resetting configuration to standard.");
+                    config.recover = true;
+                    config.manageEffects = true;
+                    config.blockUntilEmpty = false;
+                    config.blockTurn = 0;
+                    break;
+                default:
+                    try {
+                        sendChat(scriptName, `Unrecognized argument ${parts[0]} in ${msg.content}`);
+                    } catch (e) {
+                        logger.i(`ERROR: ${e}`);
+                    }
+                    break;
+            }
+        });
     };
 
     const registerEventHandlers = () => {
         on(
             "change:campaign:turnorder",
-            (obj, prev) => setTimeout(() => checkTurnOrder(Campaign(), prev), 1000)
+            (obj, prev) => setTimeout(() => checkTurnOrder(Campaign(), prev, false), 500)
         );
+        on("chat:message", handleInput);
     };
 
     on("ready", () => {
