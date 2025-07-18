@@ -27,6 +27,7 @@ const EndOfStep = (() => {
     let config = {
         recover: true,
         manageEffects: true,
+        manageEffectRemoval: true,
         blockUntilEmpty: false,
         blockTurn: 0
     };
@@ -145,7 +146,7 @@ const EndOfStep = (() => {
         return "";
     };
 
-    const performEffectRemovalOnTurnChange = (turn, expiries, turnChange, updateNextTurnExpiries) => {
+    const performEffectsOnTurnChange = (turn, expiries, turnChange, updateNextTurnExpiries) => {
         if (!config.manageEffects) {
             logger.d("Skipping effect changes; disabled in config.");
             return;
@@ -270,7 +271,7 @@ const EndOfStep = (() => {
             if (team != affectedTeam) {
                 if (affectedTeam === "enemy") {
                     // Enemies go last, so this ends the round for everyone
-                    performEffectRemovalOnTurnChange(turn, ["round"], "end of round", false);
+                    performEffectsOnTurnChange(turn, ["round"], "end of round", false);
                 }
                 continue;
             }
@@ -287,16 +288,16 @@ const EndOfStep = (() => {
             } else {
                 expiries = ["step"];
             }
-            performEffectRemovalOnTurnChange(turn, expiries, "end of step", false);
+            performEffectsOnTurnChange(turn, expiries, "end of step", false);
         }
     };
 
     const performStartOfTurn = (turn) => {
-        performEffectRemovalOnTurnChange(turn, ["start"], "start of turn", false);
+        performEffectsOnTurnChange(turn, ["start"], "start of turn", false);
     };
 
     const performEndOfTurn = (turn) => {
-        performEffectRemovalOnTurnChange(turn, ["turn"], "end of turn", true);
+        performEffectsOnTurnChange(turn, ["turn"], "end of turn", true);
     };
 
     const teamForStep = (step) => {
@@ -400,6 +401,28 @@ const EndOfStep = (() => {
                     // Do nothing for the API keyword
                     break;
 
+                case "help": {
+                    let helpContent = `<h4>${scriptName} !eos --help</h4>` +
+                        `<p>Note that passing of turns only applies in one direction, and that adding to the turn order does not count as passing a turn.</p>` +
+                        `<h5>Options</h5><ul>` +
+                        `<li><code>--help</code> - displays this message in chat.</li>` +
+                        `<li><code>--block X</code> - block any turn management until X turns have passed in the turn order.</li>` +
+                        `<li><code>--config</code> - output the current configuration of ${scriptName} to chat.</li>` +
+                        `<li><code>--end</code> - blocks any turn management until the Turn Order has been rendered empty.</li>` +
+                        `<li><code>--force</code> - immediately carries out turn management on the current first in turn order.</li>` +
+                        `<li><code>--fx X</code> - enables/disables the effect management part of turn management. 1 or on to enable, 0 or off to disable.</li>` +
+                        `<li><code>--recover X</code> - enables/disables the resource recovery part of turn management. 1 or on to enable. 0 or off to disable.</li>` +
+                        `<li><code>--reset</code> - resets the configuration to standard: no blocks on turn management, all subsystems enabled.</li>` +
+                        `</ul>`
+                        ;
+                    try {
+                        sendChat(scriptName, helpContent);
+                    } catch (e) {
+                        logger.i(`ERROR: ${e}`);
+                    }
+                    break;
+                }
+
                 case "block": {
                     if (parts.length === 1) {
                         logger.d("Blocking all future activity.");
@@ -416,7 +439,6 @@ const EndOfStep = (() => {
                         } catch (e) {
                             logger.i(`ERROR: ${e}`);
                         }
-                        return;
                     } else {
                         logger.d(`Blocking activity for ${turns} turns.`);
                         config.blockTurn = turns;
@@ -431,7 +453,7 @@ const EndOfStep = (() => {
                     }
                     break;
                 case "end": {
-                    logger.d("Blocking activity funtil the turn order has been cleared.");
+                    logger.d("Blocking activity until the turn order has been cleared.");
                     config.blockUntilEmpty = true;
                     break;
                 }
