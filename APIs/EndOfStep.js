@@ -29,7 +29,8 @@ const EndOfStep = (() => {
         manageEffects: true,
         manageEffectRemoval: true,
         blockUntilEmpty: false,
-        blockTurn: 0
+        blockTurn: 0,
+        block: false
     };
 
     let logger = new class {
@@ -50,14 +51,48 @@ const EndOfStep = (() => {
     }(true);
 
     var lastTurnOrder = "";
+    var newEncounter = false;
 
-    const unpackNaN = (value) => {
+    const unpackNaN = (value, defaultValue = 0) => {
         let intValue = parseInt(value);
         if (isNaN(intValue)) {
-            return 0;
+            return defaultValue;
         }
         return intValue;
     };
+
+    const generateUUID = (() => {
+        let a = 0;
+        let b = [];
+        return () => {
+            let c = (new Date()).getTime() + 0;
+            let f = 7;
+            let e = new Array(8);
+            let d = c === a;
+            a = c;
+            for (; 0 <= f; f--) {
+                e[f] = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".charAt(c % 64);
+                c = Math.floor(c / 64);
+            }
+            c = e.join("");
+            if (d) {
+                for (f = 11; 0 <= f && 63 === b[f]; f--) {
+                    b[f] = 0;
+                }
+                b[f]++;
+            } else {
+                for (f = 0; 12 > f; f++) {
+                    b[f] = Math.floor(64 * Math.random());
+                }
+            }
+            for (f = 0; 12 > f; f++) {
+                c += "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".charAt(b[f]);
+            }
+            return c;
+        };
+    })();
+
+    const generateRowID = () => generateUUID().replace(/_/g, "Z");
 
     const tokenCharacterForTurn = (turn) => {
         let token = getObj("graphic", turn.id);
@@ -77,6 +112,17 @@ const EndOfStep = (() => {
                 mpRecoveryBlock.set("current", "off");
                 break;
             }
+            case "lightweight refit - proc": {
+                logger.d("Resetting speed from Lightweight Refit");
+                let speed = findObjs({ type: "attribute", characterid: character.id, name: "speed"})[0];
+                if (speed) {
+                    let currentValue = unpackNaN(speed.get("current"), 6);
+                    speed.set("current", Math.max(currentValue - 1, 0));
+                } else {
+                    createObj("attribute", { characterid: character.id, current: 5 });
+                }
+                break;
+            }
             case "lucid dreaming": {
                 logger.d("Cancelling extra MP recovery from Lucid Dreaming");
                 let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: "mpRecovery" })[0];
@@ -88,8 +134,16 @@ const EndOfStep = (() => {
 
     const isEffectTypeExecutable = (type, expiries) => {
         switch (type.trim().toLowerCase()) {
+            case "aetherial focus":
+                return expiries.includes("encounterstart");
             case "dot(x)":
                 return expiries.includes("step");
+            case "improved padding":
+                return expiries.includes("stepstart");
+            case "lightweight refit":
+                return expiries.includes("encounterstart");
+            case "precision opener":
+                return expiries.includes("encounterstart");
             case "regen(x)":
                 return expiries.includes("step");
             default:
@@ -150,9 +204,22 @@ const EndOfStep = (() => {
 
     const executeEffect = (character, name, value) => {
         switch (name.trim().toLowerCase()) {
+            case "aetherial focus": {
+                let magicPoints = findObjs({ type: "attribute", characterid: character.id, name: "magicPoints" })[0];
+                if (magicPoints) {
+                    var max = parseInt(magicPoints.get("max"));
+                    if (isNaN(max)) {
+                        max = 5;
+                    }
+                    magicPoints.set("current", max + 1);
+                } else {
+                    createObj("attribute", { characterid: character.id, name: "magicPoints", current: 6, max: 5 });
+                }
+                return [`<b>Aetherial Focus</b>, giving 1 additional MP (6/5)`];
+            }
             case "dot(x)": {
-                var damage = parseInt(value);
-                if (isNaN(damage) || damage < 1) {
+                var damage = unpackNaN(value);
+                if (damage < 1) {
                     logger.i("Unable to perform dot(x); no value given");
                     return [];
                 }
@@ -165,8 +232,8 @@ const EndOfStep = (() => {
                 let barrierPoints = findObjs({ type: "attribute", characterid: character.id, name: "barrierPoints" })[0];
                 var barrierDefinition = "";
                 if (barrierPoints) {
-                    let barrierValue = parseInt(barrierPoints.get("current"));
-                    if (!isNaN(barrierValue) && barrierValue > 0) {
+                    let barrierValue = unpackNaN(barrierPoints.get("current"));
+                    if (barrierValue > 0) {
                         var newBarrierValue = barrierValue - damage;
                         damage = -newBarrierValue;
 
@@ -178,18 +245,64 @@ const EndOfStep = (() => {
 
                 var hitPointDefinition = "";
                 if (damage > 0) {
-                    let hitPointValue = parseInt(hitPoints.get("current"));
-                    let max = parseInt(hitPoints.get("max"));
+                    let hitPointValue = unpackNaN(hitPoints.get("current"));
+                    let max = unpackNaN(hitPoints.get("max"));
                     let newValue = Math.max(hitPointValue - damage, 0);
                     hitPoints.set("current", newValue);
                     hitPointDefinition = `${hitPointValue} to ${newValue}/${max} HP`;
                 }
                 let changeSummary = [barrierDefinition, hitPointDefinition].filter(element => element).join(", ");
-                return [`DOT (${value}) (${changeSummary})`];
+                return [`<b>DOT (${value})</b> (${changeSummary})`];
+            }
+            case "improved padding": {
+                let barrierPoints = findObjs({ type: "attribute", characterid: character.id, name: "barrierPoints" })[0];
+                if (barrierPoints) {
+                    let value = unpackNaN(barrierPoints.get("current"));
+                    if (value < 1) {
+                        barrierPoints.set("current", 1);
+                        return [`Improved Padding (1 Barrier)`];
+                    }
+                } else {
+                    createObj("attribute", { characterid: character.id, name: "barrierPoints", current: 1 });
+                    return [`<b>Improved Padding</b> (1 Barrier)`];
+                }
+                return [];
+            }
+            case "lightweight refit": {
+                let speed = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
+                let newValue;
+                if (speed) {
+                    let value = unpackNaN(speed.get("current"), 5);
+                    newValue = value + 1;
+                    speed.set("current", newValue);
+                } else {
+                    newValue = 6;
+                    createObj("attribute", { characterid: character.id, name: "speed", current: newValue });
+                }
+
+                // Create effect to make the speed increase temporary
+                let id = generateRowID();
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_icon`, current: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/augment.png" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_type`, current: "special" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_specialType`, current: "Lightweight Refit - Proc" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_expiry`, current: "turn" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_editable`, current: "off" });
+
+                return [`<b>Lightweight Refit</b>, +1 to speed (${newValue}, valid until end of turn)`];
+            }
+            case "precision opener": {
+                // Create advantage die effect until end of turn
+                let id = generateRowID();
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_icon`, current: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/advantage.png" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_type`, current: "advantage" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_expiry`, current: "turn" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_editable`, current: "off" });
+
+                return ["<b>Precision Opener</b>, +1 advantage die on one ability roll (valid until end of turn)"];
             }
             case "regen(x)": {
-                var healing = parseInt(value);
-                if (isNaN(healing) || healing < 1) {
+                var healing = unpackNaN(value);
+                if (healing < 1) {
                     logger.i("Unable to perform regen(x); no value given");
                     return [];
                 }
@@ -199,12 +312,12 @@ const EndOfStep = (() => {
                     return [];
                 }
 
-                let hitPointValue = parseInt(hitPoints.get("current"));
-                let max = parseInt(hitPoints.get("max"));
+                let hitPointValue = unpackNaN(hitPoints.get("current"));
+                let max = unpackNaN(hitPoints.get("max"));
                 let newValue = Math.min(hitPointValue + healing, max);
 
                 hitPoints.set("current", newValue);
-                return [`Regen (${value}) (${hitPointValue} to ${newValue}/${max} HP)`];
+                return [`<b>Regen (${value})</b> (${hitPointValue} to ${newValue}/${max} HP)`];
             }
             default:
                 return [];
@@ -270,11 +383,11 @@ const EndOfStep = (() => {
         if (executionSummary) {
             finalSummaries.push(`Executed ${executionSummary}`);
         }
-        let removalSummary = Object.entries(removalSummaries).map(entry => entry[1].summary).join(" ,");
+        let removalSummary = Object.entries(removalSummaries).map(entry => entry[1].summary).join(", ");
         if (removalSummary) {
-            finalSummaries(`Removed ${removalSummary}`);
+            finalSummaries.push(`Removed ${removalSummary}`);
         }
-        return finalSummaries.join(" ,");
+        return finalSummaries.join(", ");
     };
 
     const manageEffectsOnTurnChange = (turn, expiries, turnChange, updateNextTurnExpiries) => {
@@ -295,7 +408,7 @@ const EndOfStep = (() => {
             return;
         }
 
-        let fullSummary = `${summary} at ${turnChange}.`;
+        let fullSummary = `<h4>${turnChange}:</h4> ${summary}.`;
         logger.d(`Notifying chat of effect update: ${fullSummary}`);
         try {
             sendChat(tokenCharacter.token.get("name"), fullSummary);
@@ -371,6 +484,11 @@ const EndOfStep = (() => {
             return;
         }
 
+        if (currentMp >= maxMp) {
+            logger.d("MP is maxed out; cancelling recovery");
+            return;
+        }
+
         let updatedMp = Math.min(currentMp + unpackNaN(mpRecovery), maxMp);
 
         token.set("bar3_value", updatedMp);
@@ -390,25 +508,48 @@ const EndOfStep = (() => {
         return summaries.join("\n");
     };
 
+    const performStartOfStep = (turnOrder, affectedTeam) => {
+        for (let i = 0; i < turnOrder.length; i++) {
+            let turn = turnOrder[i];
+            let tokenCharacter = tokenCharacterForTurn(turn);
+            if (!tokenCharacter) {
+                continue;
+            }
+            let team = getAttrByName(tokenCharacter.character.id, "team");
+            if (team != affectedTeam) {
+                if (newEncounter) {
+                    manageEffectsOnTurnChange(turn, ["encounterstart"], "Start of encounter", false);
+                }
+                continue;
+            }
+            var expiries = ["stepstart"];
+            if (i == 0) {
+                expiries.push("turn");
+            }
+            if (newEncounter) {
+                expiries.push("encounterstart");
+            }
+            manageEffectsOnTurnChange(turn, expiries, "Start of step", false);
+        }
+    };
+
     const performEndOfStep = (turnOrder, affectedTeam) => {
         for (let turn of turnOrder) {
             let tokenCharacter = tokenCharacterForTurn(turn);
             if (!tokenCharacter) {
                 continue;
             }
-            let token = tokenCharacter.token;
-            let character = tokenCharacter.character;
-            let team = getAttrByName(character.id, "team");
+            let team = getAttrByName(tokenCharacter.character.id, "team");
             if (team != affectedTeam) {
                 if (affectedTeam === "enemy") {
                     // Enemies go last, so this ends the round for everyone
-                    manageEffectsOnTurnChange(turn, ["round"], "end of round", false);
+                    manageEffectsOnTurnChange(turn, ["round"], "End of round", false);
                 }
                 continue;
             }
-            let content = performRecoveryForToken(token, character);
+            let content = performRecoveryForToken(tokenCharacter.token, tokenCharacter.character);
             try {
-                sendChat(token.get("name"), content);
+                sendChat(tokenCharacter.token.get("name"), content);
             } catch (e) {
                 log(`EndOfStep: ERROR PARSING: ${content}`);
                 log(`EndOfStep: ERROR: ${e}`);
@@ -419,24 +560,24 @@ const EndOfStep = (() => {
             } else {
                 expiries = ["step"];
             }
-            manageEffectsOnTurnChange(turn, expiries, "end of step", false);
+            manageEffectsOnTurnChange(turn, expiries, "End of step", false);
         }
     };
 
     const performStartOfTurn = (turn) => {
-        manageEffectsOnTurnChange(turn, ["start"], "start of turn", false);
+        manageEffectsOnTurnChange(turn, ["start"], "Start of turn", false);
     };
 
     const performEndOfTurn = (turn) => {
-        manageEffectsOnTurnChange(turn, ["turn"], "end of turn", true);
+        manageEffectsOnTurnChange(turn, ["turn"], "End of turn", true);
     };
 
-    const teamForStep = (step) => {
+    const teamForStep = (step, reverse) => {
         switch (step.custom) {
             case "End of Adventurer Step":
-                return "adventurer";
+                return reverse ? "enemy" : "adventurer";
             case "End of Enemy Step":
-                return "enemy";
+                return reverse? "adventurer" : "enemy";
             default:
                 return "";
         }
@@ -454,6 +595,11 @@ const EndOfStep = (() => {
         if (force) {
             logger.d("Forcing start of turn for current token");
         } else {
+            // Check prerequisites before proceeding
+            if (config.block) {
+                logger.d("Mod configured to block all activity; not performing any actions.");
+                return;
+            }
             if (config.blockUntilEmpty) {
                 logger.d("Mod configured to block all activity until the turn order is emptied");
                 if (turnOrder.length === 0) {
@@ -486,7 +632,6 @@ const EndOfStep = (() => {
             }
 
             if (firstInTurn.id === previousFirstInTurn.id && firstInTurn.id !== "-1") {
-                // No change in which character has a turn, ignore
                 logger.d("Same character; ignore");
                 logger.d("----------");
                 return;
@@ -506,8 +651,21 @@ const EndOfStep = (() => {
             }
             logger.d(`Perform end of step for team ${affectedTeam}`);
             performEndOfStep(turnOrder, affectedTeam);
+        } else if (previousFirstInTurn.custom && firstInTurn.custom !== previousFirstInTurn.custom) {
+            let affectedTeam = teamForStep(previousFirstInTurn, true);
+            if (affectedTeam) {
+                logger.d(`Perform start of step for team ${affectedTeam}`);
+                performStartOfStep(turnOrder, affectedTeam);
+            } else {
+                performStartOfTurn(firstInTurn);
+            }
         } else if (firstInTurn.id != "-1") {
-            performStartOfTurn(firstInTurn);
+            if (previousTurnOrder.length === 0) {
+                newEncounter = true;
+                performStartOfStep(turnOrder, "adventurer");
+            } else {
+                performStartOfTurn(firstInTurn);
+            }
         }
         logger.d("----------");
     };
@@ -544,6 +702,8 @@ const EndOfStep = (() => {
                         `<li><code>--fx X</code> - enables/disables the effect management part of turn management. 1 or on to enable, 0 or off to disable.</li>` +
                         `<li><code>--recover X</code> - enables/disables the resource recovery part of turn management. 1 or on to enable. 0 or off to disable.</li>` +
                         `<li><code>--reset</code> - resets the configuration to standard: no blocks on turn management, all subsystems enabled.</li>` +
+                        `<li><code>--start</code> - removes any blocks on turn management and runs <code>--force</code> on the current first in turn order.</li>` +
+                        `<li><code>--stop</code> - blocks all turn management until <code>--start</code> or <code>--reset</code> is called.</li>` +
                         `</ul>`
                         ;
                     try {
@@ -590,7 +750,7 @@ const EndOfStep = (() => {
                 }
                 case "force":
                     logger.d("Forcing a repeat of starting the current turn");
-                    checkTurnOrder(Campaign(), { turnorder: "[]" }, true);
+                    checkTurnOrder(Campaign(), { turnorder: lastTurnOrder }, true);
                     break;
                 case "fx":
                     if (parts[1] === "1" || parts[1] === "on") {
@@ -634,6 +794,18 @@ const EndOfStep = (() => {
                     config.manageEffects = true;
                     config.blockUntilEmpty = false;
                     config.blockTurn = 0;
+                    config.block = false;
+                    break;
+                case "start":
+                    logger.d("Resetting any turn management blocks");
+                    config.blockUntilEmpty = false;
+                    config.blockTurn = 0;
+                    config.block = false;
+                    checkTurnOrder(Campaign(), { turnorder: "[]" }, true);
+                    break;
+                case "stop":
+                    logger.d("Blocking all turn management");
+                    config.block = true;
                     break;
                 default:
                     try {

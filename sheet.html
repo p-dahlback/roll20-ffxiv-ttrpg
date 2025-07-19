@@ -353,6 +353,7 @@
                         <select class="effect-expiry" name="attr_expiry">
                             <option value="use">On use</option>
                             <hr />
+                            <option value="stepstart">Start of the [Adventurer Step]</option>
                             <option value="turn">End of your turn</option>
                             <option value="step">End of the [Adventurer Step]</option>
                             <option value="round">End of this round</option>
@@ -2169,13 +2170,14 @@
 
     // MP Max
     on("change:magicPoints", () => {
-        getAttrs(["magicPoints", "magicPoints_max"], values => {
-            if (values.magicPoints > values.magicPoints_max) {
-                console.log("Reset MP")
-                setAttrs({
-                    magicPoints: values.magicPoints_max
-                })
+        getAttrsAndEffects(["magicPoints", "magicPoints_max"], (values, effects) => {
+            if (values.magicPoints <= values.magicPoints_max) {
+                return;
             }
+            log("Reset MP")
+            setAttrs({
+                magicPoints: values.magicPoints_max
+            })
         })
     })
 
@@ -2401,6 +2403,7 @@
         start: "Start of your next turn",
         turn: "End of your turn",
         turn2: "End of your next turn",
+        stepstart: "Start of the [Adventurer Step]",
         step: "End of the [Adventurer Step]",
         round: "End of this round",
         phase: "End of phase",
@@ -2668,6 +2671,11 @@
 
             log("Checking masked type " + effect.data.maskedType + " for " + effect.data.name)
             switch (effect.data.maskedType || effect.type) {
+                case "augment":
+                    if (effect.specialType.trim().toLowerCase() == "atherial focus") {
+                        result.mpMaxIncrease = true;
+                    }
+                    break;
                 case "critical(x)":
                     if (effect.value) {
                         result.criticalThreshold -= parseInt(effect.value)
@@ -4396,6 +4404,15 @@
                     mpRecoveryBlock: "off"
                 })
                 break
+            case "lightweight_refit__proc":
+                log("Lightweight Refit removed; resetting speed")
+                getAttrs(["speed"], values => {
+                    let newValue = (values.speed ?? 0) - 1
+                    setAttrs({
+                        speed: Math.max(newValue, 0)
+                    })
+                })
+                break;
             case "lucid_dreaming":
                 log("Lucid Dreaming removed; resetting mp recovery")
                 setAttrs({
