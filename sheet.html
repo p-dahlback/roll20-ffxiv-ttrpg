@@ -2171,7 +2171,11 @@
     // MP Max
     on("change:magicPoints", () => {
         getAttrsAndEffects(["magicPoints", "magicPoints_max"], (values, effects) => {
-            if (values.magicPoints <= values.magicPoints_max) {
+            var max = magicPoints_max
+            if (effects.mpMaxIncrease) {
+                max += 1
+            }
+            if (values.magicPoints <= max) {
                 return;
             }
             log("Reset MP")
@@ -2396,6 +2400,7 @@
         thunderhead_ready: { type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", name: "Thunderhead Ready", expiry: "use", duplicate: "block" },
         unstunnable: { type: "unstunnable", maskedType: "unstunnable", name: "Stun Immunity", expiry: "phase", duplicate: "block" },
         umbral_ice: { type: "special", maskedType: "special", specialType: "Umbral Ice", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
+        warding_talisman: { type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", name: "Warding Talisman", expiry: "use", duplicate: "allow" },
         weak: { type: "weak", maskedType: "weak", name: "Weak", expiry: "rest", duplicate: "block" }
     }
 
@@ -2441,6 +2446,11 @@
                 { title: "Parry", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
             ]
         },
+        protective_ward: {
+            instant: [
+                { title: "Protective Ward", type: "Instant, Item, {value} ward", cost: 0, uses: 1, uses_max: 1, condition: "Protective Ward can be used in addition to another instant ability this turn", trigger: "When an ability used by the specific enemy or an enemy with the classification {value} scores a critical", baseEffect: "The ability that triggered Protective Ward scores a direct hit but not a critical.", limitation: "Once", hitType: "None", damageType: "Effect", effectSelf: "consume(Warding Talisman,{value})", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Items/warding_talisman.png" },
+            ]
+        }
     }
 
     const sheets = {
@@ -2672,7 +2682,7 @@
             log("Checking masked type " + effect.data.maskedType + " for " + effect.data.name)
             switch (effect.data.maskedType || effect.type) {
                 case "augment":
-                    if (effect.specialType.trim().toLowerCase() == "atherial focus") {
+                    if (effect.specialType.trim().toLowerCase() == "aetherial focus") {
                         result.mpMaxIncrease = true;
                     }
                     break;
@@ -3071,13 +3081,14 @@
         if (!abilityDefinition) {
             return
         }
+        let value = effect.value
         var attributes = {}
         for (let section of Object.entries(abilityDefinition)) {
             for (let ability of section[1]) {
                 log("Generating effect ability " + ability.title)
                 let id = generateRowID()
                 for (let entry of Object.entries(ability)) {
-                    attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1]
+                    attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1].replaceAll("{value}", value)
                 }
                 attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto"
                 attributes[`repeating_${section[0]}_${id}_augment`] = "1"
