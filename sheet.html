@@ -2351,11 +2351,12 @@
         advantage: { type: "advantage", maskedType: "advantage", name: "Advantage", expiry: "use" },
         astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "replace", description: "While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage* and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn. \n\n*After attaining level 50, this damage increases to 2d6." },
         attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "use" },
-        barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "ephemeral", duplicate: "allow" }, 
+        barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "ephemeral" }, 
         berserk: { type: "special", maskedType: "dps(x)", specialType: "Berserk", name: "Berserk", expiry: "turn", duplicate: "block", description: "Your abilities deal an additional 2 damage until the end of this turn." },
         blind: { type: "blind", maskedType: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
         bound: { type: "bound", maskedType: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
         brink: { type: "brink", maskedType: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
+        consume: { type: "special", maskedType: "special", specialType: "Consume(X)", name: "Consume (X)", expiry: "ephemeral" },
         comatose: { type: "comatose", maskedType: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
         critical: { type: "critical(x)", maskedType: "critical(x)", name: "Critical Up (X)", expiry: "use" },
         curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability:"cure", specialType: "Curecast Focus", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
@@ -2388,7 +2389,7 @@
         ready: { type: "ready(x)", maskedType: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
         regen: { type: "regen(x)", maskedType: "regen(x)", name: "Regen (X)", expiry: "phase" },
         reprisal: { type: "special", maskedType: "ddown(x)", specialType: "Reprisal", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
-        restore: { type: "restore(x)", maskedType: "restore(x)", name: "Restore uses of Y by (X)", expiry: "use", duplicate: "allow"},
+        restore: { type: "restore(x)", maskedType: "restore(x)", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
         roll: { type: "roll(x)", maskedType: "roll(x)", name: "Roll Up (X)", expiry: "use" },
         silence: { type: "silence", maskedType: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block" },
         sleep: { type: "sleep", maskedType: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block" },
@@ -2448,7 +2449,7 @@
         },
         protective_ward: {
             instant: [
-                { title: "Protective Ward", type: "Instant, Item, {value} ward", cost: 0, uses: 1, uses_max: 1, condition: "Protective Ward can be used in addition to another instant ability this turn", trigger: "When an ability used by the specific enemy or an enemy with the classification {value} scores a critical", baseEffect: "The ability that triggered Protective Ward scores a direct hit but not a critical.", limitation: "Once", hitType: "None", damageType: "Effect", effectSelf: "consume(Warding Talisman,{value})", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Items/warding_talisman.png" },
+                { title: "Protective Ward", type: "Instant, Item, {value} ward", cost: 0, uses: 1, uses_max: 1, condition: "Protective Ward can be used in addition to another instant ability this turn", trigger: "When an ability used by the specific enemy or an enemy with the classification {value} scores a critical", baseEffect: "The ability that triggered Protective Ward scores a direct hit but not a critical.", limitation: "Once", hitType: "None", damageType: "Effect", effectSelf: "consume(Warding Talisman|{value})", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Items/warding_talisman.png" },
             ]
         }
     }
@@ -2939,7 +2940,7 @@
 
     function searchableEffectName(name) {
         return name
-            .replaceAll(/(\([\-\w]+\))|(\[[\-\+\>\<\=\w]+\])|'/g, "")
+            .replaceAll(/(\([\-\|\s\w]+\))|(\[[\-\+\>\<\=\w]+\])|'/g, "")
             .replaceAll(" ", "_")
             .trim().toLowerCase()
     }
@@ -2988,7 +2989,7 @@
             }
 
             var value = ""
-            let match = effect.match(/\(([\-\w]+)\)/)
+            let match = effect.match(/\(([\-\|\s\w]+)\)/)
             if (match && match.length >= 2) {
                 value = match[1]
             }
@@ -3071,7 +3072,7 @@
         return { result: true, summaries: summaries }
     }
     
-    function resolveEffectAbilities(effect) {
+    function resolveEffectAbilities(effect, value = "") {
         let data = effectData[effect]
         if (!data || !data.ability) {
             return
@@ -3081,14 +3082,17 @@
         if (!abilityDefinition) {
             return
         }
-        let value = effect.value
         var attributes = {}
         for (let section of Object.entries(abilityDefinition)) {
             for (let ability of section[1]) {
                 log("Generating effect ability " + ability.title)
                 let id = generateRowID()
                 for (let entry of Object.entries(ability)) {
-                    attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1].replaceAll("{value}", value)
+                    var attributeValue = entry[1]
+                    if (value && attributeValue && isNaN(attributeValue)) {
+                        attributeValue = attributeValue.replace("{value}", value)
+                    }
+                    attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = attributeValue
                 }
                 attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto"
                 attributes[`repeating_${section[0]}_${id}_augment`] = "1"
@@ -3097,7 +3101,7 @@
         setAttrs(attributes)
     }
 
-    function removeEffectAbility(effect) {
+    function removeEffectAbility(effect, value) {
         let data = effectData[effect]
         if (!data || !data.ability) {
             return
@@ -3112,11 +3116,16 @@
         for (let section of Object.keys(abilityDefinition)) {
             let titles = abilityDefinition[section].map(ability => ability.title)
             getSectionIDs(`repeating_${section}`, ids => {
-                let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_augment`])
+                let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_type`, `repeating_${section}_${id}_augment`])
                 getAttrs(attributes, values => {
                     for (let id of ids) {
                         let title = values[`repeating_${section}_${id}_title`]
+                        let type = values[`repeating_${section}_${id}_type`]
                         let augment = values[`repeating_${section}_${id}_augment`]
+
+                        if (value && !type.includes(value)) {
+                            continue
+                        }
 
                         if (augment === "1" && titles.includes(title)) {
                             log("Removed augment ability " + title)
@@ -3128,10 +3137,10 @@
         }
     }
 
-    function resolveSpecialEffects(effect, dice, values, existingEffects) {
+    function resolveSpecialEffects(effect, value, dice, values, existingEffects) {
         var attributes = {}
         var summaries = []
-        var skip = false
+        let skip = effectData[effect].expiry === "ephemeral"
 
         resolveEffectAbilities(effect)
         
@@ -3152,10 +3161,66 @@
                     barrierPoints: Math.max(values.barrierPoints ?? 0, parseInt(value))
                 })
                 summaries.push(`Granted ${value} HP barrier`)
-
-                // Don't add to effect list, just update the barrier
-                skip = true
                 break
+            case "consume": {
+                let specification = value.split("|")
+                let item = specification[0].trim()
+                var effectValue = ""
+                if (specification.length > 1) {
+                    effectValue = specification[1]
+                }
+                
+                // Remove effect
+                let adjustedItemName = searchableEffectName(item)
+                for (let effect of existingEffects.effects) {
+                    let adjustedSpecialType = searchableEffectName(effect.specialType)
+                    if (adjustedSpecialType !== adjustedItemName) {
+                        continue
+                    }
+                    let data = effectData[adjustedItemName]
+                    if (data.ability) {
+                        // Remove ability
+                        log("Removing ability linked to consumed item")
+                        removeEffectAbility(adjustedItemName, effectValue)
+                    }
+
+                    if (!effectValue || effectValue === effect.value) {
+                        log("Removing effect linked to consumed item")
+                        removeRepeatingRow(effect.fullId)
+                    }
+                }
+
+                // Consume item
+                log("Consuming item")
+                getSectionIDs("repeating_items", ids => {
+                    let attributes = ids.flatMap(id => [`repeating_items_${id}_title`, `repeating_items_${id}_effect`, `repeating_items_${id}_count`])
+                    getAttrs(attributes, values => {
+                        for (let id of ids) {
+                            let title = values[`repeating_items_${id}_title`].trim()
+                            let itemDescription = values[`repeating_items_${id}_effect`]
+                            if (effectValue && !itemDescription.toLowerCase().includes(effectValue.toLowerCase())) {
+                                continue
+                            }
+
+                            if (item.toLowerCase() !== title.toLowerCase()) {
+                                continue;
+                            }
+
+                            let count = parseInt(values[`repeating_items_${id}_count`])
+                            if (isNaN(count) || count <= 1) {
+                                log("Removing item linked to ability")
+                                removeRepeatingRow(`repeating_items_${id}`)
+                            } else {
+                                log("Removing one count of item linked to ability")
+                                var newAttributes = {}
+                                newAttributes[`repeating_items_${id}_count`] = count - 1
+                                setAttrs(newAttributes)
+                            }
+                        }
+                    })
+                })
+                break
+            }
             case "lucid_dreaming":
                 attributes.mpRecovery = 3
                 break
@@ -3191,9 +3256,6 @@
                         log("Failed to find " + abilityName)
                     })
                 })
-
-                // Don't add to effect list, just update the uses
-                skip = true
                 break
             }
             case "thrill_of_battle": {
@@ -3221,9 +3283,6 @@
                         })
                     }
                 }
-
-                // Don't add to effect list, just update the HP/Barrier
-                skip = true
                 break
             }
             case "umbral_ice":
@@ -3287,7 +3346,7 @@
             summaries = summaries.concat(duplicatesResult.summaries)
 
             var value = null
-            let match = effect.match(/\(([\-\w]+)\)/)
+            let match = effect.match(/\(([\-\|\s\w]+)\)/)
             if (match && match.length >= 2) {
                 value = match[1]
             }
@@ -3301,7 +3360,7 @@
                 curable: data.curable
             }
 
-            let specialEffectResult = resolveSpecialEffects(adjustedEffect, dice, values, existingEffects)
+            let specialEffectResult = resolveSpecialEffects(adjustedEffect, value, dice, values, existingEffects)
             summaries = summaries.concat(specialEffectResult.summaries.filter(element => element))
             if (specialEffectResult.skip) {
                 continue
@@ -4195,7 +4254,7 @@
                 }
                 if (effect.data.ability) {
                     let adjustedName = searchableEffectName(effect.specialType)
-                    removeEffectAbility(adjustedName)
+                    removeEffectAbility(adjustedName, effect.value)
                 }
                 removeRepeatingRow(effect.fullId)
             }
@@ -4370,7 +4429,12 @@
             }
         }
 
-        getAttrs([`repeating_effects_${rowId}_type`, `repeating_effects_${rowId}_specialType`, `repeating_effects_${rowId}_expiry`], values => {
+        getAttrs([
+            `repeating_effects_${rowId}_type`, 
+            `repeating_effects_${rowId}_specialType`, 
+            `repeating_effects_${rowId}_value`, 
+            `repeating_effects_${rowId}_expiry`
+        ], values => {
             let type = values[`repeating_effects_${rowId}_type`]
             let specialType = values[`repeating_effects_${rowId}_specialType`]
             let adjustedName = searchableEffectName(specialType || type)
@@ -4387,7 +4451,7 @@
                 attributes[`repeating_effects_${rowId}_icon`] = ""
             }
 
-            resolveEffectAbilities(adjustedName)
+            resolveEffectAbilities(adjustedName, values[`repeating_effects_${rowId}_value`])
 
             setAttrs(attributes)
         })
@@ -4402,8 +4466,9 @@
         
         let type = eventInfo.removedInfo[`repeating_effects_${rowId}_type`]
         let specialType = eventInfo.removedInfo[`repeating_effects_${rowId}_specialType`]
+        let value = eventInfo.removedInfo[`repeating_effects_${rowId}_value`]
         let adjustedName = searchableEffectName(specialType || type)
-        removeEffectAbility(adjustedName)
+        removeEffectAbility(adjustedName, value)
 
         if (!specialType) {
             return
