@@ -3170,29 +3170,10 @@
                 if (specification.length > 1) {
                     effectValue = specification[1]
                 }
-                
-                // Remove effect
-                let adjustedItemName = searchableEffectName(item)
-                for (let effect of existingEffects.effects) {
-                    let adjustedSpecialType = searchableEffectName(effect.specialType)
-                    if (adjustedSpecialType !== adjustedItemName) {
-                        continue
-                    }
-                    let data = effectData[adjustedItemName]
-                    if (data.ability) {
-                        // Remove ability
-                        log("Removing ability linked to consumed item")
-                        removeEffectAbility(adjustedItemName, effectValue)
-                    }
-
-                    if (!effectValue || effectValue === effect.value) {
-                        log("Removing effect linked to consumed item")
-                        removeRepeatingRow(effect.fullId)
-                    }
-                }
 
                 // Consume item
                 log("Consuming item")
+                summaries.push(`Consumed item ${item}`)
                 getSectionIDs("repeating_items", ids => {
                     let attributes = ids.flatMap(id => [`repeating_items_${id}_title`, `repeating_items_${id}_effect`, `repeating_items_${id}_count`])
                     getAttrs(attributes, values => {
@@ -3220,6 +3201,27 @@
                         }
                     })
                 })
+
+                // Remove effect
+                let adjustedItemName = searchableEffectName(item)
+                for (let effect of existingEffects.effects) {
+                    let adjustedSpecialType = searchableEffectName(effect.specialType)
+                    if (adjustedSpecialType !== adjustedItemName) {
+                        continue
+                    }
+                    let data = effectData[adjustedItemName]
+                    if (data.ability) {
+                        // Remove ability
+                        log("Removing ability linked to consumed item")
+                        removeEffectAbility(adjustedItemName, effectValue)
+                    }
+
+                    if (!effectValue || effectValue === effect.value) {
+                        log("Removing effect linked to consumed item")
+                        summaries.push(`Consumed effect ${effect.data.name}`)
+                        removeRepeatingRow(effect.fullId)
+                    }
+                }
                 break
             }
             case "lucid_dreaming":
