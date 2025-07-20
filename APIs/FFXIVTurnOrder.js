@@ -1,5 +1,5 @@
 /*
-    EndOfStep.js
+    FFXIVTurnOrder.js
 
     An API that performs resource recovery for respective Adventurer and Enemy teams when encountering the following custom turn orders:
     * End of Adventurer Step
@@ -18,10 +18,14 @@
     * resource2 - The name of the secondary resource
     * resource2Value - The current and max values of the secondary resource
     * resource2Recovery - an integer value of how much secondary resource will be recovered at the end of the given step
+
+    ---
+
+    The API further supports expiring enhancements/enfeeblements on turn change, as well as configuration via chat.
 */
 // eslint-disable-next-line no-unused-vars
-const EndOfStep = (() => {
-    const scriptName = "EndOfStep";
+const FFXIVTurnOrder = (() => {
+    const scriptName = "FFXIVTurnOrder";
     const version = "0.1.0";
 
     let config = {
@@ -551,8 +555,8 @@ const EndOfStep = (() => {
             try {
                 sendChat(tokenCharacter.token.get("name"), content);
             } catch (e) {
-                log(`EndOfStep: ERROR PARSING: ${content}`);
-                log(`EndOfStep: ERROR: ${e}`);
+                logger.i(`ERROR PARSING: ${content}`);
+                logger.i(`ERROR: ${e}`);
             }
             let expiries;
             if (team === "enemy") {
@@ -674,7 +678,7 @@ const EndOfStep = (() => {
         if ("api" !== msg.type) {
             return;
         }
-        if (!msg.content.match(/^!eos(\b\s|$)/)) {
+        if (!msg.content.match(/^!fft(\b\s|$)/)) {
             return;
         }
 
@@ -686,12 +690,12 @@ const EndOfStep = (() => {
         args.forEach(a => {
             let parts = a.split(/\s+/);
             switch (parts[0].toLowerCase()) {
-                case "!eos":
+                case "!fft":
                     // Do nothing for the API keyword
                     break;
 
                 case "help": {
-                    let helpContent = `<h4>${scriptName} !eos --help</h4>` +
+                    let helpContent = `<h4>${scriptName} !fft --help</h4>` +
                         `<p>Note that passing of turns only applies in one direction, and that adding to the turn order does not count as passing a turn.</p>` +
                         `<h5>Options</h5><ul>` +
                         `<li><code>--help</code> - displays this message in chat.</li>` +

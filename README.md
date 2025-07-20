@@ -28,16 +28,16 @@ The project is a work in progress, but its capabilities are as follows:
 ### Automagic
 
 * Automatic addition of self enhancements (Warrior, Black Mage, Bard, Astrologian)
-* Automatic MP recovery and enhancement/enfeeblement expiration via [API](#apis)
-* Buttons in ability rolls for quickly adding an enhancement/enfeeblement to any selected token via [API](#apis)
+* Automatic MP recovery and enhancement/enfeeblement expiration via [turn order mod](#ffxivendofstep)
+* Buttons in ability rolls for quickly adding an enhancement/enfeeblement to any selected token via [chat/macro mod](#ffxivaddeffect)
 
 Further features like a Charactermancer for automatic setup of abilities and stats depending on job and level is in development.
 
 ## APIs
 
-### EndOfStep
+### FFXIVTurnOrder
 
-EndOfStep is an API that performs MP and job resource recovery on tokens in Turn Order at the appropriate step:
+FFXIVTurnOrder is an API that performs MP and job resource recovery on tokens in Turn Order at the appropriate step:
 
 * "End of Adventurer Step": All tokens with a sheet marked "adventurer" recover MP
 * "End of Enemy Step": All tokens with a sheet marked "enemy" recover MP
@@ -46,32 +46,32 @@ Custom Turn Order entries need to be created that match the above names (without
 
 Further, the API can manage expirations of enhancements/enfeeblements on the following triggers:
 
-* Start of encounter (On the first active turn in turnorder, can also be forced via chat API `!eos --start`)
+* Start of encounter (On the first active turn in turnorder, can also be forced via chat API `!fft --start`)
 * Start of step
 * Start of turn
 * End of turn
 * End of step
 * End of round
 
-EndOfStep will ignore if any turns pass in reverse or if it triggers due to a new turn being added to first in order.
+FFXIVTurnOrder will ignore if any turns pass in reverse or if it triggers due to a new turn being added to first in order.
 
 #### Chat API
 
-EndOfStep manages resources automatically, but there's a chat API for on-the-fly configuration to for example only run it when desired, or rerun a specific turn.
+FFXIVTurnOrder manages resources automatically, but there's a chat API for on-the-fly configuration to for example only run it when desired, or rerun a specific turn.
 
-A suggested way to use these could be to `!eos --stop` turn management until you have filled out the Turn Order, then `!eos --start` to begin turn management in a state where everything is set up correctly. This could avoid some unintentional turn effect triggers while adding to or sorting the Turn Order.
+A suggested way to use these could be to `!fft --stop` turn management until you have filled out the Turn Order, then `!fft --start` to begin turn management in a state where everything is set up correctly. This could avoid some unintentional turn effect triggers while adding to or sorting the Turn Order.
 
-`!eos <options>`
+`!fft <options>`
 
 ##### Options
 
 * `--help` - displays this breakdown in chat.
-* `--block {X}` - block any turn management until X turns have passed in the turn order. Example: `!eos --block 5`
-* `--config` - output the current configuration of EndOfStep to chat.
+* `--block {X}` - block any turn management until X turns have passed in the turn order. Example: `!fft --block 5`
+* `--config` - output the current configuration of FFXIVTurnOrder to chat.
 * `--end` - blocks any turn management until the Turn Order has been rendered empty.
 * `--force` - immediately carries out turn management on the current first in turn order.
-* `--fx {X}` - enables/disables the effect management part of turn management. 1 or on to enable, 0 or off to disable. Example: `!eos --fx 0`
-* `--recover {X}` - enables/disables the resource recovery part of turn management. 1 or on to enable. 0 or off to disable. Example: `!eos --recover 0`
+* `--fx {X}` - enables/disables the effect management part of turn management. 1 or on to enable, 0 or off to disable. Example: `!fft --fx 0`
+* `--recover {X}` - enables/disables the resource recovery part of turn management. 1 or on to enable. 0 or off to disable. Example: `!fft --recover 0`
 * `--reset` - resets the configuration to standard: no blocks on turn management, all subsystems enabled.
 * `--start` - removes any blocks on turn management and runs `--force` on the current first in turn order. For effect management, this will be treated as the start of the encounter.
 * `--stop` - blocks all turn management until `--start` or `--reset` is called.
@@ -84,7 +84,7 @@ FFXIVAddEffect is a chat API that allows for adding arbitrary enhancements/enfee
 
 #### Arguments
 
-* `--` - Required: The name of the effect
+* `--{name}` - Required: The name of the effect. Example: `!ffe --dot`
 
 #### Options
 
@@ -141,9 +141,9 @@ With `SpawnDefaultToken`, to simultaneously spawn a token for the marker:
 }}
 ```
 
-### Add EndOfStep to turn order
+### Add FFXIVTurnOrder steps to turn order
 
-Adds the custom turn orders used by the EndOfStep API, with initiative values that should sort them correctly given 4 adventurers.
+Adds the custom turn orders used by the FFXIVTurnOrder API, with initiative values that should sort them correctly given 4 adventurers.
 
 Using `AddCustomTurn`:
 
