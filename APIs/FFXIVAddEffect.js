@@ -448,10 +448,16 @@ const FFXIVAddEffect = (() => {
             level: null
         };
 
+        logger.d("==============================================");
         logger.d("Parsing command " + msg.content);
-        args.forEach(a => {
+        logger.d("==============================================");
+        for (let a of args ) {
             let parts = a.split(/\s+/);
             switch (parts[0].toLowerCase()) {
+                case "!ffe":
+                    // Do nothing for the API keyword
+                    break;
+
                 case "help": {
                     let helpContent = `<h4>${scriptName} !eos --help</h4>` +
                         `<h5>Arguments</h5>` +
@@ -496,6 +502,7 @@ const FFXIVAddEffect = (() => {
                         `</ul>`
                         ;
 
+                    logger.d("Posting help text");
                     try {
                         sendChat(scriptName, helpContent);
                     } catch (e) {
@@ -581,7 +588,7 @@ const FFXIVAddEffect = (() => {
                     break;
                 }
             }
-        });
+        }
         if (effect.type == "none") {
             logger.i("Found no matching effect for " + msg.content);
             return;

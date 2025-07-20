@@ -702,7 +702,7 @@ const FFXIVTurnOrder = (() => {
         logger.d("==============================================");
         let args = msg.content.split(/\s+--/);
 
-        args.forEach(a => {
+        for (let a of args) {
             let parts = a.split(/\s+/);
             switch (parts[0].toLowerCase()) {
                 case "!fft":
@@ -834,7 +834,7 @@ const FFXIVTurnOrder = (() => {
                     }
                     break;
             }
-        });
+        }
     };
 
     const registerEventHandlers = () => {
