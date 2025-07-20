@@ -17,11 +17,16 @@ const FFXIVAddEffect = (() => {
         { matches: ["bind", "bound"], type: "bound", name: "Bound" },
         { matches: ["brink"], type: "brink", name: "Brink of Death" },
         { matches: ["comatose"], type: "comatose", name: "Comatose" },
+        { matches: ["curecast focus", "curecast", "ccast"], type: "special", maskedType: "augment", specialType: "Curecast Focus", name: "Curecast Focus", ability: "cure" },
+        { matches: ["deflecting edge", "deflecting", "edge", "dedge"], type: "special", maskedType: "augment", specialType: "Deflecting Edge", name: "Deflecting Edge", ability: "parry" },
         { matches: ["enmity", "enmity(x)"], type: "enmity(x)", name: "Enmity(X)" },
+        { matches: ["flamecast focus", "flamecast", "fcast"], type: "special", maskedType: "augment", specialType: "Flamecast Focus", name: "Flamecast Focus", ability: "fire" },
         { matches: ["critical", "critical(x)"], type: "critical(x)", name: "Critical Up(X)" },
         { matches: ["damage"], type: "damage", name: "Damage Reroll" },
         { matches: ["dot", "dot(x)"], type: "dot(x)", name: "DOT(X)" },
         { matches: ["heavy"], type: "heavy", name: "Heavy" },
+        { matches: ["icecast focus", "icecast", "icast"], type: "special", maskedType: "augment", specialType: "Icecast Focus", name: "Icecast Focus", ability: "ice" },
+        { matches: ["magic damper", "damper", "mdamper"], type: "special", maskedType: "augment", specialType: "Magic Damper", name: "Magic Damper", ability: "aetherwall" },
         { matches: ["paralyzed", "paralysis"], type: "paralyzed", name: "Paralyzed" },
         { matches: ["petrified", "petrify"], type: "petrified", name: "Petrified" },
         { matches: ["prone"], type: "prone", name: "Prone" },
@@ -33,8 +38,42 @@ const FFXIVAddEffect = (() => {
         { matches: ["stun"], type: "stun", name: "Stun" },
         { matches: ["transcendent"], type: "transcendent", name: "Transcendent" },
         { matches: ["unstunnable"], type: "unstunnable", name: "Unstunnable" },
+        { matches: ["warding talisman", "talisman", "ward", "wtalisman", "protective ward", "pward"], type: "special", maskedType: "item", specialType: "Warding Talisman", name: "Warding Talisman", ability: "protective_ward" },
         { matches: ["weak"], type: "weak", name: "Weak" }
     ];
+
+    const effectAbilities = {
+        aetherwall: {
+            instant: [
+                { title: "Aetherwall", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Magic Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Magic Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        cure: {
+            secondary: [
+                { title: "Cure", type: "Secondary, Magic, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        fire: {
+            primary: [
+                { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        ice: {
+            primary: [
+                { title: "Ice", type: "Primary, Magic, Ice-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        parry: {
+            instant: [
+                { title: "Parry", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+            ]
+        },
+        protective_ward: {
+            instant: [
+                { title: "Protective Ward", type: "Instant, Item, {value} ward", cost: 0, uses: 1, uses_max: 1, condition: "Protective Ward can be used in addition to another instant ability this turn", trigger: "When an ability used by the specific enemy or an enemy with the classification {value} scores a critical", baseEffect: "The ability that triggered Protective Ward scores a direct hit but not a critical.", limitation: "Once", hitType: "None", damageType: "Effect", effectSelf: "consume(Warding Talisman|{value})", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Items/warding_talisman.png" },
+            ]
+        }
+    };
 
     const expiries = [
         "use",
@@ -100,16 +139,19 @@ const FFXIVAddEffect = (() => {
 
     const generateRowID = () => generateUUID().replace(/_/g, "Z");
 
-    const getIconForEffectType = (type, specialType) => {
-        if (type == "none") {
+    const getIconForEffect = (effect) => {
+        if (effect.type == "none") {
             return "";
         }
-        if (type == "special") {
-            let imageName = specialType.toLowerCase().replace("'", "").replace(" ", "-");
+        if (effect.maskedType == "augment") {
+            return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/augment.png`;
+        }
+        if (effect.type == "special") {
+            let imageName = effect.specialType.toLowerCase().replace("'", "").replace(" ", "-");
             return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
         }
 
-        let imageName = type.replace("(x)", "-x");
+        let imageName = effect.type.replace("(x)", "-x");
         return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
     };
 
@@ -254,6 +296,28 @@ const FFXIVAddEffect = (() => {
                 break;
             }
         }
+
+        if (!effect.abilities) {
+            return;
+        }
+
+        logger.d("Creating abilities for effect");
+        for (let section of Object.entries(effect.abilities)) {
+            let sectionName = section[0];
+            for (let ability of section[1]) {
+                logger.d("Creating ability " + ability.title);
+                let id = generateRowID();
+                for (let entry of Object.entries(ability)) {
+                    var attributeValue = entry[1];
+                    if (effect.value && attributeValue && isNaN(attributeValue)) {
+                        attributeValue = attributeValue.replace("{value}", effect.value)
+                    }
+                    createObj("attribute", { characterid: character.id, name: `repeating_${sectionName}_${id}_${entry[0]}`, current: attributeValue });
+                }
+                createObj("attribute", { characterid: character.id, name: `repeating_${sectionName}_${id}_repeatingOverride`, current: "auto" });
+                createObj("attribute", { characterid: character.id, name: `repeating_${sectionName}_${id}_augment`, current: "1" });
+            }
+        }
     };
 
     const addEffect = (effect) => {
@@ -353,6 +417,7 @@ const FFXIVAddEffect = (() => {
                     typeName: "",
                     specialType: "",
                     value: " ",
+                    abilities: undefined,
                     expiry: "turn",
                     editable: "1",
                     target: "selected",
@@ -478,11 +543,15 @@ const FFXIVAddEffect = (() => {
 
                         default: {
                             let name = parts.join(" ");
-                            let match = types.find(type => type.matches.includes(name.toLowerCase())) ?? { type: "special" };
+                            let match = types.find(type => type.matches.includes(name.toLowerCase())) ?? { type: "special", specialType: name };
                             let specialType;
                             if (match.type == "special") {
-                                specialType = name;
+                                specialType = match.specialType;
+                                effect.maskedType = match.maskedType;
                                 effect.typeName = name;
+                                if (match.ability) {
+                                    effect.abilities = effectAbilities[match.ability];
+                                }
                             } else {
                                 specialType = "";
                                 effect.typeName = match.name;
@@ -497,7 +566,7 @@ const FFXIVAddEffect = (() => {
                     logger.i("Found no matching effect for " + msg.content);
                     return;
                 }
-                effect.icon = getIconForEffectType(effect.type, effect.specialType);
+                effect.icon = getIconForEffect(effect);
                 let targetResult = getCharacters(msg, effect.target);
                 if (targetResult.error) {
                     outputEvent("error", targetResult.error);
