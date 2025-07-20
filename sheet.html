@@ -313,61 +313,94 @@
             <div class="effects section">
                 <h3 class="small bold colored-in">Effects</h3> 
                 <fieldset class="repeating_effects">
-                    <div class="horizontal semi-tight">
-                        <img class="effect-icon" name="attr_icon" />
-                        <input type="hidden" class="typeSwitch" name="attr_type" />
-                        <input type="hidden" class="editSwitch" name="attr_editable" />
-                        <input type="text" class="typeSwitchDisplayed editSwitchBlocked" name="attr_specialType" placeholder="Effect" />
-                        <select class="effect-type typeSwitchHidden editSwitchBlocked" name="attr_type">
-                            <option value="none">--Select--</option>
-                            <option value="roll(x)">Roll Up(X)</option>
-                            <option value="damage">Damage Reroll</option>
-                            <option value="critical(x)">Critical Up(X)</option>
-                            <option value="attribute(x)">Attribute Up(X)</option>
-                            <option value="regen(x)">Regen(X)</option>
-                            <option value="ready(x)">X Ready</option>
-                            <option value="advantage">Advantage</option>
-                            <option value="unstunnable">Stun Immunity</option>
-                            <option value="transcendent">Transcendent</option>
-                            <hr />
-                            <option value="blind">Blind</option>
-                            <option value="bound">Bound</option>
-                            <option value="enmity(x)">Enmity(Penalty)</option>
-                            <option value="dot(x)">DOT(X)</option>
-                            <option value="heavy">Heavy</option>
-                            <option value="paralyzed">Paralyzed</option>
-                            <option value="petrified">Petrified</option>
-                            <option value="prone">Prone</option>
-                            <option value="silence">Silence</option>
-                            <option value="sleep">Sleep</option>
-                            <option value="slow">Slow</option>
-                            <option value="stun">Stun</option>
-                            <hr />
-                            <option value="weak">Weak</option>
-                            <option value="brink">Brink of Death</option>
-                            <option value="comatose">Comatose</option>
-                            <hr />
-                            <option value="special">Special</option>
-                        </select>
-                        <input class="effect-value typeSwitchHidden editSwitchBlocked" type="text" name="attr_value" placeholder="X" />
-                        <select class="effect-expiry" name="attr_expiry">
-                            <option value="use">On use</option>
-                            <hr />
-                            <option value="stepstart">Start of the [Adventurer Step]</option>
-                            <option value="turn">End of your turn</option>
-                            <option value="step">End of the [Adventurer Step]</option>
-                            <option value="round">End of this round</option>
-                            <option value="start">Start of your next turn</option>
-                            <option value="turn2">End of your next turn</option>
-                            <option value="phase">End of phase</option>
-                            <option value="encounter">End of encounter</option>
-                            <option value="rest">After rest</option>
-                            <option value="end">After adventure</option>
-                            <option value="permanent">Permanent</option>
-                            <hr />
-                            <option value="damage">On damage</option>
-                        </select>
-                        <button type="action" class="ability-action" name="act_share">q</button>
+                    <div class="effect">
+                        <input class="expand-checkbox hidden" type="checkbox" name="attr_effectsExpandItem" />
+                        <div class="effect-header">
+                            <img class="effect-icon" name="attr_icon" />
+                            <input type="hidden" class="typeSwitch" name="attr_type" />
+                            <input type="hidden" class="editSwitch" name="attr_editable" />
+                            <input type="text" class="effect-specialType typeSwitchDisplayed editSwitchBlocked" name="attr_specialType" placeholder="Effect" />
+                            <select class="effect-type typeSwitchHidden editSwitchBlocked" name="attr_type">
+                                <option value="none">--Select--</option>
+                                <option value="roll(x)">Roll Up(X)</option>
+                                <option value="damage">Damage Reroll</option>
+                                <option value="critical(x)">Critical Up(X)</option>
+                                <option value="attribute(x)">Attribute Up(X)</option>
+                                <option value="regen(x)">Regen(X)</option>
+                                <option value="ready(x)">X Ready</option>
+                                <option value="advantage">Advantage</option>
+                                <option value="unstunnable">Stun Immunity</option>
+                                <option value="transcendent">Transcendent</option>
+                                <hr />
+                                <option value="blind">Blind</option>
+                                <option value="bound">Bound</option>
+                                <option value="enmity(x)">Enmity(Penalty)</option>
+                                <option value="dot(x)">DOT(X)</option>
+                                <option value="heavy">Heavy</option>
+                                <option value="paralyzed">Paralyzed</option>
+                                <option value="petrified">Petrified</option>
+                                <option value="prone">Prone</option>
+                                <option value="silence">Silence</option>
+                                <option value="sleep">Sleep</option>
+                                <option value="slow">Slow</option>
+                                <option value="stun">Stun</option>
+                                <hr />
+                                <option value="weak">Weak</option>
+                                <option value="brink">Brink of Death</option>
+                                <option value="comatose">Comatose</option>
+                                <hr />
+                                <option value="special">Special</option>
+                            </select>
+                            <select class="effect-expiry" name="attr_expiry">
+                                <option value="use">On use</option>
+                                <hr />
+                                <option value="encounterstart">Start of encounter</option>
+                                <option value="stepstart">Start of the [Adventurer Step]</option>
+                                <option value="start">Start of your turn</option>
+                                <option value="turn">End of your turn</option>
+                                <option value="step">End of the [Adventurer Step]</option>
+                                <option value="round">End of this round</option>
+                                <option value="turn2">End of your next turn</option>
+                                <option value="phase">End of phase</option>
+                                <option value="encounter">End of encounter</option>
+                                <hr />
+                                <option value="rest">After rest</option>
+                                <option value="end">After adventure</option>
+                                <option value="permanent">Permanent</option>
+                                <hr />
+                                <option value="damage">On damage</option>
+                            </select>
+                            <div class="button-container">
+                                <button type="action" class="ability-action floatRight" name="act_info">i</button>
+                                <button type="action" class="ability-action floatRight" name="act_share">q</button>
+                            </div>
+                        </div>
+                        <div class="effect-body expanded-view">
+                            <div>
+                                <span class="mini-title floatLeft">Value:</span>
+                                <div class="adaptive adaptive--input floatLeft">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <span class="mini-input adaptive--input__span" name="attr_value"></span>
+                                    <input class="mini-input adaptive--input__input editSwitchBlocked" type="text" name="attr_value" placeholder="X" />
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">From:</span>
+                                <div class="adaptive adaptive--input floatLeft">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <span class="mini-input adaptive--input__span" name="attr_source"></span>
+                                    <input class="mini-input adaptive--input__input editSwitchBlocked" type="text" name="attr_source" placeholder="Who created the effect?" />
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">Description:</span>
+                                <div class="adaptive adaptive--text floatLeft">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <span class="mini-input adaptive--text__span" name="attr_description"></span>
+                                    <textarea class="mini-input adaptive--text__textarea editSwitchBlocked" type="text" name="attr_description" placeholder="Describe how the effect works"></textarea>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </fieldset>
             </div>
@@ -2283,7 +2316,7 @@
         })
     }
 
-    const toggleSections = ["traits"].concat(itemSections).concat(abilitySections)
+    const toggleSections = ["traits", "effects"].concat(itemSections).concat(abilitySections)
     for (let section of toggleSections) {
         on(`clicked:repeating_${section}:info`, eventInfo => {
             toggleExpandedStateInSection(eventInfo)
@@ -3359,6 +3392,7 @@
                 type: data.type,
                 specialType: data.specialType,
                 value: value,
+                description: data.description,
                 expiry: data.expiry,
                 curable: data.curable
             }
@@ -3378,9 +3412,12 @@
                 attributes[`repeating_effects_${initValues.id}_value`] = initValues.value
             }
             attributes[`repeating_effects_${initValues.id}_expiry`] = initValues.expiry
+            attributes[`repeating_effects_${initValues.id}_source`] = "Self"
+            attributes[`repeating_effects_${initValues.id}_description`] = initValues.description
             attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off"
             attributes[`repeating_effects_${initValues.id}_editable`] = "off"
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic"
+            attributes[`repeating_effects_${initValues.id}_effectsExpandItem`] = "on"
 
             summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`)
         }
@@ -4339,13 +4376,17 @@
             `repeating_effects_${rowId}_type`,
             `repeating_effects_${rowId}_specialType`,
             `repeating_effects_${rowId}_value`,
-            `repeating_effects_${rowId}_expiry`
+            `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_description`,
+            `repeating_effects_${rowId}_source`
         ], values => {
             let icon = values[`repeating_effects_${rowId}_icon`]
             let type = values[`repeating_effects_${rowId}_type`]
             let specialType = values[`repeating_effects_${rowId}_specialType`]
             let value = values[`repeating_effects_${rowId}_value`]
             let expiry = values[`repeating_effects_${rowId}_expiry`]
+            let description = values[`repeating_effects_${rowId}_description`]
+            let source = values[`repeating_effects_${rowId}_source`]
 
             let adjustedName = searchableEffectName(specialType || type)
             let data = effectData[adjustedName]
@@ -4353,13 +4394,18 @@
             var itemType = "Effect"
             let title
             var descriptions = []
+            if (description) {
+                descriptions.push(description)
+            }
             if (data) {
                 title = data.name
-                if (data.description) {
+                if (data.description && descriptions.length == 0) {
                     descriptions.push(data.description)
                 }
                 if (data.maskedType == "augment") {
                     itemType = "Augment"
+                } else if (data.maskedType == "item") {
+                    itemType = "Item Effect"
                 }
             } else {
                 title = specialType || type
@@ -4374,9 +4420,9 @@
             if (icon) {
                 iconDefinition = `[icon](${icon})`
             }
-            let description = descriptions.join("\n\n")
+            let fullDescription = descriptions.join("\n\n")
 
-            startRoll(`&{template:item} {{icon=${iconDefinition}}} {{title=${title}}} {{type=${itemType}}} {{effect=${description}}}`, results => {
+            startRoll(`&{template:item} {{icon=${iconDefinition}}} {{title=${title}}} {{type=${itemType}}} {{effect=${fullDescription}}}`, results => {
                 finishRoll(results.rollId)
             })
         })
@@ -4384,7 +4430,6 @@
 
     // Effect icon assignment
     on("change:repeating_effects:type change:repeating_effects:specialType", eventInfo => {
-        log("Change effect!")
         const sourceAttributes = eventInfo.sourceAttribute.split("_")
         const section = sourceAttributes[1]
         const rowId = sourceAttributes[2]
@@ -4436,7 +4481,8 @@
             `repeating_effects_${rowId}_type`, 
             `repeating_effects_${rowId}_specialType`, 
             `repeating_effects_${rowId}_value`, 
-            `repeating_effects_${rowId}_expiry`
+            `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_description`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`]
             let specialType = values[`repeating_effects_${rowId}_specialType`]
@@ -4449,6 +4495,7 @@
 
                 attributes[`repeating_effects_${rowId}_icon`] = iconUrl
                 attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type
+                attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`]
                 attributes[`repeating_effects_${rowId}_expiry`] = data.expiry || values[`repeating_effects_${rowId}_expiry`]
             } else {
                 attributes[`repeating_effects_${rowId}_icon`] = ""

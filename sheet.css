@@ -855,6 +855,36 @@ div[data-groupname=repeating_items].repcontrol {
   flex-grow: 1;
 }
 
+.effect-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.effect-body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 0 8px 0 36px;
+  background-color: #e1d3c1;
+  border-radius: 0 0 8px 8px;
+}
+
+.effect-body > div:first-child {
+  margin-top: 8px;
+}
+
+.effect-body > div:last-child {
+  margin-bottom: 12px;
+}
+
+.effect-header > .button-container {
+  margin: auto 0 auto 0;
+  flex-shrink: 0;
+}
+
 .mini-effects {
   margin-left: auto;
   margin-right: auto;
@@ -1061,17 +1091,21 @@ textarea {
 }
 
 .effect-type, .effect-expiry {
-  width: 10em;
+  max-width: 10em;
   margin-top: 8px;
   margin-bottom: 8px;
+  flex-shrink: 1;
+  flex-grow: 1;
+}
+
+.effect-specialType {
+  max-width: 10em;
+  flex-shrink: 1;
+  flex-grow: 1;
 }
 
 .effect-expiry {
   margin-left: auto;
-}
-
-.effect-value {
-  width: 6em;
 }
 
 .sheet-rolltemplate-roll {
