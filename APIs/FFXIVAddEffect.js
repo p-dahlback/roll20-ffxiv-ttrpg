@@ -361,6 +361,7 @@ const FFXIVAddEffect = (() => {
                     icon: effect.icon,
                     type: effect.type,
                     specialType: effect.specialType,
+                    name: effect.typeName,
                     value: effect.value,
                     expiry: effect.expiry,
                     editable: effect.editable == "1" ? "on" : "off",
@@ -575,7 +576,7 @@ const FFXIVAddEffect = (() => {
                     if (match.type == "special") {
                         specialType = match.specialType;
                         effect.maskedType = match.maskedType;
-                        effect.typeName = name;
+                        effect.typeName = match.specialType;
                         if (match.ability) {
                             effect.abilities = effectAbilities[match.ability];
                         }
