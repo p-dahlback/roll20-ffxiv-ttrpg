@@ -10,6 +10,12 @@ const FFXIVAddEffect = (() => {
     const scriptName = "FFXIVAddEffect";
     const version = "0.1.0";
 
+    var lastMessage = {
+        content: "",
+        who: "",
+        time: 0
+    };
+
     const types = [
         { matches: ["advantage"], type: "advantage", name: "Advantage" },
         { matches: ["attribute", "attribute(x)"], type: "attribute(x)", name: "Attribute Up(X)" },
@@ -45,32 +51,32 @@ const FFXIVAddEffect = (() => {
     const effectAbilities = {
         aetherwall: {
             instant: [
-                { title: "Aetherwall", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Magic Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Magic Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Aetherwall", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Magic Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Magic Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
             ]
         },
         cure: {
             secondary: [
-                { title: "Cure", type: "Secondary, Magic, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Cure", type: "Secondary, Magic, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
             ]
         },
         fire: {
             primary: [
-                { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
             ]
         },
         ice: {
             primary: [
-                { title: "Ice", type: "Primary, Magic, Ice-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Ice", type: "Primary, Magic, Ice-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
             ]
         },
         parry: {
             instant: [
-                { title: "Parry", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" },
+                { title: "Parry", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
             ]
         },
         protective_ward: {
             instant: [
-                { title: "Protective Ward", type: "Instant, Item, {value} ward", cost: 0, uses: 1, uses_max: 1, condition: "Protective Ward can be used in addition to another instant ability this turn", trigger: "When an ability used by the specific enemy or an enemy with the classification {value} scores a critical", baseEffect: "The ability that triggered Protective Ward scores a direct hit but not a critical.", limitation: "Once", hitType: "None", damageType: "Effect", effectSelf: "consume(Warding Talisman|{value})", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Items/warding_talisman.png" },
+                { title: "Protective Ward", type: "Instant, Item, {value} ward", cost: 0, uses: 1, uses_max: 1, condition: "Protective Ward can be used in addition to another instant ability this turn", trigger: "When an ability used by the specific enemy or an enemy with the classification {value} scores a critical", baseEffect: "The ability that triggered Protective Ward scores a direct hit but not a critical.", limitation: "Once", hitType: "None", damageType: "Effect", effectSelf: "consume(Warding Talisman|{value})", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Items/warding_talisman.png" }
             ]
         }
     };
@@ -310,7 +316,7 @@ const FFXIVAddEffect = (() => {
                 for (let entry of Object.entries(ability)) {
                     var attributeValue = entry[1];
                     if (effect.value && attributeValue && isNaN(attributeValue)) {
-                        attributeValue = attributeValue.replace("{value}", effect.value)
+                        attributeValue = attributeValue.replace("{value}", effect.value);
                     }
                     createObj("attribute", { characterid: character.id, name: `repeating_${sectionName}_${id}_${entry[0]}`, current: attributeValue });
                 }
@@ -406,179 +412,191 @@ const FFXIVAddEffect = (() => {
     };
 
     const handleInput = (msg) => {
-        if ("api" === msg.type) {
-            if (msg.content.match(/^!ffe(\b\s|$)/)) {
-                let who = (getObj("player", msg.playerid) || { get: () => "API" }).get("_displayname");
-                let args = msg.content.split(/\s+--/);
+        if ("api" !== msg.type) {
+            return;
+        }
+        if (!msg.content.match(/^!ffe(\b\s|$)/)) {
+            return;
+        }
 
-                let effect = {
-                    id: "-1",
-                    type: "none",
-                    typeName: "",
-                    specialType: "",
-                    value: " ",
-                    abilities: undefined,
-                    expiry: "turn",
-                    editable: "1",
-                    target: "selected",
-                    characters: [],
-                    player: msg.playerid,
-                    who: who,
-                    origin: "FFXIVAddEffect",
-                    level: null
-                };
+        let time = (new Date()).getTime();
+        if (lastMessage.content === msg.content && lastMessage.who === msg.who && time - lastMessage.time < 200) {
+            logger.d("Duplicate message, ignoring");
+            return;
+        }
+        lastMessage.content = msg.content;
+        lastMessage.who = msg.who;
+        lastMessage.time = time;
 
-                logger.d("Parsing command " + msg.content);
-                args.forEach(a => {
-                    let parts = a.split(/\s+/);
-                    switch (parts[0].toLowerCase()) {
-                        case "help": {
-                            let helpContent = `<h4>${scriptName} !eos --help</h4>` +
-                                `<h5>Arguments</h5>` +
-                                `<li><code>--{name}</code> - Required: The name of the effect</li>` +
-                                `<hr />` +
-                                `<h5>Options</h5>` +
-                                `<ul>` +
-                                `<li><code>--help</code> - displays this message in chat.</li>` +
-                                `<li><code>--v {X}</code> - the value for the effect, useful for some effects like attribute(x), which expects a value to apply to an attribute. <b>Default:</b> no value.</li>` +
-                                `<li><code>--expire {X}</code> - when the effect should expire. <b>Default:</b><code>turn</code>. Valid values are:</li>` +
-                                `<ul>` +
-                                `<li><code>encounterstart</code> - Start of an encounter</li>` +
-                                `<li><code>stepstart</code> - Start of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
-                                `<li><code>start</code> - Start of the character's turn</li>` +
-                                `<li><code>turn</code> - End of the character's turn</li>` +
-                                `<li><code>turn2</code> - End of the character's next turn</li>` +
-                                `<li><code>step</code> - End of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
-                                `<li><code>round</code> - End of this round. Triggers after the end of the [Enemy Step]</li>` +
-                                `<li><code>phase</code> - End of phase</li>` +
-                                `<li><code>encounter</code> - End of encounter</li>` +
-                                `<li><code>rest</code> - After rest</li>` +
-                                `<li><code>end</code> - After adventure/module</li>` +
-                                `<li><code>permanent</code> - Never expires</li>` +
-                                `<li><code>use</code> - On use</li>` +
-                                `<li><code>damage</code> - When the character receives damage</li>` +
-                                `</ul>` +
-                                `<li><code>--edit {X}</code> - whether the effect should be manually editable in the character sheet. 1 or on to enable editing, 0 or off to disable. <b>Default:</b> enabled.</li>` +
-                                `<li><code>--curable {X}</code> - if the effect can be removed by abilities like Esuna, or certain items. 1 or on to enable, 0 or off to disable. <b>Default:</b> disabled.</li>` +
-                                `<li><code>--dupe {X}</code> - how duplicates of the effect should be handled. <b>Default:</b><code>allow</code>. Valid values are:</li>` +
-                                `<ul>` +
-                                `<li><code>allow</code> - any number of this effect can be added to the same character</li>` +
-                                `<li><code>block</code> - the same effect cannot be applied again, and will be discarded if an attempt is made</li>` +
-                                `<li><code>replace</code> - if the same effect is applied again, it will replace the previous instance</li>` +
-                                `</ul>` +
-                                `<li><code>--t {X}</code> - the target. Default: <code>selected</code>. Valid values are:</li>` +
-                                `<ul>` +
-                                `<li><code>selected</code> - the selected token(s)</li>` +
-                                `<li><code>mine</code> - the tokens controlled by the player who triggered this call</li>` +
-                                `<li>A character name</li>` +
-                                `</ul>` +
-                                `<li><code>--l {X}</code> - the level of the effect, for any cases where that may matter. <b>Default:</b> no value.</li>` +
-                                `</ul>`
-                                ;
+        let who = (getObj("player", msg.playerid) || { get: () => "API" }).get("_displayname");
+        let args = msg.content.split(/\s+--/);
 
-                            try {
-                                sendChat(scriptName, helpContent);
-                            } catch (e) {
-                                logger.i(`ERROR: ${e}`);
-                            }
-                            return;
-                        }
-                        case "v":
-                            effect.value = parts[1];
-                            break;
+        let effect = {
+            id: "-1",
+            type: "none",
+            typeName: "",
+            specialType: "",
+            value: " ",
+            abilities: undefined,
+            expiry: "turn",
+            editable: "1",
+            target: "selected",
+            characters: [],
+            player: msg.playerid,
+            who: who,
+            origin: "FFXIVAddEffect",
+            level: null
+        };
 
-                        case "expire": {
-                            let expiry = parts[1].toLowerCase();
-                            if (expiries.includes(expiry)) {
-                                effect.expiry = expiry;
-                            } else {
-                                logger.i("Unrecognized expiry type " + expiry);
-                                return;
-                            }
-                            break;
-                        }
+        logger.d("Parsing command " + msg.content);
+        args.forEach(a => {
+            let parts = a.split(/\s+/);
+            switch (parts[0].toLowerCase()) {
+                case "help": {
+                    let helpContent = `<h4>${scriptName} !eos --help</h4>` +
+                        `<h5>Arguments</h5>` +
+                        `<li><code>--{name}</code> - Required: The name of the effect</li>` +
+                        `<hr />` +
+                        `<h5>Options</h5>` +
+                        `<ul>` +
+                        `<li><code>--help</code> - displays this message in chat.</li>` +
+                        `<li><code>--v {X}</code> - the value for the effect, useful for some effects like attribute(x), which expects a value to apply to an attribute. <b>Default:</b> no value.</li>` +
+                        `<li><code>--expire {X}</code> - when the effect should expire. <b>Default:</b><code>turn</code>. Valid values are:</li>` +
+                        `<ul>` +
+                        `<li><code>encounterstart</code> - Start of an encounter</li>` +
+                        `<li><code>stepstart</code> - Start of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
+                        `<li><code>start</code> - Start of the character's turn</li>` +
+                        `<li><code>turn</code> - End of the character's turn</li>` +
+                        `<li><code>turn2</code> - End of the character's next turn</li>` +
+                        `<li><code>step</code> - End of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
+                        `<li><code>round</code> - End of this round. Triggers after the end of the [Enemy Step]</li>` +
+                        `<li><code>phase</code> - End of phase</li>` +
+                        `<li><code>encounter</code> - End of encounter</li>` +
+                        `<li><code>rest</code> - After rest</li>` +
+                        `<li><code>end</code> - After adventure/module</li>` +
+                        `<li><code>permanent</code> - Never expires</li>` +
+                        `<li><code>use</code> - On use</li>` +
+                        `<li><code>damage</code> - When the character receives damage</li>` +
+                        `</ul>` +
+                        `<li><code>--edit {X}</code> - whether the effect should be manually editable in the character sheet. 1 or on to enable editing, 0 or off to disable. <b>Default:</b> enabled.</li>` +
+                        `<li><code>--curable {X}</code> - if the effect can be removed by abilities like Esuna, or certain items. 1 or on to enable, 0 or off to disable. <b>Default:</b> disabled.</li>` +
+                        `<li><code>--dupe {X}</code> - how duplicates of the effect should be handled. <b>Default:</b><code>allow</code>. Valid values are:</li>` +
+                        `<ul>` +
+                        `<li><code>allow</code> - any number of this effect can be added to the same character</li>` +
+                        `<li><code>block</code> - the same effect cannot be applied again, and will be discarded if an attempt is made</li>` +
+                        `<li><code>replace</code> - if the same effect is applied again, it will replace the previous instance</li>` +
+                        `</ul>` +
+                        `<li><code>--t {X}</code> - the target. Default: <code>selected</code>. Valid values are:</li>` +
+                        `<ul>` +
+                        `<li><code>selected</code> - the selected token(s)</li>` +
+                        `<li><code>mine</code> - the tokens controlled by the player who triggered this call</li>` +
+                        `<li>A character name</li>` +
+                        `</ul>` +
+                        `<li><code>--l {X}</code> - the level of the effect, for any cases where that may matter. <b>Default:</b> no value.</li>` +
+                        `</ul>`
+                        ;
 
-                        case "edit":
-                            if (["0", "1", "on", "off"].includes(parts[1])) {
-                                effect.editable = parts[1];
-                            } else {
-                                logger.i("Unrecognized editable type " + parts[1]);
-                                return;
-                            }
-                            break;
-
-                        case "curable":
-                            if (["0", "1", "on", "off"].includes(parts[1])) {
-                                effect.curable = parts[1];
-                            } else {
-                                logger.i("Unrecognized curable type " + parts[1]);
-                                return;
-                            }
-                            break;
-
-                        case "dupe":
-                            if (["block", "replace", "allow"].includes(parts[1])) {
-                                effect.duplicate = parts[1];
-                            } else {
-                                logger.i("Unrecognized dupe type " + parts[1]);
-                                return;
-                            }
-                            break;
-
-                        case "t": {
-                            let target = parts.slice(1).join(" ");
-                            effect.target = target;
-                            break;
-                        }
-
-                        case "l": {
-                            let parsedLevel = parseInt(parts[1]);
-                            if (isNaN(parsedLevel)) {
-                                logger.i("Invalid level value " + parts[1]);
-                                return;
-                            }
-                            effect.level = parsedLevel;
-                            break;
-                        }
-
-                        default: {
-                            let name = parts.join(" ");
-                            let match = types.find(type => type.matches.includes(name.toLowerCase())) ?? { type: "special", specialType: name };
-                            let specialType;
-                            if (match.type == "special") {
-                                specialType = match.specialType;
-                                effect.maskedType = match.maskedType;
-                                effect.typeName = name;
-                                if (match.ability) {
-                                    effect.abilities = effectAbilities[match.ability];
-                                }
-                            } else {
-                                specialType = "";
-                                effect.typeName = match.name;
-                            }
-                            effect.type = match.type;
-                            effect.specialType = specialType;
-                            break;
-                        }
+                    try {
+                        sendChat(scriptName, helpContent);
+                    } catch (e) {
+                        logger.i(`ERROR: ${e}`);
                     }
-                });
-                if (effect.type == "none") {
-                    logger.i("Found no matching effect for " + msg.content);
                     return;
                 }
-                effect.icon = getIconForEffect(effect);
-                let targetResult = getCharacters(msg, effect.target);
-                if (targetResult.error) {
-                    outputEvent("error", targetResult.error);
-                    return;
+                case "v":
+                    effect.value = parts[1];
+                    break;
+
+                case "expire": {
+                    let expiry = parts[1].toLowerCase();
+                    if (expiries.includes(expiry)) {
+                        effect.expiry = expiry;
+                    } else {
+                        logger.i("Unrecognized expiry type " + expiry);
+                        return;
+                    }
+                    break;
                 }
 
-                effect.characters = targetResult.result;
-                let event = addEffect(effect);
-                if (!playerIsGM(msg.playerid)) {
-                    outputEvent("add", event);
+                case "edit":
+                    if (["0", "1", "on", "off"].includes(parts[1])) {
+                        effect.editable = parts[1];
+                    } else {
+                        logger.i("Unrecognized editable type " + parts[1]);
+                        return;
+                    }
+                    break;
+
+                case "curable":
+                    if (["0", "1", "on", "off"].includes(parts[1])) {
+                        effect.curable = parts[1];
+                    } else {
+                        logger.i("Unrecognized curable type " + parts[1]);
+                        return;
+                    }
+                    break;
+
+                case "dupe":
+                    if (["block", "replace", "allow"].includes(parts[1])) {
+                        effect.duplicate = parts[1];
+                    } else {
+                        logger.i("Unrecognized dupe type " + parts[1]);
+                        return;
+                    }
+                    break;
+
+                case "t": {
+                    let target = parts.slice(1).join(" ");
+                    effect.target = target;
+                    break;
+                }
+
+                case "l": {
+                    let parsedLevel = parseInt(parts[1]);
+                    if (isNaN(parsedLevel)) {
+                        logger.i("Invalid level value " + parts[1]);
+                        return;
+                    }
+                    effect.level = parsedLevel;
+                    break;
+                }
+
+                default: {
+                    let name = parts.join(" ");
+                    let match = types.find(type => type.matches.includes(name.toLowerCase())) ?? { type: "special", specialType: name };
+                    let specialType;
+                    if (match.type == "special") {
+                        specialType = match.specialType;
+                        effect.maskedType = match.maskedType;
+                        effect.typeName = name;
+                        if (match.ability) {
+                            effect.abilities = effectAbilities[match.ability];
+                        }
+                    } else {
+                        specialType = "";
+                        effect.typeName = match.name;
+                    }
+                    effect.type = match.type;
+                    effect.specialType = specialType;
+                    break;
                 }
             }
+        });
+        if (effect.type == "none") {
+            logger.i("Found no matching effect for " + msg.content);
+            return;
+        }
+        effect.icon = getIconForEffect(effect);
+        let targetResult = getCharacters(msg, effect.target);
+        if (targetResult.error) {
+            outputEvent("error", targetResult.error);
+            return;
+        }
+
+        effect.characters = targetResult.result;
+        let event = addEffect(effect);
+        if (!playerIsGM(msg.playerid)) {
+            outputEvent("add", event);
         }
     };
 

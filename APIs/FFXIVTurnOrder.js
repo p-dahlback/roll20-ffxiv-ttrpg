@@ -55,6 +55,12 @@ const FFXIVTurnOrder = (() => {
     }(true);
 
     var lastTurnOrder = "";
+    var lastMessage = {
+        content: "",
+        who: "",
+        time: 0
+    };
+
     var newEncounter = false;
 
     const unpackNaN = (value, defaultValue = 0) => {
@@ -681,6 +687,15 @@ const FFXIVTurnOrder = (() => {
         if (!msg.content.match(/^!fft(\b\s|$)/)) {
             return;
         }
+
+        let time = (new Date()).getTime();
+        if (lastMessage.content === msg.content && lastMessage.who === msg.who && time - lastMessage.time < 200) {
+            logger.d("Duplicate message, ignoring");
+            return;
+        }
+        lastMessage.content = msg.content;
+        lastMessage.who = msg.who;
+        lastMessage.time = time;
 
         logger.d("==============================================");
         logger.d(`Parsing command ${msg.content}`);
