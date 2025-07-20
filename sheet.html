@@ -311,7 +311,11 @@
             <!-- Effects -->
 
             <div class="effects section">
-                <h3 class="small bold colored-in">Effects</h3> 
+                <div style="height: 27px; padding-bottom: 4px; background-color: #c4b5a1;">
+                    <span class="small colored-in floatLeft">Effects</span>
+                    <button type="action" class="floatRight" name="act_expandAllEffects">Expand All</button>
+                    <button type="action" class="floatRight" name="act_collapseAllEffects">Collapse All</button>
+                </div>
                 <fieldset class="repeating_effects">
                     <div class="effect">
                         <input class="expand-checkbox hidden" type="checkbox" name="attr_effectsExpandItem" />
@@ -2329,6 +2333,14 @@
         toggleExpandedState(`${section}HeaderExpandItem`)
     })
 
+    on("clicked:expandAllEffects", eventInfo => {
+        setCollapsedStateForSection(false, "effects")
+    })
+
+    on("clicked:collapseAllEffects", eventInfo => {
+        setCollapsedStateForSection(true, "effects")
+    })
+
     on("clicked:expandAllTraits", eventInfo => {
         setCollapsedStateForSection(false, "traits")
     })
@@ -2381,9 +2393,9 @@
     const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"]
     const effectData = {
         aetherial_focus: { type: "special", maskedType: "augment", specialType: "Aetherial Focus", name: "Aetherial Focus", expiry: "end", duplicate: "block", description: "Begin encounters with X MP. This effect does not increase Max MP." },
-        advantage: { type: "advantage", maskedType: "advantage", name: "Advantage", expiry: "use" },
+        advantage: { type: "advantage", maskedType: "advantage", name: "Advantage", expiry: "use", description: "Provides an advantage die that can be used once for any ability roll." },
         astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "replace", description: "While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage* and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn. \n\n*After attaining level 50, this damage increases to 2d6." },
-        attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "use" },
+        attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "use", description: "Improves the given attribute by a set value." },
         barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "ephemeral" }, 
         berserk: { type: "special", maskedType: "dps(x)", specialType: "Berserk", name: "Berserk", expiry: "turn", duplicate: "block", description: "Your abilities deal an additional 2 damage until the end of this turn." },
         blind: { type: "blind", maskedType: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
@@ -2391,16 +2403,16 @@
         brink: { type: "brink", maskedType: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block" },
         consume: { type: "special", maskedType: "special", specialType: "Consume(X)", name: "Consume (X)", expiry: "ephemeral" },
         comatose: { type: "comatose", maskedType: "comatose", name: "Comatose", expiry: "rest", duplicate: "block" },
-        critical: { type: "critical(x)", maskedType: "critical(x)", name: "Critical Up (X)", expiry: "use" },
+        critical: { type: "critical(x)", maskedType: "critical(x)", name: "Critical Up (X)", expiry: "use", description: "Reduces the roll needed to score a critical hit by the given value." },
         curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability:"cure", specialType: "Curecast Focus", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
-        damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use" },
+        damage: { type: "damage", maskedType: "damage", name: "Damage Reroll", expiry: "use", description: "Allows the option to re-roll any one damage die. The value of the new roll cannot be further re-rolled and has to be used for the damage calculation." },
         defenders_boon: { type: "special", maskedType: "augment", specialType: "Defender's Boon", name: "Defender's Boon", expiry: "end", duplicate: "block", description: "Increases Defense or Magic Defense by 1. This applies to the lower of the two attributes; if they have the same value, this augmentation has no effect." },
         deflecting_edge: { type: "special", maskedType: "augment", augmentType: "ability", ability: "parry", specialType: "Deflecting Edge", name: "Deflecting Edge", expiry: "end", duplicate: "block", description: "Grants the Parry ability." },
-        dot: { type: "dot(x)", maskedType: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true },
-        dps: { type: "dps(x)", maskedType: "dps(x)", name: "Damage Up (X)", expiry: "turn", duplicate: "allow" },
+        dot: { type: "dot(x)", maskedType: "dot(x)", name: "DOT (X)", expiry: "phase", curable: true, description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
+        dps: { type: "dps(x)", maskedType: "dps(x)", name: "Damage Up (X)", expiry: "turn", duplicate: "allow", description: "Increments all damage dealt by the character's abilities by a given value." },
         elemental_veil: { type: "special", maskedType: "augment", specialType: "Elemental Veil", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
         elemental_veil_ii: { type: "special", maskedType: "augment", specialType: "Elemental Veil", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
-        enmity: { type: "enmity(x)", maskedType: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace" },
+        enmity: { type: "enmity(x)", maskedType: "enmity(x)", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
         flamecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability: "fire", specialType: "Flamecast Focus", name: "Flamecast Focus", expiry: "end", duplicate: "block", description: "Grants the Fire ability." },
         hawks_eye: { type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", name: "Hawk's Eye", expiry: "use", duplicate: "block", description: "While under the effect of Hawk's Eye, you ignore the penalty incurred on ability checks made while Blinded." },
         heavy: { type: "heavy", maskedType: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
@@ -2420,10 +2432,10 @@
         raging_strikes: { type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", name: "Raging Strikes", expiry: "turn", duplicate: "block", description: "Your primary abilities deal an additional 2 damage until the end of this turn." },
         rampart: { type: "special", maskedType: "defense(x)", specialType: "Rampart", name: "Rampart", expiry: "start", duplicate: "block", description: "Reduces the damage you take from abilities by 2 until the start of your next turn." },
         ready: { type: "ready(x)", maskedType: "ready(x)", name: "(X) Ready", expiry: "use", duplicate: "block" },
-        regen: { type: "regen(x)", maskedType: "regen(x)", name: "Regen (X)", expiry: "phase" },
+        regen: { type: "regen(x)", maskedType: "regen(x)", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
         reprisal: { type: "special", maskedType: "ddown(x)", specialType: "Reprisal", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
         restore: { type: "restore(x)", maskedType: "restore(x)", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
-        roll: { type: "roll(x)", maskedType: "roll(x)", name: "Roll Up (X)", expiry: "use" },
+        roll: { type: "roll(x)", maskedType: "roll(x)", name: "Roll Up (X)", expiry: "use", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
         silence: { type: "silence", maskedType: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block" },
         sleep: { type: "sleep", maskedType: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block" },
         slow: { type: "slow", maskedType: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block" },
