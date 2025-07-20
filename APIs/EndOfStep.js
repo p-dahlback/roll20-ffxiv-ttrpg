@@ -702,7 +702,7 @@ const EndOfStep = (() => {
                         `<li><code>--fx X</code> - enables/disables the effect management part of turn management. 1 or on to enable, 0 or off to disable.</li>` +
                         `<li><code>--recover X</code> - enables/disables the resource recovery part of turn management. 1 or on to enable. 0 or off to disable.</li>` +
                         `<li><code>--reset</code> - resets the configuration to standard: no blocks on turn management, all subsystems enabled.</li>` +
-                        `<li><code>--start</code> - removes any blocks on turn management and runs <code>--force</code> on the current first in turn order.</li>` +
+                        `<li><code>--start</code> - removes any blocks on turn management and runs <code>--force</code> on the current first in turn order. For effect management, this will be treated as the start of the encounter.</li>` +
                         `<li><code>--stop</code> - blocks all turn management until <code>--start</code> or <code>--reset</code> is called.</li>` +
                         `</ul>`
                         ;

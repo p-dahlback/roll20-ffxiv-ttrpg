@@ -50,6 +50,23 @@ const FFXIVAddEffect = (() => {
         "ephemeral"
     ];
 
+    let logger = new class {
+
+        constructor(debug) {
+            this.debug = debug;
+        }
+
+        d(string) {
+            if (this.debug) {
+                log(`${scriptName}: ${string}`);
+            }
+        }
+
+        i(string) {
+            log(`${scriptName}: ${string}`);
+        }
+    }(true);
+
     const generateUUID = (() => {
         let a = 0;
         let b = [];
@@ -110,31 +127,31 @@ const FFXIVAddEffect = (() => {
                 }
                 let object = getObj("graphic", token._id);
                 if (!object || !object.get("represents")) {
-                    log("FFXIVAddEffect: No representation for token; skipping");
+                    logger.d("No representation for token; skipping");
                     continue;
                 }
                 let character = getObj("character", object.get("represents"));
                 characters.push(character);
-                log("FFXIVAddEffect: Adding character " + JSON.stringify(character));
+                logger.d("Adding character " + JSON.stringify(character));
             }
             return { result: characters, error: null };
         } else if (target == "mine") {
             let characters = findObjs({ type: "character", controlledby: msg.playerid });
             if (characters) {
-                log("FFXIVAddEffect: Adding characters " + JSON.stringify(characters));
+                logger.d("Adding characters " + JSON.stringify(characters));
                 return { result: characters, error: null };
             } else {
-                log("FFXIVAddEffect: No characters controlled by player");
+                logger.d("No characters controlled by player");
                 return { result: [], error: "No available controlled characters to apply status effects to." };
             }
         } else {
-            log("FFXIVAddEffect: Searching for character " + target);
+            logger.d("Searching for character " + target);
             let characters = findObjs({ type: "character", name: target });
             if (characters) {
-                log("FFXIVAddEffect: Adding characters " + JSON.stringify(characters));
+                logger.d("Adding characters " + JSON.stringify(characters));
                 return { result: characters, error: null };
             } else {
-                log("FFXIVAddEffect: No characters named " + target);
+                logger.d("No characters named " + target);
                 return { result: [], error: `No characters named ${target}` };
             }
         }
@@ -243,12 +260,12 @@ const FFXIVAddEffect = (() => {
         let summaryIntro = `${effect.typeName.replace("X", effect.value)} to `;
         var summaries = [];
 
-        log(`FFXIVAddEffect: Adding effect ${effect.typeName} to ${effect.characters.length} character(s)`);
+        logger.d(`Adding effect ${effect.typeName} to ${effect.characters.length} character(s)`);
         for (let character of effect.characters) {
             let existingEffects = getEffectsWithName(effect.specialType ?? effect.type, character);
             if (effect.duplicate === "block") {
                 if (existingEffects.some(element => element.characterid === character.id)) {
-                    log(`FFXIVAddEffect: Skipping ${character.get("name")} due to duplicate effect`);
+                    logger.d(`Skipping ${character.get("name")} due to duplicate effect`);
                     continue;
                 }
             }
@@ -261,7 +278,7 @@ const FFXIVAddEffect = (() => {
                     // Overwrite the contents of the effect with the new specification
                     id = duplicate.id;
                     update = true;
-                    log(`FFXIVAddEffect: Replacing existing effect`);
+                    logger.d(`Replacing existing effect`);
                 } else {
                     id = generateRowID();
                 }
@@ -319,7 +336,7 @@ const FFXIVAddEffect = (() => {
                 break;
 
             default:
-                log(`FFXIVAddEffect: Unrecognized type: ${type}`);
+                logger.i(`Unrecognized type: ${type}`);
                 break;
         }
     };
@@ -346,13 +363,61 @@ const FFXIVAddEffect = (() => {
                     level: null
                 };
 
-                log("FFXIVAddEffect: Parsing command " + msg.content);
+                logger.d("Parsing command " + msg.content);
                 args.forEach(a => {
                     let parts = a.split(/\s+/);
                     switch (parts[0].toLowerCase()) {
-                        case "help":
-                            return;
+                        case "help": {
+                            let helpContent = `<h4>${scriptName} !eos --help</h4>` +
+                                `<h5>Arguments</h5>` +
+                                `<li><code>--{name}</code> - Required: The name of the effect</li>` +
+                                `<hr />` +
+                                `<h5>Options</h5>` +
+                                `<ul>` +
+                                `<li><code>--help</code> - displays this message in chat.</li>` +
+                                `<li><code>--v {X}</code> - the value for the effect, useful for some effects like attribute(x), which expects a value to apply to an attribute. <b>Default:</b> no value.</li>` +
+                                `<li><code>--expire {X}</code> - when the effect should expire. <b>Default:</b><code>turn</code>. Valid values are:</li>` +
+                                `<ul>` +
+                                `<li><code>encounterstart</code> - Start of an encounter</li>` +
+                                `<li><code>stepstart</code> - Start of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
+                                `<li><code>start</code> - Start of the character's turn</li>` +
+                                `<li><code>turn</code> - End of the character's turn</li>` +
+                                `<li><code>turn2</code> - End of the character's next turn</li>` +
+                                `<li><code>step</code> - End of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
+                                `<li><code>round</code> - End of this round. Triggers after the end of the [Enemy Step]</li>` +
+                                `<li><code>phase</code> - End of phase</li>` +
+                                `<li><code>encounter</code> - End of encounter</li>` +
+                                `<li><code>rest</code> - After rest</li>` +
+                                `<li><code>end</code> - After adventure/module</li>` +
+                                `<li><code>permanent</code> - Never expires</li>` +
+                                `<li><code>use</code> - On use</li>` +
+                                `<li><code>damage</code> - When the character receives damage</li>` +
+                                `</ul>` +
+                                `<li><code>--edit {X}</code> - whether the effect should be manually editable in the character sheet. 1 or on to enable editing, 0 or off to disable. <b>Default:</b> enabled.</li>` +
+                                `<li><code>--curable {X}</code> - if the effect can be removed by abilities like Esuna, or certain items. 1 or on to enable, 0 or off to disable. <b>Default:</b> disabled.</li>` +
+                                `<li><code>--dupe {X}</code> - how duplicates of the effect should be handled. <b>Default:</b><code>allow</code>. Valid values are:</li>` +
+                                `<ul>` +
+                                `<li><code>allow</code> - any number of this effect can be added to the same character</li>` +
+                                `<li><code>block</code> - the same effect cannot be applied again, and will be discarded if an attempt is made</li>` +
+                                `<li><code>replace</code> - if the same effect is applied again, it will replace the previous instance</li>` +
+                                `</ul>` +
+                                `<li><code>--t {X}</code> - the target. Default: <code>selected</code>. Valid values are:</li>` +
+                                `<ul>` +
+                                `<li><code>selected</code> - the selected token(s)</li>` +
+                                `<li><code>mine</code> - the tokens controlled by the player who triggered this call</li>` +
+                                `<li>A character name</li>` +
+                                `</ul>` +
+                                `<li><code>--l {X}</code> - the level of the effect, for any cases where that may matter. <b>Default:</b> no value.</li>` +
+                                `</ul>`
+                                ;
 
+                            try {
+                                sendChat(scriptName, helpContent);
+                            } catch (e) {
+                                logger.i(`ERROR: ${e}`);
+                            }
+                            return;
+                        }
                         case "v":
                             effect.value = parts[1];
                             break;
@@ -362,26 +427,26 @@ const FFXIVAddEffect = (() => {
                             if (expiries.includes(expiry)) {
                                 effect.expiry = expiry;
                             } else {
-                                log("FFXIVAddEffect: Unrecognized expiry type " + expiry);
+                                logger.i("Unrecognized expiry type " + expiry);
                                 return;
                             }
                             break;
                         }
 
                         case "edit":
-                            if (["0", "1"].includes(parts[1])) {
+                            if (["0", "1", "on", "off"].includes(parts[1])) {
                                 effect.editable = parts[1];
                             } else {
-                                log("FFXIVAddEffect: Unrecognized editable type " + parts[1]);
+                                logger.i("Unrecognized editable type " + parts[1]);
                                 return;
                             }
                             break;
 
                         case "curable":
-                            if (["0", "1"].includes(parts[1])) {
+                            if (["0", "1", "on", "off"].includes(parts[1])) {
                                 effect.curable = parts[1];
                             } else {
-                                log("FFXIVAddEffect: Unrecognized curable type " + parts[1]);
+                                logger.i("Unrecognized curable type " + parts[1]);
                                 return;
                             }
                             break;
@@ -390,7 +455,7 @@ const FFXIVAddEffect = (() => {
                             if (["block", "replace", "allow"].includes(parts[1])) {
                                 effect.duplicate = parts[1];
                             } else {
-                                log("FFXIVAddEffect: Unrecognized dupe type " + parts[1]);
+                                logger.i("Unrecognized dupe type " + parts[1]);
                                 return;
                             }
                             break;
@@ -404,7 +469,7 @@ const FFXIVAddEffect = (() => {
                         case "l": {
                             let parsedLevel = parseInt(parts[1]);
                             if (isNaN(parsedLevel)) {
-                                log("FFXIVAddEffect: Invalid level value " + parts[1]);
+                                logger.i("Invalid level value " + parts[1]);
                                 return;
                             }
                             effect.level = parsedLevel;
@@ -429,7 +494,7 @@ const FFXIVAddEffect = (() => {
                     }
                 });
                 if (effect.type == "none") {
-                    log("FFXIVAddEffect: Found no matching effect for " + msg.content);
+                    logger.i("Found no matching effect for " + msg.content);
                     return;
                 }
                 effect.icon = getIconForEffectType(effect.type, effect.specialType);
