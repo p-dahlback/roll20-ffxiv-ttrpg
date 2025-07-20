@@ -217,10 +217,10 @@ const FFXIVAddEffect = (() => {
         }
     };
 
-    const unpackNaN = (value) => {
+    const unpackNaN = (value, defaultValue=0) => {
         let intValue = parseInt(value);
         if (isNaN(intValue)) {
-            return 0;
+            return defaultValue;
         }
         return intValue;
     };
@@ -260,19 +260,6 @@ const FFXIVAddEffect = (() => {
         }
     };
 
-    /*
-    const timer = (name) => {
-        var start = new Date()
-        return {
-            stop: () => {
-                var end = new Date()
-                var time = end.getTime() - start.getTime()
-                log(`Timer: ${name} finished in ${time}ms`)
-            }
-        }
-    }
-    */
-
     const getEffectsWithName = (name, character) => {
         let objects = findObjs({ type: "attribute", characterid: character.id, current: name });
         let effects = objects.reduce((accumulator, object) => {
@@ -291,12 +278,43 @@ const FFXIVAddEffect = (() => {
         return effects;
     };
 
-    const performAdditionalEffectChanges = (effect, character) => {
-        switch (effect.specialType.toLowerCase()) {
+    const performAdditionalEffectChanges = (id, effect, character) => {
+        switch ((effect.specialType || effect.type).toLowerCase()) {
             case "astral fire": {
                 // Clear MP recovery
                 let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off");
                 setAttribute(mpRecoveryBlock, "current", "on");
+                break;
+            }
+            case "attribute(x)": {
+                let definition = effect.value.split(",");
+                if (!definition) {
+                    logger.d("No value given for attribute(x)");
+                    return;
+                }
+                let attributeName = definition[0];
+                if (!["str", "dex", "vit", "int", "mnd", "defense", "magicdefense", "vigilance", "speed"].includes(attributeName.toLowerCase())) {
+                    logger.d(`Unsupported attribute for attribute(x): ${attributeName}, from value ${effect.value}`);
+                    return;
+                }
+                let attribute = unpackAttribute(character, attributeName, 0);
+                let attributeValue = attribute.get("current");
+                if (attributeValue === 0) {
+                    logger.d(`Couldn't find attribute ${attributeName} on character ${character.get("name")}`);
+                    return;
+                }
+                var value = 1;
+                if (definition.length > 1) {
+                    value = unpackNaN(definition[1], 1);
+                }
+                logger.d(`attribute(x) increments ${attributeName} by ${value}`);
+                setAttribute(attribute, "current", attributeValue + value);
+
+                let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
+                setAttribute(attributeReference, "current", attributeName);
+
+                let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
+                setAttribute(attributeValueReference, "current", value);
                 break;
             }
             case "barrier": {
@@ -305,6 +323,40 @@ const FFXIVAddEffect = (() => {
                 let value = unpackNaN(effect.value);
 
                 setAttribute(barrierPoints, "current", Math.max(currentPoints, value));
+                break;
+            }
+            case "defender's boon": {
+                let effectValue = unpackNaN(effect.value, 1);
+                let defense = unpackAttribute(character, "defense", 0);
+                let magicDefense = unpackAttribute(character, "magicDefense", 0);
+
+                let defenseValue = defense.get("current");
+                let magicDefenseValue = magicDefense.get("current");
+                if (defenseValue === 0 || magicDefenseValue === 0) {
+                    logger.d("Character has no defense; unable to apply Defender's Boon");
+                    return;
+                } else if (defenseValue === magicDefenseValue) {
+                    logger.d("No effect from Defender's Boon - same value");
+                    return;
+                } else if (defenseValue < magicDefenseValue) {
+                    logger.d("Defender's Boon increments Defense by " + effectValue);
+                    setAttribute(defense, "current", defenseValue + effectValue);
+
+                    let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
+                    setAttribute(attributeReference, "current", "defense");
+
+                    let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
+                    setAttribute(attributeValueReference, "current", effectValue);
+                } else if (magicDefenseValue < defense) {
+                    logger.d("Defender's Boon increments Magic Defense by " + effectValue);
+                    setAttribute(magicDefense, "current", magicDefenseValue + effectValue);
+
+                    let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
+                    setAttribute(attributeReference, "current", "magicDefense");
+
+                    let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
+                    setAttribute(attributeValueReference, "current", effectValue);
+                }
                 break;
             }
             case "umbral ice": {
@@ -404,7 +456,7 @@ const FFXIVAddEffect = (() => {
                 }
             }
             summaries.push(character.get("name"));
-            performAdditionalEffectChanges(effect, character);
+            performAdditionalEffectChanges(id, effect, character);
         }
         let summary = summaryIntro + summaries.join(", ");
         return { who: effect.who, summary: summary };

@@ -122,17 +122,6 @@ const FFXIVTurnOrder = (() => {
                 mpRecoveryBlock.set("current", "off");
                 break;
             }
-            case "lightweight refit - proc": {
-                logger.d("Resetting speed from Lightweight Refit");
-                let speed = findObjs({ type: "attribute", characterid: character.id, name: "speed"})[0];
-                if (speed) {
-                    let currentValue = unpackNaN(speed.get("current"), 6);
-                    speed.set("current", Math.max(currentValue - 1, 0));
-                } else {
-                    createObj("attribute", { characterid: character.id, current: 5 });
-                }
-                break;
-            }
             case "lucid dreaming": {
                 logger.d("Cancelling extra MP recovery from Lucid Dreaming");
                 let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: "mpRecovery" })[0];
@@ -297,6 +286,8 @@ const FFXIVTurnOrder = (() => {
                 createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_specialType`, current: "Lightweight Refit - Proc" });
                 createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_expiry`, current: "turn" });
                 createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_editable`, current: "off" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_attribute`, current: "speed" });
+                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_attributeValue`, current: "1" });
 
                 return [`<b>Lightweight Refit</b>, +1 to speed (${newValue}, valid until end of turn)`];
             }
@@ -356,11 +347,12 @@ const FFXIVTurnOrder = (() => {
             executionSummaries = executionSummaries.concat(executeEffect(character, effect[1].name, effect[1].value));
         }
 
+        var resetAttributes = {};
         var removalSummaries = {};
         // Remove effects
         for (let attribute of attributes) {
             let name = attribute.get("name");
-            let match = name.match(/^repeating_effects_([-\w]+)_/);
+            let match = name.match(/^repeating_effects_([-\w]+)_([\w_]+)/);
             if (!match || match.length < 2) {
                 // It's not a repeating effect attribute, skip
                 continue;
@@ -370,8 +362,9 @@ const FFXIVTurnOrder = (() => {
                 // It's not one of the effects we need to clear, skip
                 continue;
             }
+            let subname = match[2];
 
-            let nameMatch = name.match(/(special)?[tT]ype$/);
+            let nameMatch = subname.match(/(special)?[tT]ype$/);
             if (nameMatch) {
                 var summaryForId = removalSummaries[id];
                 if (!summaryForId || nameMatch[0] === "specialType") {
@@ -381,11 +374,51 @@ const FFXIVTurnOrder = (() => {
                         handleSpecialEffects(character, attribute.get("current"));
                     }
                 }
+            } else if (subname === "attribute") {
+                if (resetAttributes[id]) {
+                    resetAttributes[id].attribute = attribute.get("current");
+                } else {
+                    resetAttributes[id] = {
+                        attribute: attribute.get("current")
+                    };
+                }
+            } else if (subname === "attributeValue") {
+                let unpackedValue = parseInt(attribute.get("current"));
+                if (isNaN(unpackedValue)) {
+                    logger.d("Unexpected value in attributeValue: " + attribute.get("current"));
+                } else {
+                    if (resetAttributes[id]) {
+                        resetAttributes[id].value = unpackedValue;
+                    } else {
+                        resetAttributes[id] = {
+                            value: unpackedValue
+                        };
+                    }
+                }
             }
 
             // Remove all attributes for effects with the appropriate expiry
             logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
             attribute.remove();
+        }
+
+        // Reset any changed attributes
+        for (let resetConfiguration of Object.keys(resetAttributes)) {
+            if (!resetConfiguration.attribute || !resetConfiguration.value) {
+                logger.d("Unexpected missing content for resetting attribute: " + JSON.stringify(resetConfiguration));
+                continue;
+            }
+
+            let attribute = findObjs({ type: "attribute", characterid: character.id, name: resetConfiguration.attribute })[0];
+            if (!attribute) {
+                logger.d("Unrecognized attribute: " + resetConfiguration.attribute);
+                continue;
+            }
+
+            let attributeValue = unpackNaN(attribute.get("current"));
+            let newValue = attributeValue - resetConfiguration.value;
+            logger.d(`Removing ${resetConfiguration.value} from ${resetConfiguration.attribute} due to effect deletion; new value ${newValue}`);
+            attributeValue.set("current", newValue);
         }
 
         var finalSummaries = [];
@@ -587,7 +620,7 @@ const FFXIVTurnOrder = (() => {
             case "End of Adventurer Step":
                 return reverse ? "enemy" : "adventurer";
             case "End of Enemy Step":
-                return reverse? "adventurer" : "enemy";
+                return reverse ? "adventurer" : "enemy";
             default:
                 return "";
         }

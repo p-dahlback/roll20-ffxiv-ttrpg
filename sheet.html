@@ -2395,7 +2395,7 @@
         aetherial_focus: { type: "special", maskedType: "augment", specialType: "Aetherial Focus", name: "Aetherial Focus", expiry: "end", duplicate: "block", description: "Begin encounters with X MP. This effect does not increase Max MP." },
         advantage: { type: "advantage", maskedType: "advantage", name: "Advantage", expiry: "use", description: "Provides an advantage die that can be used once for any ability roll." },
         astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", name: "Astral Fire", expiry: "turn2", duplicate: "replace", description: "While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage* and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn. \n\n*After attaining level 50, this damage increases to 2d6." },
-        attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "use", description: "Improves the given attribute by a set value." },
+        attribute: { type: "attribute(x)", maskedType: "attribute(x)", name: "Attribute Up (X)", expiry: "turn", description: "Improves the given attribute by a set value." },
         barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", name: "Barrier (X)", expiry: "ephemeral" }, 
         berserk: { type: "special", maskedType: "dps(x)", specialType: "Berserk", name: "Berserk", expiry: "turn", duplicate: "block", description: "Your abilities deal an additional 2 damage until the end of this turn." },
         blind: { type: "blind", maskedType: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
@@ -2671,7 +2671,12 @@
                 `repeating_effects_${element}_type`,
                 `repeating_effects_${element}_specialType`,
                 `repeating_effects_${element}_value`,
-                `repeating_effects_${element}_expiry`
+                `repeating_effects_${element}_expiry`,
+                `repeating_effects_${element}_source`,
+                `repeating_effects_${element}_curable`,
+                `repeating_effects_${element}_description`,
+                `repeating_effects_${element}_attribute`,
+                `repeating_effects_${element}_attributeValue`
             ])
             getAttrs(attributes.concat(bonusAttributes), values => {
                 var sortedValues = {}
@@ -2698,6 +2703,15 @@
         getAttrsAndEffects([], (values, effects) => {
             completion(effects)
         })
+    }
+
+    function removeEffect(effect) {
+        if (effect.data.ability) {
+            let adjustedName = searchableEffectName(effect.specialType)
+            removeEffectAbility(adjustedName, effect.value)
+        }
+        removeRepeatingRow(effect.fullId)
+        resetEffectAttributeChanges(effect.attribute, effect.attributeValue)
     }
 
     function removeEffects(names, skipId) {
@@ -2791,20 +2805,6 @@
                 effectName = effect.specialType.trim().toLowerCase()
             }
             switch (effectName) {
-                case "attribute(x)":
-                    const attributeDefinition = effect.value.trim()
-                    var match = attributeDefinition.match(/^\-?\d+/)
-                    if (!match) {
-                        match = attributeDefinition.match(/\-?\d+$/)
-                    }
-                    if (!match) {
-                        console.log("Invalid attribute declaration will not be added to roll " + attributeDefinition)
-                        break
-                    }
-                    const value = parseInt(match[0])
-                    const attribute = attributeDefinition.replace(match[0], "").trim().toLowerCase()
-                    attributeUp[attribute] = value
-                    break
                 case "blind":
                     blindPenalty = 2
                     break
@@ -3117,6 +3117,74 @@
         }
         return { result: true, summaries: summaries }
     }
+
+    function resolveEffectAttributes(id, effectName, value) {
+        switch (effectName) {
+            case "attribute": {
+                log("Resolving attributes for attribute(x)")
+                if (!value) {
+                    // Unable to deal with this until value has been set
+                    return
+                }
+                let definition = value.split(",")
+                if (!definition) {
+                    log("Invalid value " + value)
+                    return
+                }
+                let attributeName = definition[0]
+                var attributeValue
+                if (definition[1]) {
+                    attributeValue = parseInt(definition[1].trim())
+                } else {
+                    attributeValue = 1
+                }
+                getAttrs([attributeName], values => {
+                    let currentValue = parseInt(values[attributeName])
+                    let newValue = currentValue + attributeValue
+                    var attributes = {}
+                    attributes[`repeating_effects_${id}_attribute`] = attributeName
+                    attributes[`repeating_effects_${id}_attributeValue`] = attributeValue
+                    attributes[attributeName] = newValue
+                    log(`Setting ${attributeName} to ${newValue}`)
+                    setAttrs(attributes)
+                })
+                break
+            }
+            case "defenders_boon": {
+                log("Resolving attributes for Defender's Boon")
+                var attributeValue
+                if (value) {
+                    attributeValue = parseInt(value.trim())
+                } else {
+                    attributeValue = 1
+                }
+                getAttrs(["defense", "magicDefense"], values => {
+                    let defense = parseInt(values.defense)
+                    let magicDefense = parseInt(values.magicDefense)
+                    let attributeName
+                    let newValue
+                    if (defense === magicDefense) {
+                        // Do nothing
+                        return
+                    } else if (defense < magicDefense) {
+                        attributeName = "defense"
+                        newValue = defense + attributeValue
+                    } else if (magicDefense < defense) {
+                        attributeName = "magicDefense"
+                        newValue = magicDefense + attributeValue
+                    }
+
+                    var attributes = {}
+                    attributes[attributeName] = newValue
+                    attributes[`repeating_effects_${id}_attribute`] = attributeName
+                    attributes[`repeating_effects_${id}_attributeValue`] = attributeValue
+                    log(`Setting ${attributeName} to ${newValue}`)
+                    setAttrs(attributes)
+                })
+                break
+            }
+        }
+    }
     
     function resolveEffectAbilities(effect, value = "") {
         let data = effectData[effect]
@@ -3181,6 +3249,33 @@
                 })
             })
         }
+    }
+
+    function resetEffectAttributeChanges(attribute, value, completion) {
+        log("Resetting effect attributes")
+        let attributeValue = parseInt(value)
+        if (!attribute || isNaN(attributeValue)) {
+            log("No effect attributes to reset")
+            if (completion) {
+                completion()
+            }
+            return
+        }
+        getAttrs([attribute], values => {
+            let currentValue = parseInt(values[attribute])
+            if (isNaN(currentValue)) {
+                log(`Unable to reset attribute ${attribute}, value is not a number: ${values[attribute]}`)
+                return
+            }
+            let newValue = currentValue - attributeValue
+            var newAttributes = {}
+            newAttributes[attribute] = newValue
+            log(`Resetting ${attribute}, ${currentValue} - ${attributeValue} = ${newValue}`)
+            setAttrs(newAttributes)
+            if (completion) {
+                completion()
+            }
+        })
     }
 
     function resolveSpecialEffects(effect, value, dice, values, existingEffects) {
@@ -4271,7 +4366,7 @@
                 if (effect.expiry == "end" || effect.expiry == "permanent") {
                     continue
                 }
-                removeRepeatingRow(effect.fullId)
+                removeEffect(effect)
             }
             resetAttributes(values)
         })
@@ -4287,7 +4382,7 @@
                 if (effect.expiry != "phase") {
                     continue
                 }
-                removeRepeatingRow(effect.fullId)
+                removeEffect(effect)
             }
 
             resetPhaseAttributes(values)
@@ -4304,11 +4399,7 @@
                 if (effect.expiry == "permanent") {
                     continue
                 }
-                if (effect.data.ability) {
-                    let adjustedName = searchableEffectName(effect.specialType)
-                    removeEffectAbility(adjustedName, effect.value)
-                }
-                removeRepeatingRow(effect.fullId)
+                removeEffect(effect)
             }
             resetAttributes(values)
         })
@@ -4494,10 +4585,13 @@
             `repeating_effects_${rowId}_specialType`, 
             `repeating_effects_${rowId}_value`, 
             `repeating_effects_${rowId}_expiry`,
-            `repeating_effects_${rowId}_description`
+            `repeating_effects_${rowId}_description`,
+            `repeating_effects_${rowId}_attribute`,
+            `repeating_effects_${rowId}_attributeValue`,
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`]
             let specialType = values[`repeating_effects_${rowId}_specialType`]
+            let value = values[`repeating_effects_${rowId}_value`]
             let adjustedName = searchableEffectName(specialType || type)
             let data = effectData[adjustedName]
 
@@ -4515,9 +4609,51 @@
 
             resolveEffectAbilities(adjustedName, values[`repeating_effects_${rowId}_value`])
 
+            let attributeName = values[`repeating_effects_${rowId}_attribute`]
+            let attributeValue = values[`repeating_effects_${rowId}_attributeValue`]
+            if (attributeName) {
+                resetEffectAttributeChanges(attributeName, attributeValue, () => {
+                    resolveEffectAttributes(rowId, adjustedName, value)
+                })
+            } else {
+                resolveEffectAttributes(rowId, adjustedName, value)
+            }
+
             setAttrs(attributes)
         })
     })
+
+    on("change:repeating_effects:value", eventInfo => {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_")
+        const section = sourceAttributes[1]
+        const rowId = sourceAttributes[2]
+
+        let value = eventInfo.newValue.trim()
+
+        getAttrs([
+            `repeating_effects_${rowId}_type`, 
+            `repeating_effects_${rowId}_specialType`,
+            `repeating_effects_${rowId}_attribute`,
+            `repeating_effects_${rowId}_attributeValue`,
+        ], values => {
+            let type = values[`repeating_effects_${rowId}_type`]
+            let specialType = values[`repeating_effects_${rowId}_specialType`]
+            let attributeName = values[`repeating_effects_${rowId}_attribute`]
+            let attributeValue = values[`repeating_effects_${rowId}_attributeValue`]
+            let adjustedName = searchableEffectName(specialType || type)
+            if (adjustedName === "attribute" || adjustedName === "defenders_boon") {
+                log(`New attribute values: ${attributeName}, ${attributeValue}`)
+                if (attributeName || attributeValue) {
+                    resetEffectAttributeChanges(attributeName, attributeValue, () => {
+                        resolveEffectAttributes(rowId, adjustedName, value)
+                    })
+                } else {
+                    resolveEffectAttributes(rowId, adjustedName, value)
+                }
+            }
+        })
+    })
+    
 
     // Reset MP recovery on Astral Fire deletion
     on("remove:repeating_effects", eventInfo => {
@@ -4529,8 +4665,11 @@
         let type = eventInfo.removedInfo[`repeating_effects_${rowId}_type`]
         let specialType = eventInfo.removedInfo[`repeating_effects_${rowId}_specialType`]
         let value = eventInfo.removedInfo[`repeating_effects_${rowId}_value`]
+        let affectedAttribute = eventInfo.removedInfo[`repeating_effects_${rowId}_attribute`]
+        let affectedAttributeValue = parseInt(eventInfo.removedInfo[`repeating_effects_${rowId}_attributeValue`])
         let adjustedName = searchableEffectName(specialType || type)
         removeEffectAbility(adjustedName, value)
+        resetEffectAttributeChanges(affectedAttribute, affectedAttributeValue)
 
         if (!specialType) {
             return
