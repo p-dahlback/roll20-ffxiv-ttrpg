@@ -327,6 +327,40 @@ const FFXIVAddEffect = (() => {
                 setAttribute(barrierPoints, "current", Math.max(currentPoints, value));
                 break;
             }
+            case "clear":
+            case "clear enfeeblements": {
+                logger.d("Clearing all enfeeblements");
+                let attributes = findObjs({ type: "attribute", characterid: character.id });
+                let actionables = attributes.reduce(
+                    (accumulator, currentValue) => {
+                        let name = currentValue.get("name");
+                        let match = name.match(/^repeating_effects_([-\w]+)_([\w_]+)/);
+                        if (!match || match.length < 2) {
+                            // It's not a repeating effect attribute, skip
+                            return accumulator;
+                        }
+                        let id = match[1];
+                        if (accumulator.byId[id]) {
+                            accumulator.byId[id].push(currentValue);
+                        } else {
+                            accumulator.byId[id] = [currentValue];
+                        }
+                        let subname = match[2];
+                        if (subname === "statusType" && currentValue.get("current").trim().toLowerCase() === "enfeeblement") {
+                           accumulator.idsToDelete.push(id);
+                        }
+                        return accumulator;
+                    },
+                    { byId: {}, idsToDelete: [] }
+                );
+                for (let id of actionables.idsToDelete) {
+                    for (let attribute of actionables.byId[id]) {
+                        logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
+                        attribute.remove();
+                    }
+                }
+                break;
+            }
             case "defender's boon": {
                 let effectValue = unpackNaN(effect.value, 1);
                 let defense = unpackAttribute(character, "defense", 0);

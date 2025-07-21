@@ -2213,23 +2213,6 @@
         })
     })
 
-    // MP Max
-    on("change:magicPoints", () => {
-        getAttrsAndEffects(["magicPoints", "magicPoints_max"], (values, effects) => {
-            var max = magicPoints_max
-            if (effects.mpMaxIncrease) {
-                max += 1
-            }
-            if (values.magicPoints <= max) {
-                return;
-            }
-            log("Reset MP")
-            setAttrs({
-                magicPoints: values.magicPoints_max
-            })
-        })
-    })
-
     // Resource Max
     on("change:resourceValue", () => {
         getAttrs(["resourceValue", "resourceValue_max"], values => {
@@ -2409,6 +2392,7 @@
         blind: { type: "blind", maskedType: "blind", statusType: "Enfeeblement", name: "Blind", expiry: "encounter", curable: true, duplicate: "block" },
         bound: { type: "bound", maskedType: "bound", statusType: "Enfeeblement", name: "Bound", expiry: "encounter", curable: true, duplicate: "block" },
         brink: { type: "brink", maskedType: "brink", statusType: "Enfeeblement", name: "Brink of Death", expiry: "rest", duplicate: "block" },
+        clear_enfeeblements: { type: "special", maskedType: "special", specialType: "Clear Enfeeblements", statusType: "Enhancement", name: "Clear Enfeeblements", expiry: "ephemeral" },
         consume: { type: "special", maskedType: "special", specialType: "Consume(X)", statusType: "Enhancement", name: "Consume (X)", expiry: "ephemeral" },
         comatose: { type: "comatose", maskedType: "comatose", statusType: "Enfeeblement", name: "Comatose", expiry: "rest", duplicate: "block" },
         critical: { type: "critical(x)", maskedType: "critical(x)", statusType: "Enfeeblement", name: "Critical Up (X)", expiry: "use", description: "Reduces the roll needed to score a critical hit by the given value." },
@@ -2453,7 +2437,7 @@
         surging_tempest: { type: "special", maskedType: "special", specialType: "Surging Tempest", statusType: "Enhancement", name: "Surging Tempest", expiry: "encounter", duplicate: "block" },
         transcendent: { type: "transcendent", maskedType: "transcendent", statusType: "Enhancement", name: "Transcendent", expiry: "turn", duplicate: "block" },
         thrill_of_battle: { type: "special", maskedType: "special", specialType: "Thrill of Battle", statusType: "Enhancement", name: "Thrill of Battle", expiry: "ephemeral", duplicate: "allow" },
-        thunderhead_ready: { type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", statusType: "Enhancement", name: "Thunderhead Ready", expiry: "use", duplicate: "block" },
+        thunderhead_ready: { type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", statusType: "Enhancement", name: "Thunderhead Ready", expiry: "use", duplicate: "block", description: "Enables one use of a Lightning-aspected ability, such as Thunder or Thunder II." },
         unstunnable: { type: "unstunnable", maskedType: "unstunnable", statusType: "Enhancement", name: "Stun Immunity", expiry: "phase", duplicate: "block" },
         umbral_ice: { type: "special", maskedType: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
         warding_talisman: { type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "use", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
@@ -2680,6 +2664,7 @@
             const attributes = ids.flatMap((element) => [
                 `repeating_effects_${element}_type`,
                 `repeating_effects_${element}_specialType`,
+                `repeating_effects_${element}_statusType`,
                 `repeating_effects_${element}_value`,
                 `repeating_effects_${element}_expiry`,
                 `repeating_effects_${element}_source`,
@@ -2750,7 +2735,6 @@
             effect.data = effectData[adjustedName]
             result.effects.push(effect)
 
-            log("Checking masked type " + effect.data.maskedType + " for " + effect.data.name)
             switch (effect.data.maskedType || effect.type) {
                 case "augment":
                     if (effect.specialType.trim().toLowerCase() == "aetherial focus") {
@@ -3319,6 +3303,16 @@
                 })
                 summaries.push(`Granted ${value} HP barrier`)
                 break
+            case "clear_enfeeblements": {
+                log("Clearing all enfeeblements")
+                for (let effect of existingEffects.effects) {
+                    if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
+                        log(`Clearing ${effect.data.name}`)
+                        removeEffect(effect)
+                    }
+                }
+                break;
+            }
             case "consume": {
                 let specification = value.split("|")
                 let item = specification[0].trim()
@@ -3481,6 +3475,7 @@
             if (!effect) {
                 continue
             }
+            effect = effect.trim()
 
             if (!matchesEffectCondition(effect, dice)) {
                 log("Condition not fulfilled; skipping effect " + effect)
@@ -4353,6 +4348,23 @@
         })
     }
 
+    // MP Max
+    on("change:magicPoints", () => {
+        getAttrsAndEffects(["magicPoints", "magicPoints_max"], (values, effects) => {
+            var max = values.magicPoints_max
+            if (effects.mpMaxIncrease) {
+                max += 1
+            }
+            if (values.magicPoints <= max) {
+                return;
+            }
+            log("Reset MP")
+            setAttrs({
+                magicPoints: values.magicPoints_max
+            })
+        })
+    })
+
     on("change:job", eventInfo => {
         getAttrs(["level", "job"], values => {
             let job = values.job.toLowerCase()
@@ -4619,6 +4631,7 @@
 
                 attributes[`repeating_effects_${rowId}_icon`] = iconUrl
                 attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type
+                attributes[`repeating_effects_${rowId}_statusType`] = data.statusType
                 attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`]
                 attributes[`repeating_effects_${rowId}_expiry`] = data.expiry || values[`repeating_effects_${rowId}_expiry`]
             } else {
