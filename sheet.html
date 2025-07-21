@@ -2759,13 +2759,14 @@
                         result.damageRerolls = [effect.data.name]
                     }
                     break
+                case "ddown(x)":
                 case "dps(x)":
-                    if (result.dpsIncrements) {
-                        result.dpsIncrements.push(effect)
+                    if (result.dpsChanges) {
+                        result.dpsChanges.push(effect)
                     } else {
-                        result.dpsIncrements = [effect]
+                        result.dpsChanges = [effect]
                     }
-                    log("dpsIncrements: " + JSON.stringify(result.dpsIncrements))
+                    log("dpsChanges: " + JSON.stringify(result.dpsChanges))
                     break
                 default:
                     break
@@ -2875,6 +2876,7 @@
 
     function addEffectsToPreDamageRolls(effects, level, type, damageRoll, directHitRoll) {
         var adds = []
+        var negatives = []
         var summaries = []
 
         let isFireType = type.toLowerCase().includes("fire-aspect")
@@ -2884,31 +2886,35 @@
             summaries.push("Astral Fire proc")
         }
 
-        if (effects.dpsIncrements) {
-            for (let effect of effects.dpsIncrements) {
+        if (effects.dpsChanges) {
+            for (let effect of effects.dpsChanges) {
                 if (effect.data.name == "Raging Strikes" && !type.includes("Primary")) {
                     // This effect only applies to primary abilities
                     continue
                 }
-                adds.push(`${effect.value}[${effect.data.name}]`)
+                if (effect.data.maskedType === "ddown(x)" || parseInt(effect.value) < 0) {
+                    negatives.push(`${effect.value}[${effect.data.name}]`)
+                } else {
+                    adds.push(`${effect.value}[${effect.data.name}]`)
+                }
                 summaries.push(`${effect.data.name} proc`)
             }
         }
 
+        // Insert empty elements so the joined string starts with an operator +/-
         if (adds.length > 0) {
-            log("Adding damage to roll")
-            let damage = damageRoll ? `${damageRoll} + ${adds.join(" + ")}` : adds.join(" + ")
-            return {
-                damage: damage,
-                directHit: directHitRoll,
-                summaries: summaries
-            }
-        } else {
-            return {
-                damage: damageRoll,
-                directHit: directHitRoll,
-                summaries: summaries
-            }
+            adds.splice(0, 0, "")
+        }
+        if (negatives.length > 0) {
+            negatives.splice(0, 0, "")
+        }
+
+        log("Adding damage to roll")
+        let damage = damageRoll ? `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}` : `${adds.join(" + ")}${negatives.join(" - ")}`
+        return {
+            damage: damage,
+            directHit: directHitRoll,
+            summaries: summaries
         }
     }
 
