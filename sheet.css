@@ -1707,6 +1707,10 @@ div[data-groupname=repeating_technique].repcontrol,
   min-width: 8rem;
 }
 
+.ui-dialog .tab-content .charsheet .effect-body .status-type input[type=text] {
+  min-width: 20rem;
+}
+
 .ui-dialog .tab-content .charsheet .adaptive--text {
   min-height: 1.5rem;/* Define a minimum height for the container when it is being used for an adaptive textarea */
   min-width: 12rem;

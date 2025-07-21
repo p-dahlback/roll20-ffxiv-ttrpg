@@ -17,47 +17,49 @@ const FFXIVAddEffect = (() => {
     };
 
     const types = [
-        { matches: ["aetherial focus", "afocus"], type: "special", maskedType: "augment", specialType: "Aetherial Focus", name: "Aetherial Focus", description: "Begin encounters with X MP. This effect does not increase Max MP." },
-        { matches: ["advantage"], type: "advantage", name: "Advantage", description: "Provides an advantage die that can be used once for any ability roll." },
-        { matches: ["attribute", "attribute(x)"], type: "attribute(x)", name: "Attribute Up(X)", description: "Improves the given attribute by a set value." },
-        { matches: ["blind"], type: "blind", name: "Blind" },
-        { matches: ["bind", "bound"], type: "bound", name: "Bound" },
-        { matches: ["brink"], type: "brink", name: "Brink of Death" },
-        { matches: ["comatose"], type: "comatose", name: "Comatose" },
-        { matches: ["critical", "critical(x)"], type: "critical(x)", name: "Critical Up(X)", description: "Reduces the roll needed to score a critical hit by the given value." },
-        { matches: ["curecast focus", "curecast", "ccast"], type: "special", maskedType: "augment", specialType: "Curecast Focus", name: "Curecast Focus", ability: "cure", description: "Grants the Cure ability." },
-        { matches: ["damage"], type: "damage", name: "Damage Reroll", description: "Allows the option to re-roll any one damage die. The value of the new roll cannot be further re-rolled and has to be used for the damage calculation." },
-        { matches: ["defender's boon", "defenders boon", "dboon"], type: "special", maskedType: "augment", specialType: "Defender's Boon", name: "Defender's Boon", description: "Increases Defense or Magic Defense by 1. This applies to the lower of the two attributes; if they have the same value, this augmentation has no effect." },
-        { matches: ["deflecting edge", "deflecting", "edge", "dedge"], type: "special", maskedType: "augment", specialType: "Deflecting Edge", name: "Deflecting Edge", ability: "parry", description: "Grants the Parry ability." },
-        { matches: ["dot", "dot(x)"], type: "dot(x)", name: "DOT(X)", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
-        { matches: ["dps", "dps(x)"], type: "dps(x)", name: "DPS(X)", description: "Increments all damage dealt by the character's abilities by a given value." },
-        { matches: ["elemental veil", "elementail veil 1", "elemental veil i", "eveil", "eveil 1", "eveil i", "eveil1", "eveili"], type: "special", maskedType: "augment", specialType: "Elemental Veil", name: "Elemental Veil", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
-        { matches: ["elemental veil ii", "elemental veil 2", "eveil 2", "eveil ii", "eveil2", "eveilii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", name: "Elemental Veil", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
-        { matches: ["enmity", "enmity(x)"], type: "enmity(x)", name: "Enmity(X)", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
-        { matches: ["flamecast focus", "flamecast", "fcast"], type: "special", maskedType: "augment", specialType: "Flamecast Focus", name: "Flamecast Focus", ability: "fire", description: "Grants the Fire ability." },
-        { matches: ["heavy"], type: "heavy", name: "Heavy" },
-        { matches: ["icecast focus", "icecast", "icast"], type: "special", maskedType: "augment", specialType: "Icecast Focus", name: "Icecast Focus", ability: "ice", description: "Grants the Ice ability." },
-        { matches: ["improved padding", "ipadding", "ipad"], type: "special", maskedType: "augment", specialType: "Improved Padding", name: "Improved Padding", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
-        { matches: ["mages ballad", "mage's ballad", "mballad"], type: "special", maskedType: "damage", specialType: "Mage's Ballad", name: "Mage's Ballad", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
-        { matches: ["magic damper", "damper", "mdamper"], type: "special", maskedType: "augment", specialType: "Magic Damper", name: "Magic Damper", ability: "aetherwall", description: "Grants the Aetherwall ability." },
-        { matches: ["major arcana", "marcana"], type: "special", maskedType: "damage", specialType: "Major Arcana", name: "Major Arcana", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
-        { matches: ["mana conduit", "mconduit"], type: "special", maskedType: "augment", specialType: "Mana Conduit", name: "Mana Conduit", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
-        { matches: ["masterwork ornamentation", "masterwork", "ornamentation", "ornament", "mwork"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", name: "Masterwork Ornamentation", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
-        { matches: ["paralyzed", "paralysis"], type: "paralyzed", name: "Paralyzed" },
-        { matches: ["petrified", "petrify"], type: "petrified", name: "Petrified" },
-        { matches: ["precision opener", "popener"], type: "special", maskedType: "augment", specialType: "Precision Opener", name: "Precision Opener", description: "Grants one advantage die on the first ability check this character makes during their first turn of an encounter." },
-        { matches: ["prone"], type: "prone", name: "Prone" },
-        { matches: ["ready"], type: "ready", name: "X Ready" },
-        { matches: ["regen", "regen(x)", "revivify", "revivify(x)"], type: "regen(x)", name: "Regen(X)", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
-        { matches: ["reprisal", "repr"], type: "special", maskedType: "ddown(x)", specialType: "Reprisal", name: "Reprisal", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
-        { matches: ["roll", "roll(x)"], type: "roll(x)", name: "Roll Up(X)", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
-        { matches: ["silence"], type: "silence", name: "Silence" },
-        { matches: ["sleep"], type: "sleep", name: "Sleep" },
-        { matches: ["stun"], type: "stun", name: "Stun" },
-        { matches: ["transcendent"], type: "transcendent", name: "Transcendent" },
-        { matches: ["unstunnable"], type: "unstunnable", name: "Unstunnable" },
-        { matches: ["warding talisman", "talisman", "ward", "wtalisman", "protective ward", "pward"], type: "special", maskedType: "item", specialType: "Warding Talisman", name: "Warding Talisman", ability: "protective_ward", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
-        { matches: ["weak"], type: "weak", name: "Weak" }
+        { matches: ["aetherial focus", "afocus"], type: "special", maskedType: "augment", specialType: "Aetherial Focus", statusType: "Enhancement", name: "Aetherial Focus", description: "Begin encounters with X MP. This effect does not increase Max MP." },
+        { matches: ["advantage"], type: "advantage", statusType: "Enhancement", name: "Advantage", description: "Provides an advantage die that can be used once for any ability roll." },
+        { matches: ["attribute", "attribute(x)"], type: "attribute(x)", statusType: "Enhancement", name: "Attribute Up(X)", description: "Improves the given attribute by a set value." },
+        { matches: ["blind"], type: "blind", statusType: "Enfeeblement", name: "Blind" },
+        { matches: ["bind", "bound"], type: "bound", statusType: "Enfeeblement", name: "Bound" },
+        { matches: ["brink"], type: "brink", statusType: "Enfeeblement", name: "Brink of Death" },
+        { matches: ["comatose"], type: "comatose", statusType: "Enfeeblement", name: "Comatose" },
+        { matches: ["critical", "critical(x)"], type: "critical(x)", statusType: "Enhancement", name: "Critical Up(X)", description: "Reduces the roll needed to score a critical hit by the given value." },
+        { matches: ["curecast focus", "curecast", "ccast"], type: "special", maskedType: "augment", specialType: "Curecast Focus", statusType: "Enhancement", name: "Curecast Focus", ability: "cure", description: "Grants the Cure ability." },
+        { matches: ["damage"], type: "damage", statusType: "Enhancement", name: "Damage Reroll", description: "Allows the option to re-roll any one damage die. The value of the new roll cannot be further re-rolled and has to be used for the damage calculation." },
+        { matches: ["defender's boon", "defenders boon", "dboon"], type: "special", maskedType: "augment", specialType: "Defender's Boon", statusType: "Enhancement", name: "Defender's Boon", description: "Increases Defense or Magic Defense by 1. This applies to the lower of the two attributes; if they have the same value, this augmentation has no effect." },
+        { matches: ["deflecting edge", "deflecting", "edge", "dedge"], type: "special", maskedType: "augment", specialType: "Deflecting Edge", statusType: "Enhancement", name: "Deflecting Edge", ability: "parry", description: "Grants the Parry ability." },
+        { matches: ["ddown", "ddown(x)", "damage down"], type: "ddown(x)", statusType: "Enfeeblement", name: "Damage Down (X)", description: "" },
+        { matches: ["dot", "dot(x)"], type: "dot(x)", statusType: "Enfeeblement", name: "DOT(X)", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
+        { matches: ["dps", "dps(x)"], type: "dps(x)", statusType: "Enhancement", name: "DPS(X)", description: "Increments all damage dealt by the character's abilities by a given value." },
+        { matches: ["elemental veil", "elementail veil 1", "elemental veil i", "eveil", "eveil 1", "eveil i", "eveil1", "eveili"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
+        { matches: ["elemental veil ii", "elemental veil 2", "eveil 2", "eveil ii", "eveil2", "eveilii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
+        { matches: ["enmity", "enmity(x)"], type: "enmity(x)", statusType: "Enfeeblement", name: "Enmity(X)", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
+        { matches: ["flamecast focus", "flamecast", "fcast"], type: "special", maskedType: "augment", specialType: "Flamecast Focus", statusType: "Enhancement", name: "Flamecast Focus", ability: "fire", description: "Grants the Fire ability." },
+        { matches: ["heavy"], type: "heavy", statusType: "Enfeeblement", name: "Heavy" },
+        { matches: ["icecast focus", "icecast", "icast"], type: "special", maskedType: "augment", specialType: "Icecast Focus", statusType: "Enhancement", name: "Icecast Focus", ability: "ice", description: "Grants the Ice ability." },
+        { matches: ["improved padding", "ipadding", "ipad"], type: "special", maskedType: "augment", specialType: "Improved Padding", statusType: "Enhancement", name: "Improved Padding", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
+        { matches: ["knocked out", "ko", "knocked", "kout"], type: "ko", statusType: "Enfeeblement", name: "Knocked Out" },
+        { matches: ["mages ballad", "mage's ballad", "mballad"], type: "special", maskedType: "damage", specialType: "Mage's Ballad", statusType: "Enhancement", name: "Mage's Ballad", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
+        { matches: ["magic damper", "damper", "mdamper"], type: "special", maskedType: "augment", specialType: "Magic Damper", statusType: "Enhancement", name: "Magic Damper", ability: "aetherwall", description: "Grants the Aetherwall ability." },
+        { matches: ["major arcana", "marcana"], type: "special", maskedType: "damage", specialType: "Major Arcana", statusType: "Enhancement", name: "Major Arcana", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
+        { matches: ["mana conduit", "mconduit"], type: "special", maskedType: "augment", specialType: "Mana Conduit", statusType: "Enhancement", name: "Mana Conduit", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
+        { matches: ["masterwork ornamentation", "masterwork", "ornamentation", "ornament", "mwork"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
+        { matches: ["paralyzed", "paralysis"], type: "paralyzed", statusType: "Enfeeblement", name: "Paralyzed" },
+        { matches: ["petrified", "petrify"], type: "petrified", statusType: "Enfeeblement", name: "Petrified" },
+        { matches: ["precision opener", "popener"], type: "special", maskedType: "augment", specialType: "Precision Opener", statusType: "Enhancement", name: "Precision Opener", description: "Grants one advantage die on the first ability check this character makes during their first turn of an encounter." },
+        { matches: ["prone"], type: "prone", statusType: "Enfeeblement", name: "Prone" },
+        { matches: ["ready"], type: "ready", statusType: "Enhancement", name: "X Ready" },
+        { matches: ["regen", "regen(x)", "revivify", "revivify(x)"], type: "regen(x)", statusType: "Enhancement", name: "Regen(X)", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
+        { matches: ["reprisal", "repr"], type: "special", maskedType: "ddown(x)", specialType: "Reprisal", statusType: "Enfeeblement", name: "Reprisal", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
+        { matches: ["roll", "roll(x)"], type: "roll(x)", statusType: "Enhancement", name: "Increment Ability Roll (X)", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
+        { matches: ["silence"], type: "silence", statusType: "Enfeeblement", name: "Silence" },
+        { matches: ["sleep"], type: "sleep", statusType: "Enfeeblement", name: "Sleep" },
+        { matches: ["stun"], type: "stun", statusType: "Enfeeblement", name: "Stun" },
+        { matches: ["transcendent"], type: "transcendent", statusType: "Enhancement", name: "Transcendent" },
+        { matches: ["unstunnable"], type: "unstunnable", statusType: "Enhancement", name: "Unstunnable" },
+        { matches: ["warding talisman", "talisman", "ward", "wtalisman", "protective ward", "pward"], type: "special", maskedType: "item", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", ability: "protective_ward", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
+        { matches: ["weak"], type: "weak", statusType: "Enfeeblement", name: "Weak" }
     ];
 
     const effectAbilities = {
@@ -217,7 +219,7 @@ const FFXIVAddEffect = (() => {
         }
     };
 
-    const unpackNaN = (value, defaultValue=0) => {
+    const unpackNaN = (value, defaultValue = 0) => {
         let intValue = parseInt(value);
         if (isNaN(intValue)) {
             return defaultValue;
@@ -424,6 +426,7 @@ const FFXIVAddEffect = (() => {
                 let attributes = {
                     icon: effect.icon,
                     type: effect.type,
+                    statusType: effect.statusType,
                     specialType: effect.specialType,
                     source: effect.source,
                     description: effect.description,
@@ -555,6 +558,7 @@ const FFXIVAddEffect = (() => {
         let effect = {
             id: "-1",
             type: "none",
+            statusType: "Enhancement",
             typeName: "",
             specialType: "",
             value: "",
@@ -662,6 +666,7 @@ const FFXIVAddEffect = (() => {
                         effect.typeName = match.name;
                     }
                     effect.type = match.type;
+                    effect.statusType = match.statusType;
                     effect.specialType = specialType;
                     effect.description = match.description;
                     break;
