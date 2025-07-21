@@ -2874,7 +2874,7 @@
         return updatedMacro
     }
 
-    function addEffectsToPreDamageRolls(effects, level, type, damageRoll, directHitRoll) {
+    function addEffectsToPreDamageRolls(effects, level, type, damageType, damageRoll, directHitRoll) {
         var adds = []
         var negatives = []
         var summaries = []
@@ -2886,7 +2886,7 @@
             summaries.push("Astral Fire proc")
         }
 
-        if (effects.dpsChanges) {
+        if (effects.dpsChanges && damageType === "Damage") {
             for (let effect of effects.dpsChanges) {
                 if (effect.data.name == "Raging Strikes" && !type.includes("Primary")) {
                     // This effect only applies to primary abilities
@@ -4069,7 +4069,7 @@
             if (directHitValue.includes("d")) {
                 directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1)
             }
-            let rolls = addEffectsToPreDamageRolls(effects, values.level, type, baseValueWithMultipliers, directHitValueWithMultipliers)
+            let rolls = addEffectsToPreDamageRolls(effects, values.level, type, damageType, baseValueWithMultipliers, directHitValueWithMultipliers)
 
             var damageTitle = ""
             var damageDice = ""
