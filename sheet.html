@@ -400,7 +400,7 @@
                                 <div class="adaptive adaptive--input floatLeft">
                                     <input type="hidden" class="editSwitch" name="attr_editable" />
                                     <span class="mini-input adaptive--input__span" name="attr_source"></span>
-                                    <input class="mini-input adaptive--input__input editSwitchBlocked" type="text" name="attr_source" placeholder="Who created the effect?" />
+                                    <input class="mini-input adaptive--input__input editSwitchBlocked" type="text" name="attr_source" placeholder="Creator?" />
                                 </div>
                             </div>
                             <div>
@@ -3302,7 +3302,8 @@
                 })
                 summaries.push(`Granted ${value} HP barrier`)
                 break
-            case "clear_enfeeblements": {
+            case "clear_enfeeblements":
+            case "transcendent": {
                 log("Clearing all enfeeblements")
                 for (let effect of existingEffects.effects) {
                     if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
@@ -4664,20 +4665,35 @@
 
             setAttrs(attributes)
 
-            if (adjustedName === "comatose" || adjustedName === "knocked_out") {
-                getEffects(effects => {
-                    log("Removing effects due to comatose/knocked out")
-                    for (let effect of effects.effects) {
-                        if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
-                            continue
+            switch (adjustedName) {
+                case "comatose":
+                case "knocked_out":
+                    getEffects(effects => {
+                        log("Removing effects due to comatose/knocked out")
+                        for (let effect of effects.effects) {
+                            if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
+                                continue
+                            }
+                            removeEffect(effect)
                         }
-                        removeEffect(effect)
-                    }
-                    // Disable MP recovery for knocked out characters
-                    setAttrs({
-                        mpRecoveryBlock: "on"
+                        // Disable MP recovery for knocked out characters
+                        setAttrs({
+                            mpRecoveryBlock: "on"
+                        })
                     })
-                })
+                    break
+                case "transcendent": {
+                    getEffects(effects => {
+                        log("Clearing all enfeeblements")
+                        for (let effect of effects.effects) {
+                            if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
+                                log(`Clearing ${effect.data.name}`)
+                                removeEffect(effect)
+                            }
+                        }
+                    })
+                    break
+                }
             }
         })
     })
