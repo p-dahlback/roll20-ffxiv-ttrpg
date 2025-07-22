@@ -351,7 +351,6 @@
                                 <hr />
                                 <option value="weak">Weak</option>
                                 <option value="brink">Brink of Death</option>
-                                <option value="comatose">Comatose</option>
                                 <hr />
                                 <option value="special">Special</option>
                             </select>
@@ -2394,7 +2393,7 @@
         brink: { type: "brink", maskedType: "brink", statusType: "Enfeeblement", name: "Brink of Death", expiry: "rest", duplicate: "block" },
         clear_enfeeblements: { type: "special", maskedType: "special", specialType: "Clear Enfeeblements", statusType: "Enhancement", name: "Clear Enfeeblements", expiry: "ephemeral" },
         consume: { type: "special", maskedType: "special", specialType: "Consume(X)", statusType: "Enhancement", name: "Consume (X)", expiry: "ephemeral" },
-        comatose: { type: "comatose", maskedType: "comatose", statusType: "Enfeeblement", name: "Comatose", expiry: "rest", duplicate: "block" },
+        comatose: { type: "comatose", maskedType: "comatose", statusType: "Enfeeblement", name: "Comatose", expiry: "rest", duplicate: "block", description: "A Comatose character is treated as if they were Knocked Out for gameplay purposes.\nComatose can only be removed by spending one full day in a location where appropriate medical treatment is available, as determined by the GM.\n\nA Comatose character has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Death." },
         critical: { type: "critical(x)", maskedType: "critical(x)", statusType: "Enfeeblement", name: "Critical Up (X)", expiry: "use", description: "Reduces the roll needed to score a critical hit by the given value." },
         curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability:"cure", specialType: "Curecast Focus", statusType: "Enhancement", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
         damage: { type: "damage", maskedType: "damage", statusType: "Enhancement", name: "Damage Reroll", expiry: "use", description: "Allows the option to re-roll any one damage die. The value of the new roll cannot be further re-rolled and has to be used for the damage calculation." },
@@ -2411,9 +2410,9 @@
         heavy: { type: "heavy", maskedType: "heavy", statusType: "Enfeeblement", name: "Heavy", expiry: "turn", curable: true, duplicate: "block" },
         icecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability: "ice", specialType: "Icecast Focus", statusType: "Enhancement", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
         improved_padding: { type: "special", maskedType: "augment", specialType: "Improved Padding", statusType: "Enhancement", name: "Improved Padding", expiry: "end", duplicate: "block", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
+        knocked_out: { type: "special", maskedType: "special", name: "Knocked Out", statusType: "Enfeeblement", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
         lightweight_refit: { type: "special", maskedType: "augment", specialType: "Lightweight Refit", statusType: "Enhancement", name: "Lightweight Refit", expiry: "end", duplicate: "block", description: "Increases Speed by 1 during this character's first turn of an encounter." },
         lucid_dreaming: { type: "special", maskedType: "special", specialType: "Lucid Dreaming", statusType: "Enhancement", name: "Lucid Dreaming", expiry: "step", duplicate: "replace", description: "Recover an additional 1 MP at the end of this round's [Adventurer Step)." },
-        knocked_out: { type: "ko", maskedType: "knocked", name: "Knocked Out", statusType: "Enfeeblement", expiry: "rest", duplicate: "block" },
         mages_ballad: { type: "special", maskedType: "damage", specialType: "Mage's Ballad", statusType: "Enhancement", name: "Mage's Ballad", expiry: "use", duplicate: "block", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
         magic_damper: { type: "special", maskedType: "augment", augmentType: "ability", ability: "aetherwall", specialType: "Magic Damper", statusType: "Enhancement", name: "Magic Damper", expiry: "end", duplicate: "block", description: "Grants the Aetherwall ability." },
         major_arcana: { type: "special", maskedType: "damage", specialType: "Major Arcana", statusType: "Enhancement", name: "Major Arcana", expiry: "turn", duplicate: "replace", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
@@ -3373,6 +3372,19 @@
                     }
                 }
                 break
+            }
+            case "comatose":
+            case "knocked_out": {
+                // Clear all non-permanent/adventure-wide effects
+                log(`Clearing all non-permanent/adventure-wide effects from ${effect.type}`)
+                for (let effect of existingEffects.effects) {
+                    if (effect.expiry !== "end" && effect.expiry !== "permanent") {
+                        log(`Removing ${effect.data.name}`)
+                        removeEffect(effect)
+                    }
+                }
+                attributes.mpRecoveryBlock = "on"
+                break;
             }
             case "lucid_dreaming":
                 attributes.mpRecovery = 3
@@ -4491,7 +4503,7 @@
             return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/augment.png`
         }
 
-        if (effect.type == "special") {
+        if (effect.type == "special" && effect.specialType) {
             let imageName = effect.specialType.toLowerCase().replaceAll("'", "").replaceAll(" ", "-")
             return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`
         }
@@ -4651,6 +4663,22 @@
             }
 
             setAttrs(attributes)
+
+            if (adjustedName === "comatose" || adjustedName === "knocked_out") {
+                getEffects(effects => {
+                    log("Removing effects due to comatose/knocked out")
+                    for (let effect of effects.effects) {
+                        if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
+                            continue
+                        }
+                        removeEffect(effect)
+                    }
+                    // Disable MP recovery for knocked out characters
+                    setAttrs({
+                        mpRecoveryBlock: "on"
+                    })
+                })
+            }
         })
     })
 
@@ -4708,6 +4736,13 @@
         switch (adjustedName) {
             case "astral_fire":
                 log("Astral Fire removed; resetting mp recovery")
+                setAttrs({
+                    mpRecoveryBlock: "off"
+                })
+                break
+            case "comatose":
+            case "knocked_out":
+                log(`${effectData[adjustedName].name}; resetting mp recovery`)
                 setAttrs({
                     mpRecoveryBlock: "off"
                 })
