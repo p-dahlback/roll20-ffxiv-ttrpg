@@ -263,6 +263,64 @@ const FFXIVAddEffect = (() => {
         }
     };
 
+    const resetAttribute = (character, attributeName, attributeValue) => {
+        if (!["str", "dex", "vit", "int", "mnd", "defense", "magicdefense", "vigilance", "speed"].includes(attributeName.toLowerCase())) {
+            logger.d(`Unsupported attribute for ${attributeName}`);
+            return;
+        }
+        let attribute = unpackAttribute(character, attributeName, 0);
+        let currentValue = attribute.get("current");
+        if (currentValue === 0) {
+            logger.d(`Couldn't find attribute ${attributeName} on character ${character.get("name")}`);
+            return;
+        }
+        let valueChange = unpackNaN(attributeValue);
+        if (valueChange === 0) {
+            logger.d(`No value change in effect for attribute ${attributeName} on character ${character.get("name")}`);
+            return;
+        }
+        logger.d(`Resetting attribute change to ${attributeName} by ${valueChange}`);
+        setAttribute(attribute, "current", currentValue - valueChange);
+    };
+
+    const removeEffectsForFilter = (character, filter) => {
+        let attributes = findObjs({ type: "attribute", characterid: character.id });
+        let actionables = attributes.reduce(
+            (accumulator, currentValue) => {
+                let name = currentValue.get("name");
+                let match = name.match(/^repeating_effects_([-\w]+)_([\w_]+)/);
+                if (!match || match.length < 2) {
+                    // It's not a repeating effect attribute, skip
+                    return accumulator;
+                }
+                let id = match[1];
+                let subname = match[2];
+                if (accumulator.byId[id]) {
+                    accumulator.byId[id][subname] = currentValue;
+                } else {
+                    accumulator.byId[id] = {};
+                    accumulator.byId[id][subname] = currentValue;
+                }
+                if (filter(id, subname, currentValue)) {
+                    accumulator.idsToDelete.push(id);
+                }
+                return accumulator;
+            },
+            { byId: {}, idsToDelete: [] }
+        );
+        for (let id of actionables.idsToDelete) {
+            let actionable = actionables.byId[id]
+            if (actionable["attribute"] && actionable["attributeValue"]) {
+                resetAttribute(character, actionable["attribute"].get("current"), actionable["attributeValue"].get("current"));
+            } 
+            for (let entry of Object.entries(actionables.byId[id])) {
+                let attribute = entry[1];
+                logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
+                attribute.remove();
+            }
+        }
+    };
+
     const getEffectsWithName = (name, character) => {
         let objects = findObjs({ type: "attribute", characterid: character.id, current: name });
         let effects = objects.reduce((accumulator, object) => {
@@ -329,37 +387,21 @@ const FFXIVAddEffect = (() => {
                 break;
             }
             case "clear":
-            case "clear enfeeblements": {
+            case "clear enfeeblements":
+            case "transcendent": {
                 logger.d("Clearing all enfeeblements");
-                let attributes = findObjs({ type: "attribute", characterid: character.id });
-                let actionables = attributes.reduce(
-                    (accumulator, currentValue) => {
-                        let name = currentValue.get("name");
-                        let match = name.match(/^repeating_effects_([-\w]+)_([\w_]+)/);
-                        if (!match || match.length < 2) {
-                            // It's not a repeating effect attribute, skip
-                            return accumulator;
-                        }
-                        let id = match[1];
-                        if (accumulator.byId[id]) {
-                            accumulator.byId[id].push(currentValue);
-                        } else {
-                            accumulator.byId[id] = [currentValue];
-                        }
-                        let subname = match[2];
-                        if (subname === "statusType" && currentValue.get("current").trim().toLowerCase() === "enfeeblement") {
-                           accumulator.idsToDelete.push(id);
-                        }
-                        return accumulator;
-                    },
-                    { byId: {}, idsToDelete: [] }
-                );
-                for (let id of actionables.idsToDelete) {
-                    for (let attribute of actionables.byId[id]) {
-                        logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
-                        attribute.remove();
-                    }
-                }
+                removeEffectsForFilter(character, (attributeId, name, attribute) => {
+                    return attributeId !== id && name === "statusType" && attribute.get("current").trim().toLowerCase() === "enfeeblement";
+                });
+                break;
+            }
+            case "comatose":
+            case "knocked out": {
+                // Trigger the rest action to clear out all prior effects
+                logger.d(`Triggering character rest due to ${effect.specialType || effect.type}`);
+                removeEffectsForFilter(character, (attributeId, name, attribute) => {
+                    return attributeId !== id && name === "expiry" && !["end", "permanent"].includes(attribute.get("current"));
+                });
                 break;
             }
             case "defender's boon": {
@@ -470,7 +512,8 @@ const FFXIVAddEffect = (() => {
                     expiry: effect.expiry,
                     editable: ["1", "on"].includes(effect.editable) ? "on" : "off",
                     curable: ["1", "on"].includes(effect.curable) ? "on" : "off",
-                    origin: effect.origin
+                    origin: effect.origin,
+                    effectsExpandItem: "on"
                 };
                 for (let entry of Object.entries(attributes)) {
                     if (!entry[1]) {
