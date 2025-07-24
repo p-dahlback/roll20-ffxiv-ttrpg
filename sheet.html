@@ -2700,12 +2700,12 @@
     }
 
     function removeEffect(effect) {
+        let adjustedName = searchableEffectName(effect.specialType || effect.type)
         if (effect.data.ability) {
-            let adjustedName = searchableEffectName(effect.specialType)
             removeEffectAbility(adjustedName, effect.value)
         }
         removeRepeatingRow(effect.fullId)
-        resetEffectAttributeChanges(effect.attribute, effect.attributeValue)
+        resetEffectAttributeChanges(adjustedName, effect.attribute, effect.attributeValue)
     }
 
     function removeEffects(names, skipId) {
@@ -3137,17 +3137,57 @@
                 } else {
                     attributeValue = 1
                 }
-                getAttrs([attributeName], values => {
-                    let currentValue = parseInt(values[attributeName])
-                    let newValue = currentValue + attributeValue
+                getAttrs([attributeName, `${attributeName}Block`, `${attributeName}Unblocked`, `${attributeName}Original`], values => {
+                    let baseAttributeName
+                    if (values[`${attributeName}Block`] === "on") {
+                        baseAttributeName = `${attributeName}Unblocked`
+                    } else {
+                        baseAttributeName = attributeName
+                    }
+
                     var attributes = {}
+                    let currentValue = parseInt(values[baseAttributeName])
+                    let originalValue = parseInt(values[`${attributeName}Original`])
+                    if (isNaN(originalValue)) {
+                        attributes[`${attributeName}Original`] = currentValue
+                    }
+                    let newValue = currentValue + attributeValue
                     attributes[`repeating_effects_${id}_attribute`] = attributeName
                     attributes[`repeating_effects_${id}_attributeValue`] = attributeValue
-                    attributes[attributeName] = newValue
-                    log(`Setting ${attributeName} to ${newValue}`)
+                    attributes[baseAttributeName] = newValue
+                    log(`Setting ${baseAttributeName} to ${newValue}`)
                     setAttrs(attributes)
                 })
                 break
+            }
+            case "bound": {
+                log("Resolving attributes for bound")
+                getAttrs(["size", "speed", "speedBlock", "speedUnblocked", "speedOriginal"], values => {
+                    let speed = parseInt(values.speed)
+                    let unblocked = parseInt(values.speedUnblocked ?? values.speed)
+                    let newValue
+                    let diff
+                    if (values.size === "large") {
+                        newValue = Math.max(speed - 2, 0)
+                        unblocked = Math.max(unblocked - 2, 0)
+                        diff = 2
+                    } else {
+                        newValue = 0
+                        unblocked = 0
+                        diff = speed - newValue
+                    }
+                    
+                    let baseAttributeName
+                    var attributes = {}
+                    if (values.speedBlock === "on") {
+                        attributes.speedUnblocked = unblocked
+                    }
+                    attributes.speed = newValue
+                    attributes[`repeating_effects_${id}_attribute`] = "speed"
+                    attributes[`repeating_effects_${id}_attributeValue`] = diff
+                    setAttrs(attributes)
+                })
+                break;
             }
             case "defenders_boon": {
                 log("Resolving attributes for Defender's Boon")
@@ -3181,6 +3221,26 @@
                     setAttrs(attributes)
                 })
                 break
+            }
+            case "heavy": {
+                log("Resolving attributes for heavy")
+                getAttrs(["speed", "speedBlock", "speedUnblocked", "speedOriginal"], values => {
+                    let speed = parseInt(values.originalSpeed ?? values.speed)
+                    let newValue = speed / 2 + speed % 2
+                    var attributes = {}
+                    if (values.speedBlock === "on") {
+                        log("Speed was already blocked when activating Heavy")
+                    } else {
+                        attributes.speedBlock = "on"
+                        attributes.speedUnblocked = values.speed
+                        attributes.originalSpeed = values.originalSpeed ?? values.speed
+                    }
+                    attributes.speed = newValue
+
+                    attributes[`repeating_effects_${id}_attribute`] = "speed"
+                    attributes[`repeating_effects_${id}_attributeValue`] = speed - newValue
+                })
+                break;
             }
         }
     }
@@ -3250,7 +3310,7 @@
         }
     }
 
-    function resetEffectAttributeChanges(attribute, value, completion) {
+    function resetEffectAttributeChanges(name, attribute, value, completion) {
         log("Resetting effect attributes")
         let attributeValue = parseInt(value)
         if (!attribute || isNaN(attributeValue)) {
@@ -3260,16 +3320,31 @@
             }
             return
         }
-        getAttrs([attribute], values => {
-            let currentValue = parseInt(values[attribute])
+        getAttrs([attribute, `${attribute}Block`, `${attribute}Unblocked`, `${attribute}Original`], values => {
+            let baseAttributeName
+            let currentValue
+            let newValue
+            var newAttributes = {}
+            if (name === "heavy") {
+                baseAttributeName = "speed"
+                newAttributes.speedBlock = "off"
+                currentValue = values.speed
+                newValue = values.speedUnblocked
+            } else {
+                if (values[`${attribute}Block`] === "on") {
+                    baseAttributeName = `${attribute}Unblocked`
+                } else {
+                    baseAttributeName = attribute
+                }
+                currentValue = parseInt(values[baseAttributeName])
+                newValue = currentValue - attributeValue
+            }
             if (isNaN(currentValue)) {
-                log(`Unable to reset attribute ${attribute}, value is not a number: ${values[attribute]}`)
+                log(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`)
                 return
             }
-            let newValue = currentValue - attributeValue
-            var newAttributes = {}
-            newAttributes[attribute] = newValue
-            log(`Resetting ${attribute}, ${currentValue} - ${attributeValue} = ${newValue}`)
+            newAttributes[baseAttributeName] = newValue
+            log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`)
             setAttrs(newAttributes)
             if (completion) {
                 completion()
@@ -3277,12 +3352,13 @@
         })
     }
 
-    function resolveSpecialEffects(effect, value, dice, values, existingEffects) {
+    function resolveSpecialEffects(id, effect, value, dice, values, existingEffects) {
         var attributes = {}
         var summaries = []
         let skip = effectData[effect].expiry === "ephemeral"
 
         resolveEffectAbilities(effect)
+        resolveEffectAttributes(id, effect, value)
         
         switch (effect) {
             case "astral_fire":
@@ -3529,11 +3605,11 @@
                 curable: data.curable
             }
 
-            let specialEffectResult = resolveSpecialEffects(adjustedEffect, value, dice, values, existingEffects)
+            let specialEffectResult = resolveSpecialEffects(initValues.id, adjustedEffect, value, dice, values, existingEffects)
             summaries = summaries.concat(specialEffectResult.summaries.filter(element => element))
             if (specialEffectResult.skip) {
                 continue
-            } 
+            }
             
             var attributes = specialEffectResult.attributes
             attributes[`repeating_effects_${initValues.id}_type`] = initValues.type
@@ -4046,6 +4122,9 @@
             "magicPoints", "magicPoints_max",
             "resource", "resourceValue", "resourceValue_max",
             "resource2", "resource2Value", "resource2Value_max",
+
+            "speed", "speedBlock", "speedUnblocked", "speedOriginal",
+
             "character_name", "sheet_type"
         ], (values, effects) => {
             const name = values[`repeating_${section}_${rowId}_title`]
@@ -4656,7 +4735,7 @@
             let attributeName = values[`repeating_effects_${rowId}_attribute`]
             let attributeValue = values[`repeating_effects_${rowId}_attributeValue`]
             if (attributeName) {
-                resetEffectAttributeChanges(attributeName, attributeValue, () => {
+                resetEffectAttributeChanges(adjustedName, attributeName, attributeValue, () => {
                     resolveEffectAttributes(rowId, adjustedName, value)
                 })
             } else {
@@ -4719,7 +4798,7 @@
             if (adjustedName === "attribute" || adjustedName === "defenders_boon") {
                 log(`New attribute values: ${attributeName}, ${attributeValue}`)
                 if (attributeName || attributeValue) {
-                    resetEffectAttributeChanges(attributeName, attributeValue, () => {
+                    resetEffectAttributeChanges(adjustedName, attributeName, attributeValue, () => {
                         resolveEffectAttributes(rowId, adjustedName, value)
                     })
                 } else {
@@ -4744,7 +4823,7 @@
         let affectedAttributeValue = parseInt(eventInfo.removedInfo[`repeating_effects_${rowId}_attributeValue`])
         let adjustedName = searchableEffectName(specialType || type)
         removeEffectAbility(adjustedName, value)
-        resetEffectAttributeChanges(affectedAttribute, affectedAttributeValue)
+        resetEffectAttributeChanges(adjustedName, affectedAttribute, affectedAttributeValue)
 
         if (!specialType) {
             return

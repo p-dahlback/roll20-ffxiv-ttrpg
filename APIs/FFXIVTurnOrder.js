@@ -122,6 +122,17 @@ const FFXIVTurnOrder = (() => {
                 mpRecoveryBlock.set("current", "off");
                 break;
             }
+            case "heavy": {
+                logger.d("Cancelling block on speed increase from Heavy");
+                let speedBlock = findObjs({ type: "attribute", characterid: character.id, name: "speedBlock" })[0];
+                speedBlock.set("current", "off");
+
+
+                let speed = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
+                let speedUnblocked = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
+                speed.set("current", speedUnblocked.get("current"));
+                break;
+            }
             case "lucid dreaming": {
                 logger.d("Cancelling extra MP recovery from Lucid Dreaming");
                 let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: "mpRecovery" })[0];
@@ -349,6 +360,7 @@ const FFXIVTurnOrder = (() => {
 
         var resetAttributes = {};
         var removalSummaries = {};
+        var idsToIgnoreAttributes = [];
         // Remove effects
         for (let attribute of attributes) {
             let name = attribute.get("name");
@@ -368,10 +380,14 @@ const FFXIVTurnOrder = (() => {
             if (nameMatch) {
                 var summaryForId = removalSummaries[id];
                 if (!summaryForId || nameMatch[0] === "specialType") {
-                    let value = attribute.get("current");
-                    if (value.trim().toLowerCase() !== "none") {
+                    let value = attribute.get("current").trim().toLowerCase();
+                    if (value !== "none") {
                         removalSummaries[id] = { attribute: nameMatch[0], summary: attribute.get("current") };
                         handleSpecialEffects(character, attribute.get("current"));
+
+                        if (value === "heavy") {
+                            idsToIgnoreAttributes.push(id);
+                        }
                     }
                 }
             } else if (subname === "attribute") {
@@ -403,7 +419,12 @@ const FFXIVTurnOrder = (() => {
         }
 
         // Reset any changed attributes
-        for (let resetConfiguration of Object.keys(resetAttributes)) {
+        for (let id of Object.keys(resetAttributes)) {
+            let resetConfiguration = resetAttributes[id];
+            if (idsToIgnoreAttributes.includes(id)) {
+                logger.d(`Skipping attribute ${resetAttributes.attribute} since it was marked to be ignored`);
+                continue;
+            }
             if (!resetConfiguration.attribute || !resetConfiguration.value) {
                 logger.d("Unexpected missing content for resetting attribute: " + JSON.stringify(resetConfiguration));
                 continue;

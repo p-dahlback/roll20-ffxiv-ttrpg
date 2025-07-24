@@ -312,7 +312,7 @@ const FFXIVAddEffect = (() => {
             let actionable = actionables.byId[id]
             if (actionable["attribute"] && actionable["attributeValue"]) {
                 resetAttribute(character, actionable["attribute"].get("current"), actionable["attributeValue"].get("current"));
-            } 
+            }
             for (let entry of Object.entries(actionables.byId[id])) {
                 let attribute = entry[1];
                 logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
@@ -358,18 +358,29 @@ const FFXIVAddEffect = (() => {
                     logger.d(`Unsupported attribute for attribute(x): ${attributeName}, from value ${effect.value}`);
                     return;
                 }
-                let attribute = unpackAttribute(character, attributeName, 0);
+                let baseAttributeName;
+                if (getAttrByName(character.id, `${attributeName}Block`) === "on") {
+                    baseAttributeName = `${attributeName}Unblocked`;
+                } else {
+                    baseAttributeName = attributeName;
+                }
+                let attribute = unpackAttribute(character, baseAttributeName, 0);
                 let attributeValue = attribute.get("current");
                 if (attributeValue === 0) {
-                    logger.d(`Couldn't find attribute ${attributeName} on character ${character.get("name")}`);
+                    logger.d(`Couldn't find attribute ${baseAttributeName} on character ${character.get("name")}`);
                     return;
                 }
                 var value = 1;
                 if (definition.length > 1) {
                     value = unpackNaN(definition[1], 1);
                 }
-                logger.d(`attribute(x) increments ${attributeName} by ${value}`);
+                logger.d(`attribute(x) increments ${baseAttributeName} by ${value}`);
                 setAttribute(attribute, "current", attributeValue + value);
+
+                let originalAttribute = unpackAttribute(character, `${attributeName}Original`, "");
+                if (isNaN(parseInt(originalAttribute.getr("current")))) {
+                    setAttribute(originalAttribute, "current", attributeValue);
+                }
 
                 let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
                 setAttribute(attributeReference, "current", attributeName);
@@ -384,6 +395,28 @@ const FFXIVAddEffect = (() => {
                 let value = unpackNaN(effect.value);
 
                 setAttribute(barrierPoints, "current", Math.max(currentPoints, value));
+                break;
+            }
+            case "bound": {
+                let attributes = [];
+                attributes.push(unpackAttribute(character, "speed", 0));
+                if (getAttrByName(character.id, "speedBlock") === "on") {
+                    attributes.push(unpackAttribute(character, "speedUnblocked", 0));
+                }
+
+                let diff;
+                if (getAttrByName(character.id, "size") === "large") {
+                    attributes.forEach(attribute => setAttribute(attribute, "current", unpackNaN(attribute.get("current")) - 2));
+                    diff = 2;
+                } else {
+                    attributes.forEach(attribute => setAttribute(attribute, "current", 0));
+                    diff = unpackNaN(attributes[0].get("current"));
+                }
+
+                let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
+                setAttribute(attributeReference, "current", "speed");
+                let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
+                setAttribute(attributeValueReference, "current", diff);
                 break;
             }
             case "clear":
@@ -436,6 +469,32 @@ const FFXIVAddEffect = (() => {
                     let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
                     setAttribute(attributeValueReference, "current", effectValue);
                 }
+                break;
+            }
+            case "heavy": {
+                let speed = unpackAttribute(character, "speed", 0);
+                let originalSpeed = unpackAttribute(character, "speedOriginal", "");
+
+                let speedValue = parseInt(originalSpeed.get("current") ?? speed.get("current"));
+                let newValue = speedValue / 2 + speedValue % 2;
+
+                if (getAttrByName(character.id, "speedBlock") === "on") {
+                    logger.d("Speed was already blocked when activating Heavy");
+                } else {
+                    let speedBlock = unpackAttribute(character, "speedBlock", "");
+                    setAttribute(speedBlock, "current", "on");
+
+                    let speedUnblocked = unpackAttribute(character, "speedUnblocked", "");
+                    setAttribute(speedUnblocked, "current", speed.get("current"));
+
+                    setAttribute(originalSpeed, "current", originalSpeed.get("current") ?? speed.get("current"));
+                }
+
+                let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
+                setAttribute(attributeReference, "current", "speed");
+
+                let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
+                setAttribute(attributeValueReference, "current", speedValue - newValue);
                 break;
             }
             case "umbral ice": {
