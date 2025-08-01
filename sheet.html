@@ -2764,6 +2764,9 @@
                 case "silence":
                     result.isSilenced = true
                     break
+                case "stun":
+                    result.isStunned = true
+                    break
                 default:
                     break
             }
@@ -4028,7 +4031,9 @@
             var hitDefinition = ""
             var button = ""
 
-            if (effects.isSilenced && typeString.toLowerCase().includes("invoked")) {
+            if (effects.isStunned) {
+                button = "Abilities cannot be used when stunned!"
+            } else if (effects.isSilenced && typeString.toLowerCase().includes("invoked")) {
                 button = "Invoked ability cannot be used when silenced!"
             } else if (hitDie || baseValue) {
                 var bonusButton = ""
