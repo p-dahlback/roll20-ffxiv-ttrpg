@@ -2381,7 +2381,7 @@
 
 <script type="text/worker">
     const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"]
-    const effectData = {
+    const effectData = { 
         aetherial_focus: { type: "special", maskedType: "augment", specialType: "Aetherial Focus", statusType: "Enhancement", name: "Aetherial Focus", expiry: "end", duplicate: "block", description: "Begin encounters with X MP. This effect does not increase Max MP." },
         advantage: { type: "advantage", maskedType: "advantage", statusType: "Enhancement", name: "Advantage", expiry: "use", description: "Provides an advantage die that can be used once for any ability roll." },
         astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", statusType: "Enhancement", name: "Astral Fire", expiry: "turn2", duplicate: "replace", description: "While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage* and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn. \n\n*After attaining level 50, this damage increases to 2d6." },
@@ -2760,6 +2760,9 @@
                         result.dpsChanges = [effect]
                     }
                     log("dpsChanges: " + JSON.stringify(result.dpsChanges))
+                    break
+                case "silence":
+                    result.isSilenced = true
                     break
                 default:
                     break
@@ -4024,7 +4027,10 @@
             var hitTitle = ""
             var hitDefinition = ""
             var button = ""
-            if (hitDie || baseValue) {
+
+            if (effects.isSilenced && typeString.toLowerCase().includes("invoked")) {
+                button = "Invoked ability cannot be used when silenced!"
+            } else if (hitDie || baseValue) {
                 var bonusButton = ""
                 if (hitType != "None" && hitDie) {
                     hitTitle = `${hitType}: `
