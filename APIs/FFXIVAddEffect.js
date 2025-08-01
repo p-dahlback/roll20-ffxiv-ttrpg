@@ -471,6 +471,7 @@ const FFXIVAddEffect = (() => {
                 }
                 break;
             }
+            case "slow":
             case "heavy": {
                 let speed = unpackAttribute(character, "speed", 0);
                 let originalSpeed = unpackAttribute(character, "speedOriginal", "");
@@ -479,7 +480,7 @@ const FFXIVAddEffect = (() => {
                 let newValue = speedValue / 2 + speedValue % 2;
 
                 if (getAttrByName(character.id, "speedBlock") === "on") {
-                    logger.d("Speed was already blocked when activating Heavy");
+                    logger.d(`Speed was already blocked when activating ${effect.type}`);
                 } else {
                     let speedBlock = unpackAttribute(character, "speedBlock", "");
                     setAttribute(speedBlock, "current", "on");

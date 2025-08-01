@@ -3228,14 +3228,15 @@
                 })
                 break
             }
+            case "slow":
             case "heavy": {
-                log("Resolving attributes for heavy")
+                log(`Resolving attributes for ${effectName}`)
                 getAttrs(["speed", "speedBlock", "speedUnblocked", "speedOriginal"], values => {
                     let speed = parseInt(values.originalSpeed ?? values.speed)
                     let newValue = speed / 2 + speed % 2
                     var attributes = {}
                     if (values.speedBlock === "on") {
-                        log("Speed was already blocked when activating Heavy")
+                        log(`Speed was already blocked when activating ${effectName}`)
                     } else {
                         attributes.speedBlock = "on"
                         attributes.speedUnblocked = values.speed
@@ -3331,7 +3332,7 @@
             let currentValue
             let newValue
             var newAttributes = {}
-            if (name === "heavy") {
+            if (name === "heavy" || name === "slow") {
                 baseAttributeName = "speed"
                 newAttributes.speedBlock = "off"
                 currentValue = values.speed

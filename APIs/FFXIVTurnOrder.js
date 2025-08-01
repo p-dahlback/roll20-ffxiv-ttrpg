@@ -122,8 +122,9 @@ const FFXIVTurnOrder = (() => {
                 mpRecoveryBlock.set("current", "off");
                 break;
             }
+            case "slow":
             case "heavy": {
-                logger.d("Cancelling block on speed increase from Heavy");
+                logger.d(`Cancelling block on speed increase from ${effectName}`);
                 let speedBlock = findObjs({ type: "attribute", characterid: character.id, name: "speedBlock" })[0];
                 speedBlock.set("current", "off");
 
@@ -385,7 +386,7 @@ const FFXIVTurnOrder = (() => {
                         removalSummaries[id] = { attribute: nameMatch[0], summary: attribute.get("current") };
                         handleSpecialEffects(character, attribute.get("current"));
 
-                        if (value === "heavy") {
+                        if (value === "heavy" || value === "slow") {
                             idsToIgnoreAttributes.push(id);
                         }
                     }
