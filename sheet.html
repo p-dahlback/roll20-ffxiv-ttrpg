@@ -4,18 +4,29 @@
 
 <div class="sticky section" spellcheck="false">
     <div class="top fancy section">
+        <input type="hidden" class="overrideSwitch" name="attr_override" />
+
         <div class="type">
             <img name="attr_jobIcon" width="50" />
         </div>
 
-        <div class="name content vertical tight">
+        <div class="name content vertical tight overrideBlocked">
             <span class="header small bold">Name</span>
             <input class="large" name="attr_character_name" type="text">
         </div>
         
-        <div class="race content vertical tight">
+        <div class="race content vertical tight overrideBlocked">
             <span class="header small bold">Race</span>
             <input class="large" name="attr_character_race" type="text">
+        </div>
+        
+        <div class="char-size content vertical tight overrideBlocked">
+            <span class="header small bold">Size</span>
+            <select name="attr_size">
+                <option value="normal">Normal</option>
+                <option value="large">Large</option>
+                <option value="small">Small</option>
+            </select>
         </div>
     </div>
 
@@ -4416,6 +4427,7 @@
                     role: sheet.role,
                     sheet_type: "unique",
                     team: "adventurer",
+                    size: "normal",
                     override: "auto"
                 }
 
