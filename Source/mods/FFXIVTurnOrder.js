@@ -128,10 +128,12 @@ const FFXIVTurnOrder = (() => {
                 let speedBlock = findObjs({ type: "attribute", characterid: character.id, name: "speedBlock" })[0];
                 speedBlock.set("current", "off");
 
-
                 let speed = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
                 let speedUnblocked = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
                 speed.set("current", speedUnblocked.get("current"));
+
+                let speedOriginal = findObjs({ type: "attribute", characterid: character.id, name: "speedOriginal" })[0];
+                speedOriginal.set("current", 0);
                 break;
             }
             case "lucid dreaming": {

@@ -237,10 +237,10 @@ const FFXIVAddEffect = (() => {
                     characterid: character.id
                 },
                 get: (key) => {
-                    if (key == "name") {
+                    if (key === "name") {
                         return name;
                     }
-                    if (key == "current") {
+                    if (key === "current") {
                         return defaultValue;
                     }
                     return "";
@@ -400,7 +400,7 @@ const FFXIVAddEffect = (() => {
             case "bound": {
                 let attributes = [];
                 attributes.push(unpackAttribute(character, "speed", 0));
-                if (getAttrByName(character.id, "speedBlock") === "on") {
+                if (unpackAttribute(character, "speedBlock", "off").get("current") === "on") {
                     attributes.push(unpackAttribute(character, "speedUnblocked", 0));
                 }
 
@@ -409,14 +409,14 @@ const FFXIVAddEffect = (() => {
                     attributes.forEach(attribute => setAttribute(attribute, "current", unpackNaN(attribute.get("current")) - 2));
                     diff = 2;
                 } else {
-                    attributes.forEach(attribute => setAttribute(attribute, "current", 0));
                     diff = unpackNaN(attributes[0].get("current"));
+                    attributes.forEach(attribute => setAttribute(attribute, "current", 0));
                 }
 
                 let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
                 setAttribute(attributeReference, "current", "speed");
                 let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
-                setAttribute(attributeValueReference, "current", diff);
+                setAttribute(attributeValueReference, "current", -diff);
                 break;
             }
             case "clear":
@@ -474,28 +474,30 @@ const FFXIVAddEffect = (() => {
             case "slow":
             case "heavy": {
                 let speed = unpackAttribute(character, "speed", 0);
-                let originalSpeed = unpackAttribute(character, "speedOriginal", "");
+                let originalSpeed = unpackAttribute(character, "speedOriginal", 0);
 
-                let speedValue = parseInt(originalSpeed.get("current") ?? speed.get("current"));
-                let newValue = speedValue / 2 + speedValue % 2;
+                let originalSpeedValue = parseInt(originalSpeed.get("current"));
+                let currentSpeedValue = parseInt(speed.get("current"));
+                let speedValue = originalSpeedValue > 0 ? originalSpeedValue : currentSpeedValue;
+                let newValue = Math.floor(speedValue / 2) + speedValue % 2;
 
-                if (getAttrByName(character.id, "speedBlock") === "on") {
+                let speedBlock = unpackAttribute(character, "speedBlock", "off");
+                if (speedBlock.get("current") === "on") {
                     logger.d(`Speed was already blocked when activating ${effect.type}`);
                 } else {
-                    let speedBlock = unpackAttribute(character, "speedBlock", "");
                     setAttribute(speedBlock, "current", "on");
 
                     let speedUnblocked = unpackAttribute(character, "speedUnblocked", "");
                     setAttribute(speedUnblocked, "current", speed.get("current"));
 
-                    setAttribute(originalSpeed, "current", originalSpeed.get("current") ?? speed.get("current"));
+                    setAttribute(originalSpeed, "current", speedValue);
                 }
 
                 let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
                 setAttribute(attributeReference, "current", "speed");
 
                 let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
-                setAttribute(attributeValueReference, "current", speedValue - newValue);
+                setAttribute(attributeValueReference, "current", newValue - speedValue);
                 break;
             }
             case "umbral ice": {

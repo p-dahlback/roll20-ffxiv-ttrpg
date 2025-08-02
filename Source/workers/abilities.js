@@ -1,0 +1,2495 @@
+const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"];
+const effectData = {
+    aetherial_focus: { type: "special", maskedType: "augment", specialType: "Aetherial Focus", statusType: "Enhancement", name: "Aetherial Focus", expiry: "end", duplicate: "block", description: "Begin encounters with X MP. This effect does not increase Max MP." },
+    advantage: { type: "advantage", maskedType: "advantage", statusType: "Enhancement", name: "Advantage", expiry: "use", description: "Provides an advantage die that can be used once for any ability roll." },
+    astral_fire: { type: "special", maskedType: "special", specialType: "Astral Fire", statusType: "Enhancement", name: "Astral Fire", expiry: "turn2", duplicate: "replace", description: "While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage* and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn. \n\n*After attaining level 50, this damage increases to 2d6." },
+    attribute: { type: "attribute(x)", maskedType: "attribute(x)", statusType: "Enhancement", name: "Attribute Up (X)", expiry: "turn", description: "Improves the given attribute by a set value." },
+    barrier: { type: "special", maskedType: "special", specialType: "Barrier(X)", statusType: "Enhancement", name: "Barrier (X)", expiry: "ephemeral" },
+    berserk: { type: "special", maskedType: "dps(x)", specialType: "Berserk", statusType: "Enhancement", name: "Berserk", expiry: "turn", duplicate: "block", description: "Your abilities deal an additional 2 damage until the end of this turn." },
+    blind: { type: "blind", maskedType: "blind", statusType: "Enfeeblement", name: "Blind", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot see and automatically fail any checks that rely entirely on vision. You incur a -2 penalty on all checks, and characters receive one advantage die when targeting you." },
+    bound: { type: "bound", maskedType: "bound", statusType: "Enfeeblement", name: "Bound", expiry: "encounter", curable: true, duplicate: "block", description: "When Bound, Small and Medium characters' Speed falls to 0, while larger characters' Speed is reduced by 2.\n\nCharacters receive one advantage die when targeting you." },
+    brink: { type: "brink", maskedType: "brink", statusType: "Enfeeblement", name: "Brink of Death", expiry: "rest", duplicate: "block", description: "You take a -5 penalty on all checks. If you are targeted by another effect that inflicts Weak, you are inflicted with Comatose instead.\n\nBrink of Death can only be removed by completing a rest or by effects that specifically remove it." },
+    clear_enfeeblements: { type: "special", maskedType: "special", specialType: "Clear Enfeeblements", statusType: "Enhancement", name: "Clear Enfeeblements", expiry: "ephemeral" },
+    consume: { type: "special", maskedType: "special", specialType: "Consume(X)", statusType: "Enhancement", name: "Consume (X)", expiry: "ephemeral" },
+    comatose: { type: "comatose", maskedType: "comatose", statusType: "Enfeeblement", name: "Comatose", expiry: "rest", duplicate: "block", description: "A Comatose character is treated as if they were Knocked Out for gameplay purposes.\nComatose can only be removed by spending one full day in a location where appropriate medical treatment is available, as determined by the GM.\n\nA Comatose character has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Death." },
+    critical: { type: "critical(x)", maskedType: "critical(x)", statusType: "Enfeeblement", name: "Critical Up (X)", expiry: "use", description: "Reduces the roll needed to score a critical hit by the given value." },
+    curecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability: "cure", specialType: "Curecast Focus", statusType: "Enhancement", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
+    damage: { type: "damage", maskedType: "damage", statusType: "Enhancement", name: "Damage Reroll", expiry: "use", description: "Allows the option to re-roll any one damage die. The value of the new roll cannot be further re-rolled and has to be used for the damage calculation." },
+    defenders_boon: { type: "special", maskedType: "augment", specialType: "Defender's Boon", statusType: "Enhancement", name: "Defender's Boon", expiry: "end", duplicate: "block", description: "Increases Defense or Magic Defense by 1. This applies to the lower of the two attributes; if they have the same value, this augmentation has no effect." },
+    deflecting_edge: { type: "special", maskedType: "augment", augmentType: "ability", ability: "parry", specialType: "Deflecting Edge", statusType: "Enhancement", name: "Deflecting Edge", expiry: "end", duplicate: "block", description: "Grants the Parry ability." },
+    dot: { type: "dot(x)", maskedType: "dot(x)", statusType: "Enfeeblement", name: "DOT (X)", expiry: "phase", curable: true, description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
+    ddown: { type: "ddown(x)", maskedType: "ddown(x)", statusType: "Enfeeblement", name: "Damage Down (X)", expiry: "turn", curable: true, description: "Reduces damage dealt by this character's abilities by the given value." },
+    dps: { type: "dps(x)", maskedType: "dps(x)", statusType: "Enhancement", name: "Damage Up (X)", expiry: "turn", duplicate: "allow", description: "Increments all damage dealt by the character's abilities by a given value." },
+    elemental_veil: { type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
+    elemental_veil_ii: { type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil II", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
+    enmity: { type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
+    flamecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability: "fire", specialType: "Flamecast Focus", statusType: "Enhancement", name: "Flamecast Focus", expiry: "end", duplicate: "block", description: "Grants the Fire ability." },
+    hawks_eye: { type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", statusType: "Enhancement", name: "Hawk's Eye", expiry: "use", duplicate: "block", description: "While under the effect of Hawk's Eye, you ignore the penalty incurred on ability checks made while Blinded." },
+    heavy: { type: "heavy", maskedType: "heavy", statusType: "Enfeeblement", name: "Heavy", expiry: "turn", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to their Speed.\n\nAbility checks targeting you automatically result in direct hits." },
+    icecast_focus: { type: "special", maskedType: "augment", augmentType: "ability", ability: "ice", specialType: "Icecast Focus", statusType: "Enhancement", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
+    improved_padding: { type: "special", maskedType: "augment", specialType: "Improved Padding", statusType: "Enhancement", name: "Improved Padding", expiry: "end", duplicate: "block", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
+    knocked_out: { type: "special", maskedType: "special", specialType: "Knocked Out", name: "Knocked Out", statusType: "Enfeeblement", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
+    lightweight_refit: { type: "special", maskedType: "augment", specialType: "Lightweight Refit", statusType: "Enhancement", name: "Lightweight Refit", expiry: "end", duplicate: "block", description: "Increases Speed by 1 during this character's first turn of an encounter." },
+    lucid_dreaming: { type: "special", maskedType: "special", specialType: "Lucid Dreaming", statusType: "Enhancement", name: "Lucid Dreaming", expiry: "step", duplicate: "replace", description: "Recover an additional 1 MP at the end of this round's [Adventurer Step)." },
+    mages_ballad: { type: "special", maskedType: "damage", specialType: "Mage's Ballad", statusType: "Enhancement", name: "Mage's Ballad", expiry: "use", duplicate: "block", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
+    magic_damper: { type: "special", maskedType: "augment", augmentType: "ability", ability: "aetherwall", specialType: "Magic Damper", statusType: "Enhancement", name: "Magic Damper", expiry: "end", duplicate: "block", description: "Grants the Aetherwall ability." },
+    major_arcana: { type: "special", maskedType: "damage", specialType: "Major Arcana", statusType: "Enhancement", name: "Major Arcana", expiry: "turn", duplicate: "replace", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
+    mana_conduit: { type: "special", maskedType: "augment", specialType: "Mana Conduit", statusType: "Enhancement", name: "Mana Conduit", expiry: "end", duplicate: "block", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
+    masterwork_ornamentation: { type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
+    paralyzed: { type: "paralyzed", maskedType: "paralyzed", statusType: "Enfeeblement", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block", description: "If you use a Primary ability and roll a 5 or lower for its ability check, Paralysis interrupts the ability, negating it completely. Do not resolve any of its effects or spend any resources." },
+    petrified: { type: "petrified", maskedType: "petrified", statusType: "Enfeeblement", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block", description: "You cannot act during your turn or use Instant abilities. You incur a -5 penalty on all checks.\n\nCharacters targeting you receive one advantage die on their ability check." },
+    precision_opener: { type: "special", maskedType: "augment", specialType: "Precision Opener", statusType: "Enhancement", name: "Precision Opener", expiry: "end", duplicate: "block", description: "Grants one advantage die on the first ability check this character makes during their first turn of an encounter." },
+    prone: { type: "prone", maskedType: "prone", statusType: "Enfeeblement", name: "Prone", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot take standard movement action on you turn unless you spend half your Speed (rounded up) to get back on your feet.\n\nProne characters incur a -2 penalty on all checks.\n\nCharacters targeting you receive one advantage die when making an ability check." },
+    raging_strikes: { type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", statusType: "Enhancement", name: "Raging Strikes", expiry: "turn", duplicate: "block", description: "Your primary abilities deal an additional 2 damage until the end of this turn." },
+    rampart: { type: "special", maskedType: "defense(x)", specialType: "Rampart", statusType: "Enhancement", name: "Rampart", expiry: "start", duplicate: "block", description: "Reduces the damage you take from abilities by 2 until the start of your next turn." },
+    ready: { type: "ready(x)", maskedType: "ready(x)", statusType: "Enhancement", name: "(X) Ready", expiry: "use", duplicate: "block", description: "You may use an ability that requires you to be under this enhancement. X Ready is removed after the ability is used." },
+    regen: { type: "regen(x)", maskedType: "regen(x)", statusType: "Enhancement", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
+    reprisal: { type: "special", maskedType: "ddown(x)", specialType: "Reprisal", statusType: "Enfeeblement", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
+    restore: { type: "restore(x)", maskedType: "restore(x)", statusType: "Enhancement", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
+    roll: { type: "roll(x)", maskedType: "roll(x)", statusType: "Enhancement", name: "Increment Ability Roll (X)", expiry: "use", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
+    silence: { type: "silence", maskedType: "silence", statusType: "Enfeeblement", name: "Silence", expiry: "turn", curable: true, duplicate: "block", description: "You cannot use invoked abilities." },
+    sleep: { type: "sleep", maskedType: "sleep", statusType: "Enfeeblement", name: "Sleep", expiry: "damage", curable: true, duplicate: "block", description: "You incur a -3 penalty on all checks. Sleep is removed when you take damage.\n\nCharacters may use a Primary action to wake a Sleeping character in an adjacent square." },
+    slow: { type: "slow", maskedType: "slow", statusType: "Enfeeblement", name: "Slow", expiry: "encounter", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to your Speed.\n\nYou incur a -2 penalty on all checks." },
+    stun: { type: "stun", maskedType: "stun", statusType: "Enfeeblement", name: "Stun", expiry: "turn", duplicate: "block", description: "You cannot act during your turn or use Instant abilities.\n\nAny and all markers for which a Stunned character is the creator are removed.\n\nYou incur a -5 penalty to all checks.\n\nCharacters targeting you receive one advantage die on ability checks.\n\nStun cannot be removed by effects that remove enfeeblements.\n\nA character that has been Stunned cannot be Stunned again in the same encounter." },
+    surging_tempest: { type: "special", maskedType: "special", specialType: "Surging Tempest", statusType: "Enhancement", name: "Surging Tempest", expiry: "encounter", duplicate: "block", description: "While under the effect of Surging Tempest, treat any roll of 1 when determining damage as if it were a 2." },
+    transcendent: { type: "transcendent", maskedType: "transcendent", statusType: "Enhancement", name: "Transcendent", expiry: "turnstart", duplicate: "block", description: "You are immune to damage and enfeeblements inflicted by enemy abilities, traits and encounter mechanics. Transcendent is removed at the start of the character's turn or when the character uses an ability." },
+    thrill_of_battle: { type: "special", maskedType: "special", specialType: "Thrill of Battle", statusType: "Enhancement", name: "Thrill of Battle", expiry: "ephemeral", duplicate: "allow" },
+    thunderhead_ready: { type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", statusType: "Enhancement", name: "Thunderhead Ready", expiry: "use", duplicate: "block", description: "Enables one use of a Lightning-aspected ability, such as Thunder or Thunder II." },
+    unstunnable: { type: "unstunnable", maskedType: "unstunnable", statusType: "Enhancement", name: "Stun Immunity", expiry: "encounter", duplicate: "block", description: "You are immune to Stun effects for this encounter." },
+    umbral_ice: { type: "special", maskedType: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
+    warding_talisman: { type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "permanent", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
+    weak: { type: "weak", maskedType: "weak", name: "Weak", statusType: "Enfeeblement", expiry: "rest", duplicate: "block", description: "A Weakened character incurs a -2 penalty on all checks. If you are afflicted with Weakness from another effect, you are instead afflicted with Brink of Death.\n\nWeakness can only be removed by completing a rest or by effects that specifically remove it." }
+};
+
+const expiries = {
+    encounterstart: "Start of an encounter",
+    stepstart: "Start of the [Adventurer Step]",
+    start: "Start of your next turn",
+    turn: "End of your turn",
+    turn2: "End of your next turn",
+    step: "End of the [Adventurer Step]",
+    round: "End of this round",
+    phase: "End of phase",
+    encounter: "End of encounter",
+    rest: "After rest",
+    end: "After adventure",
+    permanent: "Permanent",
+    use: "On use",
+    damage: "On damage"
+};
+
+const effectAbilities = {
+    aetherwall: {
+        instant: [
+            { title: "Aetherwall", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Magic Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Magic Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
+        ]
+    },
+    cure: {
+        secondary: [
+            { title: "Cure", type: "Secondary, Magic, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
+        ]
+    },
+    fire: {
+        primary: [
+            { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
+        ]
+    },
+    ice: {
+        primary: [
+            { title: "Ice", type: "Primary, Magic, Ice-Aspected, Invoked, Augment", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "Single", Range: "10 squares", check: "INT + d20", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", hitType: "Hit", damageType: "Damage", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
+        ]
+    },
+    parry: {
+        instant: [
+            { title: "Parry", type: "Instant, Augment", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you", baseEffect: "Increases your Defense by 1 for the ability check that triggered Parry.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/augment.png" }
+        ]
+    },
+    protective_ward: {
+        instant: [
+            { title: "Protective Ward", type: "Instant, Item, {value} ward", cost: 0, uses: 1, uses_max: 1, condition: "Protective Ward can be used in addition to another instant ability this turn", trigger: "When an ability used by the specific enemy or an enemy with the classification {value} scores a critical", baseEffect: "The ability that triggered Protective Ward scores a direct hit but not a critical.", limitation: "Once", hitType: "None", damageType: "Effect", effectSelf: "consume(Warding Talisman|{value})", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Items/warding_talisman.png" }
+        ]
+    }
+};
+
+const sheets = {
+    template: {
+        job: "",
+        jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/X.png",
+        role: "X / Y",
+        level: 30,
+        resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+        attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
+        traits: [
+            { title: "", effect: "" }
+        ],
+        abilities: {
+            primary: [
+                { title: "", type: "", cost: 0, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's X", baseEffect: "", directHit: "", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "", effectSelf: "", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/blizzard.png" }
+            ]
+        }
+    },
+    level30: {
+        ast: {
+            job: "AST",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
+            role: "Healer / Astrologian",
+            level: 30,
+            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            attributes: { str: 2, dex: 2, vit: 2, int: 2, mnd: 4, defense: 12, magicDefense: 13, vigilance: 14, speed: 5 },
+            traits: [
+                { title: "Play Arcana", effect: "At the start of your turn, grant a single ally of your choosing within 10 squares Major Arcana and a barrier of 1 HP." },
+                { title: "Major Arcana", effect: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Play Arcana", type: "Trait, Free action", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", condition: "May only be used at the start of your turn", baseEffect: "Grants the target Major Arcana and a barrier of 1 HP.", hitType: "None", damageType: "Effect", effectTarget: "Major Arcana, Barrier(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/play-arcana.png" },
+                    { title: "Malefic", type: "Primary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/malefic.png" },
+                    { title: "Helios", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All allies within range", range: "A 5x5 area centered on this character", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 + 2 HP to all targets.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/helios.png" },
+                    { title: "Repose", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Inflicts Sleep on target.", directHit: "Removes all markers generated by the target.", stat: "MND", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", effectTarget: "Sleep", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Healer/repose.png" },
+                    { title: "Ascend", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 2 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", effectTarget: "Weak, Transcendent", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/ascend.png" },
+                    { title: "Benefic II", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 2d6 + 4 HP to the target.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "2d6 + 4", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/benefic-ii.png" }
+                ],
+                secondary: [
+                    { title: "Benefic", type: "Secondary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 HP to the target.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/benefic.png" },
+                    { title: "Lightspeed", type: "Secondary", cost: 0, uses: 2, uses_max: 2, baseEffect: "Immediately use one of your magic abilities.", limitation: "Twice per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/lightspeed.png" },
+                    { title: "Lucid Dreaming", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Recover an additional 1 MP at the end of this round's [Adventurer Step].", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Lucid Dreaming", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/lucid-dreaming.png" },
+                    { title: "Combust", type: "Secondary, Magic", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", baseEffect: "Inflicts a DOT (3) on the target.", hitType: "None", damageType: "Effect", effectTarget: "DOT(3)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/combust.png" },
+                    { title: "Esuna", type: "Secondary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", baseEffect: "Removes a single enfeeblement of the target's choosing.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Healer/esuna.png" }
+                ],
+                instant: [
+                    { title: "Swiftcast", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Immediately use one of your magic abilities.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/swiftcast.png" },
+                    { title: "Essential Dignity", type: "Instant, Magic", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 HP to the target. If the target's HP is less than or equal to half of their Max HP (rounded up), restores 2d6 + 2HP instead.", limitation: "Once per phase", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6", dhValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/essential-dignity.png" }
+                ],
+                limit: [
+                    { title: "Astral Stasis", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", condition: "Limit Breaks have been made available for this encounter.", target: "All allied adventurers within range", range: "The entire encounter map*", baseEffect: "Removes all enfeeblements from all targets, fully restores their HP, and grants them Major Arcana. Astral Stasis can remove Knocked Out, Weakness and Brink of Death. *This ability also targets characters outside the encounter map. When doing so, move these targets to an empty square within 5 squares of this character after resolving the ability's effects.", hitType: "None", damageType: "Effect", effectTarget: "Major Arcana", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
+        blm: {
+            job: "BLM",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
+            role: "DPS / Black Mage",
+            level: 30,
+            resources: { hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            attributes: { str: 0, dex: 2, vit: 1, int: 5, mnd: 4, defense: 11, magicDefense: 15, vigilance: 14, speed: 5 },
+            traits: [
+                { title: "Consecutive Invocation", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may forgo all standard movement until the end of your turn to use a additional invoked primary ability. You may choose a new target when using this additional ability. Consecutive Invocation can only be used once per turn, and does not prevent you from using focus to perform additional secondary action." },
+                { title: "Umbral Ice", effect: "Certain effects grant you Umbral Ice. While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage. Umbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
+                { title: "Astral Fire", effect: "Certain effects grant you Astral Fire. While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn." },
+                { title: "Thunderhead Ready", effect: "Whenever you are granted Umbral Ice while not under the effect of Umbral Ice, or Astral Fire while not under the effect of Astral Fire grant Thunderhead Ready*.\n\n*You cannot use a thunder spell ability to inflict a DOT on a character already suffering from a DOT inflicted by one of your thunder spell abilities." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Blizzard", type: "Primary, Magic, Ice-Aspected, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to the target, grants Umbral Ice, and enables Consecutive Invocation.", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Umbral Ice", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/blizzard.png" },
+                    { title: "Fire", type: "Primary, Magic, Fire-Aspected, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to the target, grants Astral Fire, and enables Consecutive Invocation.", directHit: "Deals an additonal 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Astral Fire", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/fire.png" },
+                    { title: "Sleep", type: "Primary, Magic, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Inflicts Sleep on all targets.", directHit: "Removes all markers generated by all targets.", stat: "INT", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", baseValue: "", dhValue: "", effectSelf: "", effectTarget: "Sleep", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/sleep.png" },
+                    { title: "Blizzard II", type: "Primary, Magic, Ice-Aspected, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to all targets and grants Umbral Ice.", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Umbral Ice", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/blizzard-ii.png" },
+                    { title: "Fire II", type: "Primary, Magic, Fire-Aspected, Invoked", cost: 3, resource: "MP", uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to all targets and grants Astral Fire", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Astral Fire", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/fire-ii.png" }
+                ],
+                secondary: [
+                    { title: "Transpose", type: "Secondary", cost: 0, uses: 0, uses_max: 0, baseEffect: "Removes Umbral Ice and grants Astral Fire, or removes Astral Fire and grants Umbral Ice. Transpose can only be used once per turn.", hitType: "None", damageType: "Effect", effectSelf: "Transpose", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/transpose.png" },
+                    { title: "Thunder", type: "Secondary, Magic, Lightning-Aspected, Thunder-Spell", condition: "Under the effect of Thunderhead Ready", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Deals 2 damage and inflicts a DOT (3) on the target.", hitType: "None", damageType: "Damage", baseValue: "2", effectTarget: "DOT(3)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/thunder.png" },
+                    { title: "Manafont", type: "Secondary", condition: "Under the effect of Astral Fire", cost: 0, uses: 1, uses_max: 1, baseEffect: "Fully restores MP and grants Thunderhead Ready.", limitation: "Once per phase.", hitType: "None", damageType: "Effect", restore: "5 MP", effectSelf: "Thunderhead Ready", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/manafont.png" },
+                    { title: "Lucid Dreaming", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Recover an additional 1 MP at the end of this round's [Adventurer Step].", limitation: "Once per phase.", hitType: "None", damageType: "Effect", effectSelf: "Lucid Dreaming", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/lucid-dreaming.png" },
+                    { title: "Thunder II", type: "Secondary, Magic, Lightning-Aspected, Thunder Spell", condition: "Under the effect of Thunderhead Ready", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character.", baseEffect: "Inflicts a DOT (3) on all targets.", hitType: "None", damageType: "Effect", effectTarget: "DOT(3)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/thunder-ii.png" },
+                    { title: "Manaward", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Grants a barrier of 2 HP.", limitation: "Once per phase.", hitType: "None", damageType: "Effect", effectSelf: "Barrier(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/manaward.png" },
+                    { title: "Scathe", type: "Secondary, Magic", cost: 1, resource: "MP", uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Deals 4 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "4", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/scathe.png" }
+                ],
+                instant: [
+                    { title: "Addle", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy is resolved.", target: "The enemy that triggered this ability.", range: "5 squares", baseEffect: "Reduces the damage dealt by the target's abilities by 2 until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/addle.png" },
+                    { title: "Swiftcast", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Immediately use on of your magic abilities.", limitation: "Once per phase", hitType: "None", damageType: "Damage", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/swiftcast.png" }
+                ],
+                limit: [
+                    { title: "Meteor", type: "Limit Break, Magic, Fire-Aspected", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", baseEffect: "Deals 4d6 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "4d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
+        brd: {
+            job: "BRD",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
+            role: "DPS / Bard",
+            level: 30,
+            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
+            traits: [
+                { title: "Arrow Flurry", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may use an additional flurry ability. You may choose a new target when using this additional ability.\n\nArrow Flurry can only be used once per turn." },
+                { title: "Bardsong", effect: "At the start of your turn, you may use one of your song abilities as a free action. Song effects are removed at the start of your next turn, at the end of a phase, or when you are Knocked Out." },
+                { title: "Hawk's Eye", effect: "While under the effect of Hawk's Eye, you may use Straight Shot or Wide Volley and ignore the penalty incurred on ability checks made while Blinded.\n\nHawk's Eye is removed after using Straight Shot or Wide Volley." }
+            ],
+            abilities: {
+                song: [
+                    { title: "Minstrel's Refrain", type: "Magic, Song", cost: 0, uses: 0, uses_max: 0, baseEffect: "Grants the song effect of a single song ability of your choosing that you have already used this phase.", hitType: "None", damageType: "Effect", effectTarget: "Mage's Ballad", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/minstrels-refrain.png" },
+                    { title: "Mage's Ballad", type: "Magic, Song", cost: 0, uses: 1, uses_max: 1, baseEffect: "Restores one use of Bloodletter and grants the following song effect.", effectName: "Mage's Ballad:", effect: "All allies may each reroll a single die when determining the amount of damage dealt by an ability.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "restore(instant-Bloodletter-1)", effectTarget: "Mage's Ballad", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/mages-ballad.png" }
+                ],
+                primary: [
+                    { title: "Heavy Shot", type: "Primary, Physical, Ranged, Flurry", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target and enables Arrow Flurry. If the die rolled for this ability check lands on a 15 or higher, the following proc effect triggers.", effectName: "Heavier Shot:", effect: "Grants Hawk's Eye.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Hawk's Eye[d>15]", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/heavy-shot.png" },
+                    { title: "Venomous Bite + Windbite", type: "Primary, Physical, Ranged, Wind-Aspected, Poison", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts a DOT (4) on the target and enables Arrow Flurry.", directHit: "Deals 1d6 damage to the target.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "1d6", effectTarget: "DOT(4)", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/venomous-bite%2Bwindbite.png" },
+                    { title: "Wide Volley", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 5 damage to all targets", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "5", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/wide-volley.png" },
+                    { title: "Straight Shot", type: "Primary, Physical, Ranged, Flurry", cost: 0, uses: 0, uses_max: 0, condition: "Under the effect of Hawk's Eye", target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 5 damage to the target and enables Arrow Flurry.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "5", dhValue: "1d6", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/straight-shot.png" },
+                    { title: "Quick Nock", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 3x3 area adjacent to this character", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 3 damage to all targets. If the die rolled for this ability check lands on a 15 or higher, the following proc effect triggers.", effectName: "Enhanced Quick Nock:", effect: "Grant's Hawk's Eye", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Hawk's Eye[d>15]", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/quick-nock.png" }
+                ],
+                secondary: [
+                    { title: "Raging Strikes", type: "Secondary", cost: 0, uses: 2, uses_max: 2, baseEffect: "Your primary abilities deal an additional 2 damage until the end of this turn.", limitation: "Twice per phase", hitType: "None", damageType: "Effect", effectSelf: "Raging Strikes(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/raging-strikes.png" }
+                ],
+                instant: [
+                    { title: "Leg Graze", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an enemy makes an ability check", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Reduces the total of the ability check that triggered Leg Graze by 1d6.", limitation: "Once per phase", hitType: "None", damageType: "Effect", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/leg-graze.png" },
+                    { title: "Foot Graze", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an enemy moves", target: "The enemy that triggered this ability", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "None.", directHit: "Inflicts Bound on the target until the end of this turn.", limitation: "Once per phase", stat: "DEX", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", effectTarget: "bound", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/foot-graze.png" },
+                    { title: "Repelling Shot", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", target: "Single", range: "10 squares", baseEffect: "Move up to 3 squares. You cannot end this movement in a square that is closer to the target than where you began.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/repelling-shot.png" },
+                    { title: "Second Wind", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Restores 1d6 + 2 HP", limitation: "Once per phase", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/dps/second-wind.png" },
+                    { title: "Bloodletter", type: "Instant, Physical, Ranged", cost: 0, uses: 2, uses_max: 2, trigger: "When any character ends their turn", target: "Single", range: "10 squares", baseEffect: "Deals 4 damage to the target.", limitation: "Twice per phase", hitType: "None", damageType: "Damage", baseValue: "4", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/bloodletter.png" },
+                    { title: "Head Graze", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy within 10 squares of this character uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Interrupts the invoked ability that triggered Head Graze, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/head-graze.png" }
+                ],
+                limit: [
+                    { title: "Sagittarius Arrow", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "All enemies within range", range: "A 5x area extending in a straight line from 1 square adjacent to this character.", baseEffect: "Deals 6d6 damage divided evenly (rounded up) amongst all targets and inflicts a DOT (4) on all targets.", hitType: "None", damageType: "Damage", baseValue: "6d6", effectTarget: "DOT(4)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
+        war: {
+            job: "WAR",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
+            role: "Tank / Warrior",
+            level: 30,
+            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            attributes: { str: 4, dex: 2, vit: 5, int: 0, mnd: 1, defense: 15, magicDefense: 12, vigilance: 11, speed: 5 },
+            traits: [
+                { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Warrior Combo (Heavy Swing + Maim)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Combo: Storm's Path", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(2)", combo: "Storm's Path", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/warrior-combo.png" },
+                    { title: "Overpower", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All targets within range", range: "A 5x5 area centered on this character", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts Enmity on all targets.", directHit: "Deals 2 damage to all targets.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "2", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/overpower.png" },
+                    { title: "Tomahawk", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/tomahawk.png" },
+                    { title: "Storm's Path", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Restores 2 HP.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", restore: "2 HP", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/storms-path.png" }
+                ],
+                secondary: [
+                    { title: "Berserk", type: "Secondary", cost: 0, uses: 3, uses_max: 3, baseEffect: "Your abilities deal an additional 2 damage until the end of this turn.", limitation: "Three times per phase", hitType: "None", damageType: "Effect", hitDie: "1d20cs20", effectSelf: "Berserk(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/berserk.png" },
+                    { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Defense", effectSelf: "Rampart(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
+                    { title: "Low Blow", type: "Secondary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/low-blow.png" }
+                ],
+                instant: [
+                    { title: "Provoke", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy begins their turn", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Inflicts Enmity on the target.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/provoke.png" },
+                    { title: "Reprisal", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy within 2 squares is resolved", target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Reduces the damage dealt by the abilities of all targets by 2 until the end of this round.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/reprisal.png" },
+                    { title: "Thrill of Battle", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before you take damage", baseEffect: "Restores 1d6 + 2 HP and grants a barrier equaling the amount of HP restored that exceeds your Max HP.", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", effectSelf: "Thrill of Battle", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/thrill-of-battle.png" },
+                    { title: "Interject", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an adjacent enemy uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "1 square", baseEffect: "Interrupts the invoked ability that triggered Interject, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/interject.png" }
+                ],
+                limit: [
+                    { title: "Land Waker", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Immediately before 1 or more allied adventurers take damage", baseEffect: "Makes you the sole target of all damage inflicted by the effect that triggered Land Waker and halves the damage you take (rounded up). If Land Waker was triggered by an effect caused by a character, you may deal damage equaling the amount of HP you lost to that character.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        }
+    }
+};
+
+// Abilities
+function getAttrsAndEffects(bonusAttributes, completion) {
+    getSectionIDs("repeating_effects", ids => {
+        const attributes = ids.flatMap((element) => [
+            `repeating_effects_${element}_type`,
+            `repeating_effects_${element}_specialType`,
+            `repeating_effects_${element}_statusType`,
+            `repeating_effects_${element}_value`,
+            `repeating_effects_${element}_expiry`,
+            `repeating_effects_${element}_source`,
+            `repeating_effects_${element}_curable`,
+            `repeating_effects_${element}_description`,
+            `repeating_effects_${element}_attribute`,
+            `repeating_effects_${element}_attributeValue`
+        ]);
+        getAttrs(attributes.concat(bonusAttributes), values => {
+            var sortedValues = {};
+            const effectKeys = Object.keys(values).filter((key) => key.includes("repeating_effects"));
+            for (let attribute of effectKeys) {
+                let components = attribute.split("_");
+                let id = components[2];
+                let attributeName = components[3];
+                if (!sortedValues[id]) {
+                    sortedValues[id] = {
+                        id: id,
+                        fullId: `repeating_effects_${id}`
+                    };
+                }
+                sortedValues[id][attributeName] = values[attribute];
+            }
+            const valueObjects = Object.values(sortedValues);
+            completion(values, classifyEffects(valueObjects));
+        });
+    });
+}
+
+function getEffects(completion) {
+    getAttrsAndEffects([], (values, effects) => {
+        completion(effects);
+    });
+}
+
+function removeEffect(effect) {
+    let adjustedName = searchableEffectName(effect.specialType || effect.type);
+    if (effect.data.ability) {
+        removeEffectAbility(adjustedName, effect.value);
+    }
+    removeRepeatingRow(effect.fullId);
+    resetEffectAttributeChanges(adjustedName, effect.attribute, effect.attributeValue);
+}
+
+function removeEffects(names, skipId) {
+    getEffects(effects => {
+        let matches = effects.effects.filter(effect => {
+            if (effect.id == skipId) {
+                return false;
+            }
+            return names.includes(effect.type) || names.includes(effect.specialType.trim().toLowerCase());
+        });
+        for (let match of matches) {
+            log(`Removing effect ${match.id} with the type ${match.specialType || match.type}`);
+            removeRepeatingRow(match.fullId);
+        }
+    });
+}
+
+function classifyEffects(effects) {
+    var result = {
+        effects: [],
+        criticalThreshold: 20
+    };
+    for (var effect of effects) {
+        let adjustedName = searchableEffectName(effect.specialType || effect.type);
+        effect.adjustedName = adjustedName;
+        effect.data = effectData[adjustedName];
+        result.effects.push(effect);
+
+        switch (effect.data.maskedType || effect.type) {
+            case "augment":
+                if (effect.specialType.trim().toLowerCase() == "aetherial focus") {
+                    result.mpMaxIncrease = true;
+                }
+                break;
+            case "critical(x)":
+                if (effect.value) {
+                    result.criticalThreshold -= parseInt(effect.value);
+                }
+                break;
+            case "damage":
+                if (result.damageRerolls) {
+                    result.damageRerolls.push(effect.data.name);
+                } else {
+                    result.damageRerolls = [effect.data.name];
+                }
+                break;
+            case "ddown(x)":
+            case "dps(x)":
+                if (result.dpsChanges) {
+                    result.dpsChanges.push(effect);
+                } else {
+                    result.dpsChanges = [effect];
+                }
+                log("dpsChanges: " + JSON.stringify(result.dpsChanges));
+                break;
+            case "silence":
+                result.isSilenced = true;
+                break;
+            case "stun":
+                result.isStunned = true;
+                break;
+            default:
+                break;
+        }
+        if (effect.type == "special") {
+            switch (effect.specialType.trim().toLowerCase()) {
+                case "astral fire":
+                    result.astralFireId = effect.fullId;
+                    break;
+                case "hawk's eye":
+                    result.hawksEyeId = effect.fullId;
+                    break;
+                case "surging tempest":
+                    result.surgingTempestId = effect.fullId;
+                    break;
+                case "umbral ice":
+                    result.umbralIceId = effect.fullId;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return result;
+}
+
+function addEffectsToRoll(effects, rollMacro, rollType) {
+    var penalty = 0;
+    var hasParalysis = false;
+    var criticalUp = 0;
+    var attributeUp = {};
+    var blindPenalty = 0;
+    var hasHawksEye = false;
+    for (let effect of effects.effects) {
+        var effectName = effect.type;
+        if (effect.type == "special") {
+            effectName = effect.specialType.trim().toLowerCase();
+        }
+        switch (effectName) {
+            case "blind":
+                blindPenalty = 2;
+                break;
+            case "brink":
+                penalty += 5;
+                break;
+            case "critical(x)":
+                if (effect.value) {
+                    criticalUp += parseInt(effect.value);
+                }
+                break;
+            case "hawk's eye":
+                hasHawksEye = true;
+                break;
+            case "paralyzed":
+                if (rollType == "primary") {
+                    hasParalysis = true;
+                }
+                break;
+            case "petrified":
+                penalty += 5;
+                break;
+            case "prone":
+                penalty += 2;
+                break;
+            case "sleep":
+                penalty += 3;
+                break;
+            case "slow":
+                penalty += 2;
+                break;
+            case "stun":
+                penalty += 5;
+                break;
+            case "weak":
+                penalty += 2;
+                break;
+        }
+    }
+    var updatedMacro = rollMacro;
+    if (hasParalysis) {
+        updatedMacro = updatedMacro.replace(/cs>?20/, "cs>20cf<5[chance of paralysis]");
+    }
+    if (criticalUp > 0) {
+        updatedMacro = updatedMacro.replace(/cs>?20/, `cs>${20 - criticalUp}`);
+    }
+    if (!hasHawksEye) {
+        // Hawk's Eye nullifies penalty from Blind
+        penalty += blindPenalty;
+    }
+    if (penalty > 0) {
+        updatedMacro = `${updatedMacro} - ${penalty}[penalty]`;
+    }
+    const matches = [...updatedMacro.matchAll(/@\{([a-z]{3})\}/g)];
+    for (let match of matches) {
+        const attributeName = match[1];
+        const attributeValue = attributeUp[attributeName];
+        if (!attributeValue) {
+            continue;
+        }
+        updatedMacro = updatedMacro.replace(
+            match[0],
+            `${match[0]}[${attributeName.toUpperCase()}] + ${attributeUp[attributeName]}[${attributeName.toUpperCase()} bonus]`
+        );
+    }
+    return updatedMacro;
+}
+
+function addEffectsToPreDamageRolls(effects, level, type, damageType, damageRoll, directHitRoll) {
+    var adds = [];
+    var negatives = [];
+    var summaries = [];
+
+    let isFireType = type.toLowerCase().includes("fire-aspect");
+    if (isFireType && effects.astralFireId) {
+        let addedDamage = level >= 50 ? "2d6" : "1d6";
+        adds.push(`${addedDamage}[Astral Fire]`);
+        summaries.push("Astral Fire proc");
+    }
+
+    if (effects.dpsChanges && damageType === "Damage") {
+        for (let effect of effects.dpsChanges) {
+            if (effect.data.name == "Raging Strikes" && !type.includes("Primary")) {
+                // This effect only applies to primary abilities
+                continue;
+            }
+            if (effect.data.maskedType === "ddown(x)" || parseInt(effect.value) < 0) {
+                negatives.push(`${effect.value}[${effect.data.name}]`);
+            } else {
+                adds.push(`${effect.value}[${effect.data.name}]`);
+            }
+            summaries.push(`${effect.data.name} proc`);
+        }
+    }
+
+    // Insert empty elements so the joined string starts with an operator +/-
+    if (adds.length > 0) {
+        adds.splice(0, 0, "");
+    }
+    if (negatives.length > 0) {
+        negatives.splice(0, 0, "");
+    }
+
+    log("Adding damage to roll");
+    let damage = damageRoll ? `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}` : `${adds.join(" + ")}${negatives.join(" - ")}`;
+    return {
+        damage: damage,
+        directHit: directHitRoll,
+        summaries: summaries
+    };
+}
+
+function addEffectsToPostDamageRolls(effects, damageType, damageRolls) {
+    var result = {};
+    var summaries = [];
+    if (damageType == "Damage" && effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
+        summaries.push(`Damage reroll available (${effects.damageRerolls.join(", ")})`);
+    }
+
+    if (effects.surgingTempestId) {
+        var rolls = [];
+        var total = 0;
+        var appliedSurgingTempest = false;
+        for (let roll of damageRolls) {
+            if (!roll || !roll.result) {
+                rolls.push("");
+                continue;
+            }
+
+            let dice = roll.dice;
+            if (!dice || dice.length == 0) {
+                total += roll.result;
+                rolls.push(roll.result);
+                continue;
+            }
+            let diceResult = dice.reduce(
+                (accumulator, currentValue) => {
+                    if (currentValue == 1) {
+                        appliedSurgingTempest = true;
+                        return 2 + accumulator;
+                    }
+                    return currentValue + accumulator;
+                },
+                0
+            );
+            let rawAdditions = roll.expression.split("+").reduce(
+                (accumulator, currentValue) => {
+                    let trimmed = currentValue.trim();
+                    if (trimmed.includes("d")) {
+                        return accumulator;
+                    }
+                    let value = parseInt(trimmed);
+                    if (isNaN(value)) {
+                        log(`Unexpected NaN ${trimmed} from expression ${roll.expression}`);
+                        return accumulator;
+                    }
+                    return accumulator + parseInt(trimmed);
+                },
+                0
+            );
+
+            let newResult = diceResult + rawAdditions;
+            total += newResult;
+            rolls.push(newResult);
+        }
+        result.rolls = rolls;
+        result.total = total;
+        if (appliedSurgingTempest) {
+            summaries.push("Surging Tempest proc");
+        }
+    } else {
+        let rolls = damageRolls.map(roll => roll.result);
+        let total = rolls.reduce(
+            (accumulator, currentValue) => (currentValue ?? 0) + accumulator,
+            0
+        );
+        result.rolls = rolls;
+        result.total = total;
+    }
+    result.summary = summaries.join(", ");
+
+    return result;
+}
+
+function searchableEffectName(name) {
+    return name
+        .replaceAll(/(\([-|\s\w]+\))|(\[[-+><=\w]+\])|'/g, "")
+        .replaceAll(" ", "_")
+        .trim().toLowerCase();
+}
+
+function consumeEffectsOnAbility(name, condition, effects) {
+    var summaries = [];
+    for (let effect of effects.effects) {
+        let normalizedName = name.toLowerCase();
+        let normalizedCondition = condition.toLowerCase();
+        let specialType = (effect.specialType ?? "").toLowerCase();
+        let maskedType = effect.data.maskedType.toLowerCase();
+        let value = (effect.value ?? "").toLowerCase();
+        let isReadyType = effect.type == "ready(x)";
+
+        if (!isReadyType && !specialType.includes(" ready") && !maskedType.includes(" ready")) {
+            continue;
+        }
+
+        if (
+            specialType.includes(normalizedName) ||
+            normalizedCondition.includes(specialType) ||
+            (isReadyType && value == normalizedName) ||
+            (isReadyType && normalizedCondition.includes(value))
+        ) {
+            log("Consuming effect " + JSON.stringify(effect));
+            // Consume X Ready
+            removeRepeatingRow(effect.fullId);
+
+            let effectName = effect.specialType || effectData[effect.type.replace("(x)", "")].name;
+            summaries.push(`Consumed ${(effectName.replace("(X)", effect.value))}`);
+        }
+    }
+    return summaries.join(", ");
+}
+
+function buttonsForTargetEffects(effects, level) {
+    var buttons = [];
+
+    log("Preparing target effects: " + JSON.stringify(effects));
+    for (let effect of effects) {
+        let adjustedEffect = searchableEffectName(effect.trim());
+        let data = effectData[adjustedEffect];
+        if (!data) {
+            log("Unhandled effect " + adjustedEffect);
+            continue;
+        }
+
+        var value = "";
+        let match = effect.match(/\(([-|\s\w]+)\)/);
+        if (match && match.length >= 2) {
+            value = match[1];
+        }
+
+        let valueDefinition = value ? `--v ${value}` : "";
+        let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : "";
+        let effectName = (data.specialType || data.type).replace(/\([Xx]{1}\)/, "");
+        let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --expire ${data.expiry} ` +
+            `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`;
+        buttons.push(button);
+    }
+    return buttons.join("\n");
+}
+
+function matchesEffectCondition(effect, dice) {
+    let conditionMatch = effect.match(/\[([-+><=\w]+)\]/);
+    if (!conditionMatch || conditionMatch.length < 2) {
+        return true;
+    }
+
+    let operator = conditionMatch[1].match(/[><=]+/)[0];
+    let operands = conditionMatch[1].split(operator);
+    var value;
+    if (operands[0].toLowerCase() == "d") {
+        value = dice.hit;
+    } else {
+        log("Unrecognized operand " + operands[0]);
+        return false;
+    }
+
+    let compareTo = parseInt(operands[1]);
+    if (isNaN(value) || isNaN(compareTo)) {
+        log("Unrecognized operands " + conditionMatch[1]);
+        return false;
+    }
+
+    switch (operator) {
+        case ">": return value > compareTo;
+        case "<": return value < compareTo;
+        case ">=": return value >= compareTo;
+        case "<=": return value <= compareTo;
+        case "=":
+        case "==":
+            return value == compareTo;
+        default:
+            log("Unrecognized operator " + operator);
+            return false;
+    }
+}
+
+function replacementEffect(effect, existingEffects) {
+    if (effect == "transpose") {
+        if (existingEffects.astralFireId) {
+            return { name: "umbral_ice", valid: true };
+        } else if (existingEffects.umbralIceId) {
+            return { name: "astral_fire", valid: true };
+        } else {
+            log("Cannot use transpose when missing both astral fire/umbral ice");
+            return { valid: false };
+        }
+    }
+    return { name: effect, valid: true };
+}
+
+function resolveDuplicates(name, effect, existingEffectTypes, existingEffects) {
+    if (effect.duplicate == "block" && existingEffectTypes.includes(name)) {
+        log("Effect " + effect.name + " already exists, skipping");
+        return { result: false, summaries: [] };
+    }
+
+    var summaries = [];
+    if (effect.duplicate == "replace") {
+        for (let replacable of existingEffects.effects) {
+            if (replacable.type == effect.type && replacable.specialType == effect.specialType) {
+                summaries.push(`Removed existing ${effect.name}`);
+                removeRepeatingRow(replacable.fullId);
+            }
+        }
+    }
+    return { result: true, summaries: summaries };
+}
+
+function resolveEffectAttributes(id, effectName, value) {
+    switch (effectName) {
+        case "attribute": {
+            log("Resolving attributes for attribute(x)");
+            if (!value) {
+                // Unable to deal with this until value has been set
+                return;
+            }
+            let definition = value.split(",");
+            if (!definition) {
+                log("Invalid value " + value);
+                return;
+            }
+            let attributeName = definition[0];
+            let attributeValue;
+            if (definition[1]) {
+                attributeValue = parseInt(definition[1].trim());
+            } else {
+                attributeValue = 1;
+            }
+            getAttrs([`${attributeName}Effective`, `${attributeName}Block`, `${attributeName}Unblocked`], values => {
+                var attributes = {};
+                let baseAttributeName;
+                if (values[`${attributeName}Block`] === "on") {
+                    baseAttributeName = `${attributeName}Unblocked`;
+                } else {
+                    baseAttributeName = `${attributeName}Effective`;
+                }
+
+                let currentValue = parseInt(values[`${baseAttributeName}Effective`]);
+                let newValue = currentValue + attributeValue;
+                log(`${attributeName}: ${newValue}, unblocked: ${values[`${attributeName}Unblocked`]}, original: ${attributes[`${attributeName}Original`]}`);
+                attributes[`repeating_effects_${id}_attribute`] = attributeName;
+                attributes[`repeating_effects_${id}_attributeValue`] = attributeValue;
+                attributes[baseAttributeName] = newValue;
+                log(`Setting ${baseAttributeName} to ${newValue}`);
+                setAttrs(attributes);
+            });
+            break;
+        }
+        case "bound": {
+            log("Resolving attributes for bound");
+            getAttrs(["size", "speedEffective", "speedBlock", "speedUnblocked"], values => {
+                let speed = parseInt(values.speedEffective);
+                let unblocked = parseInt(values.speedUnblocked ?? values.speed);
+                let newValue;
+                let diff;
+                if (values.size === "large") {
+                    newValue = Math.max(speed - 2, 0);
+                    unblocked = Math.max(unblocked - 2, 0);
+                    diff = 2;
+                } else {
+                    newValue = 0;
+                    unblocked = 0;
+                    diff = speed - newValue;
+                }
+
+                var attributes = {};
+                if (values.speedBlock === "on") {
+                    attributes.speedUnblocked = unblocked;
+                }
+                log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
+                attributes.speed = newValue;
+                attributes[`repeating_effects_${id}_attribute`] = "speed";
+                attributes[`repeating_effects_${id}_attributeValue`] = -diff;
+                setAttrs(attributes);
+            });
+            break;
+        }
+        case "defenders_boon": {
+            log("Resolving attributes for Defender's Boon");
+            let attributeValue;
+            if (value) {
+                attributeValue = parseInt(value.trim());
+            } else {
+                attributeValue = 1;
+            }
+            getAttrs(["defense", "magicDefense"], values => {
+                let defense = parseInt(values.defense);
+                let magicDefense = parseInt(values.magicDefense);
+                let attributeName;
+                let newValue;
+                if (defense === magicDefense) {
+                    // Do nothing
+                    return;
+                } else if (defense < magicDefense) {
+                    attributeName = "defense";
+                    newValue = defense + attributeValue;
+                } else if (magicDefense < defense) {
+                    attributeName = "magicDefense";
+                    newValue = magicDefense + attributeValue;
+                }
+
+                var attributes = {};
+                attributes[attributeName] = newValue;
+                attributes[`repeating_effects_${id}_attribute`] = attributeName;
+                attributes[`repeating_effects_${id}_attributeValue`] = attributeValue;
+                log(`Setting ${attributeName} to ${newValue}`);
+                setAttrs(attributes);
+            });
+            break;
+        }
+        case "slow":
+        case "heavy": {
+            log(`Resolving attributes for ${effectName}`);
+            getAttrs(["speed", "speedEffective", "speedBlock", "speedUnblocked"], values => {
+                let speed = parseInt(values.speed);
+                let newValue = Math.floor(speed / 2) + speed % 2;
+                var attributes = {};
+                if (values.speedBlock === "on") {
+                    log(`Speed was already blocked when activating ${effectName}`);
+                } else {
+                    attributes.speedBlock = "on";
+                    attributes.speedUnblocked = values.speedEffective;
+
+                    log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
+                }
+                attributes.speedEffective = newValue;
+
+                attributes[`repeating_effects_${id}_attribute`] = "speed";
+                attributes[`repeating_effects_${id}_attributeValue`] = newValue - speed;
+                setAttrs(attributes);
+            });
+            break;
+        }
+    }
+}
+
+function resolveEffectAbilities(effect, value = "") {
+    let data = effectData[effect];
+    if (!data || !data.ability) {
+        return;
+    }
+
+    let abilityDefinition = effectAbilities[data.ability];
+    if (!abilityDefinition) {
+        return;
+    }
+    var attributes = {};
+    for (let section of Object.entries(abilityDefinition)) {
+        for (let ability of section[1]) {
+            log("Generating effect ability " + ability.title);
+            let id = generateRowID();
+            for (let entry of Object.entries(ability)) {
+                var attributeValue = entry[1];
+                if (value && attributeValue && isNaN(attributeValue)) {
+                    attributeValue = attributeValue.replace("{value}", value);
+                }
+                attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = attributeValue;
+            }
+            attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
+            attributes[`repeating_${section[0]}_${id}_augment`] = "1";
+        }
+    }
+    setAttrs(attributes);
+}
+
+function removeEffectAbility(effect, value) {
+    let data = effectData[effect];
+    if (!data || !data.ability) {
+        return;
+    }
+    let abilityDefinition = effectAbilities[data.ability];
+    if (!abilityDefinition) {
+        return;
+    }
+
+    log("Removing ability " + JSON.stringify(data));
+    // Delete ability
+    for (let section of Object.keys(abilityDefinition)) {
+        let titles = abilityDefinition[section].map(ability => ability.title);
+        getSectionIDs(`repeating_${section}`, ids => {
+            let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_type`, `repeating_${section}_${id}_augment`]);
+            getAttrs(attributes, values => {
+                for (let id of ids) {
+                    let title = values[`repeating_${section}_${id}_title`];
+                    let type = values[`repeating_${section}_${id}_type`];
+                    let augment = values[`repeating_${section}_${id}_augment`];
+
+                    if (value && !type.includes(value)) {
+                        continue;
+                    }
+
+                    if (augment === "1" && titles.includes(title)) {
+                        log("Removed augment ability " + title);
+                        removeRepeatingRow(`repeating_${section}_${id}`);
+                    }
+                }
+            });
+        });
+    }
+}
+
+function resetEffectAttributeChanges(name, attribute, value, completion) {
+    log("Resetting effect attributes for " + attribute);
+    let attributeValue = parseInt(value);
+    if (!attribute || isNaN(attributeValue)) {
+        log("No effect attributes to reset");
+        if (completion) {
+            completion();
+        }
+        return;
+    }
+    getAttrs([`${attribute}Effective`, `${attribute}Block`, `${attribute}Unblocked`], values => {
+        let baseAttributeName;
+        let currentValue;
+        let newValue;
+        var newAttributes = {};
+        log(`${attribute}: ${values[`${attribute}Effective`]}, unblocked: ${values[`${attribute}Unblocked`]}`);
+        if (name === "heavy" || name === "slow") {
+            baseAttributeName = "speed";
+            newAttributes.speedBlock = "off";
+        }
+        if (values[`${attribute}Block`] === "on") {
+            baseAttributeName = `${attribute}Unblocked`;
+            if (attributeValue < 0) {
+                newAttributes[`${attribute}Effective`] = parseInt(values[`${attribute}Effective`]) - attributeValue;
+            }
+        } else {
+            baseAttributeName = `${attribute}Effective`;
+        }
+        currentValue = parseInt(values[baseAttributeName]);
+        newValue = currentValue - attributeValue;
+
+        if (isNaN(currentValue)) {
+            log(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`);
+            return;
+        }
+        newAttributes[baseAttributeName] = newValue;
+        log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
+        setAttrs(newAttributes);
+        if (completion) {
+            completion();
+        }
+    });
+}
+
+function resolveSpecialEffects(id, effect, value, dice, values, existingEffects) {
+    var attributes = {};
+    var summaries = [];
+    let skip = effectData[effect].expiry === "ephemeral";
+
+    resolveEffectAbilities(effect);
+    resolveEffectAttributes(id, effect, value);
+
+    switch (effect) {
+        case "astral_fire":
+            // Clear MP recovery
+            attributes.mpRecoveryBlock = "on";
+
+            // Remove Umbral Ice
+            if (existingEffects.umbralIceId) {
+                summaries.push("Removed Umbral Ice");
+                removeRepeatingRow(existingEffects.umbralIceId);
+            }
+            summaries.push(addEffectsToSelf(values, dice, ["Thunderhead Ready"], existingEffects));
+            break;
+        case "barrier":
+            setAttrs({
+                barrierPoints: Math.max(values.barrierPoints ?? 0, parseInt(value))
+            });
+            summaries.push(`Granted ${value} HP barrier`);
+            break;
+        case "clear_enfeeblements":
+        case "transcendent": {
+            log("Clearing all enfeeblements");
+            for (let effect of existingEffects.effects) {
+                if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
+                    log(`Clearing ${effect.data.name}`);
+                    removeEffect(effect);
+                }
+            }
+            break;
+        }
+        case "consume": {
+            let specification = value.split("|");
+            let item = specification[0].trim();
+            var effectValue = "";
+            if (specification.length > 1) {
+                effectValue = specification[1];
+            }
+
+            // Consume item
+            log("Consuming item");
+            summaries.push(`Consumed item ${item}`);
+            getSectionIDs("repeating_items", ids => {
+                let attributes = ids.flatMap(id => [`repeating_items_${id}_title`, `repeating_items_${id}_effect`, `repeating_items_${id}_count`]);
+                getAttrs(attributes, values => {
+                    for (let id of ids) {
+                        let title = values[`repeating_items_${id}_title`].trim();
+                        let itemDescription = values[`repeating_items_${id}_effect`];
+                        if (effectValue && !itemDescription.toLowerCase().includes(effectValue.toLowerCase())) {
+                            continue;
+                        }
+
+                        if (item.toLowerCase() !== title.toLowerCase()) {
+                            continue;
+                        }
+
+                        let count = parseInt(values[`repeating_items_${id}_count`]);
+                        if (isNaN(count) || count <= 1) {
+                            log("Removing item linked to ability");
+                            removeRepeatingRow(`repeating_items_${id}`);
+                        } else {
+                            log("Removing one count of item linked to ability");
+                            var newAttributes = {};
+                            newAttributes[`repeating_items_${id}_count`] = count - 1;
+                            setAttrs(newAttributes);
+                        }
+                    }
+                });
+            });
+
+            // Remove effect
+            let adjustedItemName = searchableEffectName(item);
+            for (let effect of existingEffects.effects) {
+                let adjustedSpecialType = searchableEffectName(effect.specialType);
+                if (adjustedSpecialType !== adjustedItemName) {
+                    continue;
+                }
+                let data = effectData[adjustedItemName];
+                if (data.ability) {
+                    // Remove ability
+                    log("Removing ability linked to consumed item");
+                    removeEffectAbility(adjustedItemName, effectValue);
+                }
+
+                if (!effectValue || effectValue === effect.value) {
+                    log("Removing effect linked to consumed item");
+                    summaries.push(`Consumed effect ${effect.data.name}`);
+                    removeRepeatingRow(effect.fullId);
+                }
+            }
+            break;
+        }
+        case "comatose":
+        case "knocked_out": {
+            // Clear all non-permanent/adventure-wide effects
+            log(`Clearing all non-permanent/adventure-wide effects from ${effect.type}`);
+            for (let effect of existingEffects.effects) {
+                if (effect.expiry !== "end" && effect.expiry !== "permanent") {
+                    log(`Removing ${effect.data.name}`);
+                    removeEffect(effect);
+                }
+            }
+            attributes.mpRecoveryBlock = "on";
+            break;
+        }
+        case "lucid_dreaming":
+            attributes.mpRecovery = 3;
+            break;
+        case "restore": {
+            let components = value.split("-");
+            let section = components[0].toLowerCase();
+            let abilityName = components[1];
+            let normalizedName = abilityName.toLowerCase();
+            let increment = parseInt(components[2]);
+            if (isNaN(increment)) {
+                log("Cannot read value for effect " + effect);
+            }
+
+            summaries.push(`Restored ${increment} use(s) of ${abilityName}`);
+            log("Restoring uses of " + abilityName);
+            getSectionIDs(`repeating_${section}`, ids => {
+                let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`]);
+                getAttrs(attributes, values => {
+                    for (let id of ids) {
+                        let title = values[`repeating_${section}_${id}_title`];
+                        if (title.toLowerCase() === normalizedName) {
+                            let uses = values[`repeating_${section}_${id}_uses`];
+                            let max = values[`repeating_${section}_${id}_uses_max`];
+                            if (uses < max) {
+                                log("Restored " + abilityName);
+                                var attributes = {};
+                                attributes[`repeating_${section}_${id}_uses`] = Math.min(uses + increment, max);
+                                setAttrs(attributes);
+                            }
+                            return;
+                        }
+                    }
+                    log("Failed to find " + abilityName);
+                });
+            });
+            break;
+        }
+        case "thrill_of_battle": {
+            // Heal by roll total and add a barrier for anything that exceeds max HP
+            let result = parseInt(dice.damage.result);
+            if (isNaN(result)) {
+                log("Invalid dice roll for Thrill of Battle: " + JSON.stringify(dice.damage));
+            } else {
+                let difference = values.hitPoints_max - values.hitPoints;
+                var hitPointsToAdd = Math.min(result, difference);
+
+                if (hitPointsToAdd > 0) {
+                    var barrierPoints = values.barrierPoints;
+                    if (difference > 0) {
+                        summaries.push(`Healed ${hitPointsToAdd} HP`);
+                    }
+                    if (result > difference) {
+                        let remainder = result - difference;
+                        barrierPoints = Math.max(barrierPoints, remainder);
+                        summaries.push(`Added a ${remainder} HP barrier`);
+                    }
+                    setAttrs({
+                        hitPoints: hitPointsToAdd + values.hitPoints,
+                        barrierPoints: barrierPoints
+                    });
+                }
+            }
+            break;
+        }
+        case "umbral_ice":
+            if (existingEffects.astralFireId) {
+                summaries.push("Removed Astral Fire");
+                removeRepeatingRow(existingEffects.astralFireId);
+
+                // Reset MP recovery
+                attributes.mpRecoveryBlock = "off";
+            }
+            summaries.push(addEffectsToSelf(values, dice, ["Thunderhead Ready"], existingEffects));
+            break;
+        default:
+            break;
+    }
+
+    return { attributes: attributes, summaries: summaries, skip: skip };
+}
+
+// Adds the given effects. Values should contain level, barrierPoints.
+function addEffectsToSelf(values, dice, effects, existingEffects) {
+    var attributes = {};
+    var summaries = [];
+
+    let existingEffectTypes = existingEffects.effects.map(effect => {
+        if (effect.type == "special") {
+            return effect.specialType
+                .replaceAll("'", "")
+                .replaceAll(" ", "_")
+                .toLowerCase();
+        }
+        return effect.type;
+    });
+
+    log("Adding effects to self: " + JSON.stringify(effects));
+    for (let effect of effects) {
+        if (!effect) {
+            continue;
+        }
+        effect = effect.trim();
+
+        if (!matchesEffectCondition(effect, dice)) {
+            log("Condition not fulfilled; skipping effect " + effect);
+            continue;
+        }
+
+        let searchableName = searchableEffectName(effect);
+        let replacement = replacementEffect(searchableName, existingEffects);
+        if (!replacement.valid) {
+            continue;
+        }
+        let adjustedEffect = replacement.name;
+        let data = effectData[adjustedEffect];
+        if (!data) {
+            log("Unhandled effect " + adjustedEffect);
+            continue;
+        }
+        let duplicatesResult = resolveDuplicates(adjustedEffect, data, existingEffectTypes, existingEffects);
+        if (!duplicatesResult.result) {
+            continue;
+        }
+        summaries = summaries.concat(duplicatesResult.summaries);
+
+        var value = null;
+        let match = effect.match(/\(([-|\s\w]+)\)/);
+        if (match && match.length >= 2) {
+            value = match[1];
+        }
+
+        let initValues = {
+            id: generateRowID(),
+            type: data.type,
+            specialType: data.specialType,
+            statusType: data.statusType,
+            value: value,
+            description: data.description,
+            expiry: data.expiry,
+            curable: data.curable
+        };
+
+        let specialEffectResult = resolveSpecialEffects(initValues.id, adjustedEffect, value, dice, values, existingEffects);
+        summaries = summaries.concat(specialEffectResult.summaries.filter(element => element));
+        if (specialEffectResult.skip) {
+            continue;
+        }
+
+        attributes = specialEffectResult.attributes;
+        attributes[`repeating_effects_${initValues.id}_type`] = initValues.type;
+        if (initValues.specialType) {
+            attributes[`repeating_effects_${initValues.id}_specialType`] = initValues.specialType;
+        }
+        if (initValues.value) {
+            attributes[`repeating_effects_${initValues.id}_value`] = initValues.value;
+        }
+        attributes[`repeating_effects_${initValues.id}_statusType`] = initValues.statusType;
+        attributes[`repeating_effects_${initValues.id}_expiry`] = initValues.expiry;
+        attributes[`repeating_effects_${initValues.id}_source`] = "Self";
+        attributes[`repeating_effects_${initValues.id}_description`] = initValues.description;
+        attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off";
+        attributes[`repeating_effects_${initValues.id}_editable`] = "off";
+        attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
+        attributes[`repeating_effects_${initValues.id}_effectsExpandItem`] = "on";
+
+        summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
+    }
+    if (Object.keys(attributes).length > 0) {
+        setAttrs(attributes);
+    }
+    return summaries.join(", ");
+}
+
+function templateValues(title, value) {
+    if (value) {
+        return [title, value];
+    }
+    return ["", ""];
+}
+
+function spendResource(isGeneric, cost, resourceType, value, value_max, attributeName) {
+    if (isGeneric) {
+        return [true, `Spend ${cost} ${resourceType}`];
+    }
+
+    if (cost > 0 && resourceType && value >= 0 && value_max >= 0) {
+        if (value < cost) {
+            return [false, `${cost} ${resourceType} - Insufficient (${value}/${value_max})`];
+        } else {
+            const newValue = value - cost;
+            var attributes = {};
+            attributes[attributeName] = newValue;
+            setAttrs(attributes);
+            const resultString = `Spent ${cost} ${resourceType} (${newValue}/${value_max})`;
+            log(resultString);
+            return [true, resultString];
+        }
+    } else {
+        return [false, `${cost} ${resourceType} - Character has no ${resourceType}!`];
+    }
+}
+
+function restoreResource(isGeneric, restoration, resourceType, resourceNames) {
+    const values = restoration.split(",");
+    var attributes = [];
+    var summary = isGeneric ? "Restore " : "Restored ";
+    var didRestore = false;
+    for (let i = 0; i < values.length; i++) {
+        var parts = values[i].trim().split(" ");
+        if (parts.length < 2) {
+            log("Invalid restore declaration " + values[i]);
+            continue;
+        }
+        if (parts.length > 2) {
+            // Account for resources that have spaces in the name
+            parts = [parts[0], parts.slice(1).join(" ")];
+        }
+        const typeForValue = parts[1].toLowerCase();
+        if (typeForValue == "mp") {
+            didRestore = true;
+            attributes.push({
+                name: "magicPoints",
+                value: parts[0]
+            });
+            summary += `${parts[0]} MP, `;
+        } else if (typeForValue == "hp") {
+            didRestore = true;
+            attributes.push({
+                name: "hitpoints",
+                value: parts[0]
+            });
+            summary += `${parts[0]} HP, `;
+        } else if (resourceType && typeForValue == resourceNames[0].toLowerCase()) {
+            didRestore = true;
+            attributes.push({
+                name: "resourceValue",
+                value: parts[0]
+            });
+            summary += `${parts[0]} ${resourceType}, `;
+        } else if (resourceType && typeForValue == resourceNames[1].toLowerCase()) {
+            didRestore = true;
+            attributes.push({
+                name: "resource2Value",
+                value: parts[0]
+            });
+            summary += `${parts[0]} ${resourceType}, `;
+        }
+    }
+
+    if (!didRestore) {
+        return "";
+    }
+
+    if (!isGeneric) {
+        const attributeNames = attributes.flatMap((element) => [element.name, element.name + "_max"]);
+        getAttrs(attributeNames, values => {
+            var newValues = {};
+            for (let attribute of attributes) {
+                const value = values[attribute.name];
+                const max = values[attribute.name + "_max"];
+                const sum = +value + +attribute.value;
+                const newValue = Math.min(sum, max);
+                newValues[attribute.name] = newValue;
+                log("Restored " + attribute.name + " to " + newValue);
+            }
+            setAttrs(newValues);
+        });
+    }
+
+    return summary.substring(0, summary.length - 2);
+}
+
+function performAbilityResourceChanges(section, rowId, values, effects) {
+    const type = values[`repeating_${section}_${rowId}_type`];
+    const cost = values[`repeating_${section}_${rowId}_cost`];
+    const resourceType = values[`repeating_${section}_${rowId}_resource`];
+    const uses = values[`repeating_${section}_${rowId}_uses`];
+    const usesMax = values[`repeating_${section}_${rowId}_uses_max`];
+    const restoration = values[`repeating_${section}_${rowId}_restore`];
+    const isGeneric = values.sheet_type != "unique";
+    const resourceNames = [values.resource, values.resource2];
+
+    var resourceCost = "";
+    var resourceResult = false;
+    if (cost > 0) {
+        if (resourceType.toLowerCase() == "mp") {
+            let result = spendResource(
+                isGeneric,
+                cost,
+                resourceType,
+                values.magicPoints,
+                values.magicPoints_max,
+                "magicPoints"
+            );
+            resourceResult = result[0];
+            resourceCost = result[1];
+        } else if (resourceType.toLowerCase() == resourceNames[0].toLowerCase()) {
+            let result = spendResource(
+                isGeneric,
+                cost,
+                resourceType,
+                values.resourceValue,
+                values.resourceValue_max,
+                "resourceValue"
+            );
+            resourceResult = result[0];
+            resourceCost = result[1];
+        } else if (resourceType.toLowerCase() == resourceNames[1].toLowerCase()) {
+            let result = spendResource(
+                isGeneric,
+                cost,
+                resourceType,
+                values.resource2Value,
+                values.resource2Value_max,
+                "resource2Value"
+            );
+            resourceResult = result[0];
+            resourceCost = result[1];
+        }
+    }
+    if (resourceResult || cost == 0) {
+        // Spend uses if there are any
+        if (usesMax > 0) {
+            let result = spendResource(
+                isGeneric,
+                1,
+                "uses",
+                uses,
+                usesMax,
+                `repeating_${section}_${rowId}_uses`
+            );
+            if (result[1]) {
+                if (resourceCost) {
+                    resourceCost += `\n${result[1]}`;
+                } else {
+                    resourceCost = result[1];
+                }
+            }
+        }
+    }
+
+    var summaries = [resourceCost];
+
+    // Restore resources
+    if (resourceResult || cost == 0) {
+        if (restoration) {
+            summaries.push(restoreResource(isGeneric, restoration, resourceType, resourceNames));
+        }
+        let isIceType = type.toLowerCase().includes("ice-aspect");
+        if (isIceType && effects.umbralIceId) {
+            summaries.push(`${restoreResource(isGeneric, "5 mp", resourceType, resourceNames)} (Umbral Ice)`);
+        }
+    }
+
+    return summaries.filter(element => element).join("\n");
+}
+
+function stringWithTitle(title, value) {
+    if (value) {
+        return `${title} ${value}`;
+    }
+    return "";
+}
+
+function applyAdvantageToDice(advantage, dice) {
+    if (advantage == 0) {
+        return dice;
+    }
+    if (!dice.includes("d")) {
+        return dice;
+    }
+    const highOrLow = advantage > 0 ? "kh" : "kl";
+    const multiplier = Math.abs(advantage) + 1;
+
+    var searchString = dice;
+    var newDice = "";
+    var index;
+    while ((index = searchString.indexOf("d")) >= 0) {
+        let numberOfDice;
+        if (index == 0) {
+            numberOfDice = 1;
+            searchString = `1${searchString}`;
+            index = 1;
+        } else {
+            newDice += searchString.substring(0, index - 1);
+            numberOfDice = searchString.substring(index - 1, index);
+        }
+        const numberOfDiceWithMultiplier = numberOfDice * multiplier;
+
+        // Find end of roll
+        let match = /[-+* /)]/.exec(searchString.substring(index));
+        if (match) {
+            const matchIndex = match.index + index;
+            newDice += `${numberOfDiceWithMultiplier}${searchString.substring(index, matchIndex)}${highOrLow}${numberOfDice}`;
+            searchString = searchString.substring(matchIndex);
+        } else {
+            newDice += `${numberOfDiceWithMultiplier}${searchString.substring(index).trim()}${highOrLow}${numberOfDice}`;
+            searchString = "";
+            break;
+        }
+    }
+    newDice += searchString;
+    return newDice;
+}
+
+// Roll stat
+function rollStat(stat, statName) {
+    getAttrsAndEffects([
+        "d20"
+    ], (values, effects) => {
+        var roll = `${values.d20} + @{${stat}}`;
+        roll = addEffectsToRoll(effects, roll, "stat");
+
+        log(`Rolling stat &{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`);
+        startRoll(`&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`, results => {
+            const rollResult = results.results.roll.result;
+            finishRoll(results.rollId, {
+                roll: Math.max(rollResult, 0)
+            });
+        });
+    });
+}
+
+// Share ability details to chat
+function shareAbility(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_icon`,
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_type`,
+        `repeating_${section}_${rowId}_cost`,
+        `repeating_${section}_${rowId}_resource`,
+        `repeating_${section}_${rowId}_condition`,
+        `repeating_${section}_${rowId}_trigger`,
+
+        `repeating_${section}_${rowId}_target`,
+        `repeating_${section}_${rowId}_range`,
+        `repeating_${section}_${rowId}_check`,
+        `repeating_${section}_${rowId}_cr`,
+
+        `repeating_${section}_${rowId}_baseEffect`,
+        `repeating_${section}_${rowId}_directHit`,
+        `repeating_${section}_${rowId}_effectName`,
+        `repeating_${section}_${rowId}_effect`,
+        `repeating_${section}_${rowId}_limitation`
+    ], values => {
+        const icon = values[`repeating_${section}_${rowId}_icon`];
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const type = templateValues("Type:", values[`repeating_${section}_${rowId}_type`]);
+        const condition = templateValues("Condition:", values[`repeating_${section}_${rowId}_condition`]);
+        const trigger = templateValues("Trigger:", values[`repeating_${section}_${rowId}_trigger`]);
+        const target = templateValues("Target:", values[`repeating_${section}_${rowId}_target`]);
+        const range = templateValues("Range:", values[`repeating_${section}_${rowId}_range`]);
+        const check = templateValues("Check:", values[`repeating_${section}_${rowId}_check`]);
+        const cr = templateValues("CR:", values[`repeating_${section}_${rowId}_cr`]);
+        const baseEffect = templateValues("Base Effect:", values[`repeating_${section}_${rowId}_baseEffect`]);
+        const directHit = templateValues("Direct Hit:", values[`repeating_${section}_${rowId}_directHit`]);
+        const effectName = values[`repeating_${section}_${rowId}_effectName`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+        const limitation = templateValues("Limitation:", values[`repeating_${section}_${rowId}_limitation`]);
+
+        var cost = templateValues("Cost:", values[`repeating_${section}_${rowId}_cost`]);
+        var resourceType = values[`repeating_${section}_${rowId}_resource`];
+        if (cost[1] <= 0) {
+            cost = ["", ""];
+            resourceType = "";
+        }
+
+        startRoll(`&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
+            `{{typeTitle=${type[0]}}} {{type=${type[1]}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}}` +
+            `{{triggerTitle=${trigger[0]}}} {{trigger=${trigger[1]}}} {{targetTitle=${target[0]}}} {{target=${target[1]}}}` +
+            `{{rangeTitle=${range[0]}}} {{range=${range[1]}}} {{checkTitle=${check[0]}}} {{check=${check[1]}}}` +
+            `{{crTitle=${cr[0]}}} {{cr=${cr[1]}}} {{baseEffectTitle=${baseEffect[0]}}} {{baseEffect=${baseEffect[1]}}}` +
+            `{{directHitTitle=${directHit[0]}}} {{directHit=${directHit[1]}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
+            `{{limitationTitle=${limitation[0]}}} {{limitation=${limitation[1]}}}`, results => {
+                finishRoll(results.rollId);
+            });
+    });
+}
+
+// Roll ability
+function activateAbility(eventInfo) {
+    log("Activate ability " + JSON.stringify(eventInfo));
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    getAttrsAndEffects([
+        `repeating_${section}_${rowId}_icon`,
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_type`,
+        `repeating_${section}_${rowId}_cost`,
+        `repeating_${section}_${rowId}_resource`,
+        `repeating_${section}_${rowId}_condition`,
+        `repeating_${section}_${rowId}_trigger`,
+        `repeating_${section}_${rowId}_uses`,
+        `repeating_${section}_${rowId}_uses_max`,
+
+        `repeating_${section}_${rowId}_target`,
+        `repeating_${section}_${rowId}_range`,
+
+        `repeating_${section}_${rowId}_baseEffect`,
+        `repeating_${section}_${rowId}_directHit`,
+
+        `repeating_${section}_${rowId}_effectName`,
+        `repeating_${section}_${rowId}_effect`,
+        `repeating_${section}_${rowId}_effectSelf`,
+        `repeating_${section}_${rowId}_effectTarget`,
+
+        `repeating_${section}_${rowId}_stat`,
+        `repeating_${section}_${rowId}_damageType`,
+        `repeating_${section}_${rowId}_hitType`,
+        `repeating_${section}_${rowId}_hitDie`,
+        `repeating_${section}_${rowId}_baseValue`,
+        `repeating_${section}_${rowId}_cr`,
+        `repeating_${section}_${rowId}_restore`,
+        `repeating_${section}_${rowId}_combo`,
+
+        "strEffective", "dexEffective", "vitEffective", "intEffective", "mndEffective",
+        "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
+        "advantage", "character_name"
+    ], (values, effects) => {
+        // Perform roll
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const icon = values[`repeating_${section}_${rowId}_icon`];
+        const usesMax = values[`repeating_${section}_${rowId}_uses_max`];
+
+        const cost = values[`repeating_${section}_${rowId}_cost`];
+
+        const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase();
+        const damageType = values[`repeating_${section}_${rowId}_damageType`];
+        const hitType = values[`repeating_${section}_${rowId}_hitType`];
+        const restoration = values[`repeating_${section}_${rowId}_restore`];
+        const statValue = values[`${statType}Effective`];
+        const baseEffect = values[`repeating_${section}_${rowId}_baseEffect`];
+        const baseValue = values[`repeating_${section}_${rowId}_baseValue`];
+        const directHit = values[`repeating_${section}_${rowId}_directHit`];
+        const effectName = values[`repeating_${section}_${rowId}_effectName`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+        const effectSelf = values[`repeating_${section}_${rowId}_effectSelf`];
+        const effectTarget = values[`repeating_${section}_${rowId}_effectTarget`];
+
+        const combo = values[`repeating_${section}_${rowId}_combo`];
+
+        setAttrs({
+            currentCombo: "" // Reset combo indicators
+        });
+        const crString = stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`]);
+        const typeString = stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`]);
+        const condition = templateValues("Condition:", values[`repeating_${section}_${rowId}_condition`]);
+        const triggerString = stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`]);
+
+        var hitDie = values[`repeating_${section}_${rowId}_hitDie`];
+        hitDie = applyAdvantageToDice(values.advantage, hitDie);
+
+        var hitTitle = "";
+        var hitDefinition = "";
+        var button = "";
+
+        if (effects.isStunned) {
+            button = "Abilities cannot be used when stunned!";
+        } else if (effects.isSilenced && typeString.toLowerCase().includes("invoked")) {
+            button = "Invoked ability cannot be used when silenced!";
+        } else if (hitDie || baseValue) {
+            var bonusButton = "";
+            if (hitType != "None" && hitDie) {
+                hitTitle = `${hitType}: `;
+                if (statValue > 0) {
+                    hitDie = `${hitDie} + @{${statType}Effective}`;
+                }
+                hitDie = addEffectsToRoll(effects, hitDie, section);
+                hitDefinition = `[[${hitDie}]]`;
+
+                // Option to improve the hit roll
+                if (effects.effects.some((effect) => effect.type == "roll(x)")) {
+                    bonusButton = ` [${damageType} + Roll Up(X)](~${values.character_name}|repeating_${section}_${rowId}_rolldamagewithbonus)`;
+                }
+            }
+            button = `[${damageType}](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)${bonusButton}`;
+        } else if (cost > 0 || usesMax > 0 || restoration || combo || effectSelf || effectTarget) {
+            button = `[Effect](~${values.character_name}|repeating_${section}_${rowId}_rolldamage)`;
+        }
+
+        var directHitTitle = "";
+        if (directHit) {
+            directHitTitle = "Direct Hit:";
+        }
+
+        var attributes = {};
+        attributes[`repeating_${section}_${rowId}_currentRoll`] = "";
+        setAttrs(attributes);
+
+        let rollTemplate = `&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
+            `{{type=${typeString}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}} {{trigger=${triggerString}}} ` +
+            `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
+            `{{button=${button}}}`;
+        log(rollTemplate);
+        startRoll(rollTemplate, results => {
+            var hitRoll = results.results.hit;
+            if (!hitRoll) {
+                hitRoll = {
+                    result: undefined,
+                    dice: undefined,
+                    expression: undefined
+                };
+            }
+            const hitValue = hitRoll.result;
+            var computedValue = hitValue;
+            if (hitRoll.dice) {
+                var die;
+                if (hitRoll.expression.includes("kl")) {
+                    die = Math.min(...hitRoll.dice);
+                }
+                else {
+                    die = Math.max(...hitRoll.dice);
+                }
+                attributes[`repeating_${section}_${rowId}_currentRoll`] = die;
+            }
+            if (hitValue && parseInt(computedValue) < 0) {
+                computedValue = 0;
+            }
+
+            setAttrs(attributes);
+
+            finishRoll(results.rollId, {
+                hit: computedValue
+            });
+        });
+    });
+}
+
+function rollDamage(useRollBonus, eventInfo) {
+    log("Roll damage " + JSON.stringify(eventInfo));
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrsAndEffects([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_type`,
+        `repeating_${section}_${rowId}_damageType`,
+        `repeating_${section}_${rowId}_baseValue`,
+        `repeating_${section}_${rowId}_dhValue`,
+        `repeating_${section}_${rowId}_combo`,
+        `repeating_${section}_${rowId}_currentRoll`,
+
+        `repeating_${section}_${rowId}_cost`,
+        `repeating_${section}_${rowId}_uses`,
+        `repeating_${section}_${rowId}_uses_max`,
+        `repeating_${section}_${rowId}_restore`,
+        `repeating_${section}_${rowId}_resource`,
+
+        `repeating_${section}_${rowId}_effectSelf`,
+        `repeating_${section}_${rowId}_effectTarget`,
+        `repeating_${section}_${rowId}_condition`,
+
+        "level", "barrierPoints",
+        "hitPoints", "hitPoints_max",
+        "magicPoints", "magicPoints_max",
+        "resource", "resourceValue", "resourceValue_max",
+        "resource2", "resource2Value", "resource2Value_max",
+
+        "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
+
+        "character_name", "sheet_type"
+    ], (values, effects) => {
+        const name = values[`repeating_${section}_${rowId}_title`];
+        const type = values[`repeating_${section}_${rowId}_type`];
+        const baseValue = values[`repeating_${section}_${rowId}_baseValue`];
+        const directHitValue = values[`repeating_${section}_${rowId}_dhValue`];
+        const damageType = values[`repeating_${section}_${rowId}_damageType`];
+        const combo = values[`repeating_${section}_${rowId}_combo`];
+        const roll = parseInt(values[`repeating_${section}_${rowId}_currentRoll`]);
+
+        const selfEffects = values[`repeating_${section}_${rowId}_effectSelf`].split(",");
+        const targetEffects = values[`repeating_${section}_${rowId}_effectTarget`].split(",");
+        const condition = values[`repeating_${section}_${rowId}_condition`];
+
+        var bonusValue = 0;
+        if (useRollBonus) {
+            bonusValue = effects.reduce(
+                (accumulator, currentValue) => {
+                    if (currentValue.data.maskedType != "roll(x)") {
+                        return accumulator;
+                    }
+                    if (currentValue.value) {
+                        return accumulator + parseInt(currentValue.value);
+                    }
+                    return accumulator;
+                }, 0
+            );
+        }
+
+        var criticalMultiplier = 1;
+        if (roll) {
+            criticalMultiplier = roll + bonusValue >= effects.criticalThreshold ? 2 : 1;
+        }
+
+        // Add crit multiplier to other dice rolls
+        var baseValueWithMultipliers = baseValue;
+        if (baseValue.includes("d")) {
+            baseValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + baseValue[0] + "]]" + baseValue.substring(1);
+        }
+        var directHitValueWithMultipliers = directHitValue;
+        if (directHitValue.includes("d")) {
+            directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1);
+        }
+        let rolls = addEffectsToPreDamageRolls(effects, values.level, type, damageType, baseValueWithMultipliers, directHitValueWithMultipliers);
+
+        var damageTitle = "";
+        var damageDice = "";
+        if (rolls.damage) {
+            damageTitle = `${damageType}: `;
+            damageDice = `[[${rolls.damage}]]`;
+        }
+        var directHitTitle = "";
+        var directHitDice = "";
+        if (rolls.directHit) {
+            directHitTitle = "Direct Hit: ";
+            directHitDice = `[[${rolls.directHit}]]`;
+        }
+
+        var totalTitle = "";
+        if (rolls.damage && rolls.directHit) {
+            totalTitle = `Full ${damageTitle}`;
+        }
+
+        var button = "";
+        var comboTitle = "";
+        if (combo) {
+            setAttrs({
+                currentCombo: combo
+            });
+            var choices = [combo];
+            comboTitle = "Combo";
+            if (combo.includes(",")) {
+                choices = combo.split(",");
+            }
+            for (let i = 0; i < choices.length; i++) {
+                button += `[${choices[i].trim()}](~${values.character_name}|repeating_${section}_${rowId}_runcombo${i + 1})`;
+            }
+        }
+
+        const resourceCost = performAbilityResourceChanges(section, rowId, values, effects);
+
+        if (!damageDice && !directHitDice && !combo && !resourceCost && !selfEffects && !targetEffects) {
+            log("No reason to roll damage");
+            return;
+        }
+
+        var targetEffectTitle = "";
+        let targetEffectButtons = buttonsForTargetEffects(targetEffects, values.level);
+        if (targetEffectButtons) {
+            targetEffectTitle = "Effects";
+        }
+
+        // Roll damage
+        let rollTemplate = `&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
+            `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
+            `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
+            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`;
+        log(rollTemplate);
+        startRoll(rollTemplate, results => {
+            const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
+            const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
+
+            let computedResults = addEffectsToPostDamageRolls(effects, damageType, [damageRoll, directHitRoll]);
+            let consumedEffectSummary = consumeEffectsOnAbility(name, condition, effects);
+
+            let dice = {
+                hit: roll,
+                damage: damageRoll,
+                directHit: directHitRoll
+            };
+            let effectSummary = addEffectsToSelf(values, dice, selfEffects, effects);
+            let procSummary = rolls.summaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
+
+            var attributes = {};
+            attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1;
+            setAttrs(attributes);
+
+            finishRoll(
+                results.rollId,
+                {
+                    proc: procSummary,
+                    damage: computedResults.rolls[0],
+                    directHit: computedResults.rolls[1],
+                    total: totalTitle ? computedResults.total : ""
+                }
+            );
+        });
+    });
+}
+
+function activateCombo(eventInfo, index) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    log("Combo activated " + JSON.stringify(eventInfo));
+    getAttrs([
+        `repeating_${section}_${rowId}_combo`
+    ], values => {
+        const combo = values[`repeating_${section}_${rowId}_combo`];
+        var abilityName = combo.trim().toLowerCase();
+        if (combo.includes(",")) {
+            const choices = combo.split(",");
+            if (index < choices.length) {
+                abilityName = choices[index].trim().toLowerCase();
+            } else {
+                log(`Combo index out of bonds: selected ${index}, not in ${combo}`);
+                return;
+            }
+        }
+        getSectionIDs(`repeating_${section}`, ids => {
+            const attributes = ids.map((element) => `repeating_${section}_${element}_title`);
+            getAttrs(attributes, values => {
+                for (let i = 0; i < ids.length; i++) {
+                    const id = ids[i];
+                    const attribute = attributes[i];
+                    if (values[attribute].trim().toLowerCase() == abilityName) {
+                        const triggerEvent = {
+                            sourceAttribute: `repeating_${section}_${id}_runcomboFrom_${rowId}`
+                        };
+                        log("Activating " + abilityName);
+                        activateAbility(triggerEvent);
+                        return;
+                    }
+                }
+                log("Couldn't find ability with name " + abilityName);
+            });
+        });
+    });
+}
+
+function resetAbilityUses(section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        let attributes = ids.flatMap(id => [`repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`]);
+        getAttrs(attributes, values => {
+            var updatedAttributes = {};
+            for (let id of ids) {
+                if (parseInt(values[`repeating_${section}_${id}_uses_max`]) > 0) {
+                    updatedAttributes[`repeating_${section}_${id}_uses`] = values[`repeating_${section}_${id}_uses_max`];
+                }
+            }
+            setAttrs(updatedAttributes);
+        });
+    });
+}
+
+function resetAllAbilityUses() {
+    log("Resetting ability uses");
+    for (let section of abilitySections) {
+        resetAbilityUses(section);
+    }
+}
+
+const resetAttributeList = [
+    "hitPoints_max",
+    "magicPoints_max",
+    "resourceValue_max", "resourceReset"
+];
+
+function resetAttributes(values) {
+    log("Resetting HP/MP");
+    setAttrs({
+        hitPoints: values.hitPoints_max,
+        magicPoints: values.magicPoints_max,
+        // Some jobs start encounters/phases with full job resource
+        resourceValue: values.resourceReset == "full" ? values.resourceValue_max : 0,
+        // No jobs start with full secondary reset
+        resource2Value: 0,
+        barrierPoints: 0
+    });
+}
+
+const resetPhaseAttributeList = [
+    "resourceValue_max", "resourceReset"
+];
+
+function resetPhaseAttributes(values) {
+    if (values.resourceReset != "full") {
+        return;
+    }
+    log("Resetting job resource");
+    setAttrs({
+        resourceValue: values.resourceValue_max
+    });
+}
+
+function clearAllAbilitiesAndEffects(completion) {
+    log(`Clearing abilities and effects`);
+    let sections = abilitySections.concat(["traits", "effects"]);
+    const ThreadLessPromise = class {
+        constructor(count, completion) {
+            this.count = count;
+            this.completions = 0;
+            this.completion = completion;
+        }
+
+        complete() {
+            this.completions += 1;
+            log(`Completed cleanup ${this.completions}/${this.count}`);
+            if (this.completions >= this.count) {
+                this.completion();
+            }
+        }
+    };
+    let promise = new ThreadLessPromise(sections.length, completion);
+
+    for (let section of sections) {
+        getSectionIDs(`repeating_${section}`, ids => {
+            let attributes = ids.map(id => `repeating_${section}_${id}_automatic`);
+            getAttrs(attributes, values => {
+                for (let id of ids) {
+                    if (section == "traits") {
+                        // Only remove auto-added traits
+                        if (values[`repeating_${section}_${id}_automatic`] === "1") {
+                            removeRepeatingRow(`repeating_${section}_${id}`);
+                        }
+                    } else {
+                        removeRepeatingRow(`repeating_${section}_${id}`);
+                    }
+                }
+                promise.complete();
+            });
+        });
+    }
+}
+
+function setUpSheet(sheet) {
+    clearAllAbilitiesAndEffects(() => {
+        log("Clear complete; initializing sheet");
+        var attributes = {
+            job: sheet.job,
+            jobIcon: sheet.jobIcon,
+            level: sheet.level ?? 30,
+            role: sheet.role,
+            sheet_type: "unique",
+            team: "adventurer",
+            size: "normal",
+            override: "auto"
+        };
+
+        log("Preparing resources");
+        for (let entry of Object.entries(sheet.resources)) {
+            attributes[entry[0]] = entry[1];
+        }
+
+        log("Preparing base attributes");
+        for (let entry of Object.entries(sheet.attributes)) {
+            attributes[entry[0]] = entry[1];
+            attributes[`${entry[0]}Effective`] = entry[1];
+        }
+        attributes.mpRecovery = 2;
+        attributes.mpRecoveryBlock = "off";
+
+        log("Preparing traits");
+        for (let trait of sheet.traits) {
+            let id = generateRowID();
+            for (let entry of Object.entries(trait)) {
+                attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1];
+                attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon;
+                attributes[`repeating_traits_${id}_automatic`] = "1";
+                attributes[`repeating_traits_${id}_editable`] = "off";
+            }
+        }
+
+        log("Preparing abilities");
+        for (let section of Object.entries(sheet.abilities)) {
+            for (let ability of section[1]) {
+                let id = generateRowID();
+                for (let entry of Object.entries(ability)) {
+                    attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
+                }
+                attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
+            }
+        }
+        setAttrs(attributes);
+    });
+}
+
+// MP Max
+on("change:magicPoints", () => {
+    getAttrsAndEffects(["magicPoints", "magicPoints_max"], (values, effects) => {
+        var max = values.magicPoints_max;
+        if (effects.mpMaxIncrease) {
+            max += 1;
+        }
+        if (values.magicPoints <= max) {
+            return;
+        }
+        log("Reset MP");
+        setAttrs({
+            magicPoints: values.magicPoints_max
+        });
+    });
+});
+
+on("change:job", () => {
+    getAttrs(["level", "job"], values => {
+        let job = values.job.toLowerCase();
+        let level = values.level ?? 30;
+        log(`Setting up ${job} sheet for level ${level}`);
+        let levelSheets = sheets[`level${level}`];
+        if (!levelSheets) {
+            log(`No sheets found for level ${level}.`);
+            return;
+        }
+
+        let sheet = levelSheets[job];
+        if (!sheet) {
+            log(`No sheet found for ${job} at level ${level}.`);
+            return;
+        }
+
+        setUpSheet(sheet);
+    });
+});
+
+// Rest
+
+on("clicked:rest", () => {
+    log("Initiating rest");
+    getAttrsAndEffects(resetAttributeList, (values, effects) => {
+        log("Removing effects");
+        for (let effect of effects.effects) {
+            if (effect.expiry == "end" || effect.expiry == "permanent") {
+                continue;
+            }
+            removeEffect(effect);
+        }
+        resetAttributes(values);
+    });
+
+    resetAllAbilityUses();
+});
+
+on("clicked:phase", () => {
+    log("Initiating phase reset");
+    getAttrsAndEffects(resetPhaseAttributeList, (values, effects) => {
+        log("Removing effects");
+        for (let effect of effects.effects) {
+            if (effect.expiry != "phase") {
+                continue;
+            }
+            removeEffect(effect);
+        }
+
+        resetPhaseAttributes(values);
+    });
+
+    resetAllAbilityUses();
+});
+
+on("clicked:end", () => {
+    log("Initiating end of adventure reset");
+    getAttrsAndEffects(resetAttributeList, (values, effects) => {
+        log("Removing effects");
+        for (let effect of effects.effects) {
+            if (effect.expiry == "permanent") {
+                continue;
+            }
+            removeEffect(effect);
+        }
+        resetAttributes(values);
+    });
+
+    resetAllAbilityUses();
+});
+
+// Stat rolls
+
+on("clicked:rollStr", () => {
+    rollStat("strEffective", "Strength");
+});
+
+on("clicked:rollDex", () => {
+    rollStat("dexEffective", "Dexterity");
+});
+
+on("clicked:rollVit", () => {
+    rollStat("vitEffective", "Vitality");
+});
+
+on("clicked:rollInt", () => {
+    rollStat("intEffective", "Intelligence");
+});
+
+on("clicked:rollMnd", () => {
+    rollStat("mndEffective", "Mind");
+});
+
+// Ability rolls
+
+for (let section of abilitySections) {
+    on(`clicked:repeating_${section}:share`, eventInfo => {
+        shareAbility(eventInfo);
+    });
+    on(`clicked:repeating_${section}:trigger`, eventInfo => {
+        activateAbility(eventInfo);
+    });
+    on(`clicked:repeating_${section}:rolldamage`, eventInfo => {
+        rollDamage(false, eventInfo);
+    });
+    on(`clicked:repeating_${section}:rolldamagewithbonus`, eventInfo => {
+        rollDamage(true, eventInfo);
+    });
+    for (let i = 0; i < 3; i++) {
+        on(`clicked:repeating_${section}:runcombo${i + 1}`, eventInfo => {
+            activateCombo(eventInfo, i);
+        });
+    }
+}
+
+// Effect updates
+function getIconForEffectType(effect) {
+    if (!effect || effect.type == "none") {
+        return "";
+    }
+
+    if (effect.maskedType == "augment") {
+        return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/augment.png`;
+    }
+
+    if (effect.type == "special" && effect.specialType) {
+        let imageName = effect.specialType.toLowerCase().replaceAll("'", "").replaceAll(" ", "-");
+        return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
+    }
+
+    let imageName = effect.type.replace("(x)", "-x");
+    return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
+}
+
+on("clicked:repeating_effects:share", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_effects_${rowId}_icon`,
+        `repeating_effects_${rowId}_type`,
+        `repeating_effects_${rowId}_specialType`,
+        `repeating_effects_${rowId}_value`,
+        `repeating_effects_${rowId}_expiry`,
+        `repeating_effects_${rowId}_description`,
+        `repeating_effects_${rowId}_source`
+    ], values => {
+        let icon = values[`repeating_effects_${rowId}_icon`];
+        let type = values[`repeating_effects_${rowId}_type`];
+        let specialType = values[`repeating_effects_${rowId}_specialType`];
+        let value = values[`repeating_effects_${rowId}_value`];
+        let expiry = values[`repeating_effects_${rowId}_expiry`];
+        let description = values[`repeating_effects_${rowId}_description`];
+
+        let adjustedName = searchableEffectName(specialType || type);
+        let data = effectData[adjustedName];
+
+        var itemType = "Effect";
+        let title;
+        var descriptions = [];
+        if (description) {
+            descriptions.push(description);
+        }
+        if (data) {
+            title = data.name;
+            if (data.description && descriptions.length == 0) {
+                descriptions.push(data.description);
+            }
+            if (data.maskedType == "augment") {
+                itemType = "Augment";
+            } else if (data.maskedType == "item") {
+                itemType = "Item Effect";
+            }
+        } else {
+            title = specialType || type;
+        }
+
+        if (value) {
+            descriptions.push(`Value: ${value}`);
+        }
+        descriptions.push(`Expires: ${expiries[expiry]}`);
+
+        var iconDefinition = "";
+        if (icon) {
+            iconDefinition = `[icon](${icon})`;
+        }
+        let fullDescription = descriptions.join("\n\n");
+
+        startRoll(`&{template:item} {{icon=${iconDefinition}}} {{title=${title}}} {{type=${itemType}}} {{effect=${fullDescription}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+});
+
+// Effect icon assignment
+on("change:repeating_effects:type change:repeating_effects:specialType", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const rowId = sourceAttributes[2];
+
+    let triggerName = eventInfo.triggerName.toLowerCase();
+    let newValue = eventInfo.newValue.trim().toLowerCase();
+    if (triggerName.includes("_specialtype") && newValue === "none") {
+        // Reset
+        var attributes = {};
+        attributes[`repeating_effects_${rowId}_type`] = "";
+        attributes[`repeating_effects_${rowId}_specialType`] = "";
+        setAttrs(attributes);
+        return;
+    }
+
+    if (triggerName.includes("_specialtype")) {
+        if (["astral fire", "umbral ice"].includes(newValue)) {
+            log("Removing astral/umbral to ensure a single instance of " + newValue);
+            // Remove Astral Fire and Umbral Ice excepting the current instance.
+            // This ensures there's only one Astral Fire or Umbral Ice active at any point.
+            removeEffects(["astral fire", "umbral ice"], rowId);
+            if (newValue === "umbral ice") {
+                log("Resetting MP recovery in case of Astral Fire removal");
+                setAttrs({
+                    mpRecoveryBlock: "off"
+                });
+            } else {
+                log("Disabling MP recovery due to Astral Fire");
+                setAttrs({
+                    mpRecoveryBlock: "on"
+                });
+            }
+        } else {
+            // Remove duplicates of special effects
+            removeEffects([newValue], rowId);
+
+            switch (newValue) {
+                case "lucid dreaming":
+                    log("Incrementing MP recovery due to Lucid Dreaming");
+                    setAttrs({
+                        mpRecovery: 3
+                    });
+                    break;
+            }
+        }
+    }
+
+    getAttrs([
+        `repeating_effects_${rowId}_type`,
+        `repeating_effects_${rowId}_specialType`,
+        `repeating_effects_${rowId}_value`,
+        `repeating_effects_${rowId}_expiry`,
+        `repeating_effects_${rowId}_description`,
+        `repeating_effects_${rowId}_attribute`,
+        `repeating_effects_${rowId}_attributeValue`
+    ], values => {
+        let type = values[`repeating_effects_${rowId}_type`];
+        let specialType = values[`repeating_effects_${rowId}_specialType`];
+        let value = values[`repeating_effects_${rowId}_value`];
+        let adjustedName = searchableEffectName(specialType || type);
+        let data = effectData[adjustedName];
+
+        var attributes = {};
+        if (data) {
+            const iconUrl = getIconForEffectType(data);
+
+            attributes[`repeating_effects_${rowId}_icon`] = iconUrl;
+            attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type;
+            attributes[`repeating_effects_${rowId}_statusType`] = data.statusType;
+            attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`];
+            attributes[`repeating_effects_${rowId}_expiry`] = data.expiry || values[`repeating_effects_${rowId}_expiry`];
+        } else {
+            attributes[`repeating_effects_${rowId}_icon`] = "";
+        }
+
+        resolveEffectAbilities(adjustedName, values[`repeating_effects_${rowId}_value`]);
+
+        let attributeName = values[`repeating_effects_${rowId}_attribute`];
+        let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
+        if (attributeName) {
+            resetEffectAttributeChanges(adjustedName, attributeName, attributeValue, () => {
+                resolveEffectAttributes(rowId, adjustedName, value);
+            });
+        } else {
+            resolveEffectAttributes(rowId, adjustedName, value);
+        }
+
+        setAttrs(attributes);
+
+        switch (adjustedName) {
+            case "comatose":
+            case "knocked_out":
+                getEffects(effects => {
+                    log("Removing effects due to comatose/knocked out");
+                    for (let effect of effects.effects) {
+                        if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
+                            continue;
+                        }
+                        removeEffect(effect);
+                    }
+                    // Disable MP recovery for knocked out characters
+                    setAttrs({
+                        mpRecoveryBlock: "on"
+                    });
+                });
+                break;
+            case "transcendent": {
+                getEffects(effects => {
+                    log("Clearing all enfeeblements");
+                    for (let effect of effects.effects) {
+                        if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
+                            log(`Clearing ${effect.data.name}`);
+                            removeEffect(effect);
+                        }
+                    }
+                });
+                break;
+            }
+        }
+    });
+});
+
+on("change:repeating_effects:value", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const rowId = sourceAttributes[2];
+
+    let value = eventInfo.newValue.trim();
+
+    getAttrs([
+        `repeating_effects_${rowId}_type`,
+        `repeating_effects_${rowId}_specialType`,
+        `repeating_effects_${rowId}_attribute`,
+        `repeating_effects_${rowId}_attributeValue`
+    ], values => {
+        let type = values[`repeating_effects_${rowId}_type`];
+        let specialType = values[`repeating_effects_${rowId}_specialType`];
+        let attributeName = values[`repeating_effects_${rowId}_attribute`];
+        let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
+        let adjustedName = searchableEffectName(specialType || type);
+        if (adjustedName === "attribute" || adjustedName === "defenders_boon") {
+            log(`New attribute values: ${attributeName}, ${attributeValue}`);
+            if (attributeName || attributeValue) {
+                resetEffectAttributeChanges(adjustedName, attributeName, attributeValue, () => {
+                    resolveEffectAttributes(rowId, adjustedName, value);
+                });
+            } else {
+                resolveEffectAttributes(rowId, adjustedName, value);
+            }
+        }
+    });
+});
+
+
+// Reset MP recovery on Astral Fire deletion
+on("remove:repeating_effects", eventInfo => {
+    log("Removing repeating effect");
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const rowId = sourceAttributes[2];
+
+    let type = eventInfo.removedInfo[`repeating_effects_${rowId}_type`];
+    let specialType = eventInfo.removedInfo[`repeating_effects_${rowId}_specialType`];
+    let value = eventInfo.removedInfo[`repeating_effects_${rowId}_value`];
+    let affectedAttribute = eventInfo.removedInfo[`repeating_effects_${rowId}_attribute`];
+    let affectedAttributeValue = parseInt(eventInfo.removedInfo[`repeating_effects_${rowId}_attributeValue`]);
+    let adjustedName = searchableEffectName(specialType || type);
+    removeEffectAbility(adjustedName, value);
+    resetEffectAttributeChanges(adjustedName, affectedAttribute, affectedAttributeValue);
+
+    if (!specialType) {
+        return;
+    }
+    switch (adjustedName) {
+        case "astral_fire":
+            log("Astral Fire removed; resetting mp recovery");
+            setAttrs({
+                mpRecoveryBlock: "off"
+            });
+            break;
+        case "comatose":
+        case "knocked_out":
+            log(`${effectData[adjustedName].name}; resetting mp recovery`);
+            setAttrs({
+                mpRecoveryBlock: "off"
+            });
+            break;
+        case "lightweight_refit__proc":
+            log("Lightweight Refit removed; resetting speed");
+            getAttrs(["speed"], values => {
+                let newValue = (values.speed ?? 0) - 1;
+                setAttrs({
+                    speed: Math.max(newValue, 0)
+                });
+            });
+            break;
+        case "lucid_dreaming":
+            log("Lucid Dreaming removed; resetting mp recovery");
+            setAttrs({
+                mpRecovery: 2
+            });
+            break;
+        default:
+            break;
+    }
+});

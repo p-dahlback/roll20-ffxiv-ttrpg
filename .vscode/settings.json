@@ -1,0 +1,14 @@
+{
+    "triggerTaskOnSave.tasks": {
+        "buildSheet": [
+            "Source/base.html",
+            "Source/workers/*.js",
+        ],
+        "buildMods": [
+            "Source/mods/*.js"
+        ]
+    },
+    "triggerTaskOnSave.delay": 500,
+    "triggerTaskOnSave.restart": true,
+    "triggerTaskOnSave.showNotifications": false
+}

@@ -50,7 +50,14 @@ export default defineConfig([
         "shuffleDeck": true,
         "drawCard": true,
         "cardInfo": true,
-        "playCardToTable": true
+        "playCardToTable": true,
+
+        "getAttrs": true,
+        "getSectionIDs": true,
+        "generateRowID": true,
+        "removeRepeatingRow": true,
+        "startRoll": true,
+        "finishRoll": true
       }
     },
     rules: {

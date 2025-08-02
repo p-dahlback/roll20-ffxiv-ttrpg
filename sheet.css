@@ -432,9 +432,13 @@ body > .ui-dialog {
 
 .top {
   display: grid;
-  grid-template-columns: 50px 0.5fr 0.5fr;
+  grid-template-columns: 50px 0.5fr 0.5fr 100px;
   grid-gap: 16px;
   padding: 8px 24px 0px 12px;
+}
+
+.ui-dialog .charsheet .top .char-size select {
+  width: 100px;
 }
 
 .character {
@@ -614,12 +618,36 @@ body > .ui-dialog {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
+  gap: 4px;
   justify-content: space-between;
-  gap: 16px;
   border-style: none none solid none;
   border-width: 2px;
   border-color: #766c4b;
 }
+
+.stat-block .stat-effective {
+  text-align: right;
+  margin-left: auto;
+  width: 40px;
+  padding-left: 12px;
+  padding-right: 8px;
+}
+
+.stat-block .stat-effective.large {
+  font-size: 2.5em;
+}
+
+.stat-block .stat-effective.medium {
+  font-size: 1.8em;
+}
+
+.stat-block .stat-edit {
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
 
 .stat-block button {
   padding-left: 16px;
@@ -647,6 +675,19 @@ body > .ui-dialog {
 
 .ui-dialog .charsheet input.stat.medium {
   font-size: 1.8em;
+}
+.ui-dialog .charsheet input.stat.small {
+  font-size: 1.2em;
+  width: 2.0em;
+  text-align: center;
+
+  -moz-appearance: textfield;
+}
+
+.ui-dialog .charsheet input.stat.small::-webkit-outer-spin-button,
+.ui-dialog .charsheet input.stat.small::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .ui-dialog .charsheet input:hover, .ui-dialog .charsheet textarea:hover {
@@ -987,6 +1028,28 @@ textarea {
 }
 
 /* Stat editable setting */
+
+.overrideSwitch[value="auto"] ~ .overrideBlocked input {
+  pointer-events: none;
+  user-select: none;
+  border-style: none;
+
+  -moz-appearance: textfield;
+}
+
+.overrideSwitch[value="auto"] ~ .overrideBlocked select {
+  pointer-events: none;
+  user-select: none;
+  border-style: none;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: transparent;
+}
+
+.overrideSwitch[value="auto"] ~ .overrideHide {
+  display: none;
+}
 
 .basic-info .overrideSwitch[value="auto"] ~ input,
 .stat .overrideSwitch[value="auto"] ~ input,

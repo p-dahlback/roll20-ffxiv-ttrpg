@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "buildSheet",
+            "type": "shell",
+            "command": "./Scripts/gensheet.sh",
+            "args": [
+                "Source/base.html",
+                "Source/workers"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "buildMods",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "${workspaceFolder}/Source/mods/*.js",
+                "${workspaceFolder}/Mods/"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "silent"
+            }
+        }
+    ]
+}
