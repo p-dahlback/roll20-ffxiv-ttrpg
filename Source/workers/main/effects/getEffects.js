@@ -12,24 +12,6 @@ class GetEffects {
             .trim().toLowerCase();
     }
 
-    icon(effect) {
-        if (!effect || effect.type == "none") {
-            return "";
-        }
-
-        if (effect.maskedType == "augment") {
-            return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/augment.png`;
-        }
-
-        if (effect.type == "special" && effect.specialType) {
-            let imageName = effect.specialType.toLowerCase().replaceAll("'", "").replaceAll(" ", "-");
-            return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
-        }
-
-        let imageName = effect.type.replace("(x)", "-x");
-        return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
-    }
-
     classify(effects) {
         var result = {
             effects: [],

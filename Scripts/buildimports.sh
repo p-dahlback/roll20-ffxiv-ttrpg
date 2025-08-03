@@ -1,11 +1,13 @@
 #!/bin/bash
+version="1.0.0"
 
 echo "Integrating imports"
 buildDir=".build/$1"
 sourceDirectory=$2
+useRealNames="${3:-"0"}"
 
 function mergeIntoFile () {
-    printf "%b\n" "// Build: $1\n" >> $2
+    printf "%b\n" "// Build (version $version): $1\n" >> $2
     cat $1 >> $2
     printf "%b\n" "\n" >> $2
 }
@@ -18,7 +20,7 @@ function readImports () {
     fi
 
     # Make into array by newlines
-    echo "Reading imports in $1 to $2 for $3"
+    echo "Reading imports in $1"
     set -o noglob
     IFS=$'\n' importStatements=($result)
     set +o noglob 
@@ -38,14 +40,16 @@ function readImports () {
     return 1
 }
 
-mkdir -p $buildDir
-rm -r $buildDir/*
+if test -d $buildDir; then
+    rm -r $buildDir/*
+else
+    mkdir -p $buildDir
+fi
 
 for file in $sourceDirectory/*.js
 do
     filename=$(basename -- "$file")
     filename="${filename%.*}"
-    edited=0
 
     id=$(uuidgen)
     targetFile="$buildDir/$id.js"
@@ -75,4 +79,9 @@ do
 
     # Discarding anything marked with build:remove
     sed -i -e '/build:remove/,/build:end/d' $targetFile
+
+    if [ $useRealNames = "1" ]; then
+        newFile="$buildDir/$filename.js"
+        mv "$targetFile" "$newFile"
+    fi
 done

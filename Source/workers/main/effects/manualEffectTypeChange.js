@@ -82,7 +82,7 @@ class ManualEffectTypeChange {
 
         var attributes = {};
         if (data) {
-            const iconUrl = getEffects.icon(data);
+            const iconUrl = effectData.icon(data);
 
             attributes[`repeating_effects_${rowId}_icon`] = iconUrl;
             attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type;

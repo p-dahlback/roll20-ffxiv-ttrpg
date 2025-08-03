@@ -7,6 +7,8 @@ export default defineConfig([
   { files: ["**/*.js"], languageOptions: { sourceType: "script" } },
   { files: ["**/*.{js,mjs,cjs}"], languageOptions: { globals: globals.browser } },
   {
+    "ignorePatterns": [".build/**.js", "Mods/**.js"],
+
     // Define globals for browser environments
     languageOptions: {
       globals: {

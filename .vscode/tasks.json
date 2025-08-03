@@ -14,17 +14,31 @@
             }
         },
         {
+            "label": "modImports",
+            "type": "shell",
+            "command": "./Scripts/buildimports.sh",
+            "args": [
+                "mods",
+                "Source/mods",
+                "1"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
             "label": "buildMods",
             "type": "shell",
             "command": "cp",
             "args": [
-                "${workspaceFolder}/Source/mods/*.js",
+                "${workspaceFolder}/.build/mods/*.js",
                 "${workspaceFolder}/Mods/"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "group": "build"
+            "group": "build",
+            "dependsOn": ["modImports"]
         },
         {
             "label": "buildSheet",
@@ -41,12 +55,28 @@
             "dependsOn": ["sheetImports"]
         },
         {
+            "label": "clean",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                ".build/*"
+            ],
+            "group": "build",
+        },
+        {
+            "label": "buildSource",
+            "group": "build",
+            "dependsOn": ["buildSheet", "buildMods"]
+        },
+        {
             "label": "build",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": ["buildSheet", "buildMods"]
+            "dependsOrder": "sequence",
+            "dependsOn": ["buildSource", "clean"]
         }
     ]
 }

@@ -1,4 +1,6 @@
 #!/bin/bash
+version="1.0.0"
+
 echo "Generating sheet.html"
 baseFile=$1
 sheetWorkerDirectory=$2
@@ -6,7 +8,7 @@ sheetWorkerDirectory=$2
 echo "Inserting base content from $baseFile"
 cat $baseFile > sheet.html
 
-printf "%b\n" "\n\n<!-- ---------------------------SHEET WORKERS----------------- -->\n" >> sheet.html
+printf "%b\n" "\n\n<!-- -----------------SHEET WORKERS (version $version)----------------- -->\n" >> sheet.html
 
 for file in $sheetWorkerDirectory/*.js
 do
