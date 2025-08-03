@@ -2,18 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "buildSheet",
+            "label": "sheetImports",
             "type": "shell",
-            "command": "./Scripts/gensheet.sh",
+            "command": "./Scripts/buildimports.sh",
             "args": [
-                "Source/base.html",
+                "workers",
                 "Source/workers"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
-            },
-            "presentation": {
-                "reveal": "silent"
             }
         },
         {
@@ -27,9 +24,29 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "presentation": {
-                "reveal": "silent"
-            }
+            "group": "build"
+        },
+        {
+            "label": "buildSheet",
+            "type": "shell",
+            "command": "./Scripts/gensheet.sh",
+            "args": [
+                "Source/base.html",
+                ".build/workers"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "dependsOn": ["sheetImports"]
+        },
+        {
+            "label": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": ["buildSheet", "buildMods"]
         }
     ]
 }

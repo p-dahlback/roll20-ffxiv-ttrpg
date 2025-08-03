@@ -1,6 +1,10 @@
+/*build:remove*/
+/*build:import common/abilitySections.js*/
+const abilitySections = [];
+/*build:end*/
+
 // Expand/collapse
 
-const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"];
 const itemSections = ["titles", "minions", "items"];
 
 function toggleExpandedState(attributeName) {

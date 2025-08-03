@@ -1,0 +1,145 @@
+/*build:remove*/
+/*eslint no-unused-vars: "error"*/
+/*exported manualEffectTypeChange*/
+const getEffects = {}; const removeEffects = {}; const addEffects = {}; const effectData = {};
+/*build:end*/
+
+class ManualEffectTypeChange {
+
+    resolve(eventInfo) {
+        const sourceAttributes = eventInfo.sourceAttribute.split("_");
+        const rowId = sourceAttributes[2];
+
+        let triggerName = eventInfo.triggerName.toLowerCase();
+        let newValue = eventInfo.newValue.trim().toLowerCase();
+        if (triggerName.includes("_specialtype") && newValue === "none") {
+            // Reset
+            var attributes = {};
+            attributes[`repeating_effects_${rowId}_type`] = "";
+            attributes[`repeating_effects_${rowId}_specialType`] = "";
+            setAttrs(attributes);
+            return;
+        }
+
+        if (triggerName.includes("_specialtype")) {
+            this.resolveSpecialTypeChange(rowId, newValue);
+        }
+
+        getAttrs([
+            `repeating_effects_${rowId}_type`,
+            `repeating_effects_${rowId}_specialType`,
+            `repeating_effects_${rowId}_value`,
+            `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_description`,
+            `repeating_effects_${rowId}_attribute`,
+            `repeating_effects_${rowId}_attributeValue`
+        ], values => {
+            let type = values[`repeating_effects_${rowId}_type`];
+            let specialType = values[`repeating_effects_${rowId}_specialType`];
+            let adjustedName = getEffects.searchableName(specialType || type);
+            this.resolveAttributes(rowId, adjustedName, values);
+            this.resolveEffects(rowId, adjustedName);
+        });
+    }
+
+    resolveSpecialTypeChange(rowId, newValue) {
+        if (["astral fire", "umbral ice"].includes(newValue)) {
+            log("Removing astral/umbral to ensure a single instance of " + newValue);
+            // Remove Astral Fire and Umbral Ice excepting the current instance.
+            // This ensures there's only one Astral Fire or Umbral Ice active at any point.
+            removeEffects.removeAll(["astral fire", "umbral ice"], rowId);
+            if (newValue === "umbral ice") {
+                log("Resetting MP recovery in case of Astral Fire removal");
+                setAttrs({
+                    mpRecoveryBlock: "off"
+                });
+            } else {
+                log("Disabling MP recovery due to Astral Fire");
+                setAttrs({
+                    mpRecoveryBlock: "on"
+                });
+            }
+        } else {
+            // Remove duplicates of special effects
+            removeEffects.removeAll([newValue], rowId);
+
+            switch (newValue) {
+                case "lucid dreaming":
+                    log("Incrementing MP recovery due to Lucid Dreaming");
+                    setAttrs({
+                        mpRecovery: 3
+                    });
+                    break;
+            }
+        }
+    }
+
+    resolveAttributes(rowId, name, values) {
+        let type = values[`repeating_effects_${rowId}_type`];
+        let specialType = values[`repeating_effects_${rowId}_specialType`];
+        let value = values[`repeating_effects_${rowId}_value`];
+        let data = effectData.effects[name];
+
+        var attributes = {};
+        if (data) {
+            const iconUrl = getEffects.icon(data);
+
+            attributes[`repeating_effects_${rowId}_icon`] = iconUrl;
+            attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type;
+            attributes[`repeating_effects_${rowId}_statusType`] = data.statusType;
+            attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`];
+            attributes[`repeating_effects_${rowId}_expiry`] = data.expiry || values[`repeating_effects_${rowId}_expiry`];
+        } else {
+            attributes[`repeating_effects_${rowId}_icon`] = "";
+        }
+
+        addEffects.resolveAbilities(name, values[`repeating_effects_${rowId}_value`]);
+
+        let attributeName = values[`repeating_effects_${rowId}_attribute`];
+        let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
+        if (attributeName) {
+            removeEffects.resetAttributeChanges(name, attributeName, attributeValue, () => {
+                addEffects.resolveAttributes(rowId, name, value);
+            });
+        } else {
+            addEffects.resolveAttributes(rowId, name, value);
+        }
+
+        setAttrs(attributes);
+    }
+
+    resolveEffects(rowId, name) {
+        switch (name) {
+            case "comatose":
+            case "knocked_out":
+                getEffects(effects => {
+                    log("Removing effects due to comatose/knocked out");
+                    for (let effect of effects.effects) {
+                        if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
+                            continue;
+                        }
+                        removeEffects.remove(effect);
+                    }
+                    // Disable MP recovery for knocked out characters
+                    setAttrs({
+                        mpRecoveryBlock: "on"
+                    });
+                });
+                break;
+            case "transcendent": {
+                getEffects(effects => {
+                    log("Clearing all enfeeblements");
+                    for (let effect of effects.effects) {
+                        if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
+                            log(`Clearing ${effect.data.name}`);
+                            removeEffects.remove(effect);
+                        }
+                    }
+                });
+                break;
+            }
+        }
+    }
+}
+
+const manualEffectTypeChange = new ManualEffectTypeChange();

@@ -1,5 +1,6 @@
 
 // Items
+
 function shareItemToChat(eventInfo) {
     const sourceAttributes = eventInfo.sourceAttribute.split("_");
     const section = sourceAttributes[1];

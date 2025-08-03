@@ -1,4 +1,5 @@
 // Tabs
+
 const buttonlist = ["character", "items", "abilities", "settings"];
 buttonlist.forEach(button => {
     on(`clicked:${button}`, () => {
