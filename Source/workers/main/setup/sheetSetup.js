@@ -29,6 +29,8 @@ class SheetSetup {
                 attributes[entry[0]] = entry[1];
                 attributes[`${entry[0]}Effective`] = entry[1];
                 attributes[`${entry[0]}Display`] = entry[1];
+                attributes[`${entry[0]}Unblocked`] = entry[1];
+                attributes[`${entry[0]}Override`] = 0;
             }
             attributes.mpRecovery = 2;
             attributes.mpRecoveryBlock = "off";

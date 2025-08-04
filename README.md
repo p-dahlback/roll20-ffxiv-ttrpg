@@ -33,8 +33,6 @@ The project is a work in progress, but its capabilities are as follows:
 
 Further features like a Charactermancer for automatic setup of abilities and stats depending on job and level is in development.
 
-(Note that automatic handling of Heavy and Slow enfeeblements only works if you have one of them at a time, currently. The speed decrease will cease when one of these effects is removed even if the other still persists.)
-
 ## APIs
 
 ### FFXIVTurnOrder

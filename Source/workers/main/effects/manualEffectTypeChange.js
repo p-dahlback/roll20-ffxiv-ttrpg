@@ -7,6 +7,7 @@ const getEffects = {}; const removeEffects = {}; const addEffects = {}; const ef
 class ManualEffectTypeChange {
 
     resolve(eventInfo) {
+        log(JSON.stringify(eventInfo));
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const rowId = sourceAttributes[2];
 
@@ -25,6 +26,12 @@ class ManualEffectTypeChange {
             this.resolveSpecialTypeChange(rowId, newValue);
         }
 
+        let previousValue;
+        if (eventInfo.previousValue) {
+            previousValue = getEffects.searchableName(eventInfo.previousValue.trim());
+        } else {
+            previousValue = "";
+        }
         getAttrs([
             `repeating_effects_${rowId}_type`,
             `repeating_effects_${rowId}_specialType`,
@@ -37,7 +44,7 @@ class ManualEffectTypeChange {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let adjustedName = getEffects.searchableName(specialType || type);
-            this.resolveAttributes(rowId, adjustedName, values);
+            this.resolveAttributes(rowId, adjustedName, previousValue, values);
             this.resolveEffects(rowId, adjustedName);
         });
     }
@@ -74,7 +81,7 @@ class ManualEffectTypeChange {
         }
     }
 
-    resolveAttributes(rowId, name, values) {
+    resolveAttributes(rowId, name, oldName, values) {
         let type = values[`repeating_effects_${rowId}_type`];
         let specialType = values[`repeating_effects_${rowId}_specialType`];
         let value = values[`repeating_effects_${rowId}_value`];
@@ -98,7 +105,9 @@ class ManualEffectTypeChange {
         let attributeName = values[`repeating_effects_${rowId}_attribute`];
         let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
         if (attributeName) {
-            removeEffects.resetAttributeChanges(name, attributeName, attributeValue, () => {
+            attributes[`repeating_effects_${rowId}_attribute`] = "";
+            attributes[`repeating_effects_${rowId}_attributeValue`] = "";
+            removeEffects.resetAttributeChanges(oldName, attributeName, attributeValue, () => {
                 addEffects.resolveAttributes(rowId, name, value);
             });
         } else {

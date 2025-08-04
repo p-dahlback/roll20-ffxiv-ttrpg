@@ -60,6 +60,10 @@ on("change:resourceValue", () => {
 
 // Effective attributes
 on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
     log("Attribute changed: " + JSON.stringify(eventInfo));
     let attribute = eventInfo.sourceAttribute;
     let previousValue = parseInt(eventInfo.previousValue);

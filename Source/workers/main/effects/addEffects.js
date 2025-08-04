@@ -137,10 +137,10 @@ class AddEffects {
                 } else {
                     attributeValue = 1;
                 }
-                getAttrs([`${attributeName}Effective`, `${attributeName}Block`, `${attributeName}Unblocked`], values => {
+                getAttrs([`${attributeName}Effective`, `${attributeName}Override`, `${attributeName}Unblocked`], values => {
                     var attributes = {};
                     let baseAttributeName;
-                    let isBlocked = values[`${attributeName}Block`] === "on"
+                    let isBlocked = unpackNaN(values[`${attributeName}Block`], 0) > 0;
                     if (isBlocked) {
                         baseAttributeName = `${attributeName}Unblocked`;
                     } else {
@@ -164,7 +164,7 @@ class AddEffects {
             }
             case "bound": {
                 log("Resolving attributes for bound");
-                getAttrs(["size", "speedEffective", "speedBlock", "speedUnblocked"], values => {
+                getAttrs(["size", "speedEffective", "speedOverride", "speedUnblocked"], values => {
                     let speed = unpackNaN(values.speedEffective, 0);
                     let unblocked = unpackNaN(values.speedUnblocked ?? values.speed, 0);
                     let newValue;
@@ -174,13 +174,13 @@ class AddEffects {
                         unblocked = Math.max(unblocked - 2, 0);
                         diff = 2;
                     } else {
-                        newValue = 0;
-                        unblocked = 0;
+                        newValue = -99;
                         diff = speed - newValue;
+                        unblocked -= diff;
                     }
 
                     var attributes = {};
-                    if (values.speedBlock === "on") {
+                    if (unpackNaN(values.speedOverride, 0) > 0) {
                         attributes.speedUnblocked = unblocked;
                     }
                     log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
@@ -229,23 +229,26 @@ class AddEffects {
             case "slow":
             case "heavy": {
                 log(`Resolving attributes for ${effectName}`);
-                getAttrs(["speed", "speedEffective", "speedBlock", "speedUnblocked"], values => {
+                getAttrs(["speed", "speedEffective", "speedOverride", "speedOverrideSources", "speedUnblocked"], values => {
                     let speed = unpackNaN(values.speed, 0);
                     let newValue = Math.floor(speed / 2) + speed % 2;
+                    let diff = speed - newValue;
                     var attributes = {};
-                    if (values.speedBlock === "on") {
+                    if (unpackNaN(values.speedOverride, 0) > 0) {
                         log(`Speed was already blocked when activating ${effectName}`);
+                        attributes.speedOverrideSources = unpackNaN(values.speedOverrideSources, 1) + 1;
                     } else {
-                        attributes.speedBlock = "on";
+                        attributes.speedOverride = newValue;
+                        attributes.speedOverrideSources = 1;
                         attributes.speedUnblocked = values.speedEffective;
 
                         log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
+                        let effectiveValue = Math.min(newValue, values.speedEffective - diff);
+                        attributes.speedEffective = effectiveValue;
+                        attributes.speedDisplay = Math.max(effectiveValue, 0);
                     }
-                    attributes.speedEffective = newValue;
-                    attributes.speedDisplay = Math.max(newValue, 0);
-
                     attributes[`repeating_effects_${id}_attribute`] = "speed";
-                    attributes[`repeating_effects_${id}_attributeValue`] = newValue - speed;
+                    attributes[`repeating_effects_${id}_attributeValue`] = -diff;
                     setAttrs(attributes);
                 });
                 break;

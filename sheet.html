@@ -2240,7 +2240,7 @@
 <!-- -----------------SHEET WORKERS (version 1.0.0)----------------- -->
 
 
-<script type="text/worker"> // .build/workers/0a1619b3-fba1-4ac8-9af9-e65217066fc4.js
+<script type="text/worker"> // .build/workers/0282706d-80b2-415e-9a09-86fbc164a220.js
 
 // Build: Source/workers/override.js
 
@@ -2290,7 +2290,105 @@ on('change:override', () => {
 
 </script>
 
-<script type="text/worker"> // .build/workers/5f62c7a8-d9bf-4ad3-89c7-789d860aad21.js
+<script type="text/worker"> // .build/workers/0490e257-f879-488c-85cb-17704ad8ed5f.js
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker"> // .build/workers/28d6f9c5-9067-4052-9477-3cc140abc18f.js
 
 // Build (version 1.0.0): Source/workers/common/abilitySections.js
 
@@ -2409,7 +2507,106 @@ on("clicked:collapseAllAbilities", () => {
 
 </script>
 
-<script type="text/worker"> // .build/workers/8beb5b17-e759-4e7e-8e87-ee59a2ac7e31.js
+<script type="text/worker"> // .build/workers/675ccf2f-f496-4b69-87e2-8476cecd1c70.js
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
+        }
+        setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker"> // .build/workers/8532e91f-59e0-4b00-bf1f-b51ed541877e.js
 
 // Build (version 1.0.0): Source/workers/main/effects/getEffects.js
 
@@ -2541,6 +2738,7 @@ const getEffects = new GetEffects();
 class ManualEffectTypeChange {
 
     resolve(eventInfo) {
+        log(JSON.stringify(eventInfo));
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const rowId = sourceAttributes[2];
 
@@ -2559,6 +2757,12 @@ class ManualEffectTypeChange {
             this.resolveSpecialTypeChange(rowId, newValue);
         }
 
+        let previousValue;
+        if (eventInfo.previousValue) {
+            previousValue = getEffects.searchableName(eventInfo.previousValue.trim());
+        } else {
+            previousValue = "";
+        }
         getAttrs([
             `repeating_effects_${rowId}_type`,
             `repeating_effects_${rowId}_specialType`,
@@ -2571,7 +2775,7 @@ class ManualEffectTypeChange {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let adjustedName = getEffects.searchableName(specialType || type);
-            this.resolveAttributes(rowId, adjustedName, values);
+            this.resolveAttributes(rowId, adjustedName, previousValue, values);
             this.resolveEffects(rowId, adjustedName);
         });
     }
@@ -2608,7 +2812,7 @@ class ManualEffectTypeChange {
         }
     }
 
-    resolveAttributes(rowId, name, values) {
+    resolveAttributes(rowId, name, oldName, values) {
         let type = values[`repeating_effects_${rowId}_type`];
         let specialType = values[`repeating_effects_${rowId}_specialType`];
         let value = values[`repeating_effects_${rowId}_value`];
@@ -2632,7 +2836,9 @@ class ManualEffectTypeChange {
         let attributeName = values[`repeating_effects_${rowId}_attribute`];
         let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
         if (attributeName) {
-            removeEffects.resetAttributeChanges(name, attributeName, attributeValue, () => {
+            attributes[`repeating_effects_${rowId}_attribute`] = "";
+            attributes[`repeating_effects_${rowId}_attributeValue`] = "";
+            removeEffects.resetAttributeChanges(oldName, attributeName, attributeValue, () => {
                 addEffects.resolveAttributes(rowId, name, value);
             });
         } else {
@@ -2814,10 +3020,10 @@ class AddEffects {
                 } else {
                     attributeValue = 1;
                 }
-                getAttrs([`${attributeName}Effective`, `${attributeName}Block`, `${attributeName}Unblocked`], values => {
+                getAttrs([`${attributeName}Effective`, `${attributeName}Override`, `${attributeName}Unblocked`], values => {
                     var attributes = {};
                     let baseAttributeName;
-                    let isBlocked = values[`${attributeName}Block`] === "on"
+                    let isBlocked = unpackNaN(values[`${attributeName}Block`], 0) > 0;
                     if (isBlocked) {
                         baseAttributeName = `${attributeName}Unblocked`;
                     } else {
@@ -2841,7 +3047,7 @@ class AddEffects {
             }
             case "bound": {
                 log("Resolving attributes for bound");
-                getAttrs(["size", "speedEffective", "speedBlock", "speedUnblocked"], values => {
+                getAttrs(["size", "speedEffective", "speedOverride", "speedUnblocked"], values => {
                     let speed = unpackNaN(values.speedEffective, 0);
                     let unblocked = unpackNaN(values.speedUnblocked ?? values.speed, 0);
                     let newValue;
@@ -2851,13 +3057,13 @@ class AddEffects {
                         unblocked = Math.max(unblocked - 2, 0);
                         diff = 2;
                     } else {
-                        newValue = 0;
-                        unblocked = 0;
+                        newValue = -99;
                         diff = speed - newValue;
+                        unblocked -= diff;
                     }
 
                     var attributes = {};
-                    if (values.speedBlock === "on") {
+                    if (unpackNaN(values.speedOverride, 0) > 0) {
                         attributes.speedUnblocked = unblocked;
                     }
                     log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
@@ -2906,23 +3112,26 @@ class AddEffects {
             case "slow":
             case "heavy": {
                 log(`Resolving attributes for ${effectName}`);
-                getAttrs(["speed", "speedEffective", "speedBlock", "speedUnblocked"], values => {
+                getAttrs(["speed", "speedEffective", "speedOverride", "speedOverrideSources", "speedUnblocked"], values => {
                     let speed = unpackNaN(values.speed, 0);
                     let newValue = Math.floor(speed / 2) + speed % 2;
+                    let diff = speed - newValue;
                     var attributes = {};
-                    if (values.speedBlock === "on") {
+                    if (unpackNaN(values.speedOverride, 0) > 0) {
                         log(`Speed was already blocked when activating ${effectName}`);
+                        attributes.speedOverrideSources = unpackNaN(values.speedOverrideSources, 1) + 1;
                     } else {
-                        attributes.speedBlock = "on";
+                        attributes.speedOverride = newValue;
+                        attributes.speedOverrideSources = 1;
                         attributes.speedUnblocked = values.speedEffective;
 
                         log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
+                        let effectiveValue = Math.min(newValue, values.speedEffective - diff);
+                        attributes.speedEffective = effectiveValue;
+                        attributes.speedDisplay = Math.max(effectiveValue, 0);
                     }
-                    attributes.speedEffective = newValue;
-                    attributes.speedDisplay = Math.max(newValue, 0);
-
                     attributes[`repeating_effects_${id}_attribute`] = "speed";
-                    attributes[`repeating_effects_${id}_attributeValue`] = newValue - speed;
+                    attributes[`repeating_effects_${id}_attributeValue`] = -diff;
                     setAttrs(attributes);
                 });
                 break;
@@ -3262,38 +3471,49 @@ class RemoveEffects {
             }
             return;
         }
-        getAttrs([`${attribute}Effective`, `${attribute}Block`, `${attribute}Unblocked`], values => {
+        getAttrs([`${attribute}Effective`, `${attribute}Override`, `${attribute}OverrideSources`, `${attribute}Unblocked`], values => {
             let baseAttributeName;
             let currentValue;
             let newValue;
-            let isBlocked = values[`${attribute}Block`] === "on";
             var newAttributes = {};
             log(`${attribute}: ${values[`${attribute}Effective`]}, unblocked: ${values[`${attribute}Unblocked`]}`);
             if (name === "heavy" || name === "slow") {
-                baseAttributeName = "speedEffective";
-                newAttributes.speedBlock = "off";
-                isBlocked = false;
-            }
-            if (isBlocked) {
-                baseAttributeName = `${attribute}Unblocked`;
-                if (attributeValue < 0) {
-                    newAttributes[`${attribute}Effective`] = parseInt(values[`${attribute}Effective`]) - attributeValue;
+                let overrideSources = Math.max(unpackNaN(values.speedOverrideSources, 1) - 1, 0);
+                newAttributes.speedOverrideSources = overrideSources
+                if (overrideSources === 0) {
+                    baseAttributeName = "speedEffective";
+                    currentValue = values.speedEffective;
+                    newAttributes.speedOverride = 0;
+                    newAttributes.speedEffective = values.speedUnblocked;
+                    newAttributes.speedDisplay = values.speedUnblocked;
+                    log(`Unblocking speed, ${currentValue} -> ${values.speedUnblocked}`);
                 }
             } else {
-                baseAttributeName = `${attribute}Effective`;
-            }
-            currentValue = unpackNaN(values[baseAttributeName], 0);
-            newValue = currentValue - attributeValue;
+                let isBlocked = unpackNaN(values[`${attribute}Override`]) > 0;
+                if (isBlocked) {
+                    baseAttributeName = `${attribute}Unblocked`;
+                    if (attributeValue < 0) {
+                        let adjustedValue = unpackNaN(values[`${attribute}Effective`], 1000) - attributeValue;
+                        let effectiveValue = Math.min(adjustedValue, values.speedOverride);
+                        newAttributes[`${attribute}Effective`] = effectiveValue;
+                        newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
+                    }
+                } else {
+                    baseAttributeName = `${attribute}Effective`;
+                }
+                currentValue = unpackNaN(values[baseAttributeName], 0);
+                newValue = currentValue - attributeValue;
 
-            if (isNaN(currentValue)) {
-                log(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`);
-                return;
+                if (isNaN(currentValue)) {
+                    log(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`);
+                    return;
+                }
+                newAttributes[baseAttributeName] = newValue;
+                if (!isBlocked) {
+                    newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
+                }
+                log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
             }
-            newAttributes[baseAttributeName] = newValue;
-            if (!isBlocked) {
-                newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
-            }
-            log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
             setAttrs(newAttributes);
             if (completion) {
                 completion();
@@ -4923,6 +5143,8 @@ class SheetSetup {
                 attributes[entry[0]] = entry[1];
                 attributes[`${entry[0]}Effective`] = entry[1];
                 attributes[`${entry[0]}Display`] = entry[1];
+                attributes[`${entry[0]}Unblocked`] = entry[1];
+                attributes[`${entry[0]}Override`] = 0;
             }
             attributes.mpRecovery = 2;
             attributes.mpRecoveryBlock = "off";
@@ -5119,200 +5341,7 @@ on("clicked:end", () => {
 
 </script>
 
-<script type="text/worker"> // .build/workers/a27e5ab3-43bc-4362-9562-3ba22c2e3d48.js
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker"> // .build/workers/b19c57d9-6d9a-4486-89aa-8e0c11cdff1a.js
-
-// Build: Source/workers/attributes.js
-
-
-// Advantage management
-
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
-        }
-        setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker"> // .build/workers/fe000a55-8852-46a7-ba06-13f0170ff6af.js
+<script type="text/worker"> // .build/workers/abf8be82-03e8-4900-85f2-e01b5cc634b7.js
 
 // Build: Source/workers/tabs.js
 

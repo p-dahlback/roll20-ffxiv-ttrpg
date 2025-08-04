@@ -70,38 +70,49 @@ class RemoveEffects {
             }
             return;
         }
-        getAttrs([`${attribute}Effective`, `${attribute}Block`, `${attribute}Unblocked`], values => {
+        getAttrs([`${attribute}Effective`, `${attribute}Override`, `${attribute}OverrideSources`, `${attribute}Unblocked`], values => {
             let baseAttributeName;
             let currentValue;
             let newValue;
-            let isBlocked = values[`${attribute}Block`] === "on";
             var newAttributes = {};
             log(`${attribute}: ${values[`${attribute}Effective`]}, unblocked: ${values[`${attribute}Unblocked`]}`);
             if (name === "heavy" || name === "slow") {
-                baseAttributeName = "speedEffective";
-                newAttributes.speedBlock = "off";
-                isBlocked = false;
-            }
-            if (isBlocked) {
-                baseAttributeName = `${attribute}Unblocked`;
-                if (attributeValue < 0) {
-                    newAttributes[`${attribute}Effective`] = parseInt(values[`${attribute}Effective`]) - attributeValue;
+                let overrideSources = Math.max(unpackNaN(values.speedOverrideSources, 1) - 1, 0);
+                newAttributes.speedOverrideSources = overrideSources
+                if (overrideSources === 0) {
+                    baseAttributeName = "speedEffective";
+                    currentValue = values.speedEffective;
+                    newAttributes.speedOverride = 0;
+                    newAttributes.speedEffective = values.speedUnblocked;
+                    newAttributes.speedDisplay = values.speedUnblocked;
+                    log(`Unblocking speed, ${currentValue} -> ${values.speedUnblocked}`);
                 }
             } else {
-                baseAttributeName = `${attribute}Effective`;
-            }
-            currentValue = unpackNaN(values[baseAttributeName], 0);
-            newValue = currentValue - attributeValue;
+                let isBlocked = unpackNaN(values[`${attribute}Override`]) > 0;
+                if (isBlocked) {
+                    baseAttributeName = `${attribute}Unblocked`;
+                    if (attributeValue < 0) {
+                        let adjustedValue = unpackNaN(values[`${attribute}Effective`], 1000) - attributeValue;
+                        let effectiveValue = Math.min(adjustedValue, values.speedOverride);
+                        newAttributes[`${attribute}Effective`] = effectiveValue;
+                        newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
+                    }
+                } else {
+                    baseAttributeName = `${attribute}Effective`;
+                }
+                currentValue = unpackNaN(values[baseAttributeName], 0);
+                newValue = currentValue - attributeValue;
 
-            if (isNaN(currentValue)) {
-                log(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`);
-                return;
+                if (isNaN(currentValue)) {
+                    log(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`);
+                    return;
+                }
+                newAttributes[baseAttributeName] = newValue;
+                if (!isBlocked) {
+                    newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
+                }
+                log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
             }
-            newAttributes[baseAttributeName] = newValue;
-            if (!isBlocked) {
-                newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
-            }
-            log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
             setAttrs(newAttributes);
             if (completion) {
                 completion();
