@@ -122,7 +122,7 @@ class RollModifiers {
         }
 
         log("Adding damage to roll");
-        let damage = damageRoll ? `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}` : `${adds.join(" + ")}${negatives.join(" - ")}`;
+        let damage = damageRoll ? `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}` : `0${adds.join(" + ")}${negatives.join(" - ")}`;
         return {
             damage: damage,
             directHit: directHitRoll,
