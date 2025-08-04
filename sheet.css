@@ -381,6 +381,10 @@ span.small.colored-in {
   border-width: 4px;
 }
 
+.grid.fancy.lowkey {
+  box-sizing: border-box;
+}
+
 .fancy.lowkey .fancy.lowkey {
   margin-top: -4px;
 }
