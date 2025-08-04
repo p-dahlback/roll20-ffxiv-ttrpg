@@ -1498,6 +1498,7 @@ textarea {
   font-size: 2rem;
   font-family: Pictos;
   min-height: 18px;
+  width: 18px;
   margin: 2px;
 }
 
