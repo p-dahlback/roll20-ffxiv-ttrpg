@@ -18,22 +18,22 @@ class Rest {
 
     rest() {
         log("Initiating rest");
-        this.reset(this.attributeList, ["end", "permanent"]);
+        this.reset(this.attributeList, ["end", "permanent"], "rest");
     }
 
     phase() {
         log("Initiating phase reset");
         // Keep all effects except those that expire on phase change
         let expiries = Object.keys(effectData.expiries).filter(name => name !== "phase");
-        this.reset(this.phaseAttributeList, expiries);
+        this.reset(this.phaseAttributeList, expiries, "phase");
     }
 
     end() {
         log("Initiating end of adventure reset");
-        this.reset(this.attributeList, ["permanent"]);
+        this.reset(this.attributeList, ["permanent"], "end");
     }
 
-    reset(attributes, exceptedEffectExpiries) {
+    reset(attributes, exceptedEffectExpiries, resetType) {
         getEffects.attrs(attributes, (values, effects) => {
             log("Removing effects");
             for (let effect of effects.effects) {
@@ -42,23 +42,39 @@ class Rest {
                 }
                 removeEffects.remove(effect);
             }
-            this.resetAttributes(values);
+            this.resetAttributes(attributes, values, resetType);
         });
 
         performAbility.resetAllUses();
     }
 
-    resetAttributes(values) {
+    resetAttributes(attributes, values, resetType) {
         log("Resetting HP/MP");
-        setAttrs({
-            hitPoints: values.hitPoints_max,
-            magicPoints: values.magicPoints_max,
-            // Some jobs start encounters/phases with full job resource
-            resourceValue: values.resourceReset == "full" ? values.resourceValue_max : 0,
+        var newAttributes = {};
+        for (let attribute of attributes) {
+            if (!attribute.includes("_max")) {
+                continue
+            }
+            let baseAttribute = attribute.replace("_max", "");
+            if (baseAttribute === "resourceValue") {
+                // Some jobs start encounters/phases with full job resource
+                if (resetType === "phase" && values.resourceReset !== "full") {
+                    continue;
+                }
+                newAttributes.resourceValue = values.resourceReset === "full" ? values.resourceValue_max : 0;
+            } else {
+                log("Setting " + baseAttribute + " to " + attribute + ": " + values[attribute]);
+                newAttributes[baseAttribute] = values[attribute];
+            }
+        }
+
+        if (resetType !== "phase") {
+            newAttributes.barrierPoints = 0;
             // No jobs start with full secondary reset
-            resource2Value: 0,
-            barrierPoints: 0
-        });
+            newAttributes.resource2Value = 0;
+        }
+
+        setAttrs(newAttributes);
     }
 
 

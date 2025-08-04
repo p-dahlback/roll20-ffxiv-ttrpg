@@ -32,7 +32,7 @@ class ManualEffectRemoval {
                 break;
             case "comatose":
             case "knocked_out":
-                log(`${effectData[adjustedName].name}; resetting mp recovery`);
+                log(`${effectData.effects[adjustedName].name}; resetting mp recovery`);
                 setAttrs({
                     mpRecoveryBlock: "off"
                 });

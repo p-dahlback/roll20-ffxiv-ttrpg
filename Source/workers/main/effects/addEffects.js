@@ -38,7 +38,7 @@ class AddEffects {
                 continue;
             }
             let adjustedEffect = replacement.name;
-            let data = effectData[adjustedEffect];
+            let data = effectData.effects[adjustedEffect];
             if (!data) {
                 log("Unhandled effect " + adjustedEffect);
                 continue;
@@ -89,7 +89,9 @@ class AddEffects {
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_effectsExpandItem`] = "on";
 
-            summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
+            if (duplicatesResult.summaries.length === 0) {
+                summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
+            }
         }
         if (Object.keys(attributes).length > 0) {
             setAttrs(attributes);
@@ -107,7 +109,7 @@ class AddEffects {
         if (effect.duplicate == "replace") {
             for (let replacable of existingEffects.effects) {
                 if (replacable.type == effect.type && replacable.specialType == effect.specialType) {
-                    summaries.push(`Removed existing ${effect.name}`);
+                    summaries.push(`Reactivated ${effect.name}`);
                     removeRepeatingRow(replacable.fullId);
                 }
             }
@@ -131,25 +133,30 @@ class AddEffects {
                 let attributeName = definition[0];
                 let attributeValue;
                 if (definition[1]) {
-                    attributeValue = parseInt(definition[1].trim());
+                    attributeValue = unpackNaN(definition[1].trim(), 1);
                 } else {
                     attributeValue = 1;
                 }
                 getAttrs([`${attributeName}Effective`, `${attributeName}Block`, `${attributeName}Unblocked`], values => {
                     var attributes = {};
                     let baseAttributeName;
-                    if (values[`${attributeName}Block`] === "on") {
+                    let isBlocked = values[`${attributeName}Block`] === "on"
+                    if (isBlocked) {
                         baseAttributeName = `${attributeName}Unblocked`;
                     } else {
                         baseAttributeName = `${attributeName}Effective`;
                     }
 
-                    let currentValue = parseInt(values[`${baseAttributeName}Effective`]);
+                    let currentValue = unpackNaN(values[`${baseAttributeName}`], 0);
                     let newValue = currentValue + attributeValue;
-                    log(`${attributeName}: ${newValue}, unblocked: ${values[`${attributeName}Unblocked`]}, original: ${attributes[`${attributeName}Original`]}`);
+                    log(`${attributeName}: ${newValue}, unblocked: ${values[`${attributeName}Unblocked`]}`);
                     attributes[`repeating_effects_${id}_attribute`] = attributeName;
                     attributes[`repeating_effects_${id}_attributeValue`] = attributeValue;
+                    
                     attributes[baseAttributeName] = newValue;
+                    if (!isBlocked) {
+                        attributes[`${attributeName}Display`] = Math.max(newValue, 0);
+                    }
                     log(`Setting ${baseAttributeName} to ${newValue}`);
                     setAttrs(attributes);
                 });
@@ -158,8 +165,8 @@ class AddEffects {
             case "bound": {
                 log("Resolving attributes for bound");
                 getAttrs(["size", "speedEffective", "speedBlock", "speedUnblocked"], values => {
-                    let speed = parseInt(values.speedEffective);
-                    let unblocked = parseInt(values.speedUnblocked ?? values.speed);
+                    let speed = unpackNaN(values.speedEffective, 0);
+                    let unblocked = unpackNaN(values.speedUnblocked ?? values.speed, 0);
                     let newValue;
                     let diff;
                     if (values.size === "large") {
@@ -177,7 +184,8 @@ class AddEffects {
                         attributes.speedUnblocked = unblocked;
                     }
                     log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
-                    attributes.speed = newValue;
+                    attributes.speedEffective = newValue;
+                    attributes.speedDisplay = Math.max(newValue, 0);
                     attributes[`repeating_effects_${id}_attribute`] = "speed";
                     attributes[`repeating_effects_${id}_attributeValue`] = -diff;
                     setAttrs(attributes);
@@ -188,13 +196,13 @@ class AddEffects {
                 log("Resolving attributes for Defender's Boon");
                 let attributeValue;
                 if (value) {
-                    attributeValue = parseInt(value.trim());
+                    attributeValue = unpackNaN(value.trim(), 1);
                 } else {
                     attributeValue = 1;
                 }
                 getAttrs(["defense", "magicDefense"], values => {
-                    let defense = parseInt(values.defense);
-                    let magicDefense = parseInt(values.magicDefense);
+                    let defense = unpackNaN(values.defense, 0);
+                    let magicDefense = unpackNaN(values.magicDefense, 0);
                     let attributeName;
                     let newValue;
                     if (defense === magicDefense) {
@@ -209,7 +217,8 @@ class AddEffects {
                     }
 
                     var attributes = {};
-                    attributes[attributeName] = newValue;
+                    attributes[`${attributeName}Effective`] = newValue;
+                    attributes[`${attributeName}Display`] = Math.max(newValue, 0);
                     attributes[`repeating_effects_${id}_attribute`] = attributeName;
                     attributes[`repeating_effects_${id}_attributeValue`] = attributeValue;
                     log(`Setting ${attributeName} to ${newValue}`);
@@ -221,7 +230,7 @@ class AddEffects {
             case "heavy": {
                 log(`Resolving attributes for ${effectName}`);
                 getAttrs(["speed", "speedEffective", "speedBlock", "speedUnblocked"], values => {
-                    let speed = parseInt(values.speed);
+                    let speed = unpackNaN(values.speed, 0);
                     let newValue = Math.floor(speed / 2) + speed % 2;
                     var attributes = {};
                     if (values.speedBlock === "on") {
@@ -233,6 +242,7 @@ class AddEffects {
                         log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
                     }
                     attributes.speedEffective = newValue;
+                    attributes.speedDisplay = Math.max(newValue, 0);
 
                     attributes[`repeating_effects_${id}_attribute`] = "speed";
                     attributes[`repeating_effects_${id}_attributeValue`] = newValue - speed;
@@ -277,8 +287,8 @@ class AddEffects {
         var summaries = [];
         let skip = effectData.effects[effect].expiry === "ephemeral";
 
-        this.resolveEffectAbilities(effect);
-        this.resolveEffectAttributes(id, effect, value);
+        this.resolveAbilities(effect);
+        this.resolveAttributes(id, effect, value);
 
         switch (effect) {
             case "astral_fire":
@@ -290,7 +300,7 @@ class AddEffects {
                     summaries.push("Removed Umbral Ice");
                     removeRepeatingRow(existingEffects.umbralIceId);
                 }
-                summaries.push(this.addEffectsToSelf(values, dice, ["Thunderhead Ready"], existingEffects));
+                summaries.push(this.addToSelf(values, dice, ["Thunderhead Ready"], existingEffects));
                 break;
             case "barrier":
                 setAttrs({
@@ -444,7 +454,7 @@ class AddEffects {
                     // Reset MP recovery
                     attributes.mpRecoveryBlock = "off";
                 }
-                summaries.push(this.addEffectsToSelf(values, dice, ["Thunderhead Ready"], existingEffects));
+                summaries.push(this.addToSelf(values, dice, ["Thunderhead Ready"], existingEffects));
                 break;
             default:
                 break;

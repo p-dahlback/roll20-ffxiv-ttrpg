@@ -15,7 +15,7 @@ class RemoveEffects {
     }
 
     removeAll(names, skipId) {
-        getEffects(effects => {
+        getEffects.get(effects => {
             let matches = effects.effects.filter(effect => {
                 if (effect.id == skipId) {
                     return false;
@@ -53,7 +53,7 @@ class RemoveEffects {
                 // Consume X Ready
                 removeRepeatingRow(effect.fullId);
 
-                let effectName = effect.specialType || effectData[effect.type.replace("(x)", "")].name;
+                let effectName = effect.specialType || effectData.effects[effect.type.replace("(x)", "")].name;
                 summaries.push(`Consumed ${(effectName.replace("(X)", effect.value))}`);
             }
         }
@@ -74,13 +74,15 @@ class RemoveEffects {
             let baseAttributeName;
             let currentValue;
             let newValue;
+            let isBlocked = values[`${attribute}Block`] === "on";
             var newAttributes = {};
             log(`${attribute}: ${values[`${attribute}Effective`]}, unblocked: ${values[`${attribute}Unblocked`]}`);
             if (name === "heavy" || name === "slow") {
-                baseAttributeName = "speed";
+                baseAttributeName = "speedEffective";
                 newAttributes.speedBlock = "off";
+                isBlocked = false;
             }
-            if (values[`${attribute}Block`] === "on") {
+            if (isBlocked) {
                 baseAttributeName = `${attribute}Unblocked`;
                 if (attributeValue < 0) {
                     newAttributes[`${attribute}Effective`] = parseInt(values[`${attribute}Effective`]) - attributeValue;
@@ -88,7 +90,7 @@ class RemoveEffects {
             } else {
                 baseAttributeName = `${attribute}Effective`;
             }
-            currentValue = parseInt(values[baseAttributeName]);
+            currentValue = unpackNaN(values[baseAttributeName], 0);
             newValue = currentValue - attributeValue;
 
             if (isNaN(currentValue)) {
@@ -96,6 +98,9 @@ class RemoveEffects {
                 return;
             }
             newAttributes[baseAttributeName] = newValue;
+            if (!isBlocked) {
+                newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
+            }
             log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
             setAttrs(newAttributes);
             if (completion) {

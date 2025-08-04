@@ -184,6 +184,7 @@ class PerformAbility {
     }
 
     resetUses(section) {
+        log("Resetting uses for section " + section);
         getSectionIDs(`repeating_${section}`, ids => {
             let attributes = ids.flatMap(id => [`repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`]);
             getAttrs(attributes, values => {
@@ -199,9 +200,8 @@ class PerformAbility {
     }
 
     resetAllUses() {
-        log("Resetting ability uses");
         for (let section of abilitySections) {
-            this.resetAbilityUses(section);
+            this.resetUses(section);
         }
     }
 };

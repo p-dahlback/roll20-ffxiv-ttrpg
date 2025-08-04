@@ -28,6 +28,7 @@ class SheetSetup {
             for (let entry of Object.entries(sheet.attributes)) {
                 attributes[entry[0]] = entry[1];
                 attributes[`${entry[0]}Effective`] = entry[1];
+                attributes[`${entry[0]}Display`] = entry[1];
             }
             attributes.mpRecovery = 2;
             attributes.mpRecoveryBlock = "off";

@@ -25,7 +25,7 @@ class EffectInfo {
             let description = values[`repeating_effects_${rowId}_description`];
 
             let adjustedName = getEffects.searchableName(specialType || type);
-            let data = effectData[adjustedName];
+            let data = effectData.effects[adjustedName];
 
             var itemType = "Effect";
             let title;

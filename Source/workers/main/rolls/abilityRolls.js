@@ -45,7 +45,7 @@ class AbilityRolls {
             `repeating_${section}_${rowId}_restore`,
             `repeating_${section}_${rowId}_combo`,
 
-            "strEffective", "dexEffective", "vitEffective", "intEffective", "mndEffective",
+            "strDisplay", "dexDisplay", "vitDisplay", "intDisplay", "mndDisplay",
             "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
             "advantage", "character_name"
         ], (values, effects) => {
@@ -60,7 +60,7 @@ class AbilityRolls {
             const damageType = values[`repeating_${section}_${rowId}_damageType`];
             const hitType = values[`repeating_${section}_${rowId}_hitType`];
             const restoration = values[`repeating_${section}_${rowId}_restore`];
-            const statValue = values[`${statType}Effective`];
+            const statValue = values[`${statType}Display`];
             const baseEffect = values[`repeating_${section}_${rowId}_baseEffect`];
             const baseValue = values[`repeating_${section}_${rowId}_baseValue`];
             const directHit = values[`repeating_${section}_${rowId}_directHit`];
@@ -95,7 +95,7 @@ class AbilityRolls {
                 if (hitType != "None" && hitDie) {
                     hitTitle = `${hitType}: `;
                     if (statValue > 0) {
-                        hitDie = `${hitDie} + @{${statType}Effective}`;
+                        hitDie = `${hitDie} + @{${statType}Display}`;
                     }
                     hitDie = rollModifiers.addEffectsToHitRoll(effects, hitDie, section);
                     hitDefinition = `[[${hitDie}]]`;

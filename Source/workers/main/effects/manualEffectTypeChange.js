@@ -112,7 +112,7 @@ class ManualEffectTypeChange {
         switch (name) {
             case "comatose":
             case "knocked_out":
-                getEffects(effects => {
+                getEffects.get(effects => {
                     log("Removing effects due to comatose/knocked out");
                     for (let effect of effects.effects) {
                         if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
@@ -127,7 +127,7 @@ class ManualEffectTypeChange {
                 });
                 break;
             case "transcendent": {
-                getEffects(effects => {
+                getEffects.get(effects => {
                     log("Clearing all enfeeblements");
                     for (let effect of effects.effects) {
                         if (effect.statusType.trim().toLowerCase() === "enfeeblement") {

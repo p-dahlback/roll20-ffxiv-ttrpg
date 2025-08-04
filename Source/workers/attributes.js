@@ -76,8 +76,11 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
         var newAttributes = {};
         if (isNaN(existingValue)) {
             newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
         } else {
-            newAttributes[`${attribute}Effective`] = existingValue + diff;
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
         }
         setAttrs(newAttributes);
     });
