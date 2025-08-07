@@ -82,6 +82,12 @@ const FFXIVAddEffect = (() => {
 
         logger.d(`Adding effect ${effect.typeName} to ${characters.length} character(s)`);
         for (let character of characters) {
+            let sheetType = unpackAttribute(character, "sheet_type").get("current");
+            if (sheetType !== "unique") {
+                logger.i(`Will not add effect; character ${character.get("name")} isn't unique`);
+                continue;
+            }
+
             let modEngine = new imports.ModEngine(logger, character);
             log("FFXIVAddEffect: Engine at mod exec time: " + JSON.stringify(modEngine));
             let removalHandler = new imports.RemoveEffects(modEngine);

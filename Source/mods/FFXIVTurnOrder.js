@@ -90,6 +90,15 @@ const FFXIVTurnOrder = (() => {
             logger.d("No token/character found");
             return;
         }
+
+        if (tokenCharacter.character) {
+            let sheetType = unpackAttribute(character, "sheet_type").get("current");
+            if (sheetType !== "unique") {
+                logger.d(`Will not manage effects; character ${character.get("name")} isn't unique`);
+                return;
+            }
+        }
+
         logger.d(`Perform ${turnChange} for ${tokenCharacter.token.get("name")}`);
         let resolver = effectResolver(tokenCharacter.character);
         let resolverSummary;
