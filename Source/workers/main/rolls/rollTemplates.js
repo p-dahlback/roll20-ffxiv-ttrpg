@@ -3,13 +3,15 @@
 /*exported rollTemplates*/
 /*build:end*/
 
-class RollTemplates {
-    unpackValueWithTitle(title, value) {
+const RollTemplates = function() {
+    this.unpackValueWithTitle = function(title, value) {
         if (value) {
             return [title, value];
         }
         return ["", ""];
-    }
-}
+    };
+};
 
 const rollTemplates = new RollTemplates();
+this.export.RollTemplates = RollTemplates;
+this.export.rollTemplates = rollTemplates;

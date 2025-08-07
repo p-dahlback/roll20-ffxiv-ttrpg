@@ -1,13 +1,14 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /* exported sheetSetup */
+const engine = [];
 const abilitySections = [];
 /*build:end*/
 
-class SheetSetup {
-    execute(sheet) {
+const SheetSetup = function() {
+    this.execute = function(sheet) {
         this.clearAllAbilitiesAndEffects(() => {
-            log("Clear complete; initializing sheet");
+            engine.logd("Clear complete; initializing sheet");
             var attributes = {
                 job: sheet.job,
                 jobIcon: sheet.jobIcon,
@@ -19,12 +20,12 @@ class SheetSetup {
                 override: "auto"
             };
 
-            log("Preparing resources");
+            engine.logd("Preparing resources");
             for (let entry of Object.entries(sheet.resources)) {
                 attributes[entry[0]] = entry[1];
             }
 
-            log("Preparing base attributes");
+            engine.logd("Preparing base attributes");
             for (let entry of Object.entries(sheet.attributes)) {
                 attributes[entry[0]] = entry[1];
                 attributes[`${entry[0]}Effective`] = entry[1];
@@ -35,9 +36,9 @@ class SheetSetup {
             attributes.mpRecovery = 2;
             attributes.mpRecoveryBlock = "off";
 
-            log("Preparing traits");
+            engine.logd("Preparing traits");
             for (let trait of sheet.traits) {
-                let id = generateRowID();
+                let id = engine.generateId();
                 for (let entry of Object.entries(trait)) {
                     attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1];
                     attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon;
@@ -46,10 +47,10 @@ class SheetSetup {
                 }
             }
 
-            log("Preparing abilities");
+            engine.logd("Preparing abilities");
             for (let section of Object.entries(sheet.abilities)) {
                 for (let ability of section[1]) {
-                    let id = generateRowID();
+                    let id = engine.generateId();
                     for (let entry of Object.entries(ability)) {
                         attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
                     }
@@ -58,10 +59,10 @@ class SheetSetup {
             }
             setAttrs(attributes);
         });
-    }
+    };
 
-    clearAllAbilitiesAndEffects(completion) {
-        log(`Clearing abilities and effects`);
+    this.clearAllAbilitiesAndEffects = function(completion) {
+        engine.logd(`Clearing abilities and effects`);
         let sections = abilitySections.concat(["traits", "effects"]);
         const ThreadLessPromise = class {
             constructor(count, completion) {
@@ -72,7 +73,7 @@ class SheetSetup {
 
             complete() {
                 this.completions += 1;
-                log(`Completed cleanup ${this.completions}/${this.count}`);
+                engine.logd(`Completed cleanup ${this.completions}/${this.count}`);
                 if (this.completions >= this.count) {
                     this.completion();
                 }
@@ -98,7 +99,9 @@ class SheetSetup {
                 });
             });
         }
-    }
+    };
 };
 
 const sheetSetup = new SheetSetup();
+this.export.SheetSetup = SheetSetup;
+this.export.sheetSetup = sheetSetup;

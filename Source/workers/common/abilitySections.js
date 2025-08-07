@@ -4,3 +4,5 @@
 /*build:end*/
 
 const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"];
+
+this.export.abilitySections = abilitySections;

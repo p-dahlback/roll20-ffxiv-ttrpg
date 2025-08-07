@@ -1,12 +1,13 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported performAbility*/
+const engine = {};
 const abilitySections = [];
 /*build:end*/
 
-class PerformAbility {
+const PerformAbility = function() {
 
-    resolveResources(section, rowId, values, effects) {
+    this.resolveResources = function(section, rowId, values, effects) {
         const type = values[`repeating_${section}_${rowId}_type`];
         const cost = values[`repeating_${section}_${rowId}_cost`];
         const resourceType = values[`repeating_${section}_${rowId}_resource`];
@@ -83,15 +84,21 @@ class PerformAbility {
                 summaries.push(this.restore(isGeneric, restoration, resourceType, resourceNames));
             }
             let isIceType = type.toLowerCase().includes("ice-aspect");
-            if (isIceType && effects.umbralIceId) {
+            if (isIceType && effects.umbralIce) {
                 summaries.push(`${this.restore(isGeneric, "5 mp", resourceType, resourceNames)} (Umbral Ice)`);
             }
         }
 
         return summaries.filter(element => element).join("\n");
-    }
+    };
 
-    spend(isGeneric, cost, resourceType, value, value_max, attributeName) {
+    this.resetAllUses = function() {
+        for (let section of abilitySections) {
+            this.resetUses(section);
+        }
+    };
+
+    this.spend = function(isGeneric, cost, resourceType, value, value_max, attributeName) {
         if (isGeneric) {
             return [true, `Spend ${cost} ${resourceType}`];
         }
@@ -105,15 +112,15 @@ class PerformAbility {
                 attributes[attributeName] = newValue;
                 setAttrs(attributes);
                 const resultString = `Spent ${cost} ${resourceType} (${newValue}/${value_max})`;
-                log(resultString);
+                engine.logd(resultString);
                 return [true, resultString];
             }
         } else {
             return [false, `${cost} ${resourceType} - Character has no ${resourceType}!`];
         }
-    }
+    };
 
-    restore(isGeneric, restoration, resourceType, resourceNames) {
+    this.restore = function(isGeneric, restoration, resourceType, resourceNames) {
         const values = restoration.split(",");
         var attributes = [];
         var summary = isGeneric ? "Restore " : "Restored ";
@@ -121,7 +128,7 @@ class PerformAbility {
         for (let i = 0; i < values.length; i++) {
             var parts = values[i].trim().split(" ");
             if (parts.length < 2) {
-                log("Invalid restore declaration " + values[i]);
+                engine.logi("Invalid restore declaration " + values[i]);
                 continue;
             }
             if (parts.length > 2) {
@@ -174,17 +181,17 @@ class PerformAbility {
                     const sum = +value + +attribute.value;
                     const newValue = Math.min(sum, max);
                     newValues[attribute.name] = newValue;
-                    log("Restored " + attribute.name + " to " + newValue);
+                    engine.logd("Restored " + attribute.name + " to " + newValue);
                 }
                 setAttrs(newValues);
             });
         }
 
         return summary.substring(0, summary.length - 2);
-    }
+    };
 
-    resetUses(section) {
-        log("Resetting uses for section " + section);
+    this.resetUses = function(section) {
+        engine.logd("Resetting uses for section " + section);
         getSectionIDs(`repeating_${section}`, ids => {
             let attributes = ids.flatMap(id => [`repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`]);
             getAttrs(attributes, values => {
@@ -197,13 +204,9 @@ class PerformAbility {
                 setAttrs(updatedAttributes);
             });
         });
-    }
-
-    resetAllUses() {
-        for (let section of abilitySections) {
-            this.resetUses(section);
-        }
-    }
+    };
 };
 
 const performAbility = new PerformAbility();
+this.export.PerformAbility = PerformAbility;
+this.export.performAbility = performAbility;

@@ -4,7 +4,8 @@ version="1.0.0"
 echo "Integrating imports"
 buildDir=".build/$1"
 sourceDirectory=$2
-useRealNames="${3:-"0"}"
+insertNameConstant="${3:-"0"}"
+useRealNames="${4:-"0"}"
 
 function mergeIntoFile () {
     printf "%b\n" "// Build (version $version): $1\n" >> $2
@@ -53,7 +54,12 @@ do
 
     id=$(uuidgen)
     targetFile="$buildDir/$id.js"
-    > $targetFile
+    printf "%b\n" "// Build (version $version), generated file $filename\n" > $targetFile
+    printf "%b\n" "const ${filename}Imports = new (function() {\n    this.export = {};\n" >> $targetFile
+
+    if [ $insertNameConstant = "1" ]; then
+        printf "%b\n" "const workerName = \"$filename\"\n" >> "$targetFile"
+    fi
 
     readImports "$file" "$targetFile" "$file"
 
@@ -74,6 +80,7 @@ do
     fi
 
     echo "Finalizing $file"
+    printf "%b\n" "\n})();\n" >> $targetFile
     printf "%b\n" "// Build: $file\n\n" >> "$targetFile"
     cat $file >> "$targetFile"
 

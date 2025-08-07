@@ -4,9 +4,9 @@
 const rollTemplates = {};
 /*build:end*/
 
-class AbilityInfo {
+const AbilityInfo = function() {
     // Share ability details to chat
-    share(eventInfo) {
+    this.share = function(eventInfo) {
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const section = sourceAttributes[1];
         const rowId = sourceAttributes[2];
@@ -62,7 +62,9 @@ class AbilityInfo {
                     finishRoll(results.rollId);
                 });
         });
-    }
-}
+    };
+};
 
 const abilityInfo = new AbilityInfo();
+this.export.AbilityInfo = AbilityInfo;
+this.export.abilityInfo = abilityInfo;

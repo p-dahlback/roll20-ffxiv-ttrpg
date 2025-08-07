@@ -1,11 +1,14 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported manualEffectValueChange*/
-const getEffects = {}; const removeEffects = {}; const addEffects = {};
+const effectUtilities = {}; const removeEffects = {}; const addEffects = {};
 /*build:end*/
 
-class ManualEffectValueChange {
-    resolve(eventInfo) {
+const ManualEffectValueChange = function() {
+    this.resolve = function(eventInfo) {
+        if (eventInfo.sourceType === "sheetworker") {
+            return;
+        }
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const rowId = sourceAttributes[2];
 
@@ -21,7 +24,7 @@ class ManualEffectValueChange {
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let attributeName = values[`repeating_effects_${rowId}_attribute`];
             let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
-            let adjustedName = getEffects.searchableName(specialType || type);
+            let adjustedName = effectUtilities.searchableName(specialType || type);
             if (adjustedName === "attribute" || adjustedName === "defenders_boon") {
                 log(`New attribute values: ${attributeName}, ${attributeValue}`);
                 if (attributeName || attributeValue) {
@@ -33,7 +36,9 @@ class ManualEffectValueChange {
                 }
             }
         });
-    }
-}
+    };
+};
 
 const manualEffectValueChange = new ManualEffectValueChange();
+this.export.ManualEffectValueChange = ManualEffectValueChange;
+this.export.manualEffectValueChange = manualEffectValueChange;

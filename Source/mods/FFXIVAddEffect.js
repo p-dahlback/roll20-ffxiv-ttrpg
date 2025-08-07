@@ -7,17 +7,17 @@
 
 /*build:remove*/
 /*build:import ../common/utilities.js*/
-/*build:import common/modutilities.js*/
 /*build:import ../common/effects.js*/
-const effectData = {};
-class Logger {};
-/*eslint-disable-next-line no-redeclare*/
-const generateRowID = {}; const unpackNaN = {}; const unpackAttribute = {}; const setAttribute = {};
+/*build:import ../common/effectUtilities.js*/
+/*build:import common/modengine.js*/
+/*build:import common/modutilities.js*/
+/*build:import ../common/addEffects.js*/
+/*build:import ../common/removeEffects.js*/
+const FFXIVAddEffectImports = {};
 /*build:end*/
 
 // eslint-disable-next-line no-unused-vars
 const FFXIVAddEffect = (() => {
-
     const scriptName = "FFXIVAddEffect";
     const version = "0.1.0";
 
@@ -27,7 +27,10 @@ const FFXIVAddEffect = (() => {
         time: 0
     };
 
-    let logger = new Logger(scriptName, true);
+    var enableMessagesForGm = false;
+
+    let imports = FFXIVAddEffectImports.export;
+    let logger = new imports.Logger(scriptName, true);
 
     const getCharacters = (msg, target) => {
         if (target == "selected") {
@@ -73,346 +76,30 @@ const FFXIVAddEffect = (() => {
         }
     };
 
-    const resetAttribute = (character, attributeName, attributeValue) => {
-        if (!["str", "dex", "vit", "int", "mnd", "defense", "magicdefense", "vigilance", "speed"].includes(attributeName.toLowerCase())) {
-            logger.d(`Unsupported attribute for ${attributeName}`);
-            return;
-        }
-        let attribute = unpackAttribute(character, attributeName, 0);
-        let currentValue = attribute.get("current");
-        if (currentValue === 0) {
-            logger.d(`Couldn't find attribute ${attributeName} on character ${character.get("name")}`);
-            return;
-        }
-        let valueChange = unpackNaN(attributeValue);
-        if (valueChange === 0) {
-            logger.d(`No value change in effect for attribute ${attributeName} on character ${character.get("name")}`);
-            return;
-        }
-        logger.d(`Resetting attribute change to ${attributeName} by ${valueChange}`);
-        setAttribute(attribute, "current", currentValue - valueChange);
-    };
-
-    const removeEffectsForFilter = (character, filter) => {
-        let attributes = findObjs({ type: "attribute", characterid: character.id });
-        let actionables = attributes.reduce(
-            (accumulator, currentValue) => {
-                let name = currentValue.get("name");
-                let match = name.match(/^repeating_effects_([-\w]+)_([\w_]+)/);
-                if (!match || match.length < 2) {
-                    // It's not a repeating effect attribute, skip
-                    return accumulator;
-                }
-                let id = match[1];
-                let subname = match[2];
-                if (accumulator.byId[id]) {
-                    accumulator.byId[id][subname] = currentValue;
-                } else {
-                    accumulator.byId[id] = {};
-                    accumulator.byId[id][subname] = currentValue;
-                }
-                if (filter(id, subname, currentValue)) {
-                    accumulator.idsToDelete.push(id);
-                }
-                return accumulator;
-            },
-            { byId: {}, idsToDelete: [] }
-        );
-        for (let id of actionables.idsToDelete) {
-            let actionable = actionables.byId[id];
-            if (actionable["attribute"] && actionable["attributeValue"]) {
-                resetAttribute(character, actionable["attribute"].get("current"), actionable["attributeValue"].get("current"));
-            }
-            for (let entry of Object.entries(actionables.byId[id])) {
-                let attribute = entry[1];
-                logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
-                attribute.remove();
-            }
-        }
-    };
-
-    const getEffectsWithName = (name, character) => {
-        let objects = findObjs({ type: "attribute", characterid: character.id, current: name });
-        let effects = objects.reduce((accumulator, object) => {
-            let objectName = object.get("name");
-            let normalizedName = objectName.toLowerCase();
-            if (!normalizedName.includes("repeating_effects") || !normalizedName.includes("type")) {
-                return accumulator;
-            }
-            let id = objectName.replace("repeating_effects_", "").replace(/_\w*[Tt]{1}ype/, "");
-            accumulator.push({
-                id: id,
-                characterid: character.id
-            });
-            return accumulator;
-        }, []);
-        return effects;
-    };
-
-    const performAdditionalEffectChanges = (id, effect, character) => {
-        switch ((effect.specialType || effect.type).toLowerCase()) {
-            case "astral fire": {
-                // Clear MP recovery
-                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off");
-                setAttribute(mpRecoveryBlock, "current", "on");
-                break;
-            }
-            case "attribute(x)": {
-                let definition = effect.value.split(",");
-                if (!definition) {
-                    logger.d("No value given for attribute(x)");
-                    return;
-                }
-                let attributeName = definition[0];
-                if (!["str", "dex", "vit", "int", "mnd", "defense", "magicdefense", "vigilance", "speed"].includes(attributeName.toLowerCase())) {
-                    logger.d(`Unsupported attribute for attribute(x): ${attributeName}, from value ${effect.value}`);
-                    return;
-                }
-                let baseAttributeName;
-                if (getAttrByName(character.id, `${attributeName}Block`) === "on") {
-                    baseAttributeName = `${attributeName}Unblocked`;
-                } else {
-                    baseAttributeName = attributeName;
-                }
-                let attribute = unpackAttribute(character, baseAttributeName, 0);
-                let attributeValue = attribute.get("current");
-                if (attributeValue === 0) {
-                    logger.d(`Couldn't find attribute ${baseAttributeName} on character ${character.get("name")}`);
-                    return;
-                }
-                var value = 1;
-                if (definition.length > 1) {
-                    value = unpackNaN(definition[1], 1);
-                }
-                logger.d(`attribute(x) increments ${baseAttributeName} by ${value}`);
-                setAttribute(attribute, "current", attributeValue + value);
-
-                let originalAttribute = unpackAttribute(character, `${attributeName}Original`, "");
-                if (isNaN(parseInt(originalAttribute.getr("current")))) {
-                    setAttribute(originalAttribute, "current", attributeValue);
-                }
-
-                let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
-                setAttribute(attributeReference, "current", attributeName);
-
-                let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
-                setAttribute(attributeValueReference, "current", value);
-                break;
-            }
-            case "barrier": {
-                let barrierPoints = unpackAttribute(character, "barrierPoints", 0);
-                let currentPoints = unpackNaN(barrierPoints.get("current"));
-                let value = unpackNaN(effect.value);
-
-                setAttribute(barrierPoints, "current", Math.max(currentPoints, value));
-                break;
-            }
-            case "bound": {
-                let attributes = [];
-                attributes.push(unpackAttribute(character, "speed", 0));
-                if (unpackAttribute(character, "speedBlock", "off").get("current") === "on") {
-                    attributes.push(unpackAttribute(character, "speedUnblocked", 0));
-                }
-
-                let diff;
-                if (getAttrByName(character.id, "size") === "large") {
-                    attributes.forEach(attribute => setAttribute(attribute, "current", unpackNaN(attribute.get("current")) - 2));
-                    diff = 2;
-                } else {
-                    diff = unpackNaN(attributes[0].get("current"));
-                    attributes.forEach(attribute => setAttribute(attribute, "current", 0));
-                }
-
-                let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
-                setAttribute(attributeReference, "current", "speed");
-                let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
-                setAttribute(attributeValueReference, "current", -diff);
-                break;
-            }
-            case "clear":
-            case "clear enfeeblements":
-            case "transcendent": {
-                logger.d("Clearing all enfeeblements");
-                removeEffectsForFilter(character, (attributeId, name, attribute) => {
-                    return attributeId !== id && name === "statusType" && attribute.get("current").trim().toLowerCase() === "enfeeblement";
-                });
-                break;
-            }
-            case "comatose":
-            case "knocked out": {
-                // Trigger the rest action to clear out all prior effects
-                logger.d(`Triggering character rest due to ${effect.specialType || effect.type}`);
-                removeEffectsForFilter(character, (attributeId, name, attribute) => {
-                    return attributeId !== id && name === "expiry" && !["end", "permanent"].includes(attribute.get("current"));
-                });
-                break;
-            }
-            case "defender's boon": {
-                let effectValue = unpackNaN(effect.value, 1);
-                let defense = unpackAttribute(character, "defense", 0);
-                let magicDefense = unpackAttribute(character, "magicDefense", 0);
-
-                let defenseValue = defense.get("current");
-                let magicDefenseValue = magicDefense.get("current");
-                if (defenseValue === 0 || magicDefenseValue === 0) {
-                    logger.d("Character has no defense; unable to apply Defender's Boon");
-                    return;
-                } else if (defenseValue === magicDefenseValue) {
-                    logger.d("No effect from Defender's Boon - same value");
-                    return;
-                } else if (defenseValue < magicDefenseValue) {
-                    logger.d("Defender's Boon increments Defense by " + effectValue);
-                    setAttribute(defense, "current", defenseValue + effectValue);
-
-                    let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
-                    setAttribute(attributeReference, "current", "defense");
-
-                    let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
-                    setAttribute(attributeValueReference, "current", effectValue);
-                } else if (magicDefenseValue < defense) {
-                    logger.d("Defender's Boon increments Magic Defense by " + effectValue);
-                    setAttribute(magicDefense, "current", magicDefenseValue + effectValue);
-
-                    let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
-                    setAttribute(attributeReference, "current", "magicDefense");
-
-                    let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
-                    setAttribute(attributeValueReference, "current", effectValue);
-                }
-                break;
-            }
-            case "slow":
-            case "heavy": {
-                let speed = unpackAttribute(character, "speed", 0);
-                let originalSpeed = unpackAttribute(character, "speedOriginal", 0);
-
-                let originalSpeedValue = parseInt(originalSpeed.get("current"));
-                let currentSpeedValue = parseInt(speed.get("current"));
-                let speedValue = originalSpeedValue > 0 ? originalSpeedValue : currentSpeedValue;
-                let newValue = Math.floor(speedValue / 2) + speedValue % 2;
-
-                let speedBlock = unpackAttribute(character, "speedBlock", "off");
-                if (speedBlock.get("current") === "on") {
-                    logger.d(`Speed was already blocked when activating ${effect.type}`);
-                } else {
-                    setAttribute(speedBlock, "current", "on");
-
-                    let speedUnblocked = unpackAttribute(character, "speedUnblocked", "");
-                    setAttribute(speedUnblocked, "current", speed.get("current"));
-
-                    setAttribute(originalSpeed, "current", speedValue);
-                }
-
-                let attributeReference = unpackAttribute(character, `repeating_effects_${id}_attribute`, "");
-                setAttribute(attributeReference, "current", "speed");
-
-                let attributeValueReference = unpackAttribute(character, `repeating_effects_${id}_attributeValue`, "");
-                setAttribute(attributeValueReference, "current", newValue - speedValue);
-                break;
-            }
-            case "umbral ice": {
-                // Reset MP recovery
-                let mpRecoveryBlock = unpackAttribute(character, "mpRecoveryBlock", "off");
-                setAttribute(mpRecoveryBlock, "current", "off");
-                break;
-            }
-        }
-
-        if (!effect.abilities) {
-            return;
-        }
-
-        logger.d("Creating abilities for effect");
-        for (let section of Object.entries(effect.abilities)) {
-            let sectionName = section[0];
-            for (let ability of section[1]) {
-                logger.d("Creating ability " + ability.title);
-                let id = generateRowID();
-                for (let entry of Object.entries(ability)) {
-                    var attributeValue = entry[1];
-                    if (effect.value && attributeValue && isNaN(attributeValue)) {
-                        attributeValue = attributeValue.replace("{value}", effect.value);
-                    }
-                    createObj("attribute", { characterid: character.id, name: `repeating_${sectionName}_${id}_${entry[0]}`, current: attributeValue });
-                }
-                createObj("attribute", { characterid: character.id, name: `repeating_${sectionName}_${id}_repeatingOverride`, current: "auto" });
-                createObj("attribute", { characterid: character.id, name: `repeating_${sectionName}_${id}_augment`, current: "1" });
-            }
-        }
-    };
-
-    const addEffect = (effect) => {
+    const addEffect = (effect, characters, completion) => {
         let summaryIntro = `${effect.typeName.replace("X", effect.value)} to `;
         var summaries = [];
 
-        logger.d(`Adding effect ${effect.typeName} to ${effect.characters.length} character(s)`);
-        for (let character of effect.characters) {
-            let existingEffects = getEffectsWithName(effect.specialType ?? effect.type, character);
-            if (effect.duplicate === "block") {
-                if (existingEffects.some(element => element.characterid === character.id)) {
-                    logger.d(`Skipping ${character.get("name")} due to duplicate effect`);
-                    continue;
-                }
-            }
-
-            var update = false;
-            var id = "";
-            if (effect.duplicate == "replace") {
-                let duplicate = existingEffects.find(element => element.characterid == character.id);
-                if (duplicate) {
-                    // Overwrite the contents of the effect with the new specification
-                    id = duplicate.id;
-                    update = true;
-                    logger.d(`Replacing existing effect`);
-                } else {
-                    id = generateRowID();
-                }
-            } else {
-                id = generateRowID();
-            }
-
-            if (effect.expiry != "ephemeral") {
-                let attributes = {
-                    icon: effect.icon,
-                    type: effect.type,
-                    statusType: effect.statusType,
-                    specialType: effect.specialType,
-                    source: effect.source,
-                    description: effect.description,
-                    name: effect.typeName,
-                    value: effect.value,
-                    expiry: effect.expiry,
-                    editable: ["1", "on"].includes(effect.editable) ? "on" : "off",
-                    curable: ["1", "on"].includes(effect.curable) ? "on" : "off",
-                    origin: effect.origin,
-                    effectsExpandItem: "on"
-                };
-                for (let entry of Object.entries(attributes)) {
-                    if (!entry[1]) {
-                        continue;
-                    }
-
-                    if (update) {
-                        let object = unpackAttribute(
-                            character,
-                            `repeating_effects_${id}_${entry[0]}`,
-                            null
-                        );
-                        setAttribute(object, "current", entry[1]);
-                    } else {
-                        createObj("attribute", {
-                            name: `repeating_effects_${id}_${entry[0]}`,
-                            current: entry[1],
-                            characterid: character.id
-                        });
-                    }
-                }
-            }
-            summaries.push(character.get("name"));
-            performAdditionalEffectChanges(id, effect, character);
+        logger.d(`Adding effect ${effect.typeName} to ${characters.length} character(s)`);
+        for (let character of characters) {
+            let modEngine = new imports.ModEngine(logger, character);
+            log("FFXIVAddEffect: Engine at mod exec time: " + JSON.stringify(modEngine));
+            let removalHandler = new imports.RemoveEffects(modEngine);
+            let addHandler = new imports.AddEffects(modEngine, removalHandler);
+            modEngine.getAttrsAndEffects(["hitPoints", "barrierPoints"], (values, effects) => {
+                let state = new imports.EffectState(
+                    values.hitPoints, 
+                    values.hitPoints_max, 
+                    values.barrierPoints, 
+                    null, 
+                    effects
+                );
+                let summary = addHandler.add(state, [effect]);
+                summaries.push(summary);
+            });
         }
         let summary = summaryIntro + summaries.join(", ");
-        return { who: effect.who, summary: summary };
+        completion ({ who: effect.who, summary: summary });
     };
 
     const outputEvent = (type, event) => {
@@ -474,6 +161,7 @@ const FFXIVAddEffect = (() => {
             `<li>A character name</li>` +
             `</ul>` +
             `<li><code>--l {X}</code> - the level of the effect, for any cases where that may matter. <b>Default:</b> no value.</li>` +
+            `<li><code>--gmenable {X}</code> - enables or disables chat output when GM adds an effect. 1 or on to enable, 0 or off to disable <b>Default:</b> disabled.</li>` +
             `</ul>`
             ;
 
@@ -497,6 +185,8 @@ const FFXIVAddEffect = (() => {
         if (lastMessage.content === msg.content && lastMessage.who === msg.who && time - lastMessage.time < 200) {
             logger.d("Duplicate message, ignoring");
             return;
+        } else if (lastMessage.content === msg.content && lastMessage.who === msg.who) {
+            logger.d("Message receipt diff: " + (time - lastMessage.time));
         }
         lastMessage.content = msg.content;
         lastMessage.who = msg.who;
@@ -548,7 +238,7 @@ const FFXIVAddEffect = (() => {
 
                 case "expire": {
                     let expiry = parts[1].toLowerCase();
-                    if (effectData.expiryTypes.includes(expiry)) {
+                    if (imports.effectData.expiryTypes.includes(expiry)) {
                         effect.expiry = expiry;
                     } else {
                         logger.i("Unrecognized expiry type " + expiry);
@@ -600,21 +290,39 @@ const FFXIVAddEffect = (() => {
                     break;
                 }
 
+                case "gmenable": {
+                    if (["0", "1", "on", "off"].includes(parts[1])) {
+                        enableMessagesForGm = ["1", "on"].includes(parts[1]) ? true : false;
+                        return;
+                    } else {
+                        logger.i("Unrecognized gmenable type " + parts[1]);
+                        return;
+                    }
+                }
+
                 default: {
                     let name = parts.join(" ");
-                    let match = effectData.matches.find(type => type.matches.includes(name.toLowerCase())) ?? { type: "special", specialType: name };
+                    let match = imports.effectData.matches.find(type => type.matches && type.matches.includes(name.toLowerCase()));
+                    if (!match) {
+                        outputEvent("error", "Unknown effect " + name);
+                        return;
+                    }
+                    effect.data = match;
+
                     let specialType;
                     if (match.type == "special") {
                         specialType = match.specialType;
                         effect.maskedType = match.maskedType;
                         effect.typeName = match.specialType;
                         if (match.ability) {
-                            effect.abilities = effectData.abilities[match.ability];
+                            effect.abilities = imports.effectData.abilities[match.ability];
                         }
                     } else {
                         specialType = "";
                         effect.typeName = match.name;
                     }
+                    effect.adjustedName = imports.effectUtilities.searchableName(match.name);
+                    effect.icon = imports.effectData.icon(effect);
                     effect.type = match.type;
                     effect.statusType = match.statusType;
                     effect.specialType = specialType;
@@ -623,27 +331,27 @@ const FFXIVAddEffect = (() => {
                 }
             }
         }
+        if (!effect || !effect.type || effect.type == "none") {
+            logger.i("Found no matching effect for " + msg.content);
+            return;
+        }
         if (!effect.source) {
             logger.i("No source given");
             help();
             return;
         }
-        if (effect.type == "none") {
-            logger.i("Found no matching effect for " + msg.content);
-            return;
-        }
-        effect.icon = effectData.icon(effect);
         let targetResult = getCharacters(msg, effect.target);
         if (targetResult.error) {
             outputEvent("error", targetResult.error);
             return;
         }
 
-        effect.characters = targetResult.result;
-        let event = addEffect(effect);
-        if (!playerIsGM(msg.playerid)) {
-            outputEvent("add", event);
-        }
+        let characters = targetResult.result;
+        addEffect(effect, characters, event => {{
+            if (enableMessagesForGm || !playerIsGM(msg.playerid)) {
+                outputEvent("add", event);
+            }
+        }});
     };
 
     const registerEventHandlers = () => {

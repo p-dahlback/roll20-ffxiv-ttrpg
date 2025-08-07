@@ -1,10 +1,11 @@
 /*build:remove*/
 /*build:import common/abilitySections.js*/
-const abilitySections = [];
+const togglesImports = {};
 /*build:end*/
 
 // Expand/collapse
 
+const imports = togglesImports.export;
 const itemSections = ["titles", "minions", "items"];
 
 function toggleExpandedState(attributeName) {
@@ -42,7 +43,7 @@ function setCollapsedStateForSection(isExpanded, section) {
     });
 }
 
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(abilitySections);
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
 for (let section of toggleSections) {
     on(`clicked:repeating_${section}:info`, eventInfo => {
         toggleExpandedStateInSection(eventInfo);
@@ -84,7 +85,7 @@ on("clicked:collapseAllItems", () => {
 });
 
 on("clicked:expandAllAbilities", () => {
-    for (let section of abilitySections) {
+    for (let section of imports.abilitySections) {
         setCollapsedStateForSection(false, section);
     }
     setAttrs({
@@ -97,7 +98,7 @@ on("clicked:expandAllAbilities", () => {
 });
 
 on("clicked:collapseAllAbilities", () => {
-    for (let section of abilitySections) {
+    for (let section of imports.abilitySections) {
         setCollapsedStateForSection(true, section);
     }
     setAttrs({

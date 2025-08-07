@@ -1,29 +1,30 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-/*exported Logger, unpackNaN*/
 /*build:end*/
 
-class Logger {
-    constructor(scriptName, debug) {
-        this.scriptName = scriptName;
-        this.debug = debug;
-    }
+const Logger = function(scriptName, debug) {
 
-    d(string) {
+    this.scriptName = scriptName;
+    this.debug = debug;
+
+    this.d = (string) => {
         if (this.debug) {
             log(`${this.scriptName}: ${string}`);
         }
-    }
+    };
 
-    i(string) {
+    this.i = (string) => {
         log(`${this.scriptName}: ${string}`);
-    }
-}(true);
+    };
+};
 
-function unpackNaN(value, defaultValue = 0) {
+const unpackNaN = function(value, defaultValue = 0) {
     let intValue = parseInt(value);
     if (isNaN(intValue)) {
         return defaultValue;
     }
     return intValue;
 };
+
+this.export.Logger = Logger;
+this.export.unpackNaN = unpackNaN;

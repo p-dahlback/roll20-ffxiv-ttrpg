@@ -1,11 +1,12 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported rollModifiers*/
+const engine = {};
 /*build:end*/
 
-class RollModifiers {
+const RollModifiers = function() {
     
-    addEffectsToHitRoll(effects, rollMacro, rollType) {
+    this.addEffectsToHitRoll = function(effects, rollMacro, rollType) {
         var penalty = 0;
         var hasParalysis = false;
         var criticalUp = 0;
@@ -84,15 +85,15 @@ class RollModifiers {
             );
         }
         return updatedMacro;
-    }
+    };
 
-    addEffectsToPreDamageRolls(effects, level, type, damageType, damageRoll, directHitRoll) {
+    this.addEffectsToPreDamageRolls = function(effects, level, type, damageType, damageRoll, directHitRoll) {
         var adds = [];
         var negatives = [];
         var summaries = [];
 
         let isFireType = type.toLowerCase().includes("fire-aspect");
-        if (isFireType && effects.astralFireId) {
+        if (isFireType && effects.astralFire) {
             let addedDamage = level >= 50 ? "2d6" : "1d6";
             adds.push(`${addedDamage}[Astral Fire]`);
             summaries.push("Astral Fire proc");
@@ -121,23 +122,31 @@ class RollModifiers {
             negatives.splice(0, 0, "");
         }
 
-        log("Adding damage to roll");
-        let damage = damageRoll ? `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}` : `0${adds.join(" + ")}${negatives.join(" - ")}`;
-        return {
-            damage: damage,
-            directHit: directHitRoll,
-            summaries: summaries
-        };
-    }
+        if (adds.length > 0 || negatives.length > 0) {
+            engine.logd("Adding damage to roll");
+            let damage = damageRoll ? `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}` : `0${adds.join(" + ")}${negatives.join(" - ")}`;
+            return {
+                damage: damage,
+                directHit: directHitRoll,
+                summaries: summaries
+            };
+        } else {
+            return {
+                damage: damageRoll,
+                directHit: directHitRoll,
+                summaries: []
+            };
+        }
+    };
 
-    addEffectsToPostDamageRolls(effects, damageType, damageRolls) {
+    this.addEffectsToPostDamageRolls = function(effects, damageType, damageRolls) {
         var result = {};
         var summaries = [];
         if (damageType == "Damage" && effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
             summaries.push(`Damage reroll available (${effects.damageRerolls.join(", ")})`);
         }
 
-        if (effects.surgingTempestId) {
+        if (effects.surgingTempest) {
             var rolls = [];
             var total = 0;
             var appliedSurgingTempest = false;
@@ -200,9 +209,9 @@ class RollModifiers {
         result.summary = summaries.join(", ");
 
         return result;
-    }
+    };
 
-    applyAdvantage(advantage, dice) {
+    this.applyAdvantage = function(advantage, dice) {
         if (advantage == 0) {
             return dice;
         }
@@ -241,7 +250,9 @@ class RollModifiers {
         }
         newDice += searchString;
         return newDice;
-    }
+    };
 };
 
 const rollModifiers = new RollModifiers();
+this.export.RollModifiers = RollModifiers;
+this.export.rollModifiers = rollModifiers;

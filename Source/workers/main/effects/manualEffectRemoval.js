@@ -1,13 +1,15 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported manualEffectRemoval*/
-const getEffects = {}; const removeEffects = {}; const effectData = {};
+const effectUtilities = {}; const removeEffects = {}; const engine = {};
 /*build:end*/
 
-class ManualEffectRemoval {
-    resolve(eventInfo) {
-
-        log("Removing repeating effect");
+const ManualEffectRemoval = function() {
+    this.resolve = function(eventInfo) {
+        if (eventInfo.sourceType === "sheetworker") {
+            return;
+        }
+        engine.logd("Removing repeating effect");
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const rowId = sourceAttributes[2];
 
@@ -16,46 +18,16 @@ class ManualEffectRemoval {
         let value = eventInfo.removedInfo[`repeating_effects_${rowId}_value`];
         let affectedAttribute = eventInfo.removedInfo[`repeating_effects_${rowId}_attribute`];
         let affectedAttributeValue = parseInt(eventInfo.removedInfo[`repeating_effects_${rowId}_attributeValue`]);
-        let adjustedName = getEffects.searchableName(specialType || type);
-        removeEffects.removeAbility(adjustedName, value);
-        removeEffects.resetAttributeChanges(adjustedName, affectedAttribute, affectedAttributeValue);
-
-        if (!specialType) {
+        let adjustedName = effectUtilities.searchableName(specialType || type);
+        if (!adjustedName) {
             return;
         }
-        switch (adjustedName) {
-            case "astral_fire":
-                log("Astral Fire removed; resetting mp recovery");
-                setAttrs({
-                    mpRecoveryBlock: "off"
-                });
-                break;
-            case "comatose":
-            case "knocked_out":
-                log(`${effectData.effects[adjustedName].name}; resetting mp recovery`);
-                setAttrs({
-                    mpRecoveryBlock: "off"
-                });
-                break;
-            case "lightweight_refit__proc":
-                log("Lightweight Refit removed; resetting speed");
-                getAttrs(["speed"], values => {
-                    let newValue = (values.speed ?? 0) - 1;
-                    setAttrs({
-                        speed: Math.max(newValue, 0)
-                    });
-                });
-                break;
-            case "lucid_dreaming":
-                log("Lucid Dreaming removed; resetting mp recovery");
-                setAttrs({
-                    mpRecovery: 2
-                });
-                break;
-            default:
-                break;
-        }
-    }
-}
+        removeEffects.removeAbility(adjustedName, value);
+        removeEffects.resetSpecialEffects(adjustedName);
+        removeEffects.resetAttributeChanges(adjustedName, affectedAttribute, affectedAttributeValue);
+    };
+};
 
 const manualEffectRemoval = new ManualEffectRemoval();
+this.export.ManualEffectRemoval = ManualEffectRemoval;
+this.export.manualEffectRemoval = manualEffectRemoval;

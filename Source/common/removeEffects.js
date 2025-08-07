@@ -1,21 +1,27 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-/*exported removeEffects*/
-const effectData = {}; const getEffects = {};
+const effectData = {}; const engine = {}; const effectUtilities = {}; const unpackNaN = {};
 /*build:end*/
 
-class RemoveEffects {
-    remove(effect) {
-        let adjustedName = getEffects.searchableName(effect.specialType || effect.type);
+const RemoveEffects = function(customEngine) {
+    this.customEngine = customEngine;
+
+    this.engine = function() {
+        return this.customEngine ?? engine;
+    };
+
+    this.remove = function(effect) {
+        let adjustedName = effectUtilities.searchableName(effect.specialType || effect.type);
         if (effect.data.ability) {
             this.removeAbility(adjustedName, effect.value);
         }
-        removeRepeatingRow(effect.fullId);
+        this.engine().remove(effect);
+        this.resetSpecialEffects(adjustedName);
         this.resetAttributeChanges(adjustedName, effect.attribute, effect.attributeValue);
-    }
+    };
 
-    removeAll(names, skipId) {
-        getEffects.get(effects => {
+    this.removeAll = function(names, skipId) {
+        this.engine().getEffects(effects => {
             let matches = effects.effects.filter(effect => {
                 if (effect.id == skipId) {
                     return false;
@@ -23,13 +29,13 @@ class RemoveEffects {
                 return names.includes(effect.type) || names.includes(effect.specialType.trim().toLowerCase());
             });
             for (let match of matches) {
-                log(`Removing effect ${match.id} with the type ${match.specialType || match.type}`);
-                removeRepeatingRow(match.fullId);
+                this.engine().logd(`Removing effect ${match.id} with the type ${match.specialType || match.type}`);
+                this.remove(match);
             }
         });
-    }
+    };
 
-    consumeOnAbility(name, condition, effects) {
+    this.consumeOnAbility = function(name, condition, effects) {
         var summaries = [];
         for (let effect of effects.effects) {
             let normalizedName = name.toLowerCase();
@@ -49,43 +55,69 @@ class RemoveEffects {
                 (isReadyType && value == normalizedName) ||
                 (isReadyType && normalizedCondition.includes(value))
             ) {
-                log("Consuming effect " + JSON.stringify(effect));
+                this.engine().logd("Consuming effect " + JSON.stringify(effect));
                 // Consume X Ready
-                removeRepeatingRow(effect.fullId);
+                this.engine().remove(effect);
 
                 let effectName = effect.specialType || effectData.effects[effect.type.replace("(x)", "")].name;
                 summaries.push(`Consumed ${(effectName.replace("(X)", effect.value))}`);
             }
         }
         return summaries.join(", ");
-    }
+    };
 
-    resetAttributeChanges(name, attribute, value, completion) {
-        log("Resetting effect attributes for " + attribute);
+    this.resetSpecialEffects = function(name) {
+        switch (name) {
+            case "astral_fire":
+                this.engine().logd("Astral Fire removed; resetting mp recovery");
+                this.engine().set({
+                    mpRecoveryBlock: "off"
+                });
+                break;
+            case "comatose":
+            case "knocked_out":
+                this.engine().logd(`${effectData.effects[name].name}; resetting mp recovery`);
+                this.engine().set({
+                    mpRecoveryBlock: "off"
+                });
+                break;
+            case "lucid_dreaming":
+                this.engine().logd("Lucid Dreaming removed; resetting mp recovery");
+                this.engine().set({
+                    mpRecovery: 2
+                });
+                break;
+            default:
+                break;
+        };
+    };
+
+    this.resetAttributeChanges = function(name, attribute, value, completion) {
+        this.engine().logd("Resetting effect attributes for " + attribute);
         let attributeValue = parseInt(value);
         if (!attribute || isNaN(attributeValue)) {
-            log("No effect attributes to reset");
+            this.engine().logd("No effect attributes to reset");
             if (completion) {
                 completion();
             }
             return;
         }
-        getAttrs([`${attribute}Effective`, `${attribute}Override`, `${attribute}OverrideSources`, `${attribute}Unblocked`], values => {
+        this.engine().get([`${attribute}Effective`, `${attribute}Override`, `${attribute}OverrideSources`, `${attribute}Unblocked`], values => {
             let baseAttributeName;
             let currentValue;
             let newValue;
             var newAttributes = {};
-            log(`${attribute}: ${values[`${attribute}Effective`]}, unblocked: ${values[`${attribute}Unblocked`]}`);
+            this.engine().logd(`${attribute}: ${values[`${attribute}Effective`]}, unblocked: ${values[`${attribute}Unblocked`]}`);
             if (name === "heavy" || name === "slow") {
                 let overrideSources = Math.max(unpackNaN(values.speedOverrideSources, 1) - 1, 0);
-                newAttributes.speedOverrideSources = overrideSources
+                newAttributes.speedOverrideSources = overrideSources;
                 if (overrideSources === 0) {
                     baseAttributeName = "speedEffective";
                     currentValue = values.speedEffective;
                     newAttributes.speedOverride = 0;
                     newAttributes.speedEffective = values.speedUnblocked;
                     newAttributes.speedDisplay = values.speedUnblocked;
-                    log(`Unblocking speed, ${currentValue} -> ${values.speedUnblocked}`);
+                    this.engine().logd(`Unblocking speed, ${currentValue} -> ${values.speedUnblocked}`);
                 }
             } else {
                 let isBlocked = unpackNaN(values[`${attribute}Override`]) > 0;
@@ -104,23 +136,23 @@ class RemoveEffects {
                 newValue = currentValue - attributeValue;
 
                 if (isNaN(currentValue)) {
-                    log(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`);
+                    this.engine().logi(`Unable to reset attribute ${baseAttributeName}, value is not a number: ${values[baseAttributeName]}`);
                     return;
                 }
                 newAttributes[baseAttributeName] = newValue;
                 if (!isBlocked) {
                     newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
                 }
-                log(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
+                this.engine().logd(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
             }
-            setAttrs(newAttributes);
+            this.engine().set(newAttributes);
             if (completion) {
                 completion();
             }
         });
-    }
+    };
 
-    removeAbility(effect, value) {
+    this.removeAbility = function(effect, value) {
         let data = effectData.effects[effect];
         if (!data || !data.ability) {
             return;
@@ -130,31 +162,31 @@ class RemoveEffects {
             return;
         }
 
-        log("Removing ability " + JSON.stringify(data));
+        this.engine().logd("Removing ability " + JSON.stringify(data));
         // Delete ability
         for (let section of Object.keys(abilityDefinition)) {
             let titles = abilityDefinition[section].map(ability => ability.title);
-            getSectionIDs(`repeating_${section}`, ids => {
-                let attributes = ids.flatMap(id => [`repeating_${section}_${id}_title`, `repeating_${section}_${id}_type`, `repeating_${section}_${id}_augment`]);
-                getAttrs(attributes, values => {
-                    for (let id of ids) {
-                        let title = values[`repeating_${section}_${id}_title`];
-                        let type = values[`repeating_${section}_${id}_type`];
-                        let augment = values[`repeating_${section}_${id}_augment`];
+            let attributeNames = ["title", "type", "augment"];
+            this.engine().getSectionValues(section, attributeNames, abilities => {
+                for (let ability of abilities) {
+                    let title = ability.title;
+                    let type = ability.type;
+                    let augment = ability.augment;
 
-                        if (value && !type.includes(value)) {
-                            continue;
-                        }
-
-                        if (augment === "1" && titles.includes(title)) {
-                            log("Removed augment ability " + title);
-                            removeRepeatingRow(`repeating_${section}_${id}`);
-                        }
+                    if (value && !type.includes(value)) {
+                        continue;
                     }
-                });
+
+                    if (augment === "1" && titles.includes(title)) {
+                        this.engine().logd("Removed augment ability " + title);
+                        this.engine().remove(ability);
+                    }
+                }
             });
         }
-    }
-}
+    };
+};
 
 const removeEffects = new RemoveEffects();
+this.export.RemoveEffects = RemoveEffects;
+this.export.removeEffects = removeEffects;

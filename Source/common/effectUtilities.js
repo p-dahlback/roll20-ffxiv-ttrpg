@@ -1,24 +1,30 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-/*exported getEffects*/
 const effectData = {};
 /*build:end*/
 
-class GetEffects {
-    searchableName(name) {
+const EffectUtilities = function() {
+    
+    this.searchableName = function(name) {
+        if (!name) {
+            return "";
+        }
         return name
             .replaceAll(/(\([-|\s\w]+\))|(\[[-+><=\w]+\])|'/g, "")
             .replaceAll(" ", "_")
             .trim().toLowerCase();
-    }
-
-    classify(effects) {
+    };
+    
+    this.classify = function(effects) {
         var result = {
             effects: [],
             criticalThreshold: 20
         };
         for (var effect of effects) {
             let adjustedName = this.searchableName(effect.specialType || effect.type);
+            if (!adjustedName) {
+                continue;
+            }
             effect.adjustedName = adjustedName;
             effect.data = effectData.effects[adjustedName];
             result.effects.push(effect);
@@ -62,16 +68,16 @@ class GetEffects {
             if (effect.type == "special") {
                 switch (effect.specialType.trim().toLowerCase()) {
                     case "astral fire":
-                        result.astralFireId = effect.fullId;
+                        result.astralFire = effect;
                         break;
                     case "hawk's eye":
-                        result.hawksEyeId = effect.fullId;
+                        result.hawksEye = effect;
                         break;
                     case "surging tempest":
-                        result.surgingTempestId = effect.fullId;
+                        result.surgingTempest = effect;
                         break;
                     case "umbral ice":
-                        result.umbralIceId = effect.fullId;
+                        result.umbralIce= effect;
                         break;
                     default:
                         break;
@@ -79,48 +85,9 @@ class GetEffects {
             }
         }
         return result;
-    }
-
-    attrs(bonusAttributes, completion) {
-        getSectionIDs("repeating_effects", ids => {
-            const attributes = ids.flatMap((element) => [
-                `repeating_effects_${element}_type`,
-                `repeating_effects_${element}_specialType`,
-                `repeating_effects_${element}_statusType`,
-                `repeating_effects_${element}_value`,
-                `repeating_effects_${element}_expiry`,
-                `repeating_effects_${element}_source`,
-                `repeating_effects_${element}_curable`,
-                `repeating_effects_${element}_description`,
-                `repeating_effects_${element}_attribute`,
-                `repeating_effects_${element}_attributeValue`
-            ]);
-            getAttrs(attributes.concat(bonusAttributes), values => {
-                var sortedValues = {};
-                const effectKeys = Object.keys(values).filter((key) => key.includes("repeating_effects"));
-                for (let attribute of effectKeys) {
-                    let components = attribute.split("_");
-                    let id = components[2];
-                    let attributeName = components[3];
-                    if (!sortedValues[id]) {
-                        sortedValues[id] = {
-                            id: id,
-                            fullId: `repeating_effects_${id}`
-                        };
-                    }
-                    sortedValues[id][attributeName] = values[attribute];
-                }
-                const valueObjects = Object.values(sortedValues);
-                completion(values, this.classify(valueObjects));
-            });
-        });
-    }
-
-    get(completion) {
-        this.attrs([], (values, effects) => {
-            completion(effects);
-        });
-    }
+    };
 };
 
-const getEffects = new GetEffects();
+const effectUtilities = new EffectUtilities();
+this.export.EffectUtilities = EffectUtilities;
+this.export.effectUtilities = effectUtilities;

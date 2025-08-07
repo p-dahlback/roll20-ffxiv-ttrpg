@@ -7,7 +7,8 @@
             "command": "./Scripts/buildimports.sh",
             "args": [
                 "workers",
-                "Source/workers"
+                "Source/workers",
+                "1" // Insert name of file as worker name for logging
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -20,7 +21,8 @@
             "args": [
                 "mods",
                 "Source/mods",
-                "1"
+                "0",
+                "1" // Rename intermediary files to use the file name of the main source file
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

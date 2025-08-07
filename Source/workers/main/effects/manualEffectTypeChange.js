@@ -1,13 +1,16 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported manualEffectTypeChange*/
-const getEffects = {}; const removeEffects = {}; const addEffects = {}; const effectData = {};
+const engine = {};
+const effectUtilities = {}; const removeEffects = {}; const addEffects = {}; const effectData = {};
 /*build:end*/
 
-class ManualEffectTypeChange {
-
-    resolve(eventInfo) {
-        log(JSON.stringify(eventInfo));
+const ManualEffectTypeChange = function() {
+    this.resolve = function (eventInfo) {
+        if (eventInfo.sourceType === "sheetworker") {
+            return;
+        }
+        engine.logd(JSON.stringify(eventInfo));
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const rowId = sourceAttributes[2];
 
@@ -28,7 +31,7 @@ class ManualEffectTypeChange {
 
         let previousValue;
         if (eventInfo.previousValue) {
-            previousValue = getEffects.searchableName(eventInfo.previousValue.trim());
+            previousValue = effectUtilities.searchableName(eventInfo.previousValue.trim());
         } else {
             previousValue = "";
         }
@@ -43,13 +46,47 @@ class ManualEffectTypeChange {
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
-            let adjustedName = getEffects.searchableName(specialType || type);
+            let adjustedName = effectUtilities.searchableName(specialType || type);
             this.resolveAttributes(rowId, adjustedName, previousValue, values);
-            this.resolveEffects(rowId, adjustedName);
+            this.resolveEffects(rowId, adjustedName, previousValue);
         });
-    }
+    };
 
-    resolveSpecialTypeChange(rowId, newValue) {
+    this.resolveEffects = function(rowId, name, previousName) {
+        removeEffects.resetSpecialEffects(previousName);
+        switch (name) {
+            case "comatose":
+            case "knocked_out":
+                engine.getEffects(effects => {
+                    log("Removing effects due to comatose/knocked out");
+                    for (let effect of effects.effects) {
+                        if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
+                            continue;
+                        }
+                        removeEffects.remove(effect);
+                    }
+                    // Disable MP recovery for knocked out characters
+                    setAttrs({
+                        mpRecoveryBlock: "on"
+                    });
+                });
+                break;
+            case "transcendent": {
+                engine.getEffects(effects => {
+                    log("Clearing all enfeeblements");
+                    for (let effect of effects.effects) {
+                        if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
+                            log(`Clearing ${effect.data.name}`);
+                            removeEffects.remove(effect);
+                        }
+                    }
+                });
+                break;
+            }
+        }
+    };
+
+    this.resolveSpecialTypeChange = function(rowId, newValue) {
         if (["astral fire", "umbral ice"].includes(newValue)) {
             log("Removing astral/umbral to ensure a single instance of " + newValue);
             // Remove Astral Fire and Umbral Ice excepting the current instance.
@@ -79,9 +116,9 @@ class ManualEffectTypeChange {
                     break;
             }
         }
-    }
+    };
 
-    resolveAttributes(rowId, name, oldName, values) {
+    this.resolveAttributes = function(rowId, name, oldName, values) {
         let type = values[`repeating_effects_${rowId}_type`];
         let specialType = values[`repeating_effects_${rowId}_specialType`];
         let value = values[`repeating_effects_${rowId}_value`];
@@ -115,40 +152,9 @@ class ManualEffectTypeChange {
         }
 
         setAttrs(attributes);
-    }
-
-    resolveEffects(rowId, name) {
-        switch (name) {
-            case "comatose":
-            case "knocked_out":
-                getEffects.get(effects => {
-                    log("Removing effects due to comatose/knocked out");
-                    for (let effect of effects.effects) {
-                        if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
-                            continue;
-                        }
-                        removeEffects.remove(effect);
-                    }
-                    // Disable MP recovery for knocked out characters
-                    setAttrs({
-                        mpRecoveryBlock: "on"
-                    });
-                });
-                break;
-            case "transcendent": {
-                getEffects.get(effects => {
-                    log("Clearing all enfeeblements");
-                    for (let effect of effects.effects) {
-                        if (effect.statusType.trim().toLowerCase() === "enfeeblement") {
-                            log(`Clearing ${effect.data.name}`);
-                            removeEffects.remove(effect);
-                        }
-                    }
-                });
-                break;
-            }
-        }
-    }
-}
+    };
+};
 
 const manualEffectTypeChange = new ManualEffectTypeChange();
+this.export.ManualEffectTypeChange = ManualEffectTypeChange;
+this.export.manualEffectTypeChange = manualEffectTypeChange;

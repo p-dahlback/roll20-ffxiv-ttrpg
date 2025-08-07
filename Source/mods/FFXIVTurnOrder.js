@@ -26,10 +26,15 @@
 
 /*build:remove*/
 /*build:import ../common/utilities.js*/
+/*build:import ../common/effects.js*/
+/*build:import ../common/effectUtilities.js*/
+/*build:import common/modengine.js*/
 /*build:import common/modutilities.js*/
-class Logger {};
-/*eslint-disable-next-line no-redeclare*/
-const generateRowID = {}; const unpackNaN = {};
+/*build:import ../common/addEffects.js*/
+/*build:import ../common/removeEffects.js*/
+/*build:import turnorder/effectResolver.js*/
+/*build:import turnorder/resourceResolver.js*/
+const FFXIVTurnOrderImports = {};
 /*build:end*/
 
 // eslint-disable-next-line no-unused-vars
@@ -46,7 +51,8 @@ const FFXIVTurnOrder = (() => {
         block: false
     };
 
-    let logger = new Logger(scriptName, true);
+    let imports = FFXIVTurnOrderImports.export;
+    let logger = new imports.Logger(scriptName, true);
 
     var lastTurnOrder = "";
     var lastMessage = {
@@ -67,467 +73,55 @@ const FFXIVTurnOrder = (() => {
         return { token: token, character: character };
     };
 
-    const handleSpecialEffects = (character, effectName) => {
-        switch (effectName.trim().toLowerCase()) {
-            case "astral fire": {
-                logger.d("Cancelling MP recovery block from Astral Fire");
-                let mpRecoveryBlock = findObjs({ type: "attribute", characterid: character.id, name: "mpRecoveryBlock" })[0];
-                mpRecoveryBlock.set("current", "off");
-                break;
-            }
-            case "slow":
-            case "heavy": {
-                logger.d(`Cancelling block on speed increase from ${effectName}`);
-                let speedBlock = findObjs({ type: "attribute", characterid: character.id, name: "speedBlock" })[0];
-                speedBlock.set("current", "off");
-
-                let speed = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
-                let speedUnblocked = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
-                speed.set("current", speedUnblocked.get("current"));
-
-                let speedOriginal = findObjs({ type: "attribute", characterid: character.id, name: "speedOriginal" })[0];
-                speedOriginal.set("current", 0);
-                break;
-            }
-            case "lucid dreaming": {
-                logger.d("Cancelling extra MP recovery from Lucid Dreaming");
-                let mpRecovery = findObjs({ type: "attribute", characterid: character.id, name: "mpRecovery" })[0];
-                mpRecovery.set("current", "2");
-                break;
-            }
-        }
+    const effectResolver = (character) => {
+        let engine = new imports.ModEngine(logger, character);
+        let removeEffects = new imports.RemoveEffects(engine);
+        return new imports.EffectResolver(engine, removeEffects);
     };
 
-    const isEffectTypeExecutable = (type, expiries) => {
-        switch (type.trim().toLowerCase()) {
-            case "aetherial focus":
-                return expiries.includes("encounterstart");
-            case "dot(x)":
-                return expiries.includes("step");
-            case "improved padding":
-                return expiries.includes("stepstart");
-            case "lightweight refit":
-                return expiries.includes("encounterstart");
-            case "precision opener":
-                return expiries.includes("encounterstart");
-            case "regen(x)":
-                return expiries.includes("step");
-            default:
-                return false;
-        }
-    };
-
-    const actionableEffects = (character, attributes, expiries, updateNextTurnExpiries) => {
-        return attributes.reduce(
-            (accumulator, currentValue) => {
-                let match = currentValue.get("name").match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
-                if (!match || match.length < 3) {
-                    return accumulator;
-                }
-                let id = match[1];
-
-                switch (match[2]) {
-                    case "expiry": {
-                        let expiry = currentValue.get("current");
-                        if (expiries.includes(expiry)) {
-                            accumulator.ids.push(id);
-                        } else if (updateNextTurnExpiries && expiry === "turn2") {
-                            accumulator.toUpdate.push(currentValue);
-                        }
-                        break;
-                    }
-                    case "type":
-                    case "specialType": {
-                        let type = currentValue.get("current");
-                        if (isEffectTypeExecutable(type, expiries)) {
-                            if (accumulator.toExecute[id]) {
-                                accumulator.toExecute[id].name = type;
-                            } else {
-                                accumulator.toExecute[id] = {
-                                    name: type
-                                };
-                            }
-                        }
-                        break;
-                    }
-                    case "value": {
-                        if (accumulator.toExecute[id]) {
-                            accumulator.toExecute[id].value = currentValue.get("current");
-                        } else {
-                            // Assign into toExecute just in case
-                            accumulator.toExecute[id] = {
-                                value: currentValue.get("current")
-                            };
-                        }
-                        break;
-                    }
-                }
-                return accumulator;
-            },
-            { ids: [], toUpdate: [], toExecute: {} }
-        );
-    };
-
-    const executeEffect = (character, name, value) => {
-        switch (name.trim().toLowerCase()) {
-            case "aetherial focus": {
-                let magicPoints = findObjs({ type: "attribute", characterid: character.id, name: "magicPoints" })[0];
-                if (magicPoints) {
-                    var max = parseInt(magicPoints.get("max"));
-                    if (isNaN(max)) {
-                        max = 5;
-                    }
-                    magicPoints.set("current", max + 1);
-                } else {
-                    createObj("attribute", { characterid: character.id, name: "magicPoints", current: 6, max: 5 });
-                }
-                return [`<b>Aetherial Focus</b>, giving 1 additional MP (6/5)`];
-            }
-            case "dot(x)": {
-                var damage = unpackNaN(value);
-                if (damage < 1) {
-                    logger.i("Unable to perform dot(x); no value given");
-                    return [];
-                }
-                let hitPoints = findObjs({ type: "attribute", characterid: character.id, name: "hitPoints" })[0];
-                if (!hitPoints) {
-                    logger.i("Unable to perform dot(x); no hitPoints");
-                    return [];
-                }
-
-                let barrierPoints = findObjs({ type: "attribute", characterid: character.id, name: "barrierPoints" })[0];
-                var barrierDefinition = "";
-                if (barrierPoints) {
-                    let barrierValue = unpackNaN(barrierPoints.get("current"));
-                    if (barrierValue > 0) {
-                        var newBarrierValue = barrierValue - damage;
-                        damage = -newBarrierValue;
-
-                        newBarrierValue = Math.max(newBarrierValue, 0);
-                        barrierPoints.set("current", newBarrierValue);
-                        barrierDefinition = `${barrierValue} to ${newBarrierValue} Barrier`;
-                    }
-                }
-
-                var hitPointDefinition = "";
-                if (damage > 0) {
-                    let hitPointValue = unpackNaN(hitPoints.get("current"));
-                    let max = unpackNaN(hitPoints.get("max"));
-                    let newValue = Math.max(hitPointValue - damage, 0);
-                    hitPoints.set("current", newValue);
-                    hitPointDefinition = `${hitPointValue} to ${newValue}/${max} HP`;
-                }
-                let changeSummary = [barrierDefinition, hitPointDefinition].filter(element => element).join(", ");
-                return [`<b>DOT (${value})</b> (${changeSummary})`];
-            }
-            case "improved padding": {
-                let barrierPoints = findObjs({ type: "attribute", characterid: character.id, name: "barrierPoints" })[0];
-                if (barrierPoints) {
-                    let value = unpackNaN(barrierPoints.get("current"));
-                    if (value < 1) {
-                        barrierPoints.set("current", 1);
-                        return [`Improved Padding (1 Barrier)`];
-                    }
-                } else {
-                    createObj("attribute", { characterid: character.id, name: "barrierPoints", current: 1 });
-                    return [`<b>Improved Padding</b> (1 Barrier)`];
-                }
-                return [];
-            }
-            case "lightweight refit": {
-                let speed = findObjs({ type: "attribute", characterid: character.id, name: "speed" })[0];
-                let newValue;
-                if (speed) {
-                    let value = unpackNaN(speed.get("current"), 5);
-                    newValue = value + 1;
-                    speed.set("current", newValue);
-                } else {
-                    newValue = 6;
-                    createObj("attribute", { characterid: character.id, name: "speed", current: newValue });
-                }
-
-                // Create effect to make the speed increase temporary
-                let id = generateRowID();
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_icon`, current: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/augment.png" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_type`, current: "special" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_specialType`, current: "Lightweight Refit - Proc" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_expiry`, current: "turn" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_editable`, current: "off" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_attribute`, current: "speed" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_attributeValue`, current: "1" });
-
-                return [`<b>Lightweight Refit</b>, +1 to speed (${newValue}, valid until end of turn)`];
-            }
-            case "precision opener": {
-                // Create advantage die effect until end of turn
-                let id = generateRowID();
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_icon`, current: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/advantage.png" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_type`, current: "advantage" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_expiry`, current: "turn" });
-                createObj("attribute", { characterid: character.id, name: `repeating_effects_${id}_editable`, current: "off" });
-
-                return ["<b>Precision Opener</b>, +1 advantage die on one ability roll (valid until end of turn)"];
-            }
-            case "regen(x)": {
-                var healing = unpackNaN(value);
-                if (healing < 1) {
-                    logger.i("Unable to perform regen(x); no value given");
-                    return [];
-                }
-                let hitPoints = findObjs({ type: "attribute", characterid: character.id, name: "hitPoints" })[0];
-                if (!hitPoints) {
-                    logger.i("Unable to perform regen(x); no hitPoints");
-                    return [];
-                }
-
-                let hitPointValue = unpackNaN(hitPoints.get("current"));
-                let max = unpackNaN(hitPoints.get("max"));
-                let newValue = Math.min(hitPointValue + healing, max);
-
-                hitPoints.set("current", newValue);
-                return [`<b>Regen (${value})</b> (${hitPointValue} to ${newValue}/${max} HP)`];
-            }
-            default:
-                return [];
-        }
-    };
-
-    const manageEffects = (character, expiries, updateNextTurnExpiries) => {
-        logger.d(`Clearing effects for ${character.get("name")} matching ${expiries}`);
-        let attributes = findObjs({ type: "attribute", characterid: character.id });
-        let actionables = actionableEffects(character, attributes, expiries, updateNextTurnExpiries);
-        logger.d(`Found ${actionables.ids.length} removable and ${actionables.toUpdate.length} updateable effects.`);
-
-        // Update turn expiry
-        for (let attribute of actionables.toUpdate) {
-            logger.d(`Changing turn on attribute ${attribute.get("name")} for ${character.get("name")}.`);
-            attribute.set("current", "turn");
-        }
-
-        var executionSummaries = [];
-        // Execute effects
-        for (let effect of Object.entries(actionables.toExecute)) {
-            if (!effect[1].name) {
-                continue;
-            }
-            logger.d(`Executing effect ${effect[1].name}`);
-            executionSummaries = executionSummaries.concat(executeEffect(character, effect[1].name, effect[1].value));
-        }
-
-        var resetAttributes = {};
-        var removalSummaries = {};
-        var idsToIgnoreAttributes = [];
-        // Remove effects
-        for (let attribute of attributes) {
-            let name = attribute.get("name");
-            let match = name.match(/^repeating_effects_([-\w]+)_([\w_]+)/);
-            if (!match || match.length < 2) {
-                // It's not a repeating effect attribute, skip
-                continue;
-            }
-            let id = match[1];
-            if (!actionables.ids.includes(id)) {
-                // It's not one of the effects we need to clear, skip
-                continue;
-            }
-            let subname = match[2];
-
-            let nameMatch = subname.match(/(special)?[tT]ype$/);
-            if (nameMatch) {
-                var summaryForId = removalSummaries[id];
-                if (!summaryForId || nameMatch[0] === "specialType") {
-                    let value = attribute.get("current").trim().toLowerCase();
-                    if (value !== "none") {
-                        removalSummaries[id] = { attribute: nameMatch[0], summary: attribute.get("current") };
-                        handleSpecialEffects(character, attribute.get("current"));
-
-                        if (value === "heavy" || value === "slow") {
-                            idsToIgnoreAttributes.push(id);
-                        }
-                    }
-                }
-            } else if (subname === "attribute") {
-                if (resetAttributes[id]) {
-                    resetAttributes[id].attribute = attribute.get("current");
-                } else {
-                    resetAttributes[id] = {
-                        attribute: attribute.get("current")
-                    };
-                }
-            } else if (subname === "attributeValue") {
-                let unpackedValue = parseInt(attribute.get("current"));
-                if (isNaN(unpackedValue)) {
-                    logger.d("Unexpected value in attributeValue: " + attribute.get("current"));
-                } else {
-                    if (resetAttributes[id]) {
-                        resetAttributes[id].value = unpackedValue;
-                    } else {
-                        resetAttributes[id] = {
-                            value: unpackedValue
-                        };
-                    }
-                }
-            }
-
-            // Remove all attributes for effects with the appropriate expiry
-            logger.d(`Removing attribute ${attribute.get("name")} for ${character.get("name")}.`);
-            attribute.remove();
-        }
-
-        // Reset any changed attributes
-        for (let id of Object.keys(resetAttributes)) {
-            let resetConfiguration = resetAttributes[id];
-            if (idsToIgnoreAttributes.includes(id)) {
-                logger.d(`Skipping attribute ${resetAttributes.attribute} since it was marked to be ignored`);
-                continue;
-            }
-            if (!resetConfiguration.attribute || !resetConfiguration.value) {
-                logger.d("Unexpected missing content for resetting attribute: " + JSON.stringify(resetConfiguration));
-                continue;
-            }
-
-            let attribute = findObjs({ type: "attribute", characterid: character.id, name: resetConfiguration.attribute })[0];
-            if (!attribute) {
-                logger.d("Unrecognized attribute: " + resetConfiguration.attribute);
-                continue;
-            }
-
-            let attributeValue = unpackNaN(attribute.get("current"));
-            let newValue = attributeValue - resetConfiguration.value;
-            logger.d(`Removing ${resetConfiguration.value} from ${resetConfiguration.attribute} due to effect deletion; new value ${newValue}`);
-            attributeValue.set("current", newValue);
-        }
-
-        var finalSummaries = [];
-        let executionSummary = executionSummaries.join(", ");
-        if (executionSummary) {
-            finalSummaries.push(`Executed ${executionSummary}`);
-        }
-        let removalSummary = Object.entries(removalSummaries).map(entry => entry[1].summary).join(", ");
-        if (removalSummary) {
-            finalSummaries.push(`Removed ${removalSummary}`);
-        }
-        return finalSummaries.join(", ");
-    };
-
-    const manageEffectsOnTurnChange = (turn, expiries, turnChange, updateNextTurnExpiries) => {
+    const manageEffectsOnTurnChange = (turn, expiries, turnChange, shouldUpdateExpiries) => {
         if (!config.manageEffects) {
             logger.d("Skipping effect changes; disabled in config.");
             return;
         }
 
         let tokenCharacter = tokenCharacterForTurn(turn);
-        if (!tokenCharacter || !tokenCharacter.character) {
+        if (!tokenCharacter || !tokenCharacter.character || !tokenCharacter.token) {
             logger.d("No token/character found");
             return;
         }
         logger.d(`Perform ${turnChange} for ${tokenCharacter.token.get("name")}`);
-        let summary = manageEffects(tokenCharacter.character, expiries, updateNextTurnExpiries);
-        if (!summary) {
-            logger.d("No effects removed.");
-            return;
-        }
-
-        let fullSummary = `<h4>${turnChange}:</h4> ${summary}.`;
-        logger.d(`Notifying chat of effect update: ${fullSummary}`);
-        try {
-            sendChat(tokenCharacter.token.get("name"), fullSummary);
-        } catch (e) {
-            logger.i(`ERROR PARSING: ${fullSummary}`);
-            logger.i(`ERROR: ${e}`);
-        }
-    };
-
-    const recoverResource = (character, resource) => {
-        if (!config.recover) {
-            logger.d(`Skipping ${resource} recovery for ${character.get("name")}; disabled in config.`);
-            return;
-        }
-
-        let sheetType = getAttrByName(character.id, "sheet_type");
-        if (sheetType != "unique") {
-            return;
-        }
-
-        let resourceName = getAttrByName(character.id, resource);
-        if (!resourceName || resourceName.trim().toLowerCase() === "none") {
-            return;
-        }
-
-        logger.d(`Recovering resource ${resourceName}`);
-        var resourceObject = findObjs({ type: "attribute", characterid: character.id, name: `${resource}Value` })[0];
-        if (!resourceObject) {
-            logger.d("No resource");
-            return;
-        }
-        let recovery = getAttrByName(character.id, `${resource}Recovery`) ?? 0;
-        if (recovery <= 0) {
-            logger.d("No recovery");
-            return;
-        }
-        let currentValue = unpackNaN(resourceObject.get("current"));
-        let max = unpackNaN(resourceObject.get("max"));
-        if (max <= 0) {
-            logger.d("Max is zero; cancelling recovery");
-            return;
-        }
-
-        let updatedValue = Math.min(currentValue + unpackNaN(recovery), max);
-
-        resourceObject.set("current", updatedValue);
-
-        let summary = `Recovered ${recovery} ${resourceName} (${currentValue} -> ${updatedValue}/${max})`;
-        logger.d(summary);
-        return summary;
-    };
-
-    const recoverMp = (token, character) => {
-        var mpObject = findObjs({ type: "attribute", characterid: character.id, name: "magicPoints" })[0];
-        if (!mpObject) {
-            logger.d("No MP");
-            return;
-        }
-        let mpRecoveryBlock = getAttrByName(character.id, "mpRecoveryBlock") ?? "off";
-        if (mpRecoveryBlock == "on") {
-            logger.d("MP recovery is blocked");
-            return;
-        }
-        let mpRecovery = getAttrByName(character.id, "mpRecovery") ?? "2";
-        if (mpRecovery <= 0) {
-            logger.d("No recovery");
-            return;
-        }
-        let currentMp = unpackNaN(token.get("bar3_value"));
-        let maxMp = unpackNaN(token.get("bar3_max"));
-        if (maxMp <= 0) {
-            logger.d("Max is zero; cancelling recovery");
-            return;
-        }
-
-        if (currentMp >= maxMp) {
-            logger.d("MP is maxed out; cancelling recovery");
-            return;
-        }
-
-        let updatedMp = Math.min(currentMp + unpackNaN(mpRecovery), maxMp);
-
-        token.set("bar3_value", updatedMp);
-
-        let summary = `Recovered ${mpRecovery} MP (${currentMp} -> ${updatedMp}/${maxMp})`;
-        logger.d(summary);
-        return summary;
+        let resolver = effectResolver(tokenCharacter.character);
+        let resolverSummary;
+        resolver.resolve(expiries, shouldUpdateExpiries, summary => {
+            if (!summary) {
+                logger.d("No effects removed.");
+                return;
+            }
+            resolverSummary = summary;
+        });
+        return resolverSummary;
     };
 
     const performRecoveryForToken = (token, character) => {
+        if (!config.recover) {
+            logger.d(`Skipping recovery for ${character.get("name")}; disabled in config.`);
+            return;
+        }
+        if (!token) {
+            return;
+        }
+
+        let resolver = new imports.ResourceResolver(logger);
         let summaries = [
-            recoverMp(token, character),
-            recoverResource(character, "resource"),
-            recoverResource(character, "resource2")
+            resolver.recoverMp(token, character),
+            resolver.recoverResource(character, "resource"),
+            resolver.recoverResource(character, "resource2")
         ].filter(element => element);
 
-        return summaries.join("\n");
+        return summaries.join(", ");
     };
-
+ 
     const performStartOfStep = (turnOrder, affectedTeam) => {
         for (let i = 0; i < turnOrder.length; i++) {
             let turn = turnOrder[i];
@@ -538,19 +132,25 @@ const FFXIVTurnOrder = (() => {
             let team = getAttrByName(tokenCharacter.character.id, "team");
             if (team != affectedTeam) {
                 if (newEncounter) {
-                    manageEffectsOnTurnChange(turn, ["encounterstart"], "Start of encounter", false);
+                    let summary = manageEffectsOnTurnChange(turn, ["encounterstart"], "Start of encounter", false);
+                    postSummary(tokenCharacter, summary, "Start of encounter");
                 }
                 continue;
             }
             var expiries = ["stepstart"];
+            var turnType = "step";
             if (i == 0) {
-                expiries.push("turn");
+                expiries.push("start");
+                turnType += "/turn";
             }
             if (newEncounter) {
                 expiries.push("encounterstart");
+                turnType += "/encounter";
             }
-            manageEffectsOnTurnChange(turn, expiries, "Start of step", false);
+            let summary = manageEffectsOnTurnChange(turn, expiries, `Start of ${turnType}`, false);
+            postSummary(tokenCharacter, summary, `Start of ${turnType}`);
         }
+        newEncounter = false;
     };
 
     const performEndOfStep = (turnOrder, affectedTeam) => {
@@ -563,44 +163,130 @@ const FFXIVTurnOrder = (() => {
             if (team != affectedTeam) {
                 if (affectedTeam === "enemy") {
                     // Enemies go last, so this ends the round for everyone
-                    manageEffectsOnTurnChange(turn, ["round"], "End of round", false);
+                    let summary = manageEffectsOnTurnChange(turn, ["round"], "End of round", false);
+                    postSummary(tokenCharacter, summary, "End of round");
                 }
                 continue;
             }
-            let content = performRecoveryForToken(tokenCharacter.token, tokenCharacter.character);
-            try {
-                sendChat(tokenCharacter.token.get("name"), content);
-            } catch (e) {
-                logger.i(`ERROR PARSING: ${content}`);
-                logger.i(`ERROR: ${e}`);
-            }
+
             let expiries;
+            let stepType;
+            let forcePost;
             if (team === "enemy") {
+                // The end of the [Enemy step] marks the end of the round
                 expiries = ["step", "round"];
+                stepType = "round";
+                forcePost = false;
             } else {
                 expiries = ["step"];
+                stepType = "step";
+                forcePost = true;
             }
-            manageEffectsOnTurnChange(turn, expiries, "End of step", false);
+            let recoverySummary = performRecoveryForToken(tokenCharacter.token, tokenCharacter.character, `End of ${stepType}`);
+            let effectSummary = manageEffectsOnTurnChange(turn, expiries, `End of ${stepType}`, false);
+            let fullSummary = [recoverySummary, effectSummary].filter(element => element).join("</li><li>");
+            postSummary(tokenCharacter, fullSummary, `End of ${stepType}`, forcePost);
         }
     };
 
     const performStartOfTurn = (turn) => {
-        manageEffectsOnTurnChange(turn, ["start"], "Start of turn", false);
+        let summary = manageEffectsOnTurnChange(turn, ["start"], "Start of turn", false);
+        postSummary(tokenCharacterForTurn(turn), summary, "Start of turn");
     };
 
     const performEndOfTurn = (turn) => {
-        manageEffectsOnTurnChange(turn, ["turn"], "End of turn", true);
+        let summary = manageEffectsOnTurnChange(turn, ["turn"], "End of turn", true);
+        postSummary(tokenCharacterForTurn(turn), summary, "End of turn");
     };
 
-    const teamForStep = (step, reverse) => {
+    const postSummary = (tokenCharacter, summary, turnChange, forcePost=false) => {
+        if (!summary && !forcePost) {
+            return;
+        } else {
+            summary = summary || "No changes";
+        }
+        let team = getAttrByName(tokenCharacter.character.id, "team");
+        let prefix;
+        if (team === "enemy") {
+            prefix = "/w gm ";
+        } else {
+            prefix = "";
+        }
+        logger.d(`Notifying chat of update: ${summary}`);
+        let fullSummary = `${prefix}<h4>${turnChange}:</h4><ul><li>${summary}</li></ul>`;
+        try {
+            sendChat(tokenCharacter.token.get("name"), fullSummary);
+        } catch (e) {
+            logger.i(`ERROR PARSING: ${summary}`);
+            logger.i(`ERROR: ${e}`);
+        }
+    };
+
+    const oppositeTeam = (team) => {
+        switch (team) {
+            case "enemy": return "adventurer";
+            case "adventurer": return "enemy";
+            default: return team;
+        }
+    };
+
+    const teamForStep = (step) => {
         switch (step.custom) {
             case "End of Adventurer Step":
-                return reverse ? "enemy" : "adventurer";
+                return "adventurer";
             case "End of Enemy Step":
-                return reverse ? "adventurer" : "enemy";
+                return "enemy";
             default:
                 return "";
         }
+    };
+
+    const validateTurnOrder = (turnOrder, previousTurnOrder) => {
+        let firstInTurn = turnOrder.length > 0 ? turnOrder[0] : { id: "-1" };
+        let previousFirstInTurn = previousTurnOrder.length > 0 ? previousTurnOrder[0] : { id: "-1" };
+        
+        // Check prerequisites before proceeding
+        if (config.block) {
+            logger.d("Mod configured to block all activity; not performing any actions.");
+            return false;
+        }
+        if (config.blockUntilEmpty) {
+            logger.d("Mod configured to block all activity until the turn order is emptied");
+            if (turnOrder.length === 0) {
+                logger.d("Empty turn order; lifting block");
+                config.blockUntilEmpty = false;
+            }
+            return false;
+        }
+
+        if (turnOrder.length > previousTurnOrder.length) {
+            logger.d("Turn added; not performing any actions.");
+            logger.d("----------");
+            return false;
+        }
+
+        if (
+            turnOrder[0].id === previousTurnOrder[previousTurnOrder.length - 1].id &&
+            turnOrder[0].custom === previousTurnOrder[previousTurnOrder.length - 1].custom
+        ) {
+            logger.d("Running turn backwards; not performing any actions.");
+            logger.d("----------");
+            return false;
+        }
+
+        if (config.blockTurn > 0) {
+            logger.d(`Blocking changes for ${config.blockTurn} turns; not performing any actions.`);
+            logger.d("----------");
+            config.blockTurn--;
+            return false;
+        }
+
+        if (firstInTurn.id === previousFirstInTurn.id && firstInTurn.id !== "-1") {
+            logger.d("Same character; ignore");
+            logger.d("----------");
+            return false;
+        }
+        return true;
     };
 
     const checkTurnOrder = (obj, prev, force) => {
@@ -614,48 +300,8 @@ const FFXIVTurnOrder = (() => {
 
         if (force) {
             logger.d("Forcing start of turn for current token");
-        } else {
-            // Check prerequisites before proceeding
-            if (config.block) {
-                logger.d("Mod configured to block all activity; not performing any actions.");
-                return;
-            }
-            if (config.blockUntilEmpty) {
-                logger.d("Mod configured to block all activity until the turn order is emptied");
-                if (turnOrder.length === 0) {
-                    logger.d("Empty turn order; lifting block");
-                    config.blockUntilEmpty = false;
-                }
-                return;
-            }
-
-            if (turnOrder.length > previousTurnOrder.length) {
-                logger.d("Turn added; not performing any actions.");
-                logger.d("----------");
-                return;
-            }
-
-            if (
-                turnOrder[0].id === previousTurnOrder[previousTurnOrder.length - 1].id &&
-                turnOrder[0].custom === previousTurnOrder[previousTurnOrder.length - 1].custom
-            ) {
-                logger.d("Running turn backwards; not performing any actions.");
-                logger.d("----------");
-                return;
-            }
-
-            if (config.blockTurn > 0) {
-                logger.d(`Blocking changes for ${config.blockTurn} turns; not performing any actions.`);
-                logger.d("----------");
-                config.blockTurn--;
-                return;
-            }
-
-            if (firstInTurn.id === previousFirstInTurn.id && firstInTurn.id !== "-1") {
-                logger.d("Same character; ignore");
-                logger.d("----------");
-                return;
-            }
+        } else if (!validateTurnOrder(turnOrder, previousTurnOrder)) {
+            return;
         }
 
         if (previousFirstInTurn.id != "-1") {
@@ -663,6 +309,7 @@ const FFXIVTurnOrder = (() => {
         }
 
         if (firstInTurn.custom && firstInTurn.custom !== previousFirstInTurn.custom) {
+            // End of team step occurs when the related custom turn reaches first in turn order
             logger.d("Custom step discovered");
             let affectedTeam = teamForStep(firstInTurn);
             if (!affectedTeam) {
@@ -672,15 +319,18 @@ const FFXIVTurnOrder = (() => {
             logger.d(`Perform end of step for team ${affectedTeam}`);
             performEndOfStep(turnOrder, affectedTeam);
         } else if (previousFirstInTurn.custom && firstInTurn.custom !== previousFirstInTurn.custom) {
-            let affectedTeam = teamForStep(previousFirstInTurn, true);
+            // Start of team step occurs when the step for the opposite team has passed in the turn order
+            let affectedTeam = oppositeTeam(teamForStep(previousFirstInTurn));
             if (affectedTeam) {
                 logger.d(`Perform start of step for team ${affectedTeam}`);
                 performStartOfStep(turnOrder, affectedTeam);
             } else {
+                // The custom step had no team; just run start of turn on the current first in turn order.
                 performStartOfTurn(firstInTurn);
             }
         } else if (firstInTurn.id != "-1") {
             if (previousTurnOrder.length === 0) {
+                // Start of encounter occurs if there is no previous state
                 newEncounter = true;
                 performStartOfStep(turnOrder, "adventurer");
             } else {
@@ -702,6 +352,8 @@ const FFXIVTurnOrder = (() => {
         if (lastMessage.content === msg.content && lastMessage.who === msg.who && time - lastMessage.time < 200) {
             logger.d("Duplicate message, ignoring");
             return;
+        } else if (lastMessage.content === msg.content && lastMessage.who === msg.who) {
+            logger.d("Message receipt diff: " + (time - lastMessage.time));
         }
         lastMessage.content = msg.content;
         lastMessage.who = msg.who;

@@ -15,7 +15,7 @@ do
   [ -e "$file" ] || continue
   echo "Copying sheet worker $file into sheet.html"
   content=$(cat $file)
-  printf "%b\n" "\n<script type=\"text/worker\"> // $file\n" >> sheet.html
+  printf "%b\n" "\n<script type=\"text/worker\">\n" >> sheet.html
   printf "%s\n" "$content" >> sheet.html
   printf "%b\n" "\n</script>" >> sheet.html
 done

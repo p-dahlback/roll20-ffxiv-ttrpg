@@ -1,20 +1,22 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported abilityRolls*/
-const effectData = {}; const getEffects = {}; const addEffects = {}; const removeEffects = {};
+const engine = {};
+const effectData = {}; const effectUtilities = {}; const addEffects = {}; const removeEffects = {};
 const rollModifiers = {}; const rollTemplates = {}; const performAbility = {};
+const EffectState = {};
 /*build:end*/
 
-class AbilityRolls {
+const AbilityRolls = function() {
 
     // Roll ability
-    roll(eventInfo) {
-        log("Activate ability " + JSON.stringify(eventInfo));
+    this.roll = function(eventInfo) {
+        engine.logd("Activate ability " + JSON.stringify(eventInfo));
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const section = sourceAttributes[1];
         const rowId = sourceAttributes[2];
 
-        getEffects.attrs([
+        engine.getAttrsAndEffects([
             `repeating_${section}_${rowId}_icon`,
             `repeating_${section}_${rowId}_title`,
             `repeating_${section}_${rowId}_type`,
@@ -124,7 +126,7 @@ class AbilityRolls {
                 `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
                 `{{button=${button}}}`;
-            log(rollTemplate);
+            engine.logd(rollTemplate);
             startRoll(rollTemplate, results => {
                 var hitRoll = results.results.hit;
                 if (!hitRoll) {
@@ -157,14 +159,14 @@ class AbilityRolls {
                 });
             });
         });
-    }
+    };
 
-    rollDamage(useRollBonus, eventInfo) {
-        log("Roll damage " + JSON.stringify(eventInfo));
+    this.rollDamage = function(useRollBonus, eventInfo) {
+        engine.logd("Roll damage " + JSON.stringify(eventInfo));
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const section = sourceAttributes[1];
         const rowId = sourceAttributes[2];
-        getEffects.attrs([
+        engine.getAttrsAndEffects([
             `repeating_${section}_${rowId}_title`,
             `repeating_${section}_${rowId}_type`,
             `repeating_${section}_${rowId}_damageType`,
@@ -273,7 +275,7 @@ class AbilityRolls {
             const resourceCost = performAbility.resolveResources(section, rowId, values, effects);
 
             if (!damageDice && !directHitDice && !combo && !resourceCost && !selfEffects && !targetEffects) {
-                log("No reason to roll damage");
+                engine.logd("No reason to roll damage");
                 return;
             }
 
@@ -288,7 +290,7 @@ class AbilityRolls {
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
                 `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
                 `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`;
-            log(rollTemplate);
+            engine.logd(rollTemplate);
             startRoll(rollTemplate, results => {
                 const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
                 const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
@@ -296,12 +298,18 @@ class AbilityRolls {
                 let computedResults = rollModifiers.addEffectsToPostDamageRolls(effects, damageType, [damageRoll, directHitRoll]);
                 let consumedEffectSummary = removeEffects.consumeOnAbility(name, condition, effects);
 
-                let dice = {
-                    hit: roll,
-                    damage: damageRoll,
-                    directHit: directHitRoll
-                };
-                let effectSummary = addEffects.addToSelf(values, dice, selfEffects, effects);
+                let state = new EffectState(
+                    values.hitPoints, 
+                    values.hitPoints_max, 
+                    values.barrierPoints, 
+                    {
+                        hit: roll,
+                        damage: damageRoll,
+                        directHit: directHitRoll
+                    }, 
+                    effects
+                );
+                let effectSummary = addEffects.addBySpecificationString(state, selfEffects);
                 let procSummary = rolls.summaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
 
                 var attributes = {};
@@ -319,13 +327,13 @@ class AbilityRolls {
                 );
             });
         });
-    }
+    };
 
-    activateCombo(eventInfo, index) {
+    this.activateCombo = function(eventInfo, index) {
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const section = sourceAttributes[1];
         const rowId = sourceAttributes[2];
-        log("Combo activated " + JSON.stringify(eventInfo));
+        engine.logd("Combo activated " + JSON.stringify(eventInfo));
         getAttrs([
             `repeating_${section}_${rowId}_combo`
         ], values => {
@@ -336,7 +344,7 @@ class AbilityRolls {
                 if (index < choices.length) {
                     abilityName = choices[index].trim().toLowerCase();
                 } else {
-                    log(`Combo index out of bonds: selected ${index}, not in ${combo}`);
+                    engine.logi(`Combo index out of bonds: selected ${index}, not in ${combo}`);
                     return;
                 }
             }
@@ -350,26 +358,26 @@ class AbilityRolls {
                             const triggerEvent = {
                                 sourceAttribute: `repeating_${section}_${id}_runcomboFrom_${rowId}`
                             };
-                            log("Activating " + abilityName);
+                            engine.logd("Activating " + abilityName);
                             this.roll(triggerEvent);
                             return;
                         }
                     }
-                    log("Couldn't find ability with name " + abilityName);
+                    engine.logd("Couldn't find ability with name " + abilityName);
                 });
             });
         });
-    }
+    };
 
-    buttonsForTargetEffects(effects, level) {
+    this.buttonsForTargetEffects = function(effects, level) {
         var buttons = [];
 
-        log("Preparing target effects: " + JSON.stringify(effects));
+        engine.logd("Preparing target effects: " + JSON.stringify(effects));
         for (let effect of effects) {
-            let adjustedEffect = getEffects.searchableName(effect.trim());
+            let adjustedEffect = effectUtilities.searchableName(effect.trim());
             let data = effectData.effects[adjustedEffect];
             if (!data) {
-                log("Unhandled effect " + adjustedEffect);
+                engine.logi("Unhandled effect " + adjustedEffect);
                 continue;
             }
 
@@ -387,14 +395,16 @@ class AbilityRolls {
             buttons.push(button);
         }
         return buttons.join("\n");
-    }
+    };
 
-    stringWithTitle(title, value) {
+    this.stringWithTitle = function(title, value) {
         if (value) {
             return `${title} ${value}`;
         }
         return "";
-    }
+    };
 };
 
 const abilityRolls = new AbilityRolls();
+this.export.AbilityRolls = AbilityRolls;
+this.export.abilityRolls = abilityRolls;

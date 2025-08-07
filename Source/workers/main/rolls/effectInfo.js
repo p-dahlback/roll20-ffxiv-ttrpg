@@ -1,11 +1,11 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported effectInfo*/
-const effectData = {}; const getEffects = {};
+const effectData = {}; const effectUtilities = {};
 /*build:end*/
 
-class EffectInfo {
-    share(eventInfo) {
+const EffectInfo = function() {
+    this.share = function(eventInfo) {
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const rowId = sourceAttributes[2];
         getAttrs([
@@ -24,7 +24,7 @@ class EffectInfo {
             let expiry = values[`repeating_effects_${rowId}_expiry`];
             let description = values[`repeating_effects_${rowId}_description`];
 
-            let adjustedName = getEffects.searchableName(specialType || type);
+            let adjustedName = effectUtilities.searchableName(specialType || type);
             let data = effectData.effects[adjustedName];
 
             var itemType = "Effect";
@@ -62,7 +62,9 @@ class EffectInfo {
                 finishRoll(results.rollId);
             });
         });
-    }
-}
+    };
+};
 
 const effectInfo = new EffectInfo();
+this.export.EffectInfo = EffectInfo;
+this.export.effectInfo = effectInfo;
