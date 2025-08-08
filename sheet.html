@@ -2064,6 +2064,8 @@
                 <hr />
                 <option value="BLU">Blue Mage</option>
                 -->
+                <hr />
+                <option value="NPC">NPC (initial setup only)</option>
             </select>
         </div>
     </div>
@@ -2253,6 +2255,114 @@
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file attributes
 
 const attributesImports = new (function() {
@@ -2362,106 +2472,58 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
+// Build (version 1.0.0), generated file override
 
-const itemsImports = new (function() {
+const overrideImports = new (function() {
     this.export = {};
 
-const workerName = "items"
+const workerName = "override"
 
 
 })();
 
-// Build: Source/workers/items.js
+// Build: Source/workers/override.js
 
 
+// Assign override state
 
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        getSectionIDs('repeating_limit', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
         });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        getSectionIDs('repeating_song', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
         });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        getSectionIDs('repeating_primary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_ninjutsu', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_secondary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_instant', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_technique', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
         });
     });
 });
@@ -2595,119 +2657,6 @@ on("clicked:collapseAllAbilities", () => {
         secondaryHeaderExpandItem: "on",
         instantHeaderExpandItem: "on",
         techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-// Assign override state
-
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        getSectionIDs('repeating_limit', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_song', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_primary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_ninjutsu', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_secondary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_instant', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_technique', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
-
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
     });
 });
 
@@ -5291,7 +5240,7 @@ const sheets = {
         jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/X.png",
         role: "X / Y",
         level: 30,
-        resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+        resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
         attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
         traits: [
             { title: "", effect: "" }
@@ -5302,13 +5251,23 @@ const sheets = {
             ]
         }
     },
+    npc: {
+        job: "NPC",
+        jobIcon: "",
+        role: "",
+        level: 30,
+        override: "manual",
+        resources: { hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+        attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 0 }
+    },
+
     level30: {
         ast: {
             job: "AST",
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
             role: "Healer / Astrologian",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 2, dex: 2, vit: 2, int: 2, mnd: 4, defense: 12, magicDefense: 13, vigilance: 14, speed: 5 },
             traits: [
                 { title: "Play Arcana", effect: "At the start of your turn, grant a single ally of your choosing within 10 squares Major Arcana and a barrier of 1 HP." },
@@ -5344,7 +5303,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
             role: "DPS / Black Mage",
             level: 30,
-            resources: { hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 0, dex: 2, vit: 1, int: 5, mnd: 4, defense: 11, magicDefense: 15, vigilance: 14, speed: 5 },
             traits: [
                 { title: "Consecutive Invocation", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may forgo all standard movement until the end of your turn to use a additional invoked primary ability. You may choose a new target when using this additional ability. Consecutive Invocation can only be used once per turn, and does not prevent you from using focus to perform additional secondary action." },
@@ -5383,7 +5342,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
             role: "DPS / Bard",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
                 { title: "Arrow Flurry", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may use an additional flurry ability. You may choose a new target when using this additional ability.\n\nArrow Flurry can only be used once per turn." },
@@ -5423,7 +5382,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
             role: "Tank / Warrior",
             level: 30,
-            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 4, dex: 2, vit: 5, int: 0, mnd: 1, defense: 15, magicDefense: 12, vigilance: 11, speed: 5 },
             traits: [
                 { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
@@ -5470,9 +5429,9 @@ const SheetSetup = function() {
                 role: sheet.role,
                 sheet_type: "unique",
                 team: "adventurer",
-                size: "normal",
-                override: "auto"
+                size: "normal"
             };
+            attributes.override = sheet.override ?? "auto";
 
             engine.logd("Preparing resources");
             for (let entry of Object.entries(sheet.resources)) {
@@ -5490,25 +5449,29 @@ const SheetSetup = function() {
             attributes.mpRecovery = 2;
             attributes.mpRecoveryBlock = "off";
 
-            engine.logd("Preparing traits");
-            for (let trait of sheet.traits) {
-                let id = engine.generateId();
-                for (let entry of Object.entries(trait)) {
-                    attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1];
-                    attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon;
-                    attributes[`repeating_traits_${id}_automatic`] = "1";
-                    attributes[`repeating_traits_${id}_editable`] = "off";
+            if (sheet.traits) {
+                engine.logd("Preparing traits");
+                for (let trait of sheet.traits) {
+                    let id = engine.generateId();
+                    for (let entry of Object.entries(trait)) {
+                        attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1];
+                        attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon;
+                        attributes[`repeating_traits_${id}_automatic`] = "1";
+                        attributes[`repeating_traits_${id}_editable`] = "off";
+                    }
                 }
             }
 
-            engine.logd("Preparing abilities");
-            for (let section of Object.entries(sheet.abilities)) {
-                for (let ability of section[1]) {
-                    let id = engine.generateId();
-                    for (let entry of Object.entries(ability)) {
-                        attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
+            if (sheet.abilities) {
+                engine.logd("Preparing abilities");
+                for (let section of Object.entries(sheet.abilities)) {
+                    for (let ability of section[1]) {
+                        let id = engine.generateId();
+                        for (let entry of Object.entries(ability)) {
+                            attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
+                        }
+                        attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
                     }
-                    attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
                 }
             }
             setAttrs(attributes);
@@ -5573,20 +5536,22 @@ const imports = mainImports.export;
 on("change:job", () => {
     getAttrs(["level", "job"], values => {
         let job = values.job.toLowerCase();
-        let level = values.level ?? 30;
-        log(`Setting up ${job} sheet for level ${level}`);
-        let levelSheets = imports.sheets[`level${level}`];
-        if (!levelSheets) {
-            log(`No sheets found for level ${level}.`);
-            return;
-        }
-
-        let sheet = levelSheets[job];
+        let sheet = imports.sheets[job];
         if (!sheet) {
-            log(`No sheet found for ${job} at level ${level}.`);
-            return;
-        }
+            let level = values.level ?? 30;
+            log(`Setting up ${job} sheet for level ${level}`);
+            let levelSheets = imports.sheets[`level${level}`];
+            if (!levelSheets) {
+                log(`No sheets found for level ${level}.`);
+                return;
+            }
 
+            sheet = levelSheets[job];
+            if (!sheet) {
+                log(`No sheet found for ${job} at level ${level}.`);
+                return;
+            }
+        }
         imports.sheetSetup.execute(sheet);
     });
 });
@@ -5688,6 +5653,59 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file tabs
+
+const tabsImports = new (function() {
+    this.export = {};
+
+const workerName = "tabs"
+
+
+})();
+
+// Build: Source/workers/tabs.js
+
+
+// Tabs
+
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
+    });
+});
+
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
+    });
 });
 
 </script>

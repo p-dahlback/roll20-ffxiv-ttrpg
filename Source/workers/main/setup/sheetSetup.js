@@ -16,9 +16,9 @@ const SheetSetup = function() {
                 role: sheet.role,
                 sheet_type: "unique",
                 team: "adventurer",
-                size: "normal",
-                override: "auto"
+                size: "normal"
             };
+            attributes.override = sheet.override ?? "auto";
 
             engine.logd("Preparing resources");
             for (let entry of Object.entries(sheet.resources)) {
@@ -36,25 +36,29 @@ const SheetSetup = function() {
             attributes.mpRecovery = 2;
             attributes.mpRecoveryBlock = "off";
 
-            engine.logd("Preparing traits");
-            for (let trait of sheet.traits) {
-                let id = engine.generateId();
-                for (let entry of Object.entries(trait)) {
-                    attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1];
-                    attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon;
-                    attributes[`repeating_traits_${id}_automatic`] = "1";
-                    attributes[`repeating_traits_${id}_editable`] = "off";
+            if (sheet.traits) {
+                engine.logd("Preparing traits");
+                for (let trait of sheet.traits) {
+                    let id = engine.generateId();
+                    for (let entry of Object.entries(trait)) {
+                        attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1];
+                        attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon;
+                        attributes[`repeating_traits_${id}_automatic`] = "1";
+                        attributes[`repeating_traits_${id}_editable`] = "off";
+                    }
                 }
             }
 
-            engine.logd("Preparing abilities");
-            for (let section of Object.entries(sheet.abilities)) {
-                for (let ability of section[1]) {
-                    let id = engine.generateId();
-                    for (let entry of Object.entries(ability)) {
-                        attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
+            if (sheet.abilities) {
+                engine.logd("Preparing abilities");
+                for (let section of Object.entries(sheet.abilities)) {
+                    for (let ability of section[1]) {
+                        let id = engine.generateId();
+                        for (let entry of Object.entries(ability)) {
+                            attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
+                        }
+                        attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
                     }
-                    attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
                 }
             }
             setAttrs(attributes);

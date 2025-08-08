@@ -8,20 +8,22 @@ const imports = mainImports.export;
 on("change:job", () => {
     getAttrs(["level", "job"], values => {
         let job = values.job.toLowerCase();
-        let level = values.level ?? 30;
-        log(`Setting up ${job} sheet for level ${level}`);
-        let levelSheets = imports.sheets[`level${level}`];
-        if (!levelSheets) {
-            log(`No sheets found for level ${level}.`);
-            return;
-        }
-
-        let sheet = levelSheets[job];
+        let sheet = imports.sheets[job];
         if (!sheet) {
-            log(`No sheet found for ${job} at level ${level}.`);
-            return;
-        }
+            let level = values.level ?? 30;
+            log(`Setting up ${job} sheet for level ${level}`);
+            let levelSheets = imports.sheets[`level${level}`];
+            if (!levelSheets) {
+                log(`No sheets found for level ${level}.`);
+                return;
+            }
 
+            sheet = levelSheets[job];
+            if (!sheet) {
+                log(`No sheet found for ${job} at level ${level}.`);
+                return;
+            }
+        }
         imports.sheetSetup.execute(sheet);
     });
 });

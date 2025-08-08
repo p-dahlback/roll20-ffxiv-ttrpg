@@ -9,7 +9,7 @@ const sheets = {
         jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/X.png",
         role: "X / Y",
         level: 30,
-        resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+        resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
         attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
         traits: [
             { title: "", effect: "" }
@@ -20,13 +20,23 @@ const sheets = {
             ]
         }
     },
+    npc: {
+        job: "NPC",
+        jobIcon: "",
+        role: "",
+        level: 30,
+        override: "manual",
+        resources: { hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+        attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 0 }
+    },
+
     level30: {
         ast: {
             job: "AST",
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
             role: "Healer / Astrologian",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 2, dex: 2, vit: 2, int: 2, mnd: 4, defense: 12, magicDefense: 13, vigilance: 14, speed: 5 },
             traits: [
                 { title: "Play Arcana", effect: "At the start of your turn, grant a single ally of your choosing within 10 squares Major Arcana and a barrier of 1 HP." },
@@ -62,7 +72,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
             role: "DPS / Black Mage",
             level: 30,
-            resources: { hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 0, dex: 2, vit: 1, int: 5, mnd: 4, defense: 11, magicDefense: 15, vigilance: 14, speed: 5 },
             traits: [
                 { title: "Consecutive Invocation", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may forgo all standard movement until the end of your turn to use a additional invoked primary ability. You may choose a new target when using this additional ability. Consecutive Invocation can only be used once per turn, and does not prevent you from using focus to perform additional secondary action." },
@@ -101,7 +111,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
             role: "DPS / Bard",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
                 { title: "Arrow Flurry", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may use an additional flurry ability. You may choose a new target when using this additional ability.\n\nArrow Flurry can only be used once per turn." },
@@ -141,7 +151,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
             role: "Tank / Warrior",
             level: 30,
-            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resourceValue2: 0, resourceValue2_max: 0 },
+            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
             attributes: { str: 4, dex: 2, vit: 5, int: 0, mnd: 1, defense: 15, magicDefense: 12, vigilance: 11, speed: 5 },
             traits: [
                 { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
