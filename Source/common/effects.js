@@ -137,6 +137,21 @@ const EffectData = function() {
         let imageName = effect.type.replace("(x)", "-x");
         return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
     };
+
+    this.hoverDescription = function (name, value, expiry, curable) {
+        var descriptions = [];
+        if (value) {
+            descriptions.push(`${name.replace("(X)", `(${value.toUpperCase()})`)}`);
+        } else {
+            descriptions.push(name);
+        }
+        descriptions.push(`expires ${this.expiries[expiry]}`);
+        if (curable === "on") {
+            descriptions.push("can be cured");
+        }
+
+        return descriptions.join(", ");
+    };
 };
 
 const effectData = new EffectData();

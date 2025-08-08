@@ -280,7 +280,7 @@ const AbilityRolls = function() {
             }
 
             var targetEffectTitle = "";
-            let targetEffectButtons = this.buttonsForTargetEffects(targetEffects, values.level);
+            let targetEffectButtons = this.buttonsForTargetEffects(targetEffects, values.character_name);
             if (targetEffectButtons) {
                 targetEffectTitle = "Effects";
             }
@@ -369,7 +369,7 @@ const AbilityRolls = function() {
         });
     };
 
-    this.buttonsForTargetEffects = function(effects, level) {
+    this.buttonsForTargetEffects = function(effects, characterName) {
         var buttons = [];
 
         engine.logd("Preparing target effects: " + JSON.stringify(effects));
@@ -390,8 +390,8 @@ const AbilityRolls = function() {
             let valueDefinition = value ? `--v ${value}` : "";
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : "";
             let effectName = (data.specialType || data.type).replace(/\([Xx]{1}\)/, "");
-            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --expire ${data.expiry} ` +
-                `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`;
+            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --source ${characterName} ` +
+                `--edit ${0} ${duplicateDefinition})`;
             buttons.push(button);
         }
         return buttons.join("\n");

@@ -356,6 +356,10 @@
                     <div class="effect">
                         <input class="expand-checkbox hidden" type="checkbox" name="attr_effectsExpandItem" />
                         <div class="effect-header">
+                            <input class="expand-checkbox reverse hidden" type="checkbox" name="attr_curable" />
+                            <div class="expanded-view-horizontal" style="padding: 2px 0 2px 0;">
+                                <div class="color-prefix"></div>
+                            </div>
                             <img class="effect-icon" name="attr_icon" />
                             <input type="hidden" class="typeSwitch" name="attr_type" />
                             <input type="hidden" class="editSwitch" name="attr_editable" />
@@ -445,6 +449,13 @@
                                     <input type="hidden" class="editSwitch" name="attr_editable" />
                                     <span class="mini-input adaptive--text__span" name="attr_description"></span>
                                     <textarea class="mini-input adaptive--text__textarea editSwitchBlocked" type="text" name="attr_description" placeholder="Describe how the effect works"></textarea>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">Curable:</span>
+                                <div class="sheet-checkbox-container">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <input class="floatLeft sheet-checkbox editSwitchBlocked" style="position: absolute;" type="checkbox" name="attr_curable" /><span class="sheet-checkbox-before"></span>
                                 </div>
                             </div>
                         </div>

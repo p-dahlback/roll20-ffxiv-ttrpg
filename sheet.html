@@ -356,6 +356,10 @@
                     <div class="effect">
                         <input class="expand-checkbox hidden" type="checkbox" name="attr_effectsExpandItem" />
                         <div class="effect-header">
+                            <input class="expand-checkbox reverse hidden" type="checkbox" name="attr_curable" />
+                            <div class="expanded-view-horizontal" style="padding: 2px 0 2px 0;">
+                                <div class="color-prefix"></div>
+                            </div>
                             <img class="effect-icon" name="attr_icon" />
                             <input type="hidden" class="typeSwitch" name="attr_type" />
                             <input type="hidden" class="editSwitch" name="attr_editable" />
@@ -445,6 +449,13 @@
                                     <input type="hidden" class="editSwitch" name="attr_editable" />
                                     <span class="mini-input adaptive--text__span" name="attr_description"></span>
                                     <textarea class="mini-input adaptive--text__textarea editSwitchBlocked" type="text" name="attr_description" placeholder="Describe how the effect works"></textarea>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">Curable:</span>
+                                <div class="sheet-checkbox-container">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <input class="floatLeft sheet-checkbox editSwitchBlocked" style="position: absolute;" type="checkbox" name="attr_curable" /><span class="sheet-checkbox-before"></span>
                                 </div>
                             </div>
                         </div>
@@ -2242,52 +2253,108 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file tabs
+// Build (version 1.0.0), generated file attributes
 
-const tabsImports = new (function() {
+const attributesImports = new (function() {
     this.export = {};
 
-const workerName = "tabs"
+const workerName = "attributes"
 
 
 })();
 
-// Build: Source/workers/tabs.js
+// Build: Source/workers/attributes.js
 
 
-// Tabs
+// Advantage management
 
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
         setAttrs({
-            sheetTab: button
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
         });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
     });
 });
 
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
+        }
+        setAttrs(newAttributes);
     });
 });
 
@@ -2535,108 +2602,112 @@ on("clicked:collapseAllAbilities", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file attributes
+// Build (version 1.0.0), generated file override
 
-const attributesImports = new (function() {
+const overrideImports = new (function() {
     this.export = {};
 
-const workerName = "attributes"
+const workerName = "override"
 
 
 })();
 
-// Build: Source/workers/attributes.js
+// Build: Source/workers/override.js
 
 
-// Advantage management
+// Assign override state
 
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        getSectionIDs('repeating_limit', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_song', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_primary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_ninjutsu', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_secondary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_instant', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_technique', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
         });
     });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
 });
 
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
+</script>
 
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file tabs
+
+const tabsImports = new (function() {
+    this.export = {};
+
+const workerName = "tabs"
+
+
+})();
+
+// Build: Source/workers/tabs.js
+
+
+// Tabs
+
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
     });
 });
 
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
-        }
-        setAttrs(newAttributes);
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
     });
 });
 
@@ -2768,20 +2839,20 @@ const ManualEffectTypeChange = function() {
     };
 
     this.resolveAttributes = function(rowId, name, oldName, values) {
-        let type = values[`repeating_effects_${rowId}_type`];
-        let specialType = values[`repeating_effects_${rowId}_specialType`];
         let value = values[`repeating_effects_${rowId}_value`];
         let data = effectData.effects[name];
 
         var attributes = {};
         if (data) {
             const iconUrl = effectData.icon(data);
+            let expiry = data.expiry || values[`repeating_effects_${rowId}_expiry`];
 
             attributes[`repeating_effects_${rowId}_icon`] = iconUrl;
-            attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type;
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, data.curable ? "on" : "off");
             attributes[`repeating_effects_${rowId}_statusType`] = data.statusType;
             attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`];
-            attributes[`repeating_effects_${rowId}_expiry`] = data.expiry || values[`repeating_effects_${rowId}_expiry`];
+            attributes[`repeating_effects_${rowId}_expiry`] = expiry;
+            attributes[`repeating_effects_${rowId}_curable`] = data.curable ? "on" : "off";
         } else {
             attributes[`repeating_effects_${rowId}_icon`] = "";
         }
@@ -2826,6 +2897,9 @@ const ManualEffectRemoval = function() {
         let affectedAttribute = eventInfo.removedInfo[`repeating_effects_${rowId}_attribute`];
         let affectedAttributeValue = parseInt(eventInfo.removedInfo[`repeating_effects_${rowId}_attributeValue`]);
         let adjustedName = effectUtilities.searchableName(specialType || type);
+        if (!adjustedName) {
+            return;
+        }
         removeEffects.removeAbility(adjustedName, value);
         removeEffects.resetSpecialEffects(adjustedName);
         removeEffects.resetAttributeChanges(adjustedName, affectedAttribute, affectedAttributeValue);
@@ -2849,17 +2923,28 @@ const ManualEffectValueChange = function() {
 
         let value = eventInfo.newValue.trim();
 
+
         getAttrs([
             `repeating_effects_${rowId}_type`,
             `repeating_effects_${rowId}_specialType`,
             `repeating_effects_${rowId}_attribute`,
-            `repeating_effects_${rowId}_attributeValue`
+            `repeating_effects_${rowId}_attributeValue`,
+            `repeating_effects_${rowId}_curable`,
+            `repeating_effects_${rowId}_expiry`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let attributeName = values[`repeating_effects_${rowId}_attribute`];
             let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
+            let curable = values[`repeating_effects_${rowId}_curable`];
+            let expiry = values[`repeating_effects_${rowId}_expiry`];
             let adjustedName = effectUtilities.searchableName(specialType || type);
+            let data = effectData.effects[adjustedName];
+
+            var attributes = {};
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable);
+            setAttrs(attributes);
+
             if (adjustedName === "attribute" || adjustedName === "defenders_boon") {
                 log(`New attribute values: ${attributeName}, ${attributeValue}`);
                 if (attributeName || attributeValue) {
@@ -2877,6 +2962,43 @@ const ManualEffectValueChange = function() {
 const manualEffectValueChange = new ManualEffectValueChange();
 this.export.ManualEffectValueChange = ManualEffectValueChange;
 this.export.manualEffectValueChange = manualEffectValueChange;
+
+// Build (version 1.0.0): Source/workers/main/effects/manualEffectCurableChange.js
+
+
+const ManualEffectCurableChange = function() {
+    this.resolve = function(eventInfo) {
+        if (eventInfo.sourceType === "sheetworker") {
+            return;
+        }
+        const sourceAttributes = eventInfo.sourceAttribute.split("_");
+        const rowId = sourceAttributes[2];
+
+        let curable = eventInfo.newValue.trim();
+
+        getAttrs([
+            `repeating_effects_${rowId}_type`,
+            `repeating_effects_${rowId}_specialType`,
+            `repeating_effects_${rowId}_value`,
+            `repeating_effects_${rowId}_expiry`
+        ], values => {
+            let type = values[`repeating_effects_${rowId}_type`];
+            let specialType = values[`repeating_effects_${rowId}_specialType`];
+            let value = values[`repeating_effects_${rowId}_value`];
+            let expiry = values[`repeating_effects_${rowId}_expiry`];
+            let adjustedName = effectUtilities.searchableName(specialType || type);
+            let data = effectData.effects[adjustedName];
+
+            var attributes = {};
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable);
+            setAttrs(attributes);
+        });
+    };
+};
+
+const manualEffectCurableChange = new ManualEffectCurableChange();
+this.export.ManualEffectValueChange = ManualEffectCurableChange;
+this.export.manualEffectCurableChange = manualEffectCurableChange;
 
 // Build (version 1.0.0): Source/workers/main/rolls/rollTemplates.js
 
@@ -2975,6 +3097,7 @@ const EffectInfo = function() {
             `repeating_effects_${rowId}_specialType`,
             `repeating_effects_${rowId}_value`,
             `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_curable`,
             `repeating_effects_${rowId}_description`,
             `repeating_effects_${rowId}_source`
         ], values => {
@@ -2982,6 +3105,7 @@ const EffectInfo = function() {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let value = values[`repeating_effects_${rowId}_value`];
+            let curable = values[`repeating_effects_${rowId}_curable`];
             let expiry = values[`repeating_effects_${rowId}_expiry`];
             let description = values[`repeating_effects_${rowId}_description`];
 
@@ -3012,6 +3136,10 @@ const EffectInfo = function() {
                 descriptions.push(`Value: ${value}`);
             }
             descriptions.push(`Expires: ${effectData.expiries[expiry]}`);
+
+            if (curable === "on") {
+                descriptions.push("Can be cured.");
+            }
 
             var iconDefinition = "";
             if (icon) {
@@ -3562,7 +3690,7 @@ const AbilityRolls = function() {
             }
 
             var targetEffectTitle = "";
-            let targetEffectButtons = this.buttonsForTargetEffects(targetEffects, values.level);
+            let targetEffectButtons = this.buttonsForTargetEffects(targetEffects, values.character_name);
             if (targetEffectButtons) {
                 targetEffectTitle = "Effects";
             }
@@ -3651,7 +3779,7 @@ const AbilityRolls = function() {
         });
     };
 
-    this.buttonsForTargetEffects = function(effects, level) {
+    this.buttonsForTargetEffects = function(effects, characterName) {
         var buttons = [];
 
         engine.logd("Preparing target effects: " + JSON.stringify(effects));
@@ -3672,8 +3800,8 @@ const AbilityRolls = function() {
             let valueDefinition = value ? `--v ${value}` : "";
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : "";
             let effectName = (data.specialType || data.type).replace(/\([Xx]{1}\)/, "");
-            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --expire ${data.expiry} ` +
-                `--edit ${0} --curable ${data.curable ? 1 : 0}${duplicateDefinition} --l ${level})`;
+            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --source ${characterName} ` +
+                `--edit ${0} ${duplicateDefinition})`;
             buttons.push(button);
         }
         return buttons.join("\n");
@@ -4057,6 +4185,21 @@ const EffectData = function() {
         let imageName = effect.type.replace("(x)", "-x");
         return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
     };
+
+    this.hoverDescription = function (name, value, expiry, curable) {
+        var descriptions = [];
+        if (value) {
+            descriptions.push(`${name.replace("(X)", `(${value.toUpperCase()})`)}`);
+        } else {
+            descriptions.push(name);
+        }
+        descriptions.push(`expires ${this.expiries[expiry]}`);
+        if (curable === "on") {
+            descriptions.push("can be cured");
+        }
+
+        return descriptions.join(", ");
+    };
 };
 
 const effectData = new EffectData();
@@ -4250,7 +4393,7 @@ const AddEffects = function(customEngine, customRemove) {
                 source: adjustedEffect.source ?? "Self",
                 description: data.description,
                 expiry: adjustedEffect.expiry ?? data.expiry,
-                curable:  data.curable
+                curable:  adjustedEffect.curable ?? (data.curable ? "on" : "off")
             };
 
             let specialEffectResult = this.resolveSpecialEffects(state, initValues.id, adjustedEffect, value);
@@ -4271,12 +4414,13 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_icon`] = effectData.icon(data);
             attributes[`repeating_effects_${initValues.id}_statusType`] = initValues.statusType;
             attributes[`repeating_effects_${initValues.id}_expiry`] = initValues.expiry;
-            attributes[`repeating_effects_${initValues.id}_source`] = "Self";
+            attributes[`repeating_effects_${initValues.id}_source`] = initValues.source;
             attributes[`repeating_effects_${initValues.id}_description`] = initValues.description;
-            attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off";
+            attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable;
             attributes[`repeating_effects_${initValues.id}_editable`] = "off";
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_effectsExpandItem`] = "on";
+            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
 
             if (duplicatesResult.summaries.length === 0) {
                 summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
@@ -4289,6 +4433,7 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveAttributes = function(id, effectName, value) {
+        this.engine().logd("Resolving attributes " + effectName);
         switch (effectName) {
             case "attribute": {
                 this.engine().logd("Resolving attributes for attribute(x)");
@@ -5297,7 +5442,7 @@ const sheets = {
                 ],
                 instant: [
                     { title: "Provoke", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy begins their turn", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Inflicts Enmity on the target.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/provoke.png" },
-                    { title: "Reprisal", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy within 2 squares is resolved", target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Reduces the damage dealt by the abilities of all targets by 2 until the end of this round.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/reprisal.png" },
+                    { title: "Reprisal", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy within 2 squares is resolved", target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Reduces the damage dealt by the abilities of all targets by 2 until the end of this round.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Reprisal", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/reprisal.png" },
                     { title: "Thrill of Battle", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before you take damage", baseEffect: "Restores 1d6 + 2 HP and grants a barrier equaling the amount of HP restored that exceeds your Max HP.", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", effectSelf: "Thrill of Battle", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/thrill-of-battle.png" },
                     { title: "Interject", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an adjacent enemy uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "1 square", baseEffect: "Interrupts the invoked ability that triggered Interject, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/interject.png" }
                 ],
@@ -5523,6 +5668,10 @@ on("change:repeating_effects:value", eventInfo => {
     imports.manualEffectValueChange.resolve(eventInfo);
 });
 
+on("change:repeating_effects:curable", eventInfo => {
+    imports.manualEffectCurableChange.resolve(eventInfo);
+});
+
 on("remove:repeating_effects", eventInfo => {
     imports.manualEffectRemoval.resolve(eventInfo);
 });
@@ -5539,66 +5688,6 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-// Assign override state
-
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        getSectionIDs('repeating_limit', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_song', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_primary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_ninjutsu', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_secondary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_instant', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_technique', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-    });
 });
 
 </script>

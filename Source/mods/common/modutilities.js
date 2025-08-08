@@ -24,7 +24,6 @@ function unpackAttribute(character, name, defaultValue) {
     return attribute[0];
 }
 
-/*eslint-disable-next-line no-unused-vars*/
 function setAttribute(attribute, key, value) {
     if (attribute.fake) {
         var settings = {

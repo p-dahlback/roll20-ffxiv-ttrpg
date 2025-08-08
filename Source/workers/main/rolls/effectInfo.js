@@ -14,6 +14,7 @@ const EffectInfo = function() {
             `repeating_effects_${rowId}_specialType`,
             `repeating_effects_${rowId}_value`,
             `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_curable`,
             `repeating_effects_${rowId}_description`,
             `repeating_effects_${rowId}_source`
         ], values => {
@@ -21,6 +22,7 @@ const EffectInfo = function() {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let value = values[`repeating_effects_${rowId}_value`];
+            let curable = values[`repeating_effects_${rowId}_curable`];
             let expiry = values[`repeating_effects_${rowId}_expiry`];
             let description = values[`repeating_effects_${rowId}_description`];
 
@@ -51,6 +53,10 @@ const EffectInfo = function() {
                 descriptions.push(`Value: ${value}`);
             }
             descriptions.push(`Expires: ${effectData.expiries[expiry]}`);
+
+            if (curable === "on") {
+                descriptions.push("Can be cured.");
+            }
 
             var iconDefinition = "";
             if (icon) {

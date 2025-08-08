@@ -82,7 +82,7 @@ const AddEffects = function(customEngine, customRemove) {
                 source: adjustedEffect.source ?? "Self",
                 description: data.description,
                 expiry: adjustedEffect.expiry ?? data.expiry,
-                curable:  data.curable
+                curable:  adjustedEffect.curable ?? (data.curable ? "on" : "off")
             };
 
             let specialEffectResult = this.resolveSpecialEffects(state, initValues.id, adjustedEffect, value);
@@ -103,12 +103,13 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_icon`] = effectData.icon(data);
             attributes[`repeating_effects_${initValues.id}_statusType`] = initValues.statusType;
             attributes[`repeating_effects_${initValues.id}_expiry`] = initValues.expiry;
-            attributes[`repeating_effects_${initValues.id}_source`] = "Self";
+            attributes[`repeating_effects_${initValues.id}_source`] = initValues.source;
             attributes[`repeating_effects_${initValues.id}_description`] = initValues.description;
-            attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable ? "on" : "off";
+            attributes[`repeating_effects_${initValues.id}_curable`] = initValues.curable;
             attributes[`repeating_effects_${initValues.id}_editable`] = "off";
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_effectsExpandItem`] = "on";
+            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
 
             if (duplicatesResult.summaries.length === 0) {
                 summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
@@ -121,6 +122,7 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveAttributes = function(id, effectName, value) {
+        this.engine().logd("Resolving attributes " + effectName);
         switch (effectName) {
             case "attribute": {
                 this.engine().logd("Resolving attributes for attribute(x)");

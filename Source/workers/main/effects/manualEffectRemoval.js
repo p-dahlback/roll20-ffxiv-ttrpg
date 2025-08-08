@@ -1,6 +1,5 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-/*exported manualEffectRemoval*/
 const effectUtilities = {}; const removeEffects = {}; const engine = {};
 /*build:end*/
 

@@ -27,8 +27,6 @@ const FFXIVAddEffect = (() => {
         time: 0
     };
 
-    var enableMessagesForGm = false;
-
     let imports = FFXIVAddEffectImports.export;
     let logger = new imports.Logger(scriptName, true);
 
@@ -77,19 +75,17 @@ const FFXIVAddEffect = (() => {
     };
 
     const addEffect = (effect, characters, completion) => {
-        let summaryIntro = `${effect.typeName.replace("X", effect.value)} to `;
         var summaries = [];
 
         logger.d(`Adding effect ${effect.typeName} to ${characters.length} character(s)`);
         for (let character of characters) {
-            let sheetType = unpackAttribute(character, "sheet_type").get("current");
+            let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
             if (sheetType !== "unique") {
                 logger.i(`Will not add effect; character ${character.get("name")} isn't unique`);
                 continue;
             }
 
             let modEngine = new imports.ModEngine(logger, character);
-            log("FFXIVAddEffect: Engine at mod exec time: " + JSON.stringify(modEngine));
             let removalHandler = new imports.RemoveEffects(modEngine);
             let addHandler = new imports.AddEffects(modEngine, removalHandler);
             modEngine.getAttrsAndEffects(["hitPoints", "barrierPoints"], (values, effects) => {
@@ -101,18 +97,31 @@ const FFXIVAddEffect = (() => {
                     effects
                 );
                 let summary = addHandler.add(state, [effect]);
-                summaries.push(summary);
+                summaries.push(`${summary} on <b>${character.get("name")}</b>`);
             });
         }
-        let summary = summaryIntro + summaries.join(", ");
+        let summary = summaries.join("</li><li>");
+        if (summary) {
+            summary = `<ul><li>${summary}</li></ul>`;
+        }
         completion ({ who: effect.who, summary: summary });
     };
 
-    const outputEvent = (type, event) => {
+    const outputEvent = (type, event, playerid) => {
         switch (type) {
-            case "add":
-                sendChat(event.who, `Added effect: <b>${event.summary}</b>. <i>(FFXIVAddEffect)</i>`);
+            case "add": {
+                if (!event.summary) {
+                    break;
+                }
+                let prefix;
+                if (playerIsGM(playerid)) {
+                    prefix = "/w gm ";
+                } else {
+                    prefix = "";
+                }
+                sendChat(event.who, `${prefix}<h4>Effects:</h4>${event.summary}`);
                 break;
+            }
 
             case "error":
                 sendChat("FFXIV Effects", `/w gm ${event}`);
@@ -165,9 +174,6 @@ const FFXIVAddEffect = (() => {
             `<li><code>selected</code> - the selected token(s)</li>` +
             `<li><code>mine</code> - the tokens controlled by the player who triggered this call</li>` +
             `<li>A character name</li>` +
-            `</ul>` +
-            `<li><code>--l {X}</code> - the level of the effect, for any cases where that may matter. <b>Default:</b> no value.</li>` +
-            `<li><code>--gmenable {X}</code> - enables or disables chat output when GM adds an effect. 1 or on to enable, 0 or off to disable <b>Default:</b> disabled.</li>` +
             `</ul>`
             ;
 
@@ -210,14 +216,12 @@ const FFXIVAddEffect = (() => {
             value: "",
             source: "",
             abilities: undefined,
-            expiry: "turn",
             editable: "1",
             target: "selected",
             characters: [],
             player: msg.playerid,
             who: who,
-            origin: "FFXIVAddEffect",
-            level: null
+            origin: "FFXIVAddEffect"
         };
 
         logger.d("==============================================");
@@ -264,7 +268,7 @@ const FFXIVAddEffect = (() => {
 
                 case "curable":
                     if (["0", "1", "on", "off"].includes(parts[1])) {
-                        effect.curable = parts[1];
+                        effect.curable = ["1", "on"].includes(parts[1]) ? "on" : "off";
                     } else {
                         logger.i("Unrecognized curable type " + parts[1]);
                         return;
@@ -284,26 +288,6 @@ const FFXIVAddEffect = (() => {
                     let target = parts.slice(1).join(" ");
                     effect.target = target;
                     break;
-                }
-
-                case "l": {
-                    let parsedLevel = parseInt(parts[1]);
-                    if (isNaN(parsedLevel)) {
-                        logger.i("Invalid level value " + parts[1]);
-                        return;
-                    }
-                    effect.level = parsedLevel;
-                    break;
-                }
-
-                case "gmenable": {
-                    if (["0", "1", "on", "off"].includes(parts[1])) {
-                        enableMessagesForGm = ["1", "on"].includes(parts[1]) ? true : false;
-                        return;
-                    } else {
-                        logger.i("Unrecognized gmenable type " + parts[1]);
-                        return;
-                    }
                 }
 
                 default: {
@@ -327,7 +311,7 @@ const FFXIVAddEffect = (() => {
                         specialType = "";
                         effect.typeName = match.name;
                     }
-                    effect.adjustedName = imports.effectUtilities.searchableName(match.name);
+                    effect.adjustedName = imports.effectUtilities.searchableName(match.specialType ?? match.type);
                     effect.icon = imports.effectData.icon(effect);
                     effect.type = match.type;
                     effect.statusType = match.statusType;
@@ -354,9 +338,7 @@ const FFXIVAddEffect = (() => {
 
         let characters = targetResult.result;
         addEffect(effect, characters, event => {{
-            if (enableMessagesForGm || !playerIsGM(msg.playerid)) {
-                outputEvent("add", event);
-            }
+            outputEvent("add", event, msg.playerid);
         }});
     };
 

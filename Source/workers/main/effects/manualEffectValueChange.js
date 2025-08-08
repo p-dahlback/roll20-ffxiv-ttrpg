@@ -1,7 +1,6 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-/*exported manualEffectValueChange*/
-const effectUtilities = {}; const removeEffects = {}; const addEffects = {};
+const effectUtilities = {}; const removeEffects = {}; const addEffects = {}; const effectData = {};
 /*build:end*/
 
 const ManualEffectValueChange = function() {
@@ -14,17 +13,28 @@ const ManualEffectValueChange = function() {
 
         let value = eventInfo.newValue.trim();
 
+
         getAttrs([
             `repeating_effects_${rowId}_type`,
             `repeating_effects_${rowId}_specialType`,
             `repeating_effects_${rowId}_attribute`,
-            `repeating_effects_${rowId}_attributeValue`
+            `repeating_effects_${rowId}_attributeValue`,
+            `repeating_effects_${rowId}_curable`,
+            `repeating_effects_${rowId}_expiry`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let attributeName = values[`repeating_effects_${rowId}_attribute`];
             let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
+            let curable = values[`repeating_effects_${rowId}_curable`];
+            let expiry = values[`repeating_effects_${rowId}_expiry`];
             let adjustedName = effectUtilities.searchableName(specialType || type);
+            let data = effectData.effects[adjustedName];
+
+            var attributes = {};
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable);
+            setAttrs(attributes);
+
             if (adjustedName === "attribute" || adjustedName === "defenders_boon") {
                 log(`New attribute values: ${attributeName}, ${attributeValue}`);
                 if (attributeName || attributeValue) {

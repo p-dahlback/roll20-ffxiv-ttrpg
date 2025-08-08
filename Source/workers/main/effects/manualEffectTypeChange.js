@@ -1,6 +1,5 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-/*exported manualEffectTypeChange*/
 const engine = {};
 const effectUtilities = {}; const removeEffects = {}; const addEffects = {}; const effectData = {};
 /*build:end*/
@@ -119,20 +118,20 @@ const ManualEffectTypeChange = function() {
     };
 
     this.resolveAttributes = function(rowId, name, oldName, values) {
-        let type = values[`repeating_effects_${rowId}_type`];
-        let specialType = values[`repeating_effects_${rowId}_specialType`];
         let value = values[`repeating_effects_${rowId}_value`];
         let data = effectData.effects[name];
 
         var attributes = {};
         if (data) {
             const iconUrl = effectData.icon(data);
+            let expiry = data.expiry || values[`repeating_effects_${rowId}_expiry`];
 
             attributes[`repeating_effects_${rowId}_icon`] = iconUrl;
-            attributes[`repeating_effects_${rowId}_name`] = data.name || specialType || type;
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, data.curable ? "on" : "off");
             attributes[`repeating_effects_${rowId}_statusType`] = data.statusType;
             attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`];
-            attributes[`repeating_effects_${rowId}_expiry`] = data.expiry || values[`repeating_effects_${rowId}_expiry`];
+            attributes[`repeating_effects_${rowId}_expiry`] = expiry;
+            attributes[`repeating_effects_${rowId}_curable`] = data.curable ? "on" : "off";
         } else {
             attributes[`repeating_effects_${rowId}_icon`] = "";
         }

@@ -103,6 +103,10 @@ on("change:repeating_effects:value", eventInfo => {
     imports.manualEffectValueChange.resolve(eventInfo);
 });
 
+on("change:repeating_effects:curable", eventInfo => {
+    imports.manualEffectCurableChange.resolve(eventInfo);
+});
+
 on("remove:repeating_effects", eventInfo => {
     imports.manualEffectRemoval.resolve(eventInfo);
 });

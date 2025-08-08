@@ -34,15 +34,45 @@ input[type="number"] {
   border: none;
 }
 
-input[type="checkbox"].sheet-checkbox {
+.sheet-checkbox-container {
+  position: relative;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  margin: auto 0 auto 0;
+}
+
+.sheet-checkbox-container > input[type="checkbox"].sheet-checkbox {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.sheet-checkbox-container > input[type="checkbox"].sheet-checkbox:focus {
+  content: "";
+  border: none;
+  outline: none;
+}
+
+.sheet-checkbox-container > input[type="checkbox"].sheet-checkbox:checked + span::before {
+  content: "✔";
+}
+
+.sheet-checkbox-container > .sheet-checkbox-before {
+  position: absolute;
   border: solid black;
-  border-radius: 0px;
+  border-width: 1px;
+  padding: 0 0 4px 2px;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
 }
 
 textarea:focus,
 input[type="text"]:focus,
 input[type="number"]:focus{
-  background-color: white;
+  background-color: white; 
 }
 
 h3 {
@@ -180,16 +210,35 @@ input {
   display: none;
 }
 
+.expand-checkbox:checked ~ .expanded-view-horizontal,
+.expand-checkbox.reverse:not(:checked) ~ .expanded-view-horizontal {
+  max-width: 0px;
+  overflow: hidden;
+}
+
 .expand-checkbox:checked ~ .expanded-view,
+.expand-checkbox.reverse:not(:checked) ~ .expanded-view,
 .expand-checkbox:checked ~ .repcontainer,
 .expand-checkbox:not(:checked) ~ .collapsed-view {
   max-height: 0px;
   overflow: hidden;
 }
 
+.expand-checkbox:not(:checked) ~ .expanded-view-horizontal,
+.expand-checkbox[value="0"] ~ .expanded-view-horizontal,
+.expand-checkbox[value="off"] ~ .expanded-view-horizontal,
+.expand-checkbox.reverse:checked ~ .expanded-view-horizontal,
+.expand-checkbox.reverse[value="1"] ~ .expanded-view-horizontal,
+.expand-checkbox.reverse[value="on"] ~ .expanded-view-horizontal {
+  max-width: 100vh;
+}
+
 .expand-checkbox:not(:checked) ~ .expanded-view,
 .expand-checkbox[value="0"] ~ .expanded-view,
 .expand-checkbox[value="off"] ~ .expanded-view,
+.expand-checkbox.reverse:checked ~ .expanded-view,
+.expand-checkbox.reverse[value="1"] ~ .expanded-view,
+.expand-checkbox.reverse[value="on"] ~ .expanded-view,
 .expand-checkbox[value="0"] ~ .repcontainer,
 .expand-checkbox[value="off"] ~ .repcontainer,
 .expand-checkbox:checked ~ .collapsed-view {
@@ -904,7 +953,7 @@ div[data-groupname=repeating_items].repcontrol {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  gap: 8px;
+  gap: 0;
 }
 
 .effect-body {
@@ -915,6 +964,21 @@ div[data-groupname=repeating_items].repcontrol {
   padding: 0 8px 0 36px;
   background-color: #e1d3c1;
   border-radius: 0 0 8px 8px;
+}
+
+.effect-header .color-prefix {
+  background-color: #c4b5a1;
+  width: 8px;
+  height: 100%;
+  margin-right: 8px;
+}
+
+.effect-header .effect-icon {
+  margin-right: 8px;
+}
+
+.effect-header .effect-expiry {
+  margin-right: 8px;
 }
 
 .effect-body > div:first-child {
@@ -965,7 +1029,7 @@ div[data-groupname=repeating_items].repcontrol {
     padding: 8px 8px;
     margin-top: -30px;
     margin-left: 28px;
-    width: 120px;
+    width: 150px;
     line-height: 16px;
     color: #111;
     border: 1px solid #dca;

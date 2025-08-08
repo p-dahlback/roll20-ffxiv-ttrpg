@@ -92,7 +92,8 @@ const FFXIVTurnOrder = (() => {
         }
 
         if (tokenCharacter.character) {
-            let sheetType = unpackAttribute(character, "sheet_type").get("current");
+            let character = tokenCharacter.character;
+            let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
             if (sheetType !== "unique") {
                 logger.d(`Will not manage effects; character ${character.get("name")} isn't unique`);
                 return;
