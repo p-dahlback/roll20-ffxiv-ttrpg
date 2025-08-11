@@ -19,6 +19,7 @@ const SheetSetup = function() {
                 size: "normal"
             };
             attributes.override = sheet.override ?? "auto";
+            attributes.barrierPoints = 0;
 
             engine.logd("Preparing resources");
             for (let entry of Object.entries(sheet.resources)) {
