@@ -20,6 +20,7 @@ body,
   --sheet-input-focus-background-color: #e1d3c1;
   --sheet-button-hover-background-color: white;
   --sheet-button-hover-color: gray;
+  --sheet-button-active-background-color: white;
   --sheet-button-active-color: lightgray;
   --sheet-tab-color: gray;
   --sheet-ridged-border-color: #c99c78;
@@ -31,6 +32,10 @@ body,
   --sheet-effect-button-color: green;
   --sheet-override-field-color: lightblue;
   --sheet-subcategory-color: #7b745d;
+  --sheet-tooltip-background-color: #fffaf0;
+  --sheet-tooltip-border-color: #dca;
+  --sheet-tooltip-shadow-color: #766c4b;
+  --sheet-select-border-color: #ccc;
 }
 
 body.sheet-darkmode,
@@ -41,27 +46,31 @@ body.sheet-darkmode,
 .sheet-rolltemplate-item.sheet-rolltemplate-darkmode {
   --sheet-primary-color: #cccccc;
   --sheet-secondary-color: white;
-  --sheet-background-color: #07121b;
-  --sheet-paper-color: #06070c;
+  --sheet-background-color: #0d263b;
+  --sheet-paper-color: var(--dark-surface1);
   --sheet-paper-shadow: #8993b4;
   --sheet-emphasis-background: #8993b4;
   --sheet-simple-border-color: #8993b4;
   --sheet-filled-background: #3b4a5e;
   --sheet-input-focus-color: black;
   --sheet-input-focus-background-color: #1e2c3e;
-  --sheet-button-hover-background-color: black;
+  --sheet-button-hover-background-color: #192f41;
   --sheet-button-hover-color: gray;
+  --sheet-button-active-background-color: black;
   --sheet-button-active-color: gray;
   --sheet-tab-color: gray;
   --sheet-ridged-border-color: #366387;
   --sheet-deep-color: #83a5f4;
   --sheet-top-background-color: #0c1520;
   --sheet-action-background-color: #0a0a0a;
-  --sheet-damage-background-color: #191919;
-  --sheet-rolltemplate-body-color: black;
-  --sheet-effect-button-color: #ff7fff;
+  --sheet-damage-background-color: #49003a;
+  --sheet-rolltemplate-body-color: var(--dark-surface1);
+  --sheet-effect-button-color: green;
   --sheet-override-field-color: #522719;
   --sheet-subcategory-color: #848ba2;
+  --sheet-tooltip-background-color: #00050f;
+  --sheet-tooltip-shadow-color: #00050f;
+  --sheet-select-border-color: #333333;
 }
 
 /*------------------------------------------------*\
@@ -88,7 +97,9 @@ span.sheet-bold{
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.ui-dialog .charsheet span {
+.ui-dialog .charsheet h3,
+.ui-dialog .charsheet span,
+.ui-dialog .charsheet p {
   color: var(--sheet-primary-color);
 }
 
@@ -187,7 +198,7 @@ button[type=action],
  
 .ui-dialog .charsheet button[type=action]:active,
 .ui-dialog .charsheet button[type=roll].turn-order:active {
-  background-color: var(--sheet-button-hover-background-color);
+  background-color: var(--sheet-button-active-background-color);
   color: var(--sheet-button-active-color);
 }
 
@@ -225,7 +236,8 @@ input {
     display: none;
 }
 
-.ui-dialog .charsheet .tab button.toggle {
+.ui-dialog .charsheet .tab button.toggle,
+body.sheet-darkmode > .ui-dialog .charsheet .tab button.toggle {
   border-style: none solid solid solid;
   border-width: 4px;
   border-color: transparent;
@@ -235,13 +247,15 @@ input {
   height: 18px;
 }
 
-.ui-dialog .charsheet .tab button.toggle:hover {
+.ui-dialog .charsheet .tab button.toggle:hover,
+body.sheet-darkmode > .ui-dialog .charsheet .tab button.toggle:hover {
   background: linear-gradient(to top, var(--sheet-paper-color), var(--sheet-paper-color)) no-repeat 0 4px;
   background-size: 100% 24px;
   border-radius: 0 0 20px 20px;
 }
 
-.ui-dialog .charsheet .tab button.toggle:active {
+.ui-dialog .charsheet .tab button.toggle:active,
+body.sheet-darkmode > .ui-dialog .charsheet .tab button.toggle:active {
   color: var(--sheet-tab-color);
 }
 
@@ -252,9 +266,13 @@ input {
 
 /* style the active button */
 .ui-dialog .charsheet .tabstoggle[value="character"] ~ button.sheet-button0,
+body.sheet-darkmode > .ui-dialog .charsheet .tabstoggle[value="character"] ~ button.sheet-button0,
 .ui-dialog .charsheet .tabstoggle[value="items"] ~ button.sheet-button1,
+body.sheet-darkmode > .ui-dialog .charsheet .tabstoggle[value="items"] ~ button.sheet-button1,
 .ui-dialog .charsheet .tabstoggle[value="abilities"] ~ button.sheet-button2,
-.ui-dialog .charsheet .tabstoggle[value="settings"] ~ button.sheet-button3 {
+body.sheet-darkmode > .ui-dialog .charsheet .tabstoggle[value="abilities"] ~ button.sheet-button2,
+.ui-dialog .charsheet .tabstoggle[value="settings"] ~ button.sheet-button3,
+body.sheet-darkmode > .ui-dialog .charsheet .tabstoggle[value="settings"] ~ button.sheet-button3 {
   margin: 0;
   border-style: none ridge ridge ridge;
   border-width: 4px;
@@ -537,7 +555,8 @@ span.small.colored-in {
   margin-bottom: -2px;
 }
 
-.ui-dialog .nav-tabs > li.active > a {
+.ui-dialog .nav-tabs > li.active > a,
+.sheet-darkmode .ui-dialog .nav-tabs > li.active > a {
   background-color: var(--sheet-paper-color);
   border-style: ridge ridge none ridge;
   border-color: var(--sheet-ridged-border-color);
@@ -557,6 +576,9 @@ body > .ui-dialog {
   scrollbar-color: var(--sheet-filled-background) var(--sheet-deep-color);
 }
 
+body.sheet-darkmode > div.ui-dialog[aria-live="polite"] {
+  background-color: var(--sheet-paper-color);
+}
 
 body.sheet-darkmode > .ui-dialog .sheetform {
   background-color: transparent;
@@ -572,6 +594,12 @@ body.sheet-darkmode > .ui-dialog .sheetform {
   grid-template-columns: 50px 0.5fr 0.5fr 100px;
   grid-gap: 16px;
   padding: 8px 24px 0px 12px;
+}
+
+.ui-dialog .charsheet select {
+  background-color: var(--sheet-input-focus-color);
+  color: var(--sheet-primary-color);
+  border-color: var(--sheet-select-border-color);
 }
 
 .ui-dialog .charsheet .top .char-size select {
@@ -1112,16 +1140,16 @@ div[data-groupname=repeating_items].repcontrol {
 .sheet-tooltip span {
     display: none;
     border-radius: 4px;
-    box-shadow: 5px 5px 8px var(--sheet-paper-shadow);
+    box-shadow: 5px 5px 8px var(--sheet-tooltip-shadow-color);
     z-index: 10;
     padding: 8px 8px;
     margin-top: -30px;
     margin-left: 28px;
     width: 150px;
     line-height: 16px;
-    color: #111;
-    border: 1px solid #dca;
-    background: #fffaf0;
+    color: var(--sheet-primary-color);
+    border: 1px solid var(--sheet-tooltip-border-color);
+    background: var(--sheet-tooltip-background-color);
 }
 
 .repcontainer[data-groupname=repeating_effects] {
