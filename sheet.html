@@ -347,7 +347,7 @@
             <!-- Effects -->
 
             <div class="effects section">
-                <div style="height: 27px; padding-bottom: 4px; background-color: #c4b5a1;">
+                <div style="height: 27px; padding-bottom: 4px; background-color: var(--sheet-filled-background);">
                     <span class="small colored-in floatLeft">Effects</span>
                     <button type="action" class="floatRight" name="act_expandAllEffects">Expand All</button>
                     <button type="action" class="floatRight" name="act_collapseAllEffects">Collapse All</button>
@@ -2255,114 +2255,6 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file attributes
 
 const attributesImports = new (function() {
@@ -2472,58 +2364,106 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
+// Build (version 1.0.0), generated file items
 
-const overrideImports = new (function() {
+const itemsImports = new (function() {
     this.export = {};
 
-const workerName = "override"
+const workerName = "items"
 
 
 })();
 
-// Build: Source/workers/override.js
+// Build: Source/workers/items.js
 
 
-// Assign override state
 
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        getSectionIDs('repeating_limit', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
         });
-        getSectionIDs('repeating_song', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
         });
-        getSectionIDs('repeating_primary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_ninjutsu', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_secondary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_instant', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_technique', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
         });
     });
 });
@@ -5432,6 +5372,7 @@ const SheetSetup = function() {
                 size: "normal"
             };
             attributes.override = sheet.override ?? "auto";
+            attributes.barrierPoints = 0;
 
             engine.logd("Preparing resources");
             for (let entry of Object.entries(sheet.resources)) {
@@ -5653,6 +5594,66 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+// Assign override state
+
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        getSectionIDs('repeating_limit', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_song', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_primary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_ninjutsu', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_secondary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_instant', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_technique', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+    });
 });
 
 </script>
