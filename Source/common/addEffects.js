@@ -142,7 +142,7 @@ const AddEffects = function(customEngine, customRemove) {
                 } else {
                     attributeValue = 1;
                 }
-                this.engine().get([`${attributeName}Effective`, `${attributeName}Override`, `${attributeName}Unblocked`], values => {
+                this.engine().get([`${attributeName}`, `${attributeName}Effective`, `${attributeName}Override`, `${attributeName}Unblocked`], values => {
                     var attributes = {};
                     let baseAttributeName;
                     let isBlocked = unpackNaN(values[`${attributeName}Override`], 0) > 0;
@@ -153,6 +153,7 @@ const AddEffects = function(customEngine, customRemove) {
                     }
 
                     let currentValue = unpackNaN(values[`${baseAttributeName}`], 0);
+                    let rawValue = unpackNaN(values[attributeName]);
                     let newValue = currentValue + attributeValue;
                     this.engine().logd(`${attributeName}: ${newValue}, unblocked: ${values[`${attributeName}Unblocked`]}`);
                     attributes[`repeating_effects_${id}_attribute`] = attributeName;
@@ -160,7 +161,8 @@ const AddEffects = function(customEngine, customRemove) {
                     
                     attributes[baseAttributeName] = newValue;
                     if (!isBlocked) {
-                        attributes[`${attributeName}Display`] = Math.max(newValue, 0);
+                        let bottomValue = Math.min(rawValue, 0);
+                        attributes[`${attributeName}Display`] = Math.max(newValue, bottomValue);
                     }
                     this.engine().logd(`Setting ${baseAttributeName} to ${newValue}`);
                     this.engine().set(attributes);
@@ -169,7 +171,7 @@ const AddEffects = function(customEngine, customRemove) {
             }
             case "bound": {
                 this.engine().logd("Resolving attributes for bound");
-                this.engine().get(["size", "speedEffective", "speedOverride", "speedUnblocked"], values => {
+                this.engine().get(["size", "speed", "speedEffective", "speedOverride", "speedUnblocked"], values => {
                     let speed = unpackNaN(values.speedEffective, 0);
                     let unblocked = unpackNaN(values.speedUnblocked ?? values.speed, 0);
                     let newValue;
@@ -189,8 +191,10 @@ const AddEffects = function(customEngine, customRemove) {
                         attributes.speedUnblocked = unblocked;
                     }
                     this.engine().logd(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
+                    let rawValue = unpackNaN(values.speed);
+                    let bottomValue = Math.min(rawValue, 0);
                     attributes.speedEffective = newValue;
-                    attributes.speedDisplay = Math.max(newValue, 0);
+                    attributes.speedDisplay = Math.max(newValue, bottomValue);
                     attributes[`repeating_effects_${id}_attribute`] = "speed";
                     attributes[`repeating_effects_${id}_attributeValue`] = -diff;
                     this.engine().set(attributes);
@@ -210,20 +214,24 @@ const AddEffects = function(customEngine, customRemove) {
                     let magicDefense = unpackNaN(values.magicDefense, 0);
                     let attributeName;
                     let newValue;
+                    let rawValue;
                     if (defense === magicDefense) {
                         // Do nothing
                         return;
                     } else if (defense < magicDefense) {
                         attributeName = "defense";
                         newValue = defense + attributeValue;
+                        rawValue = defense;
                     } else if (magicDefense < defense) {
                         attributeName = "magicDefense";
                         newValue = magicDefense + attributeValue;
+                        rawValue = magicDefense;
                     }
 
+                    let bottomValue = Math.min(rawValue, 0);
                     var attributes = {};
                     attributes[`${attributeName}Effective`] = newValue;
-                    attributes[`${attributeName}Display`] = Math.max(newValue, 0);
+                    attributes[`${attributeName}Display`] = Math.max(newValue, bottomValue);
                     attributes[`repeating_effects_${id}_attribute`] = attributeName;
                     attributes[`repeating_effects_${id}_attributeValue`] = attributeValue;
                     log(`Setting ${attributeName} to ${newValue}`);
@@ -249,8 +257,9 @@ const AddEffects = function(customEngine, customRemove) {
 
                         log(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
                         let effectiveValue = Math.min(newValue, values.speedEffective - diff);
+                        let bottomValue = Math.min(speed, 0);
                         attributes.speedEffective = effectiveValue;
-                        attributes.speedDisplay = Math.max(effectiveValue, 0);
+                        attributes.speedDisplay = Math.max(effectiveValue, bottomValue);
                     }
                     attributes[`repeating_effects_${id}_attribute`] = "speed";
                     attributes[`repeating_effects_${id}_attributeValue`] = -diff;

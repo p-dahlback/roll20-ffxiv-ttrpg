@@ -102,7 +102,7 @@ const RemoveEffects = function(customEngine) {
             }
             return;
         }
-        this.engine().get([`${attribute}Effective`, `${attribute}Override`, `${attribute}OverrideSources`, `${attribute}Unblocked`], values => {
+        this.engine().get([`${attribute}`, `${attribute}Effective`, `${attribute}Override`, `${attribute}OverrideSources`, `${attribute}Unblocked`], values => {
             let baseAttributeName;
             let currentValue;
             let newValue;
@@ -124,10 +124,12 @@ const RemoveEffects = function(customEngine) {
                 if (isBlocked) {
                     baseAttributeName = `${attribute}Unblocked`;
                     if (attributeValue < 0) {
+                        let rawValue = unpackNaN(values[attribute]);
+                        let bottomValue = Math.min(rawValue, 0);
                         let adjustedValue = unpackNaN(values[`${attribute}Effective`], 1000) - attributeValue;
                         let effectiveValue = Math.min(adjustedValue, values.speedOverride);
                         newAttributes[`${attribute}Effective`] = effectiveValue;
-                        newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
+                        newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
                     }
                 } else {
                     baseAttributeName = `${attribute}Effective`;
@@ -141,7 +143,9 @@ const RemoveEffects = function(customEngine) {
                 }
                 newAttributes[baseAttributeName] = newValue;
                 if (!isBlocked) {
-                    newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
+                    let rawValue = unpackNaN(values[attribute]);
+                    let bottomValue = Math.min(rawValue, 0);
+                    newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
                 }
                 this.engine().logd(`Resetting ${baseAttributeName}, ${currentValue} - ${attributeValue} = ${newValue}`);
             }

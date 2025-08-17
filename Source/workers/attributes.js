@@ -75,16 +75,18 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
         newValue = 0;
     }
     let diff = newValue - previousValue;
-    getAttrs([`${attribute}Effective`], values => {
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
         let existingValue = parseInt(values[`${attribute}Effective`]);
         var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
         if (isNaN(existingValue)) {
             newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, 0);
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
         } else {
             let effectiveValue = existingValue + diff;
             newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, 0);
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
     });
