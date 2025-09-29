@@ -2029,8 +2029,8 @@
             <p class="medium" style="margin-top: 8px;">Assigns the job, with automatically added actions (only some jobs supported)</p>
             <select name="attr_job">
                 <option value="">--Select--</option>
-                <!--
                 <option value="DRK">Dark Knight</option>
+                <!--
                 <option value="GNB">Gunbreaker</option>
                 <option value="PLD">Paladin</option>
                 !-->
@@ -2255,114 +2255,6 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file toggles
 
 const togglesImports = new (function() {
@@ -2540,177 +2432,6 @@ on("sheet:opened", () => {
             resource2Recovery: values.resource2Recovery ?? 0,
             resource: values.resource ?? "",
             resource2: values.resource2 ?? "none"
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file attributes
-
-const attributesImports = new (function() {
-    this.export = {};
-
-const workerName = "attributes"
-
-
-})();
-
-// Build: Source/workers/attributes.js
-
-
-// Advantage management
-
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-// Assign override state
-
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        getSectionIDs('repeating_limit', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_song', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_primary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_ninjutsu', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_secondary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_instant', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_technique', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
         });
     });
 });
@@ -4071,6 +3792,7 @@ const EffectData = function() {
         critical: { matches: ["critical", "critical(x)"], type: "critical(x)", maskedType: "critical(x)", statusType: "Enfeeblement", name: "Critical Up (X)", expiry: "use", description: "Reduces the roll needed to score a critical hit by the given value." },
         curecast_focus: { matches: ["curecast focus", "curecast", "ccast"], type: "special", maskedType: "augment", augmentType: "ability", ability: "cure", specialType: "Curecast Focus", statusType: "Enhancement", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
         damage: { matches: ["damage"], type: "damage", maskedType: "damage", statusType: "Enhancement", name: "Damage Reroll", expiry: "use", description: "Allows the option to re-roll any one damage die. The value of the new roll cannot be further re-rolled and has to be used for the damage calculation." },
+        darkside: { matches: ["darkside"], type: "special", maskedType: "special", specialType: "Darkside", statusType: "Enhancement", name: "Darkside", expiry: "turn2", duplicate: "replace", description: "While under the effect of Darkside, you may spend 2 MP when you score a direct hit on an enemy with a single-target ability to treat any roll of 1. 2, or 3 as if it were a 0 and any roll of 4, 5, or 6 as if it were a 10 when determining damage. Darkside is removed at the end of your next turn it the effect is not renewed." },
         defenders_boon: { matches: ["defender's boon", "defenders boon", "dboon"], type: "special", maskedType: "augment", specialType: "Defender's Boon", statusType: "Enhancement", name: "Defender's Boon", expiry: "end", duplicate: "block", description: "Increases Defense or Magic Defense by 1. This applies to the lower of the two attributes; if they have the same value, this augmentation has no effect." },
         deflecting_edge: { matches: ["deflecting edge", "deflecting", "edge", "dedge"], type: "special", maskedType: "augment", augmentType: "ability", ability: "parry", specialType: "Deflecting Edge", statusType: "Enhancement", name: "Deflecting Edge", expiry: "end", duplicate: "block", description: "Grants the Parry ability." },
         ddown: { matches: ["ddown", "ddown(x)", "damage down"], type: "ddown(x)", maskedType: "ddown(x)", statusType: "Enfeeblement", name: "Damage Down (X)", expiry: "turn", curable: true, description: "Reduces damage dealt by this character's abilities by the given value." },
@@ -5445,6 +5167,39 @@ const sheets = {
                 ]
             }
         },
+        drk: {
+            job: "DRK",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png",
+            role: "Tank / Dark Knight",
+            level: 30,
+            resources: { hitPoints: 32, hitPoints_max: 32, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            attributes: { str: 4, dex: 0, vit: 4, int: 0, mnd: 4, defense: 15, magicDefense: 14, vigilance: 14, speed: 5 },
+            traits: [
+                { title: "Darkside", effect: "While under the effect of Darkside, you may spend 2 MP when you score a direct hit on an enemy with a single-target ability to treat any roll of 1. 2, or 3 as if it were a 0 and any roll of 4, 5, or 6 as if it were a 10 when determining damage. Darkside is removed at the end of your next turn it the effect is not renewed." },
+                { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Dark Knight Combo (Hard Slash + Siphon Strike)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Restores 1 MP. Combo: Souleater", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", restore: "1MP", effectTarget: "Enmity(5)", combo: "Souleater", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRK/dark-knight-combo.png" },
+                    { title: "Unleash", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, resource: "MP", target: "All enemies within range", range: "A 5x5 area centered on this character", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Inflicts Enmity on all targets.", directHit: "Deals 2 damage to all targets.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRK/unleash.png" },
+                    { title: "Unmend", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "5 squares", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage and inflicts Enmity on the target.", directHit: "Deals an additional 1d6 damage.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRK/unmend.png" },
+                    { title: "Souleater", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Restores 2HP.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", restore: "2 HP", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRK/souleater.png" }
+                ],
+                secondary: [
+                    { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Rampart(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
+                    { title: "Low Blow", type: "Secondary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/low-blow.png" },
+                    { title: "Flood of Darkness", type: "Secondary, Magic", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All enemies within range", range: "A 3x3 area adjacent to this character", baseEffect: "Deals 2 damage to all targets and grants Darkside.", hitType: "None", damageType: "Damage", baseValue: "2", effectSelf: "Darkside", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRK/flood-of-darkness.png" }
+                ],
+                instant: [
+                    { title: "Provoke", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy begins their turn", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Inflicts Enmity on the target.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/provoke.png" },
+                    { title: "Interject", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an adjacent enemy uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "1 square", baseEffect: "Interrupts the invoked ability that triggered Interject, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/interject.png" },
+                    { title: "Reprisal", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy within 2 squares is resolved", target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Reduces the damage dealt by the abilities of all targets by 2 until the end of this round.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Reprisal", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/reprisal.png" }
+                ],
+                limit: [
+                    { title: "Dark Force", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Immediately before an effect that deals damage or inflicts enfeeblements is resolved", target: "Single", baseEffect: "Prevents all damage and enfeeblements that the effect that triggered Dark Force inflicts on the target.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
         war: {
             job: "WAR",
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
@@ -5458,17 +5213,17 @@ const sheets = {
             abilities: {
                 primary: [
                     { title: "Warrior Combo (Heavy Swing + Maim)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Combo: Storm's Path", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(2)", combo: "Storm's Path", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/warrior-combo.png" },
-                    { title: "Overpower", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All targets within range", range: "A 5x5 area centered on this character", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts Enmity on all targets.", directHit: "Deals 2 damage to all targets.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "2", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/overpower.png" },
-                    { title: "Tomahawk", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/tomahawk.png" },
-                    { title: "Storm's Path", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Restores 2 HP.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", restore: "2 HP", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/storms-path.png" }
+                    { title: "Overpower", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All targets within range", range: "A 5x5 area centered on this character", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts Enmity on all targets.", directHit: "Deals 2 damage to all targets.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/overpower.png" },
+                    { title: "Tomahawk", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/tomahawk.png" },
+                    { title: "Storm's Path", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Restores 2 HP.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", restore: "2 HP", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/storms-path.png" }
                 ],
                 secondary: [
                     { title: "Berserk", type: "Secondary", cost: 0, uses: 3, uses_max: 3, baseEffect: "Your abilities deal an additional 2 damage until the end of this turn.", limitation: "Three times per phase", hitType: "None", damageType: "Effect", hitDie: "1d20cs20", effectSelf: "Berserk(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/berserk.png" },
-                    { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Defense", effectSelf: "Rampart(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
+                    { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Rampart(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
                     { title: "Low Blow", type: "Secondary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/low-blow.png" }
                 ],
                 instant: [
-                    { title: "Provoke", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy begins their turn", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Inflicts Enmity on the target.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Enmity(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/provoke.png" },
+                    { title: "Provoke", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy begins their turn", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Inflicts Enmity on the target.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/provoke.png" },
                     { title: "Reprisal", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy within 2 squares is resolved", target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Reduces the damage dealt by the abilities of all targets by 2 until the end of this round.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Reprisal", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/reprisal.png" },
                     { title: "Thrill of Battle", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before you take damage", baseEffect: "Restores 1d6 + 2 HP and grants a barrier equaling the amount of HP restored that exceeds your Max HP.", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", effectSelf: "Thrill of Battle", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WAR/thrill-of-battle.png" },
                     { title: "Interject", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an adjacent enemy uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "1 square", baseEffect: "Interrupts the invoked ability that triggered Interject, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/interject.png" }
@@ -5722,6 +5477,285 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+// Assign override state
+
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        getSectionIDs('repeating_limit', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_song', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_primary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_ninjutsu', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_secondary', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_instant', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+        getSectionIDs('repeating_technique', ids => {
+            const output = {};
+            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
+            setAttrs(output);
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file attributes
+
+const attributesImports = new (function() {
+    this.export = {};
+
+const workerName = "attributes"
+
+
+})();
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
 });
 
 </script>
