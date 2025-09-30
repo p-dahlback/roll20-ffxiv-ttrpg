@@ -339,7 +339,7 @@ const ModEngine = function(logger, character) {
             }
 
             if (name.endsWith("_max")) {
-                let baseName = name.remove("_max");
+                let baseName = name.replace("_max", "");
                 let actionableAttribute = unpackAttribute(this.character, baseName);
                 setAttribute(actionableAttribute, "max", value);
             } else {
@@ -852,12 +852,15 @@ const AddEffects = function(customEngine, customRemove) {
                 }
                 summaries.push(this.addBySpecificationString(state, ["Thunderhead Ready"]));
                 break;
-            case "barrier":
+            case "barrier": {
+                let barrierValue = Math.max(parseInt(state.barrierPoints), parseInt(value));
                 this.engine().set({
-                    barrierPoints: Math.max(state.barrierPoints ?? 0, parseInt(value))
+                    barrierPoints: barrierValue,
+                    barrierPoints_max: barrierValue
                 });
                 summaries.push(`Granted ${value} HP barrier`);
                 break;
+            }
             case "clear_enfeeblements":
             case "transcendent": {
                 this.engine().logd("Clearing all enfeeblements");
@@ -936,12 +939,15 @@ const AddEffects = function(customEngine, customRemove) {
                 let remainingDamage = damageValue;
                 let barrierPoints = parseInt(state.barrierPoints);
                 let hitPoints = parseInt(state.hitPoints);
+                let barrierValue = barrierPoints;
                 if (barrierPoints > 0) {
                     barrierDamage = Math.min(barrierPoints, damageValue);
+                    barrierValue = barrierPoints - barrierDamage;
                     remainingDamage = damageValue - barrierDamage;
                 }
                 this.engine().set({
-                    barrierPoints: barrierPoints - barrierDamage,
+                    barrierPoints: barrierValue,
+                    barrierPoints_max: barrierValue,
                     hitPoints: Math.max(hitPoints - remainingDamage, 0)
                 });
                 summaries.push(`Dealt ${value} damage`);
@@ -1013,7 +1019,8 @@ const AddEffects = function(customEngine, customRemove) {
                         }
                         this.engine().set({
                             hitPoints: hitPointsToAdd + state.hitPoints,
-                            barrierPoints: barrierPoints
+                            barrierPoints: barrierPoints,
+                            barrierPoints_max: barrierPoints
                         });
                     }
                 }
@@ -1430,7 +1437,8 @@ const EffectResolver = function(engine, removeEffects) {
             case "improved_padding": {
                 if (state.barrierPoints < 1) {
                     this.engine.set({
-                        barrierPoints: 1
+                        barrierPoints: 1,
+                        barrierPoints_max: 1
                     });
                     return `Executed <b>Improved Padding</b> (1 Barrier)`;
                 }

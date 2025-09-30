@@ -52,7 +52,7 @@ const ModEngine = function(logger, character) {
             }
 
             if (name.endsWith("_max")) {
-                let baseName = name.remove("_max");
+                let baseName = name.replace("_max", "");
                 let actionableAttribute = unpackAttribute(this.character, baseName);
                 setAttribute(actionableAttribute, "max", value);
             } else {
