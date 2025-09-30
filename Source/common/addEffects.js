@@ -415,6 +415,32 @@ const AddEffects = function(customEngine, customRemove) {
                 attributes.mpRecoveryBlock = "on";
                 break;
             }
+            case "damage": {
+                let damageValue = parseInt(value);
+                let barrierDamage = 0;
+                let remainingDamage = damageValue;
+                let barrierPoints = parseInt(state.barrierPoints);
+                let hitPoints = parseInt(state.hitPoints);
+                if (barrierPoints > 0) {
+                    barrierDamage = Math.min(barrierPoints, damageValue);
+                    remainingDamage = damageValue - barrierDamage;
+                }
+                this.engine().set({
+                    barrierPoints: barrierPoints - barrierDamage,
+                    hitPoints: Math.max(hitPoints - remainingDamage, 0)
+                });
+                summaries.push(`Dealt ${value} damage`);
+                break;
+            }
+            case "heal": {
+                let hitPoints = parseInt(state.hitPoints);
+                let healValue = parseInt(value);
+                this.engine().set({
+                    hitPoints: Math.min(parseInt(state.hitPoints_max), hitPoints + healValue)
+                });
+                summaries.push(`Granted ${value} HP`);
+                break;
+            }
             case "lucid_dreaming":
                 attributes.mpRecovery = 3;
                 break;

@@ -40,13 +40,6 @@ const EffectUtilities = function() {
                         result.criticalThreshold -= parseInt(effect.value);
                     }
                     break;
-                case "damage":
-                    if (result.damageRerolls) {
-                        result.damageRerolls.push(effect.data.name);
-                    } else {
-                        result.damageRerolls = [effect.data.name];
-                    }
-                    break;
                 case "ddown(x)":
                 case "dps(x)":
                     if (result.dpsChanges) {
@@ -55,6 +48,13 @@ const EffectUtilities = function() {
                         result.dpsChanges = [effect];
                     }
                     log("dpsChanges: " + JSON.stringify(result.dpsChanges));
+                    break;
+                case "dreroll":
+                    if (result.damageRerolls) {
+                        result.damageRerolls.push(effect.data.name);
+                    } else {
+                        result.damageRerolls = [effect.data.name];
+                    }
                     break;
                 case "silence":
                     result.isSilenced = true;
