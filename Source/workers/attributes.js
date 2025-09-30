@@ -46,6 +46,16 @@ on("change:hitPoints", () => {
     });
 });
 
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
 // Resource Max
 on("change:resourceValue", () => {
     getAttrs(["resourceValue", "resourceValue_max"], values => {

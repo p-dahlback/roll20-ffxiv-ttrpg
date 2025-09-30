@@ -114,7 +114,8 @@ const EffectResolver = function(engine, removeEffects) {
             case "improved_padding": {
                 if (state.barrierPoints < 1) {
                     this.engine.set({
-                        barrierPoints: 1
+                        barrierPoints: 1,
+                        barrierPoints_max: 1
                     });
                     return `Executed <b>Improved Padding</b> (1 Barrier)`;
                 }
