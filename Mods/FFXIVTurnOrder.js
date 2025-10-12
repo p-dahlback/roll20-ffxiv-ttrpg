@@ -39,17 +39,18 @@ this.export.unpackNaN = unpackNaN;
 const EffectData = function() {
     this.effects = {
         aetherial_focus: { matches: ["aetherial focus", "afocus"], type: "special", maskedType: "augment", specialType: "Aetherial Focus", statusType: "Enhancement", name: "Aetherial Focus", expiry: "end", duplicate: "block", description: "Begin encounters with X MP. This effect does not increase Max MP." },
+        addle: { matches: ["addle"], type: "special", maskedType: "ddown", statusType: "Enfeeblement", specialType: "Addle", marker: "addle", name: "Addle", expiry: "turn", description: "Reduces the damage dealt by your abilities." },
         advantage: { matches: ["advantage"], type: "advantage", maskedType: "advantage", statusType: "Enhancement", name: "Advantage", expiry: "use", description: "Provides an advantage die that can be used once for any ability roll." },
         astral_fire: { matches: ["astral fire", "afire", "astralf"], type: "special", maskedType: "special", specialType: "Astral Fire", statusType: "Enhancement", name: "Astral Fire", expiry: "turn2", duplicate: "replace", description: "While under the effect of Astral Fire your fire-aspected abilities deal an additional 1d6 damage* and you do not recover MP at the end of the [Adventurer Step].\n\nAstral Fire is removed when you are granted Umbral Ice or, if the effect is not renewed, at the end of your next turn. \n\n*After attaining level 50, this damage increases to 2d6." },
         attribute: { matches: ["attribute", "attribute(x)"], type: "attribute(x)", maskedType: "attribute(x)", statusType: "Enhancement", name: "Attribute Up (X)", expiry: "turn", description: "Improves the given attribute by a set value." },
         barrier: { matches: ["barrier"], type: "special", maskedType: "special", specialType: "Barrier(X)", statusType: "Enhancement", name: "Barrier (X)", expiry: "ephemeral" },
         berserk: { matches: ["berserk"], type: "special", maskedType: "dps(x)", specialType: "Berserk", statusType: "Enhancement", name: "Berserk", expiry: "turn", duplicate: "block", description: "Your abilities deal an additional 2 damage until the end of this turn." },
-        blind: { matches: ["blind"], type: "blind", maskedType: "blind", statusType: "Enfeeblement", name: "Blind", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot see and automatically fail any checks that rely entirely on vision. You incur a -2 penalty on all checks, and characters receive one advantage die when targeting you." },
-        bound: { matches: ["bind", "bound"], type: "bound", maskedType: "bound", statusType: "Enfeeblement", name: "Bound", expiry: "encounter", curable: true, duplicate: "block", description: "When Bound, Small and Medium characters' Speed falls to 0, while larger characters' Speed is reduced by 2.\n\nCharacters receive one advantage die when targeting you." },
-        brink: { matches: ["brink"], type: "brink", maskedType: "brink", statusType: "Enfeeblement", name: "Brink of Death", expiry: "rest", duplicate: "block", description: "You take a -5 penalty on all checks. If you are targeted by another effect that inflicts Weak, you are inflicted with Comatose instead.\n\nBrink of Death can only be removed by completing a rest or by effects that specifically remove it." },
+        blind: { matches: ["blind"], type: "blind", maskedType: "blind", statusType: "Enfeeblement", marker: "blind", name: "Blind", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot see and automatically fail any checks that rely entirely on vision. You incur a -2 penalty on all checks, and characters receive one advantage die when targeting you." },
+        bound: { matches: ["bind", "bound"], type: "bound", maskedType: "bound", statusType: "Enfeeblement", marker: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block", description: "When Bound, Small and Medium characters' Speed falls to 0, while larger characters' Speed is reduced by 2.\n\nCharacters receive one advantage die when targeting you." },
+        brink: { matches: ["brink"], type: "brink", maskedType: "brink", statusType: "Enfeeblement", marker: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block", description: "You take a -5 penalty on all checks. If you are targeted by another effect that inflicts Weak, you are inflicted with Comatose instead.\n\nBrink of Death can only be removed by completing a rest or by effects that specifically remove it." },
         clear_enfeeblements: { matches: ["clear", "clear enfeeblements", "cleare"], type: "special", maskedType: "special", specialType: "Clear Enfeeblements", statusType: "Enhancement", name: "Clear Enfeeblements", expiry: "ephemeral" },
         consume: { matches: ["consume"], type: "special", maskedType: "special", specialType: "Consume(X)", statusType: "Enhancement", name: "Consume (X)", expiry: "ephemeral" },
-        comatose: { matches: ["comatose"], type: "comatose", maskedType: "comatose", statusType: "Enfeeblement", name: "Comatose", expiry: "rest", duplicate: "block", description: "A Comatose character is treated as if they were Knocked Out for gameplay purposes.\nComatose can only be removed by spending one full day in a location where appropriate medical treatment is available, as determined by the GM.\n\nA Comatose character has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Death." },
+        comatose: { matches: ["comatose"], type: "comatose", maskedType: "comatose", statusType: "Enfeeblement", marker: "comatose", name: "Comatose", expiry: "rest", duplicate: "block", description: "A Comatose character is treated as if they were Knocked Out for gameplay purposes.\nComatose can only be removed by spending one full day in a location where appropriate medical treatment is available, as determined by the GM.\n\nA Comatose character has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Death." },
         critical: { matches: ["critical", "critical(x)"], type: "critical(x)", maskedType: "critical(x)", statusType: "Enfeeblement", name: "Critical Up (X)", expiry: "use", description: "Reduces the roll needed to score a critical hit by the given value." },
         curecast_focus: { matches: ["curecast focus", "curecast", "ccast"], type: "special", maskedType: "augment", augmentType: "ability", ability: "cure", specialType: "Curecast Focus", statusType: "Enhancement", name: "Curecast Focus", expiry: "end", duplicate: "block", description: "Grants the Cure ability." },
         dreroll: { matches: ["damage reroll, dreroll"], type: "dreroll", maskedType: "dreroll", statusType: "Enhancement", name: "Damage Reroll", expiry: "use", description: "Allows the option to re-roll any one damage die. The value of the new roll cannot be further re-rolled and has to be used for the damage calculation." },
@@ -58,18 +59,18 @@ const EffectData = function() {
         deflecting_edge: { matches: ["deflecting edge", "deflecting", "edge", "dedge"], type: "special", maskedType: "augment", augmentType: "ability", ability: "parry", specialType: "Deflecting Edge", statusType: "Enhancement", name: "Deflecting Edge", expiry: "end", duplicate: "block", description: "Grants the Parry ability." },
         damage: { matches: ["damage"], type: "special", maskedType: "special", specialType: "Damage", statusType: "Enfeeblement", name: "Damage", expiry: "ephemeral" },
         ddown: { matches: ["ddown", "ddown(x)", "damage down"], type: "ddown(x)", maskedType: "ddown(x)", statusType: "Enfeeblement", name: "Damage Down (X)", expiry: "turn", curable: true, description: "Reduces damage dealt by this character's abilities by the given value." },
-        dot: { matches: ["dot", "dot(x)"], type: "dot(x)", maskedType: "dot(x)", statusType: "Enfeeblement", name: "DOT (X)", expiry: "phase", curable: true, description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
+        dot: { matches: ["dot", "dot(x)"], type: "dot(x)", maskedType: "dot(x)", statusType: "Enfeeblement", marker: "dot", name: "DOT (X)", expiry: "phase", curable: true, description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         dps: { matches: ["dps", "dps(x)"], type: "dps(x)", maskedType: "dps(x)", statusType: "Enhancement", name: "Damage Up (X)", expiry: "turn", duplicate: "allow", description: "Increments all damage dealt by the character's abilities by a given value." },
         elemental_veil: { matches: ["elemental veil", "elementail veil 1", "elemental veil i", "eveil", "eveil 1", "eveil i", "eveil1", "eveili"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
         elemental_veil_ii: { matches: ["elemental veil ii", "elemental veil 2", "eveil 2", "eveil ii", "eveil2", "eveilii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil II", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
-        enmity: { matches: ["enmity", "enmity(x)"], type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
+        enmity: { matches: ["enmity", "enmity(x)"], type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", marker: "enmity", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
         flamecast_focus: { matches: ["flamecast focus", "flamecast", "fcast"], type: "special", maskedType: "augment", augmentType: "ability", ability: "fire", specialType: "Flamecast Focus", statusType: "Enhancement", name: "Flamecast Focus", expiry: "end", duplicate: "block", description: "Grants the Fire ability." },
         hawks_eye: { matches: ["hawk", "hawke", "hawkseye", "hawk eye", "hawk's eye", "heye"], type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", statusType: "Enhancement", name: "Hawk's Eye", expiry: "use", duplicate: "block", description: "While under the effect of Hawk's Eye, you ignore the penalty incurred on ability checks made while Blinded." },
         heal: { matches: ["heal"], type: "special", maskedType: "special", specialType: "Heal(X)", statusType: "Enhancement", name: "Heal (X)", expiry: "ephemeral" },
-        heavy: { matches: ["heavy"], type: "heavy", maskedType: "heavy", statusType: "Enfeeblement", name: "Heavy", expiry: "turn", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to their Speed.\n\nAbility checks targeting you automatically result in direct hits." },
+        heavy: { matches: ["heavy"], type: "heavy", maskedType: "heavy", statusType: "Enfeeblement", marker: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to their Speed.\n\nAbility checks targeting you automatically result in direct hits." },
         icecast_focus: { matches: ["icecast focus", "icecast", "icast"], type: "special", maskedType: "augment", augmentType: "ability", ability: "ice", specialType: "Icecast Focus", statusType: "Enhancement", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
         improved_padding: { matches: ["improved padding", "ipadding", "ipad"], type: "special", maskedType: "augment", specialType: "Improved Padding", statusType: "Enhancement", name: "Improved Padding", expiry: "end", duplicate: "block", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
-        knocked_out: { matches: ["knocked out", "ko", "knocked", "kout"], type: "special", maskedType: "special", specialType: "Knocked Out", name: "Knocked Out", statusType: "Enfeeblement", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
+        knocked_out: { matches: ["knocked out", "ko", "knocked", "kout"], type: "special", maskedType: "special", specialType: "Knocked Out", name: "Knocked Out", statusType: "Enfeeblement", marker: "ko", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
         lightweight_refit: { matches: ["lightweight refit", "lrefit", "refit"], type: "special", maskedType: "augment", specialType: "Lightweight Refit", statusType: "Enhancement", name: "Lightweight Refit", expiry: "end", duplicate: "block", description: "Increases Speed by 1 during this character's first turn of an encounter." },
         lucid_dreaming: { matches: ["lucid dreaming", "ldreaming", "lucid"], type: "special", maskedType: "special", specialType: "Lucid Dreaming", statusType: "Enhancement", name: "Lucid Dreaming", expiry: "step", duplicate: "replace", description: "Recover an additional 1 MP at the end of this round's [Adventurer Step)." },
         mages_ballad: { matches: ["mages ballad", "mage's ballad", "mballad"], type: "special", maskedType: "dreroll", specialType: "Mage's Ballad", statusType: "Enhancement", name: "Mage's Ballad", expiry: "use", duplicate: "block", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
@@ -77,21 +78,21 @@ const EffectData = function() {
         major_arcana: { matches: ["major arcana", "marcana"], type: "special", maskedType: "dreroll", specialType: "Major Arcana", statusType: "Enhancement", name: "Major Arcana", expiry: "turn", duplicate: "replace", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
         mana_conduit: { matches: ["mana conduit", "mconduit"], type: "special", maskedType: "augment", specialType: "Mana Conduit", statusType: "Enhancement", name: "Mana Conduit", expiry: "end", duplicate: "block", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
         masterwork_ornamentation: { matches: ["masterwork ornamentation", "masterwork", "ornamentation", "ornament", "mwork"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
-        paralyzed: { matches: ["paralyzed", "paralysis"], type: "paralyzed", maskedType: "paralyzed", statusType: "Enfeeblement", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block", description: "If you use a Primary ability and roll a 5 or lower for its ability check, Paralysis interrupts the ability, negating it completely. Do not resolve any of its effects or spend any resources." },
-        petrified: { matches: ["petrified", "petrify"], type: "petrified", maskedType: "petrified", statusType: "Enfeeblement", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block", description: "You cannot act during your turn or use Instant abilities. You incur a -5 penalty on all checks.\n\nCharacters targeting you receive one advantage die on their ability check." },
+        paralyzed: { matches: ["paralyzed", "paralysis"], type: "paralyzed", maskedType: "paralyzed", statusType: "Enfeeblement", marker: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block", description: "If you use a Primary ability and roll a 5 or lower for its ability check, Paralysis interrupts the ability, negating it completely. Do not resolve any of its effects or spend any resources." },
+        petrified: { matches: ["petrified", "petrify"], type: "petrified", maskedType: "petrified", statusType: "Enfeeblement", marker: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block", description: "You cannot act during your turn or use Instant abilities. You incur a -5 penalty on all checks.\n\nCharacters targeting you receive one advantage die on their ability check." },
         precision_opener: { matches: ["precision opener", "popener"], type: "special", maskedType: "augment", specialType: "Precision Opener", statusType: "Enhancement", name: "Precision Opener", expiry: "end", duplicate: "block", description: "Grants one advantage die on the first ability check this character makes during their first turn of an encounter." },
-        prone: { matches: ["prone"], type: "prone", maskedType: "prone", statusType: "Enfeeblement", name: "Prone", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot take standard movement action on you turn unless you spend half your Speed (rounded up) to get back on your feet.\n\nProne characters incur a -2 penalty on all checks.\n\nCharacters targeting you receive one advantage die when making an ability check." },
+        prone: { matches: ["prone"], type: "prone", maskedType: "prone", statusType: "Enfeeblement", marker: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot take standard movement action on you turn unless you spend half your Speed (rounded up) to get back on your feet.\n\nProne characters incur a -2 penalty on all checks.\n\nCharacters targeting you receive one advantage die when making an ability check." },
         raging_strikes: { matches: ["raging strikes", "rstrikes"], type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", statusType: "Enhancement", name: "Raging Strikes", expiry: "turn", duplicate: "block", description: "Your primary abilities deal an additional 2 damage until the end of this turn." },
         rampart: { matches: ["rampart"], type: "special", maskedType: "defense(x)", specialType: "Rampart", statusType: "Enhancement", name: "Rampart", expiry: "start", duplicate: "block", description: "Reduces the damage you take from abilities by 2 until the start of your next turn." },
         ready: { matches: ["ready", "ready(x)"], type: "ready(x)", maskedType: "ready(x)", statusType: "Enhancement", name: "(X) Ready", expiry: "use", duplicate: "block", description: "You may use an ability that requires you to be under this enhancement. X Ready is removed after the ability is used." },
         regen: { matches: ["regen", "regen(x)", "revivify", "revivify(x)"], type: "regen(x)", maskedType: "regen(x)", statusType: "Enhancement", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
-        reprisal: { matches: ["reprisal", "repr"], type: "special", maskedType: "ddown(x)", specialType: "Reprisal", statusType: "Enfeeblement", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
+        reprisal: { matches: ["reprisal", "repr"], type: "special", maskedType: "ddown(x)", specialType: "Reprisal", statusType: "Enfeeblement", marker: "reprisal", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
         restore: { matches: ["restore", "restore(x)"], type: "restore(x)", maskedType: "restore(x)", statusType: "Enhancement", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
         roll: { matches: ["roll", "roll(x)"], type: "roll(x)", maskedType: "roll(x)", statusType: "Enhancement", name: "Increment Ability Roll (X)", expiry: "use", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
-        silence: { matches: ["silence"], type: "silence", maskedType: "silence", statusType: "Enfeeblement", name: "Silence", expiry: "turn", curable: true, duplicate: "block", description: "You cannot use invoked abilities." },
-        sleep: { matches: ["sleep"], type: "sleep", maskedType: "sleep", statusType: "Enfeeblement", name: "Sleep", expiry: "damage", curable: true, duplicate: "block", description: "You incur a -3 penalty on all checks. Sleep is removed when you take damage.\n\nCharacters may use a Primary action to wake a Sleeping character in an adjacent square." },
-        slow: { matches: ["slow"], type: "slow", maskedType: "slow", statusType: "Enfeeblement", name: "Slow", expiry: "encounter", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to your Speed.\n\nYou incur a -2 penalty on all checks." },
-        stun: { matches: ["stun"], type: "stun", maskedType: "stun", statusType: "Enfeeblement", name: "Stun", expiry: "turn", duplicate: "block", description: "You cannot act during your turn or use Instant abilities.\n\nAny and all markers for which a Stunned character is the creator are removed.\n\nYou incur a -5 penalty to all checks.\n\nCharacters targeting you receive one advantage die on ability checks.\n\nStun cannot be removed by effects that remove enfeeblements.\n\nA character that has been Stunned cannot be Stunned again in the same encounter." },
+        silence: { matches: ["silence"], type: "silence", maskedType: "silence", statusType: "Enfeeblement", marker: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block", description: "You cannot use invoked abilities." },
+        sleep: { matches: ["sleep"], type: "sleep", maskedType: "sleep", statusType: "Enfeeblement", marker: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block", description: "You incur a -3 penalty on all checks. Sleep is removed when you take damage.\n\nCharacters may use a Primary action to wake a Sleeping character in an adjacent square." },
+        slow: { matches: ["slow"], type: "slow", maskedType: "slow", statusType: "Enfeeblement", marker: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to your Speed.\n\nYou incur a -2 penalty on all checks." },
+        stun: { matches: ["stun"], type: "stun", maskedType: "stun", statusType: "Enfeeblement", marker: "stun", name: "Stun", expiry: "turn", duplicate: "block", description: "You cannot act during your turn or use Instant abilities.\n\nAny and all markers for which a Stunned character is the creator are removed.\n\nYou incur a -5 penalty to all checks.\n\nCharacters targeting you receive one advantage die on ability checks.\n\nStun cannot be removed by effects that remove enfeeblements.\n\nA character that has been Stunned cannot be Stunned again in the same encounter." },
         surging_tempest: { matches: ["surging tempest", "stempest"], type: "special", maskedType: "special", specialType: "Surging Tempest", statusType: "Enhancement", name: "Surging Tempest", expiry: "encounter", duplicate: "block", description: "While under the effect of Surging Tempest, treat any roll of 1 when determining damage as if it were a 2." },
         transcendent: { matches: ["transcendent"], type: "transcendent", maskedType: "transcendent", statusType: "Enhancement", name: "Transcendent", expiry: "turnstart", duplicate: "block", description: "You are immune to damage and enfeeblements inflicted by enemy abilities, traits and encounter mechanics. Transcendent is removed at the start of the character's turn or when the character uses an ability." },
         transpose: { matches: ["transpose"], type: "special", maskedType: "special", specialType: "Transpose", name: "Transpose", expiry: "ephemeral" },
@@ -100,7 +101,7 @@ const EffectData = function() {
         unstunnable: { matches: ["unstunnable"], type: "unstunnable", maskedType: "unstunnable", statusType: "Enhancement", name: "Stun Immunity", expiry: "encounter", duplicate: "block", description: "You are immune to Stun effects for this encounter." },
         umbral_ice: { matches: ["umbral ice", "uice"], type: "special", maskedType: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
         warding_talisman: { matches: ["warding talisman", "talisman", "ward", "wtalisman", "protective ward", "pward"], type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "permanent", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
-        weak: { matches: ["weak"], type: "weak", maskedType: "weak", name: "Weak", statusType: "Enfeeblement", expiry: "rest", duplicate: "block", description: "A Weakened character incurs a -2 penalty on all checks. If you are afflicted with Weakness from another effect, you are instead afflicted with Brink of Death.\n\nWeakness can only be removed by completing a rest or by effects that specifically remove it." }
+        weak: { matches: ["weak"], type: "weak", maskedType: "weak", name: "Weak", statusType: "Enfeeblement", marker: "weak", expiry: "rest", duplicate: "block", description: "A Weakened character incurs a -2 penalty on all checks. If you are afflicted with Weakness from another effect, you are instead afflicted with Brink of Death.\n\nWeakness can only be removed by completing a rest or by effects that specifically remove it." }
     };
 
     this.matches = Object.values(this.effects);
@@ -473,6 +474,328 @@ const ModEngine = function(logger, character) {
 const engine = null;
 this.export.ModEngine = ModEngine;
 this.export.engine = engine;
+
+// Build (version 1.0.0): Source/mods/common/effectcache.js
+
+
+const TokenEffectData = function(id, marker=null, managed=true) {
+    this.id = id;
+    this.marker = marker;
+    this.managed = managed;
+};
+
+const TokenEffects = function(logger, token, obj=null) {
+    this.getStatusMarkers = function() {
+        let statusmarkers = this.token.get("statusmarkers");
+        if (statusmarkers) {
+            return statusmarkers.split(",");
+        }
+        return [];
+    };
+
+    if (obj) {
+        Object.assign(this, obj);
+        this.logger = logger;
+        this.token = token;
+    } else {
+        this.token = token;
+        this.logger = logger;
+        this.effectsById = {};
+
+        this.markersToAdd = {};
+        this.markerMap = [];
+
+        let currentMarkers = this.getStatusMarkers();
+        for (let marker of currentMarkers) {
+            this.markerMap.push(new TokenEffectData(null, marker, false));
+        }
+    }
+
+    this.set = function(id, property, value) {
+        let effect;
+        if (this.effectsById[id]) {
+            effect = this.effectsById[id];
+        } else {
+            effect = new TokenEffectData(id);
+            this.effectsById[id] = effect;
+        }
+        
+        if (property === "type" || property === "specialType") {
+            let searchableName = effectUtilities.searchableName(value);
+            let data = effectData.effects[searchableName];
+            if (data && data.marker) {
+                // Created a new status marker
+                var markers = this.getStatusMarkers();
+                let availableMarkers = JSON.parse(Campaign().get("token_markers") || "[]");
+                let markerObject = availableMarkers.find(marker => marker.name === data.marker );
+                if (!markerObject) {
+                    this.logger.d(`Couldn't find status marker ${data.marker}`);
+                } else {
+                    let tag = markerObject.tag;
+                    markers.push(tag);
+                    token.set("statusmarkers", markers.join(","));
+                    effect.marker = tag;
+
+                    this.markerMap.push(effect);
+                    this.logger.d(`Updated status markers for ${id} - '${markers}'`);
+                }
+            }
+        }
+        this.effectsById[id][property] = value;
+    };
+
+    this.remove = function(id, stopRecursion=false) {
+        this.logger.d("Removing status marker with id " + id);
+        var markers = this.getStatusMarkers();
+        if (markers.length != this.markerMap.length) {
+            this.logger.d("Number of markers is inconsistent");
+            this.reconfigureMarkerMap(markers);
+        }
+
+        for (let index in this.markerMap) {
+            let effect = this.markerMap[index];
+
+            if (effect.marker !== markers[index]) {
+                this.logger.d("Marker contents are inconsistent");
+
+                // Reconfigure and rerun operation
+                this.reconfigureMarkerMap(markers);
+                if (stopRecursion) {
+                    this.logger.i(`Couldn't remove marker for effect ${id}; unresolvable inconsistencies with status marker list 
+                        (${JSON.stringify(markers)}) vs (${JSON.stringify(this.markerMap)})`);
+                    if (this.effectsById[id]) {
+                        delete this.effectsById[id];
+                    }
+                } else {
+                    this.remove(id, true);
+                }
+                return;
+            }
+
+            if (effect.id === id) {
+                markers.splice(index, 1);
+                this.markerMap.splice(index, 1);
+                break;
+            }
+        }
+        token.set("statusmarkers", markers.join(","));
+
+        if (this.effectsById[id]) {
+            delete this.effectsById[id];
+        }
+    };
+
+    this.getEffects = function() {
+        return this.markerMap;
+    };
+
+    this.reconfigureMarkerMap = function(markers=null) {
+        this.logger.d("Reconfiguring markers");
+        if (!markers) {
+            markers = this.getStatusMarkers();
+        }
+        var managedMarkers = this.markerMap.filter(value => value.managed);
+        var newMarkerMap = [];
+        for (let marker of markers) {
+            if (managedMarkers.length > 0 && marker === managedMarkers[0].marker) {
+                this.logger.d(`Cached marker: ${marker} (${JSON.stringify(managedMarkers[0])})`);
+                newMarkerMap.push(managedMarkers[0]);
+                managedMarkers.splice(0, 1);
+            } else {
+                this.logger.d("Unmanaged marker: " + marker);
+                newMarkerMap.push(new TokenEffectData(null, marker, false));
+            }
+        }
+        if (managedMarkers.length > 0) {
+            for (let leftoverMarker of managedMarkers) {
+                if (this.effectsById[leftoverMarker.id]) {
+                    this.logger.d("Deleting missing cached effect " + JSON.stringify(leftoverMarker));
+                    delete this.effectsById[leftoverMarker.id];
+                }
+            }
+        }
+        this.markerMap = newMarkerMap;
+        this.logger.d("New state: " + JSON.stringify(newMarkerMap.map(value => { return `${value.marker}` + (value.managed ? "" : "-unmanaged"); })));
+    };
+};
+
+const EffectCache = function(obj=null) {
+    if (obj) {
+        Object.assign(this, obj);
+    } else {
+        this.cacheByToken = {};
+    }
+    this.logger = new Logger("FFXIVCache", true);
+
+    this.get = function(token) {
+        let id = token.get("_id");
+        if (!this.cacheByToken[id]) {
+            this.cacheByToken[id] = new TokenEffects(this.logger, token);
+            return this.cacheByToken[id];
+        } else if (this.cacheByToken[id] instanceof TokenEffects) {
+            return this.cacheByToken[id];
+        } else {
+            this.cacheByToken[id] = new TokenEffects(this.logger, token, this.cacheByToken[id]);
+            return this.cacheByToken[id];
+        }
+    };
+
+    this.remove = function(token) {
+        let id = token.get("_id");
+        if (this.cacheByToken[id]) {
+            delete this.cacheByToken[id];
+        }
+    };
+};
+
+this.export.TokenEffectData = TokenEffectData;
+this.export.TokenEffects = TokenEffects;
+this.export.EffectCache = EffectCache;
+
+// Build (version 1.0.0): Source/mods/common/tokenengine.js
+
+
+const TokenEngine = function(logger, token, character, cache) {
+    if (!token) {
+        logger.i("Token must be specified for token engine");
+    }
+
+    this.name = "TokenEngine";
+    this.logger = logger;
+    this.token = token;
+    this.modengine = new ModEngine(logger, character);
+    let convertedCache;
+    if (cache instanceof EffectCache) {
+        convertedCache = cache;
+    } else {
+        convertedCache = new EffectCache(cache);
+    }
+    this.effectCache = convertedCache.get(token);
+
+    this.set = function(attributes) {
+        for (let attribute of Object.entries(attributes)) {
+            let name = attribute[0];
+            let value = attribute[1];
+            if (value === undefined || value === null) {
+                this.logger.i("Undefined value encountered for " + name);
+                continue;
+            }
+            let mappedName = this.mapAttribute(name);
+            if (mappedName) {
+                this.token.set(mappedName, value);
+                this.logger.d("Set " + mappedName + " to " + value);
+                continue;
+            }
+
+            let match = name.match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
+            if (match) {
+                let id = match[1];
+                let effectProperty = match[2];
+                this.effectCache.set(id, effectProperty, value);
+                this.logger.d("Cache " + name + " to " + value);
+            } else {
+                this.logger.i("Attempting to set non-token value " + name);
+            }
+        }
+    };
+
+    this.get = function(attributes, completion) {
+        let filteredAttributes = this.filterAttributes(attributes, false);
+        let tokenAdjustmentBlock = values => {
+            var adjustedValues = values;
+            for (let tokenAttribute of filteredAttributes.tokenAttributes) {
+                adjustedValues[tokenAttribute.nameInRequest] = this.token.get(tokenAttribute.nameInToken);
+            }
+            completion(adjustedValues);
+        };
+        if (filteredAttributes.characterAttributes.length > 0) {
+            this.modengine.get(filteredAttributes.characterAttributes, tokenAdjustmentBlock);
+        } else {
+            tokenAdjustmentBlock({});
+        }
+    };
+
+    this.getAttrsAndEffects = function(attributes, completion) {
+        let filteredAttributes = this.filterAttributes(attributes, true);
+        let effects = this.effectCache.getEffects();
+        this.modengine.get(filteredAttributes.characterAttributes, (values) => {
+            var adjustedValues = values;
+            for (let tokenAttribute of filteredAttributes.tokenAttributes) {
+                adjustedValues[tokenAttribute.nameInRequest] = this.token.get(tokenAttribute.nameInToken);
+            }
+
+            completion(adjustedValues, effectUtilities.classify(effects));
+        });
+    };
+
+    this.mapAttribute = function(name) {
+        switch (name) {
+            case "hitPoints":
+                return "bar1_value";
+            case "hitPoints_max":
+                return "bar1_max";
+            case "barrierPoints":
+                return "bar2_value";
+            case "barrierPoints_max":
+                return "bar2_max";
+            case "magicPoints":
+                return "bar3_value";
+            case "magicPoints_max":
+                return "bar3_max";
+        }
+        return null;
+    };
+
+    this.filterAttributes = function(attributes, skipEffects=false) {
+        return attributes.reduce(
+            (result, currentValue) => {
+                let mappedName = this.mapAttribute(currentValue);
+                if (mappedName) {
+                    result.tokenAttributes.push({ nameInRequest: currentValue, nameInToken: mappedName });
+                    return result;
+                }
+
+                this.logger.d("Property " + JSON.stringify(currentValue));
+                let match = currentValue.match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
+                if (match) {
+                    if (skipEffects) {
+                        return result;
+                    }
+                    let id = match[1];
+                    let name = match[2];
+                    if (!result.effects[id]) {
+                        result.effects[id] = {};
+                    }
+                    result.effects[id][name] = this.effectCache[id][name];
+                    this.logger.d("Add effect to attributes: " + id + ", " + name);
+                    return result;
+                }
+
+                result.characterAttributes.push(currentValue);
+                return result;
+            },
+            { tokenAttributes: [], characterAttributes: [], effects: {} }
+        );
+    };
+
+    this.remove = function(object) {
+        this.effectCache.remove(object.id);
+    };
+
+    this.generateId = function() {
+        return this.modengine.generateId();
+    };
+
+    this.logi = function(value) {
+        this.logger.i(value);
+    };
+
+    this.logd = function(value) {
+        this.logger.d(value);
+    };
+};
+
+this.export.TokenEngine = TokenEngine;
 
 // Build (version 1.0.0): Source/mods/common/modutilities.js
 
@@ -1670,8 +1993,14 @@ const FFXIVTurnOrder = (() => {
         return { token: token, character: character };
     };
 
-    const effectResolver = (character) => {
-        let engine = new imports.ModEngine(logger, character);
+    const effectResolver = (token, character, effectCache) => {
+        let engine;
+        let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
+        if (sheetType === "unique") {
+            engine = new imports.ModEngine(logger, character);
+        } else {
+            engine = new imports.TokenEngine(logger, token, character, effectCache);
+        }
         let removeEffects = new imports.RemoveEffects(engine);
         return new imports.EffectResolver(engine, removeEffects);
     };
@@ -1687,18 +2016,13 @@ const FFXIVTurnOrder = (() => {
             logger.d("No token/character found");
             return;
         }
-
-        if (tokenCharacter.character) {
-            let character = tokenCharacter.character;
-            let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
-            if (sheetType !== "unique") {
-                logger.d(`Will not manage effects; character ${character.get("name")} isn't unique`);
-                return;
-            }
-        }
-
+        
         logger.d(`Perform ${turnChange} for ${tokenCharacter.token.get("name")}`);
-        let resolver = effectResolver(tokenCharacter.character);
+        let effectCache = new imports.EffectCache(state["FFXIVCache"].effects);
+        let resolver = effectResolver(tokenCharacter.token, tokenCharacter.character, effectCache);
+        if (!resolver) {
+            return;
+        }
         let resolverSummary;
         resolver.resolve(expiries, shouldUpdateExpiries, summary => {
             if (!summary) {
@@ -1707,6 +2031,7 @@ const FFXIVTurnOrder = (() => {
             }
             resolverSummary = summary;
         });
+        state["FFXIVCache"].effects = effectCache;
         return resolverSummary;
     };
 
@@ -1983,6 +2308,7 @@ const FFXIVTurnOrder = (() => {
                         `<p>Note that passing of turns only applies in one direction, and that adding to the turn order does not count as passing a turn.</p>` +
                         `<h5>Options</h5><ul>` +
                         `<li><code>--help</code> - displays this message in chat.</li>` +
+                        `<li><code>--clean</code> - cleans out the internal cache for token status markers.</li>` + 
                         `<li><code>--block X</code> - block any turn management until X turns have passed in the turn order.</li>` +
                         `<li><code>--config</code> - output the current configuration of ${scriptName} to chat.</li>` +
                         `<li><code>--end</code> - blocks any turn management until the Turn Order has been rendered empty.</li>` +
@@ -2000,6 +2326,13 @@ const FFXIVTurnOrder = (() => {
                         logger.i(`ERROR: ${e}`);
                     }
                     break;
+                }
+
+                case "clean": {
+                    state["FFXIVCache"] = {
+                        effects: new imports.EffectCache()
+                    };
+                    return;
                 }
 
                 case "block": {
@@ -2127,6 +2460,12 @@ const FFXIVTurnOrder = (() => {
         state[scriptName] = {
             version: version
         };
+        if (!state["FFXIVCache"]) {
+            logger.d("Initialising effect cache");
+            state["FFXIVCache"] = {
+                effects: new imports.EffectCache()
+            };
+        }
         registerEventHandlers();
     });
 })();

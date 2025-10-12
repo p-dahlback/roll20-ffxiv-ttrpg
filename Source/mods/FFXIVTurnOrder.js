@@ -29,6 +29,8 @@
 /*build:import ../common/effects.js*/
 /*build:import ../common/effectUtilities.js*/
 /*build:import common/modengine.js*/
+/*build:import common/effectcache.js*/
+/*build:import common/tokenengine.js*/
 /*build:import common/modutilities.js*/
 /*build:import ../common/addEffects.js*/
 /*build:import ../common/removeEffects.js*/
@@ -73,8 +75,14 @@ const FFXIVTurnOrder = (() => {
         return { token: token, character: character };
     };
 
-    const effectResolver = (character) => {
-        let engine = new imports.ModEngine(logger, character);
+    const effectResolver = (token, character, effectCache) => {
+        let engine;
+        let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
+        if (sheetType === "unique") {
+            engine = new imports.ModEngine(logger, character);
+        } else {
+            engine = new imports.TokenEngine(logger, token, character, effectCache);
+        }
         let removeEffects = new imports.RemoveEffects(engine);
         return new imports.EffectResolver(engine, removeEffects);
     };
@@ -90,18 +98,13 @@ const FFXIVTurnOrder = (() => {
             logger.d("No token/character found");
             return;
         }
-
-        if (tokenCharacter.character) {
-            let character = tokenCharacter.character;
-            let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
-            if (sheetType !== "unique") {
-                logger.d(`Will not manage effects; character ${character.get("name")} isn't unique`);
-                return;
-            }
-        }
-
+        
         logger.d(`Perform ${turnChange} for ${tokenCharacter.token.get("name")}`);
-        let resolver = effectResolver(tokenCharacter.character);
+        let effectCache = new imports.EffectCache(state["FFXIVCache"].effects);
+        let resolver = effectResolver(tokenCharacter.token, tokenCharacter.character, effectCache);
+        if (!resolver) {
+            return;
+        }
         let resolverSummary;
         resolver.resolve(expiries, shouldUpdateExpiries, summary => {
             if (!summary) {
@@ -110,6 +113,7 @@ const FFXIVTurnOrder = (() => {
             }
             resolverSummary = summary;
         });
+        state["FFXIVCache"].effects = effectCache;
         return resolverSummary;
     };
 
@@ -386,6 +390,7 @@ const FFXIVTurnOrder = (() => {
                         `<p>Note that passing of turns only applies in one direction, and that adding to the turn order does not count as passing a turn.</p>` +
                         `<h5>Options</h5><ul>` +
                         `<li><code>--help</code> - displays this message in chat.</li>` +
+                        `<li><code>--clean</code> - cleans out the internal cache for token status markers.</li>` + 
                         `<li><code>--block X</code> - block any turn management until X turns have passed in the turn order.</li>` +
                         `<li><code>--config</code> - output the current configuration of ${scriptName} to chat.</li>` +
                         `<li><code>--end</code> - blocks any turn management until the Turn Order has been rendered empty.</li>` +
@@ -403,6 +408,13 @@ const FFXIVTurnOrder = (() => {
                         logger.i(`ERROR: ${e}`);
                     }
                     break;
+                }
+
+                case "clean": {
+                    state["FFXIVCache"] = {
+                        effects: new imports.EffectCache()
+                    };
+                    return;
                 }
 
                 case "block": {
@@ -530,6 +542,12 @@ const FFXIVTurnOrder = (() => {
         state[scriptName] = {
             version: version
         };
+        if (!state["FFXIVCache"]) {
+            logger.d("Initialising effect cache");
+            state["FFXIVCache"] = {
+                effects: new imports.EffectCache()
+            };
+        }
         registerEventHandlers();
     });
 })();

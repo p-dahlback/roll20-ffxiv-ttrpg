@@ -10,6 +10,8 @@
 /*build:import ../common/effects.js*/
 /*build:import ../common/effectUtilities.js*/
 /*build:import common/modengine.js*/
+/*build:import common/effectcache.js*/
+/*build:import common/tokenengine.js*/
 /*build:import common/modutilities.js*/
 /*build:import ../common/addEffects.js*/
 /*build:import ../common/removeEffects.js*/
@@ -48,12 +50,15 @@ const FFXIVAddEffect = (() => {
                     continue;
                 }
                 let character = getObj("character", object.get("represents"));
-                characters.push(character);
+                characters.push({
+                    token: object,
+                    character: character
+                });
                 logger.d("Adding character " + JSON.stringify(character));
             }
             return { result: characters, error: null };
         } else if (target == "mine") {
-            let characters = findObjs({ type: "character", controlledby: msg.playerid });
+            let characters = findObjs({ type: "character", controlledby: msg.playerid }).map(value => { return { character: value }; });
             if (characters) {
                 logger.d("Adding characters " + JSON.stringify(characters));
                 return { result: characters, error: null };
@@ -63,7 +68,7 @@ const FFXIVAddEffect = (() => {
             }
         } else {
             logger.d("Searching for character " + target);
-            let characters = findObjs({ type: "character", name: target });
+            let characters = findObjs({ type: "character", name: target }).map(value => { return { character: value }; });
             if (characters) {
                 logger.d("Adding characters " + JSON.stringify(characters));
                 return { result: characters, error: null };
@@ -74,21 +79,25 @@ const FFXIVAddEffect = (() => {
         }
     };
 
-    const addEffect = (effect, characters, completion) => {
+    const addEffect = (effect, characters, effectCache, completion) => {
         var summaries = [];
 
         logger.d(`Adding effect ${effect.typeName} to ${characters.length} character(s)`);
-        for (let character of characters) {
+        for (let object of characters) {
+            let character = object.character;
+            let token = object.token;
             let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
-            if (sheetType !== "unique") {
-                logger.i(`Will not add effect; character ${character.get("name")} isn't unique`);
-                continue;
+            let engine;
+            if (sheetType === "unqiue") {
+                engine = new imports.ModEngine(logger, character);
+            } else if (token) {
+                engine = new imports.TokenEngine(logger, token, character, effectCache);
+            } else {
+                logger.i(`Will not add effect; character ${character.get("name")} isn't unique. Generic characters only support adding to selected token.`);
             }
-
-            let modEngine = new imports.ModEngine(logger, character);
-            let removalHandler = new imports.RemoveEffects(modEngine);
-            let addHandler = new imports.AddEffects(modEngine, removalHandler);
-            modEngine.getAttrsAndEffects(["hitPoints", "barrierPoints"], (values, effects) => {
+            let removalHandler = new imports.RemoveEffects(engine);
+            let addHandler = new imports.AddEffects(engine, removalHandler);
+            engine.getAttrsAndEffects(["hitPoints", "barrierPoints"], (values, effects) => {
                 let state = new imports.EffectState(
                     values.hitPoints, 
                     values.hitPoints_max, 
@@ -143,6 +152,7 @@ const FFXIVAddEffect = (() => {
             `<h5>Options</h5>` +
             `<ul>` +
             `<li><code>--help</code> - displays this message in chat.</li>` +
+            `<li><code>--clean</code> - cleans out the internal cache for token status markers.<li>` +
             `<li><code>--v {X}</code> - the value for the effect, useful for some effects like attribute(x), which expects a value to apply to an attribute. <b>Default:</b> no value.</li>` +
             `<li><code>--expire {X}</code> - when the effect should expire. <b>Default:</b><code>turn</code>. Valid values are:</li>` +
             `<ul>` +
@@ -236,6 +246,12 @@ const FFXIVAddEffect = (() => {
 
                 case "help":
                     help();
+                    return;
+                
+                case "clean":
+                    state["FFXIVCache"] = {
+                        effects: new imports.EffectCache()
+                    };
                     return;
 
                 case "v":
@@ -337,19 +353,47 @@ const FFXIVAddEffect = (() => {
         }
 
         let characters = targetResult.result;
-        addEffect(effect, characters, event => {{
+        let effectCache = new imports.EffectCache(state["FFXIVCache"].effects);
+        addEffect(effect, characters, effectCache, event => {{
+            state["FFXIVCache"].effects = effectCache;
             outputEvent("add", event, msg.playerid);
         }});
     };
 
+    const reconfigureMarkers = (token) => {
+        logger.d("Status markers changed for token " + token.get("_id"));
+        if (!token.get("represents")) {
+            logger.d("No representation for token; cancelling marker update");
+            return;
+        }
+        let character = getObj("character", token.get("represents"));
+        let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
+        if (sheetType === "unique") {
+            logger.d("Character is unique; no need to update status markers");
+            return;
+        }
+
+        let effectCache = new imports.EffectCache(state["FFXIVCache"].effects);
+        let tokenCache = effectCache.get(token);
+        tokenCache.reconfigureMarkerMap();
+        state["FFXIVCache"].effects = effectCache;
+    };
+
     const registerEventHandlers = () => {
         on("chat:message", handleInput);
+        on("change:graphic:statusmarkers", reconfigureMarkers);
     };
 
     on("ready", () => {
         state[scriptName] = {
             version: version
         };
+        if (!state["FFXIVCache"]) {
+            logger.d("Initialising effect cache");
+            state["FFXIVCache"] = {
+                effects: new imports.EffectCache()
+            };
+        }
         registerEventHandlers();
     });
 })();
