@@ -28,10 +28,9 @@ The project is a work in progress, but its capabilities are as follows:
 ### Automagic
 
 * Automatic addition of self enhancements (Warrior, Black Mage, Bard, Astrologian)
-* Automatic MP recovery and enhancement/enfeeblement expiration via [turn order mod](#ffxivendofstep)
+* Automatic MP recovery and enhancement/enfeeblement expiration via [turn order mod](#ffxivturnorder)
 * Buttons in ability rolls for quickly adding an enhancement/enfeeblement to any selected token via [chat/macro mod](#ffxivaddeffect)
-
-Further features like a Charactermancer for automatic setup of abilities and stats depending on job and level is in development.
+* Quick setup for LV30 of some jobs
 
 ## APIs
 
@@ -44,7 +43,7 @@ FFXIVTurnOrder is an API that performs MP and job resource recovery on tokens in
 
 Custom Turn Order entries need to be created that match the above names (without quotation marks).
 
-Further, the API can manage expirations of enhancements/enfeeblements on the following triggers:
+Further, the API can manage execution and expirations of enhancements/enfeeblements on the following triggers:
 
 * Start of encounter (On the first active turn in turnorder, can also be forced via chat API `!fft --start`)
 * Start of step
@@ -66,6 +65,7 @@ A suggested way to use these could be to `!fft --stop` turn management until you
 ##### Options
 
 * `--help` - displays this breakdown in chat.
+* `--clean` - cleans out the FFXIVCache data, used mostly to store effects applied to tokens for generic characters.
 * `--block {X}` - block any turn management until X turns have passed in the turn order. Example: `!fft --block 5`
 * `--config` - output the current configuration of FFXIVTurnOrder to chat.
 * `--end` - blocks any turn management until the Turn Order has been rendered empty.
@@ -84,12 +84,14 @@ FFXIVAddEffect is a chat API that allows for adding arbitrary enhancements/enfee
 
 #### Arguments
 
-* `--{name}` - Required: The name of the effect. Example: `!ffe --dot`
+* `--{specification}` - The specification of the effect(s), a comma separated list of effect names and values. Examples: `!ffe --dot(3)`, `!ffe --dot(3),stun` 
+  * `name` - The name of the effect, needs to match any of the available FFXIV effects.
+  * `value`, Optional - An optional value in parentheses. Required for certain effects.
 
 #### Options
 
 * `--help` - displays this breakdown in chat.
-* `--v {X}` - the value for the effect, useful for some effects like attribute(x), which expects a value to apply to an attribute. **Default:** no value.
+* `--clean` - cleans out the FFXIVCache data, used mostly to store effects applied to tokens for generic characters.
 * `--expire {X}` - when the effect should expire. **Default:** `turn`. Valid values are:
   * `encounterstart` - Start of an encounter
   * `stepstart` - Start of the [Adventurer Step]/[Enemy step], depending on the character's affiliation
@@ -116,6 +118,101 @@ FFXIVAddEffect is a chat API that allows for adding arbitrary enhancements/enfee
   * `mine` - the tokens controlled by the player who triggered this call
   * A character name
 * `--l {X}` - the level of the effect, for any cases where that may matter. **Default:** no value.
+
+#### Available effects
+
+<details>
+
+<summary>
+Standard effects
+</summary>
+
+| Icon | Name | Matches |
+| ---- | ---- | ------- |
+| ![Aero icon](/Images/Effects/aero.png) | Aero (x) | `aero` |
+| ![Aetherial Focus icon](/Images/Effects/augment.png) | Aetherial Focus | `afocus`, `aetherial focus` |
+| ![Addle icon](/Images/Effects/addle.png) | Addle | `addle` |
+| ![Advantage icon](/Images/Effects/advantage.png) | Advantage | `adv`, `advantage` |
+| ![Astral Fire icon](/Images/Effects/astral-fire.png) | Astral Fire | `afire`, `astralf`, `astral fire` |
+| ![Attribute Up icon](/Images/Effects/attribute-x.png) | Attribute Up (x) | `attr`, `attribute`, `attribute up` |
+| ![Berserk icon](/Images/Effects/berserk.png) | Berserk | `berserk` |
+| ![Blind icon](/Images/Effects/blind.png) | Blind | `blind` |
+| ![Bind icon](/Images/Effects/bound.png) | Bind | `bind`, `bound` |
+| ![Brink of Death icon](/Images/Effects/brink.png) | Brink of Death | `brink`, `brink of death` |
+| ![Comatose icon](/Images/Effects/comatose.png) | Comatose | `coma`, `comatose` |
+| ![Combust icon](/Images/Effects/combust.png) | Combust (x) | `combust` |
+| ![Critical Up icon](/Images/Effects/critical-x.png) | Critical Up (x) | `crit`, `critical`, `critical up` |
+| ![Curecast Focus icon](/Images/Effects/augment.png) | Curecast Focus | `ccast`, `curecast`, `curecast focus` |
+| ![Damage Down icon](/Images/Effects/damage-down-x.png) | Damage Down (x) | `ddown`, `damage down` |
+| ![Damage Reroll icon](/Images/Effects/dreroll.png) | Damage Reroll | `dreroll`, `damage reroll` |
+| ![Damage Up icon](/Images/Effects/damage-up-x.png) | Damage Up (x) | `dps`, `dup`, `damage up` |
+| ![Darkside icon](/Images/Effects/darkside.png) | Darkside | `dside`, `darkside` |
+| ![Defender's Boon icon](/Images/Effects/augment.png) | Defender's Boon | `dboon`, `defender's boon`, `defenders boon` |
+| ![Deflecting Edge icon](/Images/Effects/augment.png) | Deflecting Edge | `edge`, `dedge`, `deflecting`, `deflecting edge` |
+| ![Damage over time icon](/Images/Effects/dot-x.png) | DOT (x) | `dot` |
+| ![Elemental Veil 1 icon](/Images/Effects/augment.png) | Elementail Veil I | `eveil`, `eveil1`, `eveili`, `eveil 1`, `eveil i`, <br/><br/>`elementail veil`, `elemental veil 1`, `elementail veil i` |
+| ![Elemental Veil 2 icon](/Images/Effects/augment.png) | Elementail Veil II | `eveil2`, `eveilii`, `eveil 2`, `eveil ii`, <br/><br/>`elemental veil 2`, `elementail veil ii` |
+| ![Enmity icon](/Images/Effects/enmity-x.png) | Enmity (x) | `enmity` |
+| ![Flamecast focus icon](/Images/Effects/augment.png) | Flamecast Focus | `fcast`, `flamecast`, `flamecast focus` |
+| ![Hawk's eye icon](/Images/Effects/hawks-eye.png) | Hawk's Eye | `hawk`, `hawke`, `heye`, `hawkeye`, <br/><br/>`hawk's eye`, `hawks eye` |
+| ![Heavy icon](/Images/Effects/heavy.png) | Heavy | `heavy` |
+| ![Icecast focus icon](/Images/Effects/augment.png) | Icecast Focus | `icast`, `icecast`, `icecast focus` |
+| ![Improved padding icon](/Images/Effects/augment.png) | Improved Padding | `ipad`, `ipadding`, `improved padding` |
+| ![Knocked out icon](/Images/Effects/knocked-out.png) | Knocked Out | `ko`, `kout`, `knocked`,  `knocked out` |
+| ![Lightweight refit icon](/Images/Effects/augment.png) | Lightweight Refit | `refit`, `lrefit`, `lightweight refit` |
+| ![Lucid Dreaming icon](/Images/Effects/lucid-dreaming.png) | Lucid Dreaming | `lucid`, `ldreaming`, `lucid dreaming` |
+| ![Mage's Ballad icon](/Images/Effects/mages-ballad.png) | Mage's Ballad | `mballad`, `mage's ballad`, `mages ballad` |
+| ![Magic Damper icon](/Images/Effects/augment.png) | Magic Damper | `damper`, `mdamper`, `magic damper` |
+| ![Major Arcana icon](/Images/Effects/major-arcana.png) | Major Arcana | `marcana`, `major arcana` |
+| ![Mana Conduit icon](/Images/Effects/augment.png) | Mana Conduit | `mconduit`, `mana conduit` |
+| ![Masterwork Ornamentation icon](/Images/Effects/augment.png) | Masterwork Ornamentation | `mwork`, `masterwork`, `ornament`, `ornamentation`, `masterwork ornamentation` |
+| ![Paralyze icon](/Images/Effects/paralyzed.png) | Paralyze | `paralysis`, `paralyze`, `paralyzed` |
+| ![Petrify icon](/Images/Effects/petrified.png) | Petrify | `petrify`, `petrified` |
+| ![Precision opener icon](/Images/Effects/augment.png) | Precision Opener | `popen`, `popener`, `precision opener` |
+| ![Prone icon](/Images/Effects/prone.png) | Prone | `prone` |
+| ![Raging strikes icon](/Images/Effects/raging-strikes.png) | Raging Strikes | `rstrikes`, `raging strikes` |
+| ![Rampart icon](/Images/Effects/rampart.png) | Rampart | `rampart` |
+| ![X Ready icon](/Images/Effects/ready-x.png) | (x) Ready | `ready` |
+| ![Reprisal icon](/Images/Effects/reprisal.png) | Reprisal | `repr`, `reprisal` |
+| ![Revivify icon](/Images/Effects/regen-x.png) | Revivify (x) | `regen`, `revivify` |
+| ![Roll Up icon](/Images/Effects/roll-x.png) | Roll Up (x) | `roll`, `roll up` |
+| ![Silence icon](/Images/Effects/silence.png) | Silence | `silence` |
+| ![Sleep icon](/Images/Effects/sleep.png) | Sleep | `sleep` |
+| ![Slow icon](/Images/Effects/slow.png) | Slow | `slow` |
+| ![Stun icon](/Images/Effects/stun.png) | Stun | `stun` |
+| ![Unstunnable icon](/Images/Effects/unstunnable.png) | Stun resistance | `unstun`, `unstunnable`, `stunresist`, `stun resistance` |
+| ![Surging Tempest icon](/Images/Effects/surging-tempest.png) | Surging Tempest | `stempest`, `surging tempest` |
+| ![Transcendent icon](/Images/Effects/transcendent.png) | Transcendent | `trans`, `transcendent` |
+| ![Thunder icon](/Images/Effects/thunder.png) | Thunder (x) | `thunder` |
+| ![Thunderhead Ready icon](/Images/Effects/thunderhead-ready.png) | Thunderhead Ready | `tready`, `thunderhead`, `thunderhead ready` |
+| ![Umbral Ice icon](/Images/Effects/umbral-ice.png) | Umbral Ice | `uice`, `umbral ice` |
+| ![Warding Talisman icon](/Images/Effects/warding-talisman.png) | Warding Talisman | `ward`, `talisman`, `wtalisman`, `warding talisman` |
+| ![Weakness icon](/Images/Effects/weak.png) | Weakness | `weak`, `weakness` |
+
+</details>
+
+<br/>
+
+<details>
+
+<summary>
+Ephemeral effects
+</summary>
+
+Ephemeral effects immediately execute an action when applied and do not persist afterward as a regular effect would.
+
+| Name | Details | Matches |
+| ---- | ------- | ------- |
+| Barrier | Grants the given token or character a barrier with `value`.  | `barrier` |
+| Clear Enfeeblements | Removes all enfeeblements on the given token or character. | `clear`, `cleare`, `clear enfeeblements` |
+| Consume item | Consumes one count of the item with a name matching `value`. | `consume`, `consume item` |
+| Damage | Inflicts `value` damage to the given token or character. | `damage` |
+| Heal | Heals `value` HP on the given token or character. | `heal` |
+| Restore | Restores usages of an ability Y by X, as given by `value` = `X\|Y`. | `restore` |
+| Thrill of Battle | Heals `value` HP on the given token or character and grants a barrier for any overhealing. | `thrill`, `tbattle`, `thrill of battle` |
+| Transpose | Switches Astral Fire to Umbral Ice and vice versaq on the given character. | `transpose` |
+
+</details>
 
 ## Helpful Macros
 
