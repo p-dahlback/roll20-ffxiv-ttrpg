@@ -79,41 +79,43 @@ const FFXIVAddEffect = (() => {
         }
     };
 
-    const addEffect = (effect, characters, effectCache, completion) => {
+    const addEffects = (effects, characters, effectCache) => {
         var summaries = [];
 
-        logger.d(`Adding effect ${effect.typeName} to ${characters.length} character(s)`);
+        logger.d(`Adding ${effects.length} effects to ${characters.length} character(s)`);
         for (let object of characters) {
-            let character = object.character;
-            let token = object.token;
-            let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
-            let engine;
-            if (sheetType === "unqiue") {
-                engine = new imports.ModEngine(logger, character);
-            } else if (token) {
-                engine = new imports.TokenEngine(logger, token, character, effectCache);
-            } else {
-                logger.i(`Will not add effect; character ${character.get("name")} isn't unique. Generic characters only support adding to selected token.`);
+            for (let effect of effects) {
+                let character = object.character;
+                let token = object.token;
+                let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
+                let engine;
+                if (sheetType === "unqiue") {
+                    engine = new imports.ModEngine(logger, character);
+                } else if (token) {
+                    engine = new imports.TokenEngine(logger, token, character, effectCache);
+                } else {
+                    logger.i(`Will not add effect; character ${character.get("name")} isn't unique. Generic characters only support adding to selected token.`);
+                }
+                let removalHandler = new imports.RemoveEffects(engine);
+                let addHandler = new imports.AddEffects(engine, removalHandler);
+                engine.getAttrsAndEffects(["hitPoints", "barrierPoints"], (values, effects) => {
+                    let state = new imports.EffectState(
+                        values.hitPoints, 
+                        values.hitPoints_max, 
+                        values.barrierPoints, 
+                        null, 
+                        effects
+                    );
+                    let summary = addHandler.add(state, [effect]);
+                    summaries.push(`${summary} on <b>${character.get("name")}</b>`);
+                });
             }
-            let removalHandler = new imports.RemoveEffects(engine);
-            let addHandler = new imports.AddEffects(engine, removalHandler);
-            engine.getAttrsAndEffects(["hitPoints", "barrierPoints"], (values, effects) => {
-                let state = new imports.EffectState(
-                    values.hitPoints, 
-                    values.hitPoints_max, 
-                    values.barrierPoints, 
-                    null, 
-                    effects
-                );
-                let summary = addHandler.add(state, [effect]);
-                summaries.push(`${summary} on <b>${character.get("name")}</b>`);
-            });
         }
         let summary = summaries.join("</li><li>");
         if (summary) {
             summary = `<ul><li>${summary}</li></ul>`;
         }
-        completion ({ who: effect.who, summary: summary });
+        return summary;
     };
 
     const outputEvent = (type, event, playerid) => {
@@ -146,14 +148,17 @@ const FFXIVAddEffect = (() => {
 
         let helpContent = `<h4>${scriptName} !eos --help</h4>` +
             `<h5>Arguments</h5>` +
-            `<li><code>--{name}</code> - Required: The name of the effect</li>` +
+            `<li><code>--{effects}</code> - Required: The specification of the effect(s), a comma separated list of effect names and values. <b>Examples:</b> <code>dot(3)</code>, <code>dot(3),stun</code></li>` +
+            `</ul>` +
+            `<li><code>name</code> - the name of the effect, needs to match any of the available FFXIV effects.</li>` +            
+            `<li><code>value</code> Optional - An optional value in parentheses. Required for certain effects.</li>` +
+            `<ul>` +
             `<li><code>--source {X}</code> - Required: The name of the effect's originator</li>` +
             `<hr />` +
             `<h5>Options</h5>` +
             `<ul>` +
             `<li><code>--help</code> - displays this message in chat.</li>` +
             `<li><code>--clean</code> - cleans out the internal cache for token status markers.<li>` +
-            `<li><code>--v {X}</code> - the value for the effect, useful for some effects like attribute(x), which expects a value to apply to an attribute. <b>Default:</b> no value.</li>` +
             `<li><code>--expire {X}</code> - when the effect should expire. <b>Default:</b><code>turn</code>. Valid values are:</li>` +
             `<ul>` +
             `<li><code>encounterstart</code> - Start of an encounter</li>` +
@@ -217,22 +222,8 @@ const FFXIVAddEffect = (() => {
         let who = (getObj("player", msg.playerid) || { get: () => "API" }).get("_displayname");
         let args = msg.content.split(/\s+--/);
 
-        let effect = {
-            id: "-1",
-            type: "none",
-            statusType: "Enhancement",
-            typeName: "",
-            specialType: "",
-            value: "",
-            source: "",
-            abilities: undefined,
-            editable: "1",
-            target: "selected",
-            characters: [],
-            player: msg.playerid,
-            who: who,
-            origin: "FFXIVAddEffect"
-        };
+        var effects = [];
+        let target = "selected";
 
         logger.d("==============================================");
         logger.d("Parsing command " + msg.content);
@@ -254,18 +245,14 @@ const FFXIVAddEffect = (() => {
                     };
                     return;
 
-                case "v":
-                    effect.value = parts[1];
-                    break;
-
                 case "source":
-                    effect.source = parts[1];
+                    effects.forEach(effect => effect.source = parts[1]);
                     break;
 
                 case "expire": {
                     let expiry = parts[1].toLowerCase();
                     if (imports.effectData.expiryTypes.includes(expiry)) {
-                        effect.expiry = expiry;
+                        effects.forEach(effect => effect.expiry = expiry);
                     } else {
                         logger.i("Unrecognized expiry type " + expiry);
                         return;
@@ -275,7 +262,7 @@ const FFXIVAddEffect = (() => {
 
                 case "edit":
                     if (["0", "1", "on", "off"].includes(parts[1])) {
-                        effect.editable = parts[1];
+                        effects.forEach(effect => effect.editable = parts[1]);
                     } else {
                         logger.i("Unrecognized editable type " + parts[1]);
                         return;
@@ -284,7 +271,7 @@ const FFXIVAddEffect = (() => {
 
                 case "curable":
                     if (["0", "1", "on", "off"].includes(parts[1])) {
-                        effect.curable = ["1", "on"].includes(parts[1]) ? "on" : "off";
+                        effects.forEach(effect => effect.curable = ["1", "on"].includes(parts[1]) ? "on" : "off");
                     } else {
                         logger.i("Unrecognized curable type " + parts[1]);
                         return;
@@ -293,7 +280,7 @@ const FFXIVAddEffect = (() => {
 
                 case "dupe":
                     if (["block", "replace", "allow"].includes(parts[1])) {
-                        effect.duplicate = parts[1];
+                        effects.forEach(effect => effect.duplicate = parts[1]);
                     } else {
                         logger.i("Unrecognized dupe type " + parts[1]);
                         return;
@@ -302,51 +289,76 @@ const FFXIVAddEffect = (() => {
 
                 case "t": {
                     let target = parts.slice(1).join(" ");
-                    effect.target = target;
+                    effects.forEach(effect => effect.target = target);
                     break;
                 }
 
                 default: {
-                    let name = parts.join(" ");
-                    let match = imports.effectData.matches.find(type => type.matches && type.matches.includes(name.toLowerCase()));
-                    if (!match) {
-                        outputEvent("error", "Unknown effect " + name);
-                        return;
-                    }
-                    effect.data = match;
-
-                    let specialType;
-                    if (match.type == "special") {
-                        specialType = match.specialType;
-                        effect.maskedType = match.maskedType;
-                        effect.typeName = match.specialType;
-                        if (match.ability) {
-                            effect.abilities = imports.effectData.abilities[match.ability];
+                    let specificationText = parts.join(" ");
+                    let specifications = specificationText.split(",");
+                    for (let specification of specifications) {
+                        let effect = {
+                            id: "-1",
+                            type: "none",
+                            statusType: "Enhancement",
+                            typeName: "",
+                            specialType: "",
+                            value: "",
+                            source: "Self",
+                            abilities: undefined,
+                            editable: "1",
+                            target: target,
+                            characters: [],
+                            player: msg.playerid,
+                            who: who,
+                            origin: "FFXIVAddEffect"
+                        };
+                        let formatMatch = specification.match(/([-_\w]+)(\(([-|\s\w]+)\))?/);
+                        if (!formatMatch) {
+                            outputEvent("error", "Malformed effect specification " + specification);
+                            return;
                         }
-                    } else {
-                        specialType = "";
-                        effect.typeName = match.name;
+                        let name = formatMatch[1];
+                        if (formatMatch.length > 3 && formatMatch[3]) {
+                            effect.value = formatMatch[3];
+                        }
+
+                        let match = imports.effectData.matches.find(type => type.matches && type.matches.includes(name.toLowerCase()));
+                        if (!match) {
+                            outputEvent("error", "Unknown effect " + name);
+                            return;
+                        }
+                        effect.data = match;
+
+                        let specialType;
+                        if (match.type == "special") {
+                            specialType = match.specialType;
+                            effect.maskedType = match.maskedType;
+                            effect.typeName = match.specialType;
+                            if (match.ability) {
+                                effect.abilities = imports.effectData.abilities[match.ability];
+                            }
+                        } else {
+                            specialType = "";
+                            effect.typeName = match.name;
+                        }
+                        effect.adjustedName = imports.effectUtilities.searchableName(match.specialType ?? match.type);
+                        effect.icon = imports.effectData.icon(effect);
+                        effect.type = match.type;
+                        effect.statusType = match.statusType;
+                        effect.specialType = specialType;
+                        effect.description = match.description;
+                        effects.push(effect);
                     }
-                    effect.adjustedName = imports.effectUtilities.searchableName(match.specialType ?? match.type);
-                    effect.icon = imports.effectData.icon(effect);
-                    effect.type = match.type;
-                    effect.statusType = match.statusType;
-                    effect.specialType = specialType;
-                    effect.description = match.description;
                     break;
                 }
             }
         }
-        if (!effect || !effect.type || effect.type == "none") {
+        if (effects.length === 0) {
             logger.i("Found no matching effect for " + msg.content);
             return;
         }
-        if (!effect.source) {
-            logger.i("No source given");
-            help();
-            return;
-        }
-        let targetResult = getCharacters(msg, effect.target);
+        let targetResult = getCharacters(msg, target);
         if (targetResult.error) {
             outputEvent("error", targetResult.error);
             return;
@@ -354,10 +366,9 @@ const FFXIVAddEffect = (() => {
 
         let characters = targetResult.result;
         let effectCache = new imports.EffectCache(state["FFXIVCache"].effects);
-        addEffect(effect, characters, effectCache, event => {{
-            state["FFXIVCache"].effects = effectCache;
-            outputEvent("add", event, msg.playerid);
-        }});
+        let event = addEffects(effects, characters, effectCache);
+        state["FFXIVCache"].effects = effectCache;
+        outputEvent("add", event, msg.playerid);
     };
 
     const reconfigureMarkers = (token) => {

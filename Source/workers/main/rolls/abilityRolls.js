@@ -387,10 +387,10 @@ const AbilityRolls = function() {
                 value = match[1];
             }
 
-            let valueDefinition = value ? `--v ${value}` : "";
+            let valueDefinition = value ? `(${value})` : "";
             let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : "";
             let effectName = (data.specialType || data.type).replace(/\([Xx]{1}\)/, "");
-            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName} ${valueDefinition} --source ${characterName} ` +
+            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName}${valueDefinition} --source ${characterName} ` +
                 `--edit ${0} ${duplicateDefinition})`;
             buttons.push(button);
         }
