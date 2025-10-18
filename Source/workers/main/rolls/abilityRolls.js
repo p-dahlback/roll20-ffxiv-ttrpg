@@ -7,6 +7,26 @@ const rollModifiers = {}; const rollTemplates = {}; const performAbility = {};
 const EffectState = {};
 /*build:end*/
 
+const TargetEffects = function(source) {
+    let match  = source.match(/^(?:([-'\s\w]+):)?((?:[-'\s\w()]+,)*)([-'\s\w()]+)$/);
+    if (match && match.length > 1) {
+        this.name = match[1];
+    } else {
+        this.name = null;
+        this.effects = [];
+        return;
+    }
+
+    this.effects = [];
+    if (match.length > 2 && match[2]) {
+        let commaSeparatedEffects = match[2].slice(0, -1);
+        this.effects = this.effects.concat(commaSeparatedEffects.split(",").map(value => value.trim()));
+    }
+    if (match.length > 3 && match[3]) {
+        this.effects = this.effects.concat(match[3].trim());
+    }
+};
+
 const AbilityRolls = function() {
 
     // Roll ability
@@ -204,7 +224,7 @@ const AbilityRolls = function() {
             const roll = parseInt(values[`repeating_${section}_${rowId}_currentRoll`]);
 
             const selfEffects = values[`repeating_${section}_${rowId}_effectSelf`].split(",");
-            const targetEffects = values[`repeating_${section}_${rowId}_effectTarget`].split(",");
+            const targetEffects = values[`repeating_${section}_${rowId}_effectTarget`];
             const condition = values[`repeating_${section}_${rowId}_condition`];
 
             var bonusValue = 0;
@@ -280,16 +300,20 @@ const AbilityRolls = function() {
             }
 
             var targetEffectTitle = "";
-            let targetEffectButtons = this.buttonsForTargetEffects(targetEffects, values.character_name);
-            if (targetEffectButtons) {
-                targetEffectTitle = "Effects";
+            let targetEffectButton = "";
+            if (targetEffects) {
+                let calculatedEffects = new TargetEffects(targetEffects);
+                targetEffectButton = this.buttonForTargetEffects(calculatedEffects, values.character_name);
+                if (targetEffectButton) {
+                    targetEffectTitle = "Effect";
+                }
             }
 
             // Roll damage
             let rollTemplate = `&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
                 `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
-                `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButtons}}}`;
+                `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
             engine.logd(rollTemplate);
             startRoll(rollTemplate, results => {
                 const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
@@ -369,11 +393,15 @@ const AbilityRolls = function() {
         });
     };
 
-    this.buttonsForTargetEffects = function(effects, characterName) {
-        var buttons = [];
+    this.buttonForTargetEffects = function(effects, characterName) {
+        if (effects.effects.length === 0) {
+            return null;
+        }
+        var effectDefinitions = [];
 
         engine.logd("Preparing target effects: " + JSON.stringify(effects));
-        for (let effect of effects) {
+        let initialName = "";
+        for (let effect of effects.effects) {
             let adjustedEffect = effectUtilities.searchableName(effect.trim());
             let data = effectData.effects[adjustedEffect];
             if (!data) {
@@ -387,14 +415,15 @@ const AbilityRolls = function() {
                 value = match[1];
             }
 
-            let valueDefinition = value ? `(${value})` : "";
-            let duplicateDefinition = data.duplicate ? ` --dupe ${data.duplicate}` : "";
+            if (!initialName) {
+                initialName = data.name.replace("(X)", `(${value})`);
+            }
+            let valueDefinition = value ? `[${value}]` : "";
             let effectName = (data.specialType || data.type).replace(/\([Xx]{1}\)/, "");
-            let button = `[${data.name.replace("(X)", `(${value})`)}](!ffe --${effectName}${valueDefinition} --source ${characterName} ` +
-                `--edit ${0} ${duplicateDefinition})`;
-            buttons.push(button);
+            let effectDefinition = `${effectName}${valueDefinition}`;
+            effectDefinitions.push(effectDefinition);
         }
-        return buttons.join("\n");
+        return `[${effects.name || initialName}](!ffe --${effectDefinitions.join(",")} --source ${characterName} --edit ${0})`;
     };
 
     this.stringWithTitle = function(title, value) {

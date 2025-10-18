@@ -315,14 +315,14 @@ const FFXIVAddEffect = (() => {
                             who: who,
                             origin: "FFXIVAddEffect"
                         };
-                        let formatMatch = specification.match(/([-_\w]+)(\(([-|\s\w]+)\))?/);
+                        let formatMatch = specification.match(/([-_\s\w]+)(?:[([]([-|\s\w]+)[)\]])?/);
                         if (!formatMatch) {
                             outputEvent("error", "Malformed effect specification " + specification);
                             return;
                         }
                         let name = formatMatch[1];
-                        if (formatMatch.length > 3 && formatMatch[3]) {
-                            effect.value = formatMatch[3];
+                        if (formatMatch.length > 2 && formatMatch[2]) {
+                            effect.value = formatMatch[2];
                         }
 
                         let match = imports.effectData.matches.find(type => type.matches && type.matches.includes(name.toLowerCase()));
