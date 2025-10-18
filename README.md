@@ -209,6 +209,7 @@ Ephemeral effects immediately execute an action when applied and do not persist 
 | Damage | Inflicts `value` damage to the given token or character. | `damage` |
 | Heal | Heals `value` HP on the given token or character. | `heal` |
 | Restore | Restores usages of an ability Y by X, as given by `value` = `X\|Y`. | `restore` |
+| Restore Magic | Restores `value` MP for the given token | `restorem`, `restore magic` |
 | Thrill of Battle | Heals `value` HP on the given token or character and grants a barrier for any overhealing. | `thrill`, `tbattle`, `thrill of battle` |
 | Transpose | Switches Astral Fire to Umbral Ice and vice versaq on the given character. | `transpose` |
 

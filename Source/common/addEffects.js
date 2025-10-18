@@ -441,10 +441,11 @@ const AddEffects = function(customEngine, customRemove) {
             case "heal": {
                 let hitPoints = parseInt(state.hitPoints);
                 let healValue = parseInt(value);
+                let newValue = Math.min(parseInt(state.hitPoints_max), hitPoints + healValue);
                 this.engine().set({
-                    hitPoints: Math.min(parseInt(state.hitPoints_max), hitPoints + healValue)
+                    hitPoints: newValue
                 });
-                summaries.push(`Granted ${value} HP`);
+                summaries.push(`Granted ${newValue - hitPoints} HP`);
                 break;
             }
             case "lucid_dreaming":
@@ -481,6 +482,16 @@ const AddEffects = function(customEngine, customRemove) {
                     }
                     this.engine().logi("Failed to find " + abilityName);
                 });
+                break;
+            }
+            case "restore_magic": {
+                let magicPoints = parseInt(state.magicPoints);
+                let restoreValue = parseInt(value);
+                let newValue = Math.min(parseInt(state.magicPoints_max), magicPoints + restoreValue);
+                this.engine().set({
+                    magicPoints: newValue
+                });
+                summaries.push(`Granted ${newValue - magicPoints} MP`);
                 break;
             }
             case "thrill_of_battle": {
