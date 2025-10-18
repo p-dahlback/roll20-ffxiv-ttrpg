@@ -91,6 +91,7 @@ const EffectData = function() {
         regen: { matches: ["regen", "revivify"], type: "regen(x)", maskedType: "regen(x)", statusType: "Enhancement", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
         reprisal: { matches: ["repr", "reprisal"], type: "special", maskedType: "ddown(x)", specialType: "Reprisal", statusType: "Enfeeblement", marker: "reprisal", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
         restore: { matches: ["restore"], type: "restore(x)", maskedType: "restore(x)", statusType: "Enhancement", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
+        restore_magic: { matches: ["restorem", "restore magic"], type: "special", maskedType: "special", specialType: "Restore Magic", statusType: "Enhancement", name: "Restore Magic", expiry: "ephemeral" },
         roll: { matches: ["roll", "roll up"], type: "roll(x)", maskedType: "roll(x)", statusType: "Enhancement", name: "Increment Ability Roll (X)", expiry: "use", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
         silence: { matches: ["silence"], type: "silence", maskedType: "silence", statusType: "Enfeeblement", marker: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block", description: "You cannot use invoked abilities." },
         sleep: { matches: ["sleep"], type: "sleep", maskedType: "sleep", statusType: "Enfeeblement", marker: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block", description: "You incur a -3 penalty on all checks. Sleep is removed when you take damage.\n\nCharacters may use a Primary action to wake a Sleeping character in an adjacent square." },
@@ -1283,10 +1284,11 @@ const AddEffects = function(customEngine, customRemove) {
             case "heal": {
                 let hitPoints = parseInt(state.hitPoints);
                 let healValue = parseInt(value);
+                let newValue = Math.min(parseInt(state.hitPoints_max), hitPoints + healValue);
                 this.engine().set({
-                    hitPoints: Math.min(parseInt(state.hitPoints_max), hitPoints + healValue)
+                    hitPoints: newValue
                 });
-                summaries.push(`Granted ${value} HP`);
+                summaries.push(`Granted ${newValue - hitPoints} HP`);
                 break;
             }
             case "lucid_dreaming":
@@ -1323,6 +1325,16 @@ const AddEffects = function(customEngine, customRemove) {
                     }
                     this.engine().logi("Failed to find " + abilityName);
                 });
+                break;
+            }
+            case "restore_magic": {
+                let magicPoints = parseInt(state.magicPoints);
+                let restoreValue = parseInt(value);
+                let newValue = Math.min(parseInt(state.magicPoints_max), magicPoints + restoreValue);
+                this.engine().set({
+                    magicPoints: newValue
+                });
+                summaries.push(`Granted ${newValue - magicPoints} MP`);
                 break;
             }
             case "thrill_of_battle": {
