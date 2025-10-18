@@ -1731,9 +1731,11 @@ const FFXIVAddEffect = (() => {
                 let token = object.token;
                 let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
                 let engine;
-                if (sheetType === "unqiue") {
+                if (sheetType === "unique") {
+                    logger.d(`Using character engine for ${sheetType} token`);
                     engine = new imports.ModEngine(logger, character);
                 } else if (token) {
+                    logger.d(`Using token engine for ${sheetType} token`);
                     engine = new imports.TokenEngine(logger, token, character, effectCache);
                 } else {
                     logger.i(`Will not add effect; character ${character.get("name")} isn't unique. Generic characters only support adding to selected token.`);
