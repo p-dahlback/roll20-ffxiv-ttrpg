@@ -8,12 +8,17 @@ insertNameConstant="${3:-"0"}"
 useRealNames="${4:-"0"}"
 
 function mergeIntoFile () {
+    # $1 - Base file
+    # $2 - Target file
     printf "%b\n" "// Build (version $version): $1\n" >> $2
     cat $1 >> $2
     printf "%b\n" "\n" >> $2
 }
 
 function readImports () {
+    # $1 - Base file
+    # $2 - Target file
+    # $3 - Base file name
     result=$(sed -n "/build:import/p" "$1")
 
     if [ -z "$result" ]; then

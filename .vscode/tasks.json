@@ -47,6 +47,7 @@
             "type": "shell",
             "command": "./Scripts/gensheet.sh",
             "args": [
+                "Source",
                 "Source/base.html",
                 ".build/workers"
             ],

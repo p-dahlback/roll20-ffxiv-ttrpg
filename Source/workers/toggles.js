@@ -28,14 +28,14 @@ function toggleExpandedStateInSection(eventInfo) {
     const sourceAttributes = eventInfo.sourceAttribute.split("_");
     const section = sourceAttributes[1];
     const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_${section}ExpandItem`);
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
 }
 
 function setCollapsedStateForSection(isExpanded, section) {
     getSectionIDs(`repeating_${section}`, ids => {
         var attributes = {};
         for (let id of ids) {
-            attributes[`repeating_${section}_${id}_${section}ExpandItem`] = isExpanded ? "on" : "off";
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
         }
         if (Object.keys(attributes).length > 0) {
             setAttrs(attributes);
