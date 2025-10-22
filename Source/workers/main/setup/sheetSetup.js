@@ -53,12 +53,20 @@ const SheetSetup = function() {
             if (sheet.abilities) {
                 engine.logd("Preparing abilities");
                 for (let section of Object.entries(sheet.abilities)) {
-                    for (let ability of section[1]) {
+                    for (let index in section[1]) {
+                        let ability = section[1][index];
+                        let sectionName;
+                        if (section[0] === "limit") {
+                            sectionName = section[0];
+                        } else {
+                            let column = (index % 3) + 1;
+                            sectionName = `${section[0]}${column}`;
+                        }
                         let id = engine.generateId();
                         for (let entry of Object.entries(ability)) {
-                            attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
+                            attributes[`repeating_${sectionName}_${id}_${entry[0]}`] = entry[1];
                         }
-                        attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
+                        attributes[`repeating_${sectionName}_${id}_repeatingOverride`] = "auto";
                     }
                 }
             }

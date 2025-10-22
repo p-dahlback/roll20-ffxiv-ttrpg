@@ -331,7 +331,7 @@ body.sheet-darkmode > .ui-dialog .charsheet .tabstoggle[value="settings"] ~ butt
 .expand-checkbox[value="0"] ~ .repcontainer,
 .expand-checkbox[value="off"] ~ .repcontainer,
 .expand-checkbox:checked ~ .collapsed-view {
-  max-height: 100vh;
+  max-height: 1000vh;
 }
 
 .expandable-section.grid {
@@ -1277,6 +1277,10 @@ textarea {
   margin: 3px;
 }
 
+.ability-columns .ability {
+  margin: 3px 0 3px 0;
+}
+
 .ability-sub-category .ability {
   width: 19.5em;
 }
@@ -1798,23 +1802,47 @@ textarea {
 /* Repeating section change control visibility */
 
 div[data-groupname=repeating_limit].repcontrol,
-div[data-groupname=repeating_song].repcontrol,
-div[data-groupname=repeating_primary].repcontrol,
-div[data-groupname=repeating_ninjutsu].repcontrol,
-div[data-groupname=repeating_secondary].repcontrol, 
-div[data-groupname=repeating_instant].repcontrol,
-div[data-groupname=repeating_technique].repcontrol,
+div[data-groupname=repeating_song1].repcontrol,
+div[data-groupname=repeating_song2].repcontrol,
+div[data-groupname=repeating_song3].repcontrol,
+div[data-groupname=repeating_primary1].repcontrol,
+div[data-groupname=repeating_primary2].repcontrol,
+div[data-groupname=repeating_primary3].repcontrol,
+div[data-groupname=repeating_ninjutsu1].repcontrol,
+div[data-groupname=repeating_ninjutsu2].repcontrol,
+div[data-groupname=repeating_ninjutsu3].repcontrol,
+div[data-groupname=repeating_secondary1].repcontrol, 
+div[data-groupname=repeating_secondary2].repcontrol, 
+div[data-groupname=repeating_secondary3].repcontrol, 
+div[data-groupname=repeating_instant1].repcontrol,
+div[data-groupname=repeating_instant2].repcontrol,
+div[data-groupname=repeating_instant3].repcontrol,
+div[data-groupname=repeating_technique1].repcontrol,
+div[data-groupname=repeating_technique2].repcontrol,
+div[data-groupname=repeating_technique3].repcontrol,
 .hidden-controls div.repcontrol {
   display: none;
 }
 
 .overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_limit].repcontrol,
-.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_song].repcontrol,
-.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_primary].repcontrol,
-.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_ninjutsu].repcontrol,
-.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_secondary].repcontrol,
-.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_instant].repcontrol,
-.overrideSwitch:not([value="auto"]) ~ div[data-groupname=repeating_technique].repcontrol {
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_song1].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_song2].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_song3].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_primary1].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_primary2].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_primary3].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_ninjutsu1].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_ninjutsu2].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_ninjutsu3].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_secondary1].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_secondary2].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_secondary3].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_instant1].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_instant2].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_instant3].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_technique1].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_technique2].repcontrol,
+.overrideSwitch:not([value="auto"]) ~ .ability-columns .ability-column div[data-groupname=repeating_technique3].repcontrol {
   display: block;
   padding-bottom: 16px;
 }
@@ -1850,6 +1878,26 @@ div[data-groupname=repeating_technique].repcontrol,
   grid-template-columns: repeat(3, 1fr);
   min-height: 3rem;
   padding: 8px 0 16px 0;
+}
+
+.ability-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  min-height: 3rem;
+  gap: 16px;
+  width: 100%;
+  padding: 8px 0 16px 0;
+}
+
+.ability-column {
+  width: 20em;
+}
+
+.ability-column > .repcontainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 3rem;
+  width: 20em;
 }
 
 .ability-sub-category {

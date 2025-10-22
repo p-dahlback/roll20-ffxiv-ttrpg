@@ -499,8 +499,10 @@
             <button type="action" class="header-action" name="act_song_info">i</button>
         </div>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-        <fieldset class="repeating_song">
-            <!-- build:import ability.html-->
+        <div class="ability-columns expanded-view">
+            <div class="ability-column">
+                <fieldset class="repeating_song1">
+                    <!-- build:import ability.html-->
 <div class="ability">
     <div class="header list">
         <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
@@ -691,7 +693,399 @@
         <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
         <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
     </div>
-</div>        </fieldset>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_song2">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_song3">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+        </div>
         <div class="collapse-overlay collapsed-view "></div>
     </div>
 
@@ -704,8 +1098,10 @@
             <h3 class="large">Primary Abilities</h3>
         </div>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-        <fieldset class="repeating_primary">
-            <!-- build:import ability.html-->
+        <div class="ability-columns expanded-view">
+            <div class="ability-column">
+                <fieldset class="repeating_primary1">
+                    <!-- build:import ability.html-->
 <div class="ability">
     <div class="header list">
         <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
@@ -896,7 +1292,399 @@
         <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
         <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
     </div>
-</div>        </fieldset>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_primary2">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_primary3">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+        </div>
         <div class="collapse-overlay collapsed-view "></div>
     </div>
 
@@ -909,8 +1697,10 @@
             <button type="action" class="header-action" name="act_ninjutsu_info">i</button>
         </div>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-        <fieldset class="repeating_ninjutsu">
-            <!-- build:import ability.html-->
+        <div class="ability-columns expanded-view">
+            <div class="ability-column">
+                <fieldset class="repeating_ninjutsu1">
+                    <!-- build:import ability.html-->
 <div class="ability">
     <div class="header list">
         <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
@@ -1101,7 +1891,399 @@
         <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
         <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
     </div>
-</div>        </fieldset>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_ninjutsu2">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_ninjutsu3">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+        </div>
         <div class="collapse-overlay collapsed-view "></div>
     </div>
 
@@ -1112,8 +2294,10 @@
         <button type="action" class="header-action" name="act_secondary_info">i</button>
         <h3 class="large">Secondary Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-        <fieldset class="repeating_secondary">
-            <!-- build:import ability.html-->
+        <div class="ability-columns expanded-view">
+            <div class="ability-column">
+                <fieldset class="repeating_secondary1">
+                    <!-- build:import ability.html-->
 <div class="ability">
     <div class="header list">
         <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
@@ -1304,7 +2488,399 @@
         <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
         <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
     </div>
-</div>        </fieldset>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_secondary2">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_secondary3">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+        </div>
         <div class="collapse-overlay collapsed-view "></div>
     </div>
 
@@ -1315,8 +2891,10 @@
         <button type="action" class="header-action" name="act_instant_info">i</button>
         <h3 class="large">Instant Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-        <fieldset class="repeating_instant">
-            <!-- build:import ability.html-->
+        <div class="ability-columns expanded-view">
+            <div class="ability-column">
+                <fieldset class="repeating_instant1">
+                    <!-- build:import ability.html-->
 <div class="ability">
     <div class="header list">
         <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
@@ -1507,7 +3085,399 @@
         <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
         <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
     </div>
-</div>        </fieldset>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_instant2">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_instant3">
+                    <!-- build:import ability.html-->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+        </div>
         <div class="collapse-overlay collapsed-view "></div>
     </div>
 
@@ -1518,8 +3488,10 @@
         <button type="action" class="header-action" name="act_technique_info">i</button>
         <h3 class="large">Technique Abilities</h3>
         <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-        <fieldset class="repeating_technique">
-            <!-- build:import ability.html -->
+        <div class="ability-columns expanded-view">
+            <div class="ability-column">
+                <fieldset class="repeating_technique1">
+                    <!-- build:import ability.html -->
 <div class="ability">
     <div class="header list">
         <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
@@ -1710,7 +3682,399 @@
         <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
         <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
     </div>
-</div>        </fieldset>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_technique2">
+                    <!-- build:import ability.html -->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+            <div class="ability-column">
+                <fieldset class="repeating_technique3">
+                    <!-- build:import ability.html -->
+<div class="ability">
+    <div class="header list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="hidden" class="usesFlag" name="attr_uses_max" />
+        <input type="hidden" class="costFlag" name="attr_cost" />
+        <input type="text" class="conditionFlag hidden" name="attr_condition" placeholder="P" />
+        <input type="text" class="triggerFlag hidden" name="attr_trigger" placeholder="P" />
+        <input type="text" class="targetFlag hidden" name="attr_target" placeholder="P" />
+        <input type="text" class="checkFlag hidden" name="attr_check" placeholder="P" />
+        <input type="text" class="crFlag hidden" name="attr_cr" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <span class="mini flagTitle expanded-view floatLeft">Icon source:</span>
+        <input type="text" class="iconSource overrideContent expanded-view mini-input" name="attr_icon" title="Icon" placeholder="icon source" />
+
+        <div class="uses">
+            <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+            <input class="max mini-input floatRight" type="number" name="attr_uses_max" min="0" value="0" />
+            <span class="floatRight">/</span>
+            <input class="mini-input floatRight" type="number" name="attr_uses" min="0" value="0" />
+        </div>
+
+        <div class="header-title">
+            <img class="ability-icon" name="attr_icon" />
+            <div class="title adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="bold adaptive--text__span"  name="attr_title"></span>
+                <textarea class="adaptive--text__textarea" type="text" name="attr_title" placeholder="Paladin Combo (Fast Blade + Riot Blade)"></textarea>
+            </div>
+        </div>
+
+        <div class="ability-controls">
+            <button type="action" class="ability-action-trigger" name="act_trigger">t</button>
+            <button type="action" class="ability-action" name="act_info">i</button>
+            <button type="action" class="ability-action" name="act_share">q</button>
+            <button type="action" name="act_rolldamage" style="display: none;">d</button>
+            <button type="action" name="act_rolldamagewithbonus" style="display: none;">d</button>
+            <button type="action" name="act_runcombo1" style="display: none;">d</button>
+            <button type="action" name="act_runcombo2" style="display: none;">d</button>
+            <button type="action" name="act_runcombo3" style="display: none;">d</button>
+        </div>
+
+        <div class="type expanded-view">
+            <span class="mini-title floatLeft">Type:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input italic adaptive--text__span" name="attr_type"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_type" placeholder="Primary, Physical"></textarea>
+            </div>
+        </div>
+        <div class="cost expanded-view">
+            <span class="mini-title floatLeft">Cost:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cost"></span>
+                <input class="mini-input adaptive--input__input" type="number" name="attr_cost" placeholder="X" />
+            </div>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span"  name="attr_resource"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_resource" placeholder="Conviction" />
+            </div>
+        </div>
+        <div class="condition expanded-view">
+            <span class="mini-title floatLeft">Condition:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_condition"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_condition" placeholder="Under the effect of Fang and Claw Bared / Wheel in Motion Ready"></textarea>
+            </div>
+        </div>
+        <div class="trigger expanded-view">
+            <span class="mini-title floatLeft">Trigger:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_trigger"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_trigger" placeholder="Immediately after an ability check for an ability that targets you"></textarea>
+            </div>
+        </div>
+        <div class="target expanded-view">
+            <span class="mini-title floatLeft">Target:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_target"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_target" placeholder="Single"></textarea>
+            </div>
+        </div>
+        <div class="range expanded-view">
+            <span class="mini-title floatLeft">Range:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_range"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_range" placeholder="1 square"></textarea>
+            </div>
+        </div>
+        <div class="check expanded-view">
+            <span class="mini-title floatLeft">Check:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input bold adaptive--input__span" name="attr_check"></span>
+                <input class="mini-input bold adaptive--input__input" type="text" name="attr_check" placeholder="d20 + STR" />
+            </div>
+        </div>
+        <div class="cr expanded-view">
+            <span class="mini-title floatLeft">CR:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_cr"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_cr" placeholder="Target's Defense" />
+            </div>
+        </div>
+    </div>
+
+    <div class="body list">
+        <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+        <input type="text" class="directHitFlag hidden" name="attr_directHit" placeholder="P" />
+        <input type="text" class="effectFlag hidden" name="attr_effectName" placeholder="P" />
+        <input type="text" class="limitationFlag hidden" name="attr_limitation" placeholder="P" />
+        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+
+        <div class="spacer expanded-view"></div>
+
+        <div class="base-effect expanded-view">
+            <span class="mini-title floatLeft">Base Effect:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_baseEffect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_baseEffect" placeholder="Deals 3 damage and inflicts Enmity on the target. Combo: Rage of Halone."></textarea>
+            </div>
+        </div>
+        <div class="ability-effect list expanded-view">
+            <div class="adaptive adaptive--input">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-title adaptive--input__span" name="attr_effectName"></span>
+                <span class="mini-title" name="attr_effectName">:</span>
+                <input class="mini-title adaptive--input__input" type="text" name="attr_effectName" placeholder="My Effect" />
+            </div>
+            <div class="adaptive adaptive--text">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_effect"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_effect" placeholder="Provides 1 HP Barrier"></textarea>
+            </div>
+        </div>
+        <div class="direct-hit expanded-view">
+            <span class="mini-title floatLeft">Direct Hit:</span>
+            <div class="adaptive adaptive--text floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--text__span" name="attr_directHit"></span>
+                <textarea class="mini-input adaptive--text__textarea" type="text" name="attr_directHit" placeholder="Deals an additional 2d6 damage"></textarea>
+            </div>
+        </div>
+        <div class="limitation expanded-view">
+            <span class="mini-title floatLeft">Limitation:</span>
+            <div class="adaptive adaptive--input floatLeft">
+                <input type="hidden" class="overrideSwitch" name="attr_repeatingOverride" />
+                <span class="mini-input adaptive--input__span" name="attr_limitation"></span>
+                <input class="mini-input adaptive--input__input" type="text" name="attr_limitation" placeholder="Once per phase." />
+            </div>
+        </div>
+
+        <span class="mini flagTitle expanded-view floatLeft">Stat for rolls (used for calculations):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_stat" title="Stat for rolls" placeholder="STR, DEX, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Hit dice type (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_hitType">
+            <option value="Hit">Hit</option>
+            <option value="Critical">Critical</option>
+            <option value="None">None</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Damage/Healing (used for display on rolls):</span>
+        <select class="overrideContent expanded-view mini-input" name="attr_damageType">
+            <option value="Damage">Damage</option>
+            <option value="Healing">Healing</option>
+            <option value="Defense">Defense</option>
+            <option value="Effect">Effect</option>
+        </select>
+        <span class="mini flagTitle expanded-view floatLeft">Hit die (used for rolls):</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_hitDie" title="Hit" placeholder="1d20cs20, 1d8, etc"/>
+        <span class="mini flagTitle expanded-view floatLeft">Base effect dice/value (used to calculate damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_baseValue" title="Base effect value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Direct Hit dice/value (used to calculate extra damage)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_dhValue" title="Direct Hit value" placeholder="5, 1d20 + 2, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Restoration value (used to restore own HP/MP/resource, include space)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_restore" title="Restore value" placeholder="5 MP, 5 HP, 5 Conviction, etc" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on self (used to automatically add effects)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectSelf" title="Effect names" placeholder="Astral Fire, Surging Tempest" />
+        <span class="mini flagTitle expanded-view floatLeft">Effects on target (used to add effect shortcut button)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_effectTarget" title="Effect names" placeholder="Major Arcana, Mage's Ballad" />
+        <span class="mini flagTitle expanded-view floatLeft">Combo name (used for easy chaining to next ability)</span>
+        <input type="text" class="overrideContent expanded-view mini-input" name="attr_combo" title="Combo value" placeholder="Storm's Path, Storm's Eye" />
+    </div>
+</div>                </fieldset>
+            </div>
+        </div>
         <div class="collapse-overlay collapsed-view "></div>
     </div>
 
@@ -2254,306 +4618,6 @@
 
 <!-- -----------------SHEET WORKERS (version 1.0.0)----------------- -->
 
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-// Assign override state
-
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        getSectionIDs('repeating_limit', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_limit_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_song', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_song_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_primary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_primary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_ninjutsu', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_ninjutsu_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_secondary', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_secondary_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_instant', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_instant_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-        getSectionIDs('repeating_technique', ids => {
-            const output = {};
-            ids.forEach(id => output[`repeating_technique_${id}_repeatingOverride`] = values.override);
-            setAttrs(output);
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
 
 <script type="text/worker">
 
@@ -4187,7 +6251,15 @@ this.export.engine = engine;
 // Build (version 1.0.0): Source/workers/common/abilitySections.js
 
 
-const abilitySections = ["limit", "song", "primary", "ninjutsu", "secondary", "instant", "technique"];
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
 
 this.export.abilitySections = abilitySections;
 
@@ -5519,12 +7591,20 @@ const SheetSetup = function() {
             if (sheet.abilities) {
                 engine.logd("Preparing abilities");
                 for (let section of Object.entries(sheet.abilities)) {
-                    for (let ability of section[1]) {
+                    for (let index in section[1]) {
+                        let ability = section[1][index];
+                        let sectionName;
+                        if (section[0] === "limit") {
+                            sectionName = section[0];
+                        } else {
+                            let column = (index % 3) + 1;
+                            sectionName = `${section[0]}${column}`;
+                        }
                         let id = engine.generateId();
                         for (let entry of Object.entries(ability)) {
-                            attributes[`repeating_${section[0]}_${id}_${entry[0]}`] = entry[1];
+                            attributes[`repeating_${sectionName}_${id}_${entry[0]}`] = entry[1];
                         }
-                        attributes[`repeating_${section[0]}_${id}_repeatingOverride`] = "auto";
+                        attributes[`repeating_${sectionName}_${id}_repeatingOverride`] = "auto";
                     }
                 }
             }
@@ -5834,6 +7914,254 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file tabs
 
 const tabsImports = new (function() {
@@ -5880,6 +8208,55 @@ on("sheet:opened", () => {
             resource: values.resource ?? "",
             resource2: values.resource2 ?? "none"
         });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
     });
 });
 
