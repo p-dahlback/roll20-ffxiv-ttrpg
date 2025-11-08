@@ -372,15 +372,17 @@ const AbilityRolls = function() {
                     return;
                 }
             }
-            getSectionIDs(`repeating_${section}`, ids => {
-                const attributes = ids.map((element) => `repeating_${section}_${element}_title`);
+            let rawSection = section.replace(/[\d]+/, "");
+            let sections = [1, 2, 3].map(index => `${rawSection}${index}`);
+            engine.allSectionIDs(sections, sectionIds => {
+                const attributes = sectionIds.map((element) => `${element}_title`);
                 getAttrs(attributes, values => {
-                    for (let i = 0; i < ids.length; i++) {
-                        const id = ids[i];
+                    for (let i = 0; i < sectionIds.length; i++) {
+                        const sectionId = sectionIds[i];
                         const attribute = attributes[i];
                         if (values[attribute].trim().toLowerCase() == abilityName) {
                             const triggerEvent = {
-                                sourceAttribute: `repeating_${section}_${id}_runcomboFrom_${rowId}`
+                                sourceAttribute: `${sectionId}_runcomboFrom_${rowId}`
                             };
                             engine.logd("Activating " + abilityName);
                             this.roll(triggerEvent);

@@ -94,6 +94,26 @@ const WorkerEngine = function(logger) {
     this.logd = function(value) {
         this.logger.d(value);
     };
+
+    this.allSectionIDs = function(sections, completion) {
+        let length = sections.length;
+        let index = 0;
+        var sectionsWithIds = [];
+
+        let recursionBlock = function(ids) {
+            let namedIds = ids.map(id => `repeating_${sections[index]}_${id}`);
+            sectionsWithIds = sectionsWithIds.concat(namedIds);
+            index = index + 1;
+
+            if (index >= length) {
+                completion(sectionsWithIds);
+            } else {
+                getSectionIDs(sections[index], recursionBlock);
+            }
+        };
+
+        getSectionIDs(sections[0], recursionBlock);
+    };
 };
 
 const engine = new WorkerEngine(new Logger(workerName, true));
