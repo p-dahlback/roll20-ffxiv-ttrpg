@@ -213,6 +213,17 @@ const FFXIVTurnOrder = (() => {
         postSummary(tokenCharacterForTurn(turn), summary, "End of turn");
     };
 
+    const performEndOfPhase = (campaign) => {
+        let turnOrder = JSON.parse(campaign.get("turnorder") ?? "[]");
+        for (let turn of turnOrder) {
+            if (turn.custom) {
+                continue;
+            }
+            let summary = manageEffectsOnTurnChange(turn, ["phase"], "End of phase", true);
+            postSummary(tokenCharacterForTurn(turn), summary, "End of phase");
+        }
+    };
+
     const postSummary = (tokenCharacter, summary, turnChange, forcePost=false) => {
         if (!summary && !forcePost) {
             return;
@@ -270,7 +281,7 @@ const FFXIVTurnOrder = (() => {
             logger.d("Mod configured to block all activity; not performing any actions.");
             return false;
         }
-        
+
         if (turnOrder.length > previousTurnOrder.length) {
             logger.d("Turn added; not performing any actions.");
             logger.d("----------");
@@ -394,6 +405,7 @@ const FFXIVTurnOrder = (() => {
                         `<li><code>--end</code> - blocks any turn management until the Turn Order has been rendered empty.</li>` +
                         `<li><code>--force</code> - immediately carries out turn management on the current first in turn order.</li>` +
                         `<li><code>--fx X</code> - enables/disables the effect management part of turn management. 1 or on to enable, 0 or off to disable.</li>` +
+                        `<li><code>--phase</code> - activates a phase shift, which expires phase-dependent effects.</li>` +
                         `<li><code>--recover X</code> - enables/disables the resource recovery part of turn management. 1 or on to enable. 0 or off to disable.</li>` +
                         `<li><code>--reset</code> - resets the configuration to standard: no blocks on turn management, all subsystems enabled.</li>` +
                         `<li><code>--start</code> - removes any blocks on turn management and runs <code>--force</code> on the current first in turn order. For effect management, this will be treated as the start of the encounter.</li>` +
@@ -470,6 +482,13 @@ const FFXIVTurnOrder = (() => {
                         }
                         return;
                     }
+                    break;
+                case "phase":
+                    logger.d("Triggering phase shift");
+                    config.blockUntilEmpty = false;
+                    config.blockTurn = 0;
+                    config.block = false;
+                    performEndOfPhase(Campaign());
                     break;
                 case "recover":
                     if (parts[1] === "1" || parts[1] === "on") {
