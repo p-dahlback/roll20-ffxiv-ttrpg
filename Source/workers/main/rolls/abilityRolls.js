@@ -71,7 +71,7 @@ const AbilityRolls = function() {
             "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
             "advantage", "character_name",
 
-            "whisper"
+            "whisper", "whisperExemptAbilities"
         ], (values, effects) => {
             // Perform roll
             const title = values[`repeating_${section}_${rowId}_title`];
@@ -143,7 +143,11 @@ const AbilityRolls = function() {
             attributes[`repeating_${section}_${rowId}_currentRoll`] = "";
             setAttrs(attributes);
 
-            let rollTemplate = `${values["whisper"]}&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
+            let whisper = values.whisper;
+            if (values.whisper && values.whisperExemptAbilities === "on") {
+                whisper = "";
+            }
+            let rollTemplate = `${whisper}&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
                 `{{type=${typeString}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}} {{trigger=${triggerString}}} ` +
                 `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
@@ -217,7 +221,7 @@ const AbilityRolls = function() {
 
             "character_name", "sheet_type",
 
-            "whisper"
+            "whisper", "whisperExemptAbilities"
         ], (values, effects) => {
             const name = values[`repeating_${section}_${rowId}_title`];
             const type = values[`repeating_${section}_${rowId}_type`];
@@ -313,8 +317,12 @@ const AbilityRolls = function() {
                 }
             }
 
+            let whisper = values.whisper;
+            if (values.whisper && values.whisperExemptAbilities === "on") {
+                whisper = "";
+            }
             // Roll damage
-            let rollTemplate = `${values["whisper"]}&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
+            let rollTemplate = `${whisper}&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
                 `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
                 `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;

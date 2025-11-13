@@ -90,9 +90,20 @@
 
     <div class="override overrideContent fancy lowkey">
         <h3>Roll visibility</h3>
-        <select name="attr_whisper" style="margin-top: 8px;">
-            <option value="">Public</option>
-            <option value="/w gm ">Whisper to GM</option>
-        </select>
+        
+        <div class="vertical">
+            <select name="attr_whisper" style="margin-top: 8px;">
+                <option value="">Public</option>
+                <option value="/w gm ">Whisper to GM</option>
+            </select>
+
+            <input type="hidden" class="whisperSwitch" name="attr_whisper" />
+            <div class="whisperContent">
+                <span class="mini-title">Always show Ability Rolls:</span>
+                <div class="sheet-checkbox-container">
+                    <input class="floatLeft sheet-checkbox" style="position: absolute;" type="checkbox" name="attr_whisperExemptAbilities" /><span class="sheet-checkbox-before"></span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

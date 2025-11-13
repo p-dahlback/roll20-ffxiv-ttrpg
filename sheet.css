@@ -1789,6 +1789,7 @@ textarea {
 
 .overrideContent,
 .turnOrderContent,
+.whisperContent,
 .flagTitle {
   display: none;
 }
@@ -1799,7 +1800,8 @@ textarea {
   background-color: var(--sheet-override-field-color);
 }
 
-.turnOrderSwitch[value="roll"] ~ .turnOrderContent {
+.turnOrderSwitch[value="roll"] ~ .turnOrderContent,
+.whisperSwitch[value="/w gm "] ~ .whisperContent {
   display: inline-block;
 }
 
