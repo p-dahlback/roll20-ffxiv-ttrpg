@@ -258,21 +258,19 @@ const FFXIVTurnOrder = (() => {
     const validateTurnOrder = (turnOrder, previousTurnOrder) => {
         let firstInTurn = turnOrder.length > 0 ? turnOrder[0] : { id: "-1" };
         let previousFirstInTurn = previousTurnOrder.length > 0 ? previousTurnOrder[0] : { id: "-1" };
-        
+
         // Check prerequisites before proceeding
+        if (turnOrder.length === 0) {
+            logger.d("Turn order is empty; no action to perform");
+            config.blockUntilEmpty = false;
+            return false;
+        }
+
         if (config.block) {
             logger.d("Mod configured to block all activity; not performing any actions.");
             return false;
         }
-        if (config.blockUntilEmpty) {
-            logger.d("Mod configured to block all activity until the turn order is emptied");
-            if (turnOrder.length === 0) {
-                logger.d("Empty turn order; lifting block");
-                config.blockUntilEmpty = false;
-            }
-            return false;
-        }
-
+        
         if (turnOrder.length > previousTurnOrder.length) {
             logger.d("Turn added; not performing any actions.");
             logger.d("----------");
