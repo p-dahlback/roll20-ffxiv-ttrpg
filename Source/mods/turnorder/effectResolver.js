@@ -77,14 +77,14 @@ const EffectResolver = function(engine, removeEffects) {
     };
     
     this.executeEffect = function(state, effect) {
-        switch (effect.adjustedName) {
+        switch (this.searchValue(effect)) {
             case "aetherial_focus": {
                 this.engine.set({
                     magicPoints: Math.max(state.magicPoints_max + 1, 6)
                 });
                 return `Executed <b>Aetherial Focus</b>, giving 1 additional MP (6/5)`;
             }
-            case "dot": {
+            case "dot", "dot(x)": {
                 var damage = unpackNaN(effect.value);
                 if (damage < 1) {
                     this.engine.logi("Unable to perform dot(x); no value given");
@@ -141,7 +141,7 @@ const EffectResolver = function(engine, removeEffects) {
 
                 return "Executed <b>Precision Opener</b>, +1 advantage die on one ability roll (valid until end of turn)";
             }
-            case "regen": {
+            case "regen", "regen(x)": {
                 var healing = unpackNaN(state.value);
                 if (healing < 1) {
                     this.engine.logi("Unable to perform regen(x); no value given");
@@ -154,15 +154,16 @@ const EffectResolver = function(engine, removeEffects) {
                 return `Executed <b>Regen (${state.value})</b> (${state.hitPoints} to ${newValue}/${state.hitPoints_max} HP)`;
             }
             default:
+                this.engine.logi("Unrecognized effect " + JSON.stringify(effect.adjustedName));
                 return "";
         }
     };
 
     this.isExecutable = function(effect, expiries) {
-        switch (effect.adjustedName) {
+        switch (this.searchValue(effect)) {
             case "aetherial_focus":
                 return expiries.includes("encounterstart");
-            case "dot":
+            case "dot", "dot(x)":
                 return expiries.includes("step");
             case "improved_padding":
                 return expiries.includes("stepstart");
@@ -170,10 +171,20 @@ const EffectResolver = function(engine, removeEffects) {
                 return expiries.includes("encounterstart");
             case "precision_opener":
                 return expiries.includes("encounterstart");
-            case "regen":
+            case "regen", "regen(x)":
                 return expiries.includes("step");
             default:
                 return false;
+        }
+    };
+
+    this.searchValue = function(effect) {
+        switch (effect.data.maskedType) {
+            case "augment":
+            case "item":
+                return effect.adjustedName;
+            default:
+                return effect.data.maskedType;
         }
     };
 };

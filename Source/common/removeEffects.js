@@ -41,7 +41,7 @@ const RemoveEffects = function(customEngine) {
             let normalizedName = name.toLowerCase();
             let normalizedCondition = condition.toLowerCase();
             let specialType = (effect.specialType ?? "").toLowerCase();
-            let maskedType = effect.data.maskedType.toLowerCase();
+            let maskedType = (effect.data.maskedType ?? "").toLowerCase();
             let value = (effect.value ?? "").toLowerCase();
             let isReadyType = effect.type == "ready(x)";
 

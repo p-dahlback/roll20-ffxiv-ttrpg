@@ -313,7 +313,30 @@ const AddEffects = function(customEngine, customRemove) {
                     this.engine().remove(replacable);
                 }
             }
+        } else if (effect.data.duplicate == "bigger") {
+            var didReplace = false;
+            var hadDuplicate = false;
+            for (let replacable of state.existingEffects.effects) {
+                if (
+                    replacable.type === effect.data.type
+                    && replacable.specialType === effect.data.specialType
+                    && replacable.source === effect.source
+                ) {
+                    hadDuplicate = true;
+                    if (effect.value > replacable.value) {
+                        summaries.push(`Reactivated ${effect.data.specialType ?? effect.data.type}`);
+                        this.engine().remove(replacable);
+                        didReplace = true;
+                    }
+                }
+            }
+            if (hadDuplicate && !didReplace) {
+                // Couldn't replace - the effect was blocked.
+                this.engine.logd("Skipping effect; already an identical or greater effect from the same source");
+                return { result: false, summaries: [] };
+            }
         }
+
         return { result: true, summaries: summaries };
     };
 
