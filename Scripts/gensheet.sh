@@ -7,9 +7,19 @@ baseFile=$2
 sheetWorkerDirectory=$3
 
 function contains() {
-    # $1 - List
-    # $2 - Item to check
-    [[ $1 =~ (^|[[:space:]])$2($|[[:space:]]) ]] && echo "1" || echo "0"
+    # $1 - Item to check
+    # >= S2 - Elements in array
+    search=$1
+    shift 1
+
+    for i in "$@"
+    do
+        if [ "$i" = "$search" ] ; then
+            echo "1"
+            return
+        fi
+    done
+    echo "0"
 }
 
 function readImports () {
@@ -28,8 +38,7 @@ function readImports () {
     IFS=$'\n' importStatements=($result)
     set +o noglob 
 
-    declare -a importFiles
-    latestIndex=0
+    declare -a importFiles=()
     for import in "${importStatements[@]}"
     do
         cleanImport=$(sed "s/.*build:import \(.*\)\.html.*/\1/" <<< $import)
@@ -38,15 +47,14 @@ function readImports () {
             continue
         fi
         fullImport="$sourceDirectory/$cleanImport.html"
-        containsResult=$(contains $importFiles "$fullImport")
+        containsResult=$(contains "$fullImport" "${importFiles[@]}")
         if [ $containsResult = "1" ]; then
-            echo "Skipping $import; already handled"
+            echo "Skipping $fullImport; already handled"
             continue
         else
             echo "Importing $fullImport for $3"
             sed -i "/build:import $cleanImport.html/r$fullImport" $2
-            importFiles[$latestIndex]="$fullImport"
-            latestIndex=$((latestIndex+1))
+            importFiles+=("$fullImport")
         fi
     done
 
