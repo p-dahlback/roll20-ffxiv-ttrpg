@@ -126,6 +126,7 @@
 <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
 
 <!-- Profile page -->
+<!-- build:import profile.html -->
 <div class="character" spellcheck="false">
     <div class="grid fancy lowkey fill">
 
@@ -336,9 +337,12 @@
 
             <div class="misc-stat fancy lowkey">
                 <div class="flex horizontal tight floatLeft">
+                    <input type="hidden" class="turnOrderSwitch" name="attr_turnOrderStyle">
+
                     <span class="header bold medium">Turn Order</span>
                     <input class="stat medium" name="attr_turnOrder" type="number" min="0" value="1">
-                    <button class="turn-order" type="roll" value="&{template:roll} {{title=Turn Order}} {{roll=[[@{turnOrder} &{tracker}]]}}"></button>
+                    <button class="turn-order reverseTurnOrderContent" name="act_applyTurnOrder" type="action">Add</button>
+                    <button class="turn-order roll turnOrderContent" name="act_rollTurnOrder" type="action"></button>
                 </div>
 
                 <div class="fortune fancy lowkey flex horizontal tight floatRight">
@@ -482,7 +486,6 @@
         </div>
     </div>
 </div>
-
 <!-- Abilities page -->
 
 <div class="char-abilities" spellcheck="false">
@@ -4283,7 +4286,7 @@
 </div>
 
 <!-- Items page -->
-
+<!-- build:import items.html -->
 <div class="items" spellcheck="false">
 
     <div class="ability-top">
@@ -4369,8 +4372,11 @@
         </div>
     </div>
 </div>
-
+<!-- Settings page -->
+<!-- build:import settings.html -->
 <div class="char-settings" spellcheck="false">
+    <input type="hidden" class="overrideSwitch" name="attr_override" />
+
     <div class="grid">
         <div class="entry fancy lowkey">
             <h3>Character type</h3>
@@ -4437,6 +4443,18 @@
                 <option value="NPC">NPC (initial setup only)</option>
             </select>
         </div>
+
+
+        <div class="entry fancy lowkey">
+            <h3>Turn order type</h3>
+            <p class="medium" style="margin-top: 8px;">Players decide on their own turn order within the adventurer phase by setting a specific value.</p>
+            <p class="medium">For enemies, you can randomly distribute their turns within the enemy phase.</p>
+            <p class="medium">"Roll" is the default style for Enemies.</p>
+            <select name="attr_turnOrderStyle" style="margin-top: 8px;">
+                <option value="set">Set to value</option>
+                <option value="roll">Roll d20 + value</option>
+            </select>
+        </div>
     </div>
 
     <div class="override fancy lowkey">
@@ -4445,13 +4463,21 @@
         <p class="medium">Mess with at your own risk!</p>
         <input type="text" class="large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" value="" />
     </div>
-</div>
 
+    <div class="override overrideContent fancy lowkey">
+        <h3>Roll visibility</h3>
+        <select name="attr_whisper" style="margin-top: 8px;">
+            <option value="">Public</option>
+            <option value="/w gm ">Whisper to GM</option>
+        </select>
+    </div>
+</div> 
 <div class="attribution list">
     <span class="mini">FXIV TTRPG Character Sheet for Roll20. Fan-made, no association with Square Enix.</span>
     <span class="mini">Custom borders and icons for jobs, abilities and effects are property of Square Enix Ltd.</span>
 </div>
 
+<!-- build:import rolltemplates.html -->
 <rolltemplate class="sheet-rolltemplate-roll">
     <div class="sheet-template-container">
         <div class="sheet-header">
@@ -4785,195 +4811,6 @@ on("sheet:opened", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file attributes
 
 const attributesImports = new (function() {
@@ -5088,6 +4925,55 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
             newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
     });
 });
 
@@ -5423,7 +5309,9 @@ const AbilityInfo = function() {
             `repeating_${section}_${rowId}_directHit`,
             `repeating_${section}_${rowId}_effectName`,
             `repeating_${section}_${rowId}_effect`,
-            `repeating_${section}_${rowId}_limitation`
+            `repeating_${section}_${rowId}_limitation`,
+
+            `whisper`
         ], values => {
             const icon = values[`repeating_${section}_${rowId}_icon`];
             const title = values[`repeating_${section}_${rowId}_title`];
@@ -5447,7 +5335,7 @@ const AbilityInfo = function() {
                 resourceType = "";
             }
 
-            startRoll(`&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
+            startRoll(`${values["whisper"]}&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
                 `{{typeTitle=${type[0]}}} {{type=${type[1]}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}}` +
                 `{{triggerTitle=${trigger[0]}}} {{trigger=${trigger[1]}}} {{targetTitle=${target[0]}}} {{target=${target[1]}}}` +
                 `{{rangeTitle=${range[0]}}} {{range=${range[1]}}} {{checkTitle=${check[0]}}} {{check=${check[1]}}}` +
@@ -5859,7 +5747,9 @@ const AbilityRolls = function() {
 
             "strDisplay", "dexDisplay", "vitDisplay", "intDisplay", "mndDisplay",
             "magicPoints", "magicPoints_max", "resourceValue", "resourceValue_max",
-            "advantage", "character_name"
+            "advantage", "character_name",
+
+            "whisper"
         ], (values, effects) => {
             // Perform roll
             const title = values[`repeating_${section}_${rowId}_title`];
@@ -5931,7 +5821,7 @@ const AbilityRolls = function() {
             attributes[`repeating_${section}_${rowId}_currentRoll`] = "";
             setAttrs(attributes);
 
-            let rollTemplate = `&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
+            let rollTemplate = `${values["whisper"]}&{template:hit} {{icon=[icon](${icon})}} {{name=${title}}} ` +
                 `{{type=${typeString}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}} {{trigger=${triggerString}}} ` +
                 `{{hitTitle=${hitTitle}}} {{hit=${hitDefinition}}} {{cr=${crString}}} {{baseEffect=${baseEffect}}} ` +
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHit}}} {{effectTitle=${effectName}}} {{effect=${effect}}}` +
@@ -6003,7 +5893,9 @@ const AbilityRolls = function() {
 
             "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
 
-            "character_name", "sheet_type"
+            "character_name", "sheet_type",
+
+            "whisper"
         ], (values, effects) => {
             const name = values[`repeating_${section}_${rowId}_title`];
             const type = values[`repeating_${section}_${rowId}_type`];
@@ -6100,7 +5992,7 @@ const AbilityRolls = function() {
             }
 
             // Roll damage
-            let rollTemplate = `&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
+            let rollTemplate = `${values["whisper"]}&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
                 `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
                 `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
                 `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
@@ -6230,6 +6122,40 @@ const abilityRolls = new AbilityRolls();
 this.export.AbilityRolls = AbilityRolls;
 this.export.abilityRolls = abilityRolls;
 
+// Build (version 1.0.0): Source/workers/main/rolls/turnorder.js
+
+
+const TurnOrder = function() {
+
+    this.apply = function() {
+        engine.get([
+            "turnOrder", "whisper"
+        ], (values) => {
+            let rollTemplate = `${values.whisper}&{template:roll} {{title=Turn Order}} {{roll=[[${values.turnOrder} &{tracker}]]}}`;
+            engine.logd(`Rolling turn order ${rollTemplate}`);
+            startRoll(rollTemplate, results => {
+                finishRoll(results.rollId);
+            });
+        });
+    };
+
+    this.roll = function() {
+        engine.get([
+            "turnOrder", "whisper"
+        ], (values) => {
+            let rollTemplate = `${values.whisper}&{template:roll} {{title=Turn Order}} {{roll=[[d20 + ${values.turnOrder} &{tracker}]]}}`;
+            engine.logd(`Rolling turn order ${rollTemplate}`);
+            startRoll(rollTemplate, results => {
+                finishRoll(results.rollId);
+            });
+        });
+    };
+};
+
+const turnOrder = new TurnOrder();
+this.export.TurnOrder = TurnOrder;
+this.export.turnOrder = turnOrder;
+
 // Build (version 1.0.0): Source/workers/main/rolls/statRolls.js
 
 
@@ -6237,13 +6163,14 @@ const StatRoll = function() {
 
     this.roll = function(stat, statName) {
         engine.getAttrsAndEffects([
-            "d20"
+            "d20", "whisper"
         ], (values, effects) => {
             var roll = `${values.d20} + @{${stat}}`;
             roll = rollModifiers.addEffectsToHitRoll(effects, roll, "stat");
 
-            engine.logd(`Rolling stat &{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`);
-            startRoll(`&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`, results => {
+            let rollTemplate = `${values["whisper"]}&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`;
+            engine.logd(`Rolling stat ${rollTemplate}`);
+            startRoll(rollTemplate, results => {
                 const rollResult = results.results.roll.result;
                 finishRoll(results.rollId, {
                     roll: Math.max(rollResult, 0)
@@ -8186,6 +8113,17 @@ on("change:job", () => {
     });
 });
 
+on("change:team", () => {
+    getAttrs(["team"], values => {
+        if (values.team === "enemy") {
+            // By default enemies add themselves to turn order by random roll
+            setAttrs({
+                turnOrderStyle: "roll"
+            });
+        }
+    });
+});
+
 // MP Max
 on("change:magicPoints", () => {
     imports.engine.getAttrsAndEffects(["magicPoints", "magicPoints_max"], (values, effects) => {
@@ -8223,6 +8161,14 @@ on("clicked:rollInt", () => {
 
 on("clicked:rollMnd", () => {
     imports.statRoll.roll("mndEffective", "Mind");
+});
+
+on("clicked:applyTurnOrder", () => {
+    imports.turnOrder.apply();
+});
+
+on("clicked:rollTurnOrder", () => {
+    imports.turnOrder.roll();
 });
 
 // Ability rolls
@@ -8283,6 +8229,146 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
 });
 
 </script>

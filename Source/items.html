@@ -1,0 +1,85 @@
+<div class="items" spellcheck="false">
+
+    <div class="ability-top">
+        <button type="action" class="floatRight" name="act_expandAllItems">Expand All</button>
+        <button type="action" class="floatRight" name="act_collapseAllItems">Collapse All</button>
+    </div>
+
+    <div class="grid">
+        <div class="left fancy lowkey section list">
+
+            <!-- Title List -->
+
+            <h3 class="small colored-in">Titles</h3> 
+            <fieldset class="repeating_titles">
+                <div class="trait list">
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+                    <div class="grid3 item-header">
+                        <input class="medium" type="text" name="attr_title" placeholder="Enter the title name"></span>
+                        <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                    </div>
+                    <div class="item-body list expanded-view">
+                        <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The effect provided by the Title"></textarea>
+                        </div>
+                        <div class="equip-container">
+                            <button type="action" class="select floatRight" name="act_select">Equip</button>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Minion List -->
+
+            <h3 class="small colored-in">Minions</h3>
+            <fieldset class="repeating_minions">
+                <div class="trait list">
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+                    <div class="grid3 item-header">
+                        <input class="medium" type="text" name="attr_title" placeholder="Enter the minion's name"></span>
+                        <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                    </div>
+                    <div class="item-body list expanded-view">
+                        <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The effect provided by the Minion"></textarea>
+                        </div>
+                        <div class="equip-container">
+                            <button type="action" class="select floatRight" name="act_select">Equip</button>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- Item List -->
+
+        <div class="right fancy lowkey section list vertical-span2">
+            <h3 class="small colored-in">Items</h3>
+            <fieldset class="repeating_items">
+
+                <div class="trait list">
+                    <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+                    <div class="grid4 item-header">
+                        <input class="medium" name="attr_title" type="text" placeholder="Item name" />
+                        <input class="medium stat" name="attr_count" type="number" value="1" min="0" />
+                        <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                        <button type="action" class="ability-action" name="act_info">i</button>
+                    </div>
+                    <div class="item-body list expanded-view">
+                        <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                        <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                            <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                            <textarea class="mini-input adaptive--text__textarea" name="attr_effect" placeholder="The item's effect"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>

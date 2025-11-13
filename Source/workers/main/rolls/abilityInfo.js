@@ -28,7 +28,9 @@ const AbilityInfo = function() {
             `repeating_${section}_${rowId}_directHit`,
             `repeating_${section}_${rowId}_effectName`,
             `repeating_${section}_${rowId}_effect`,
-            `repeating_${section}_${rowId}_limitation`
+            `repeating_${section}_${rowId}_limitation`,
+
+            `whisper`
         ], values => {
             const icon = values[`repeating_${section}_${rowId}_icon`];
             const title = values[`repeating_${section}_${rowId}_title`];
@@ -52,7 +54,7 @@ const AbilityInfo = function() {
                 resourceType = "";
             }
 
-            startRoll(`&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
+            startRoll(`${values["whisper"]}&{template:ability} {{icon=[icon](${icon})}} {{name=${title}}} {{costTitle=${cost[0]}}} {{cost=${cost[1]}}} {{resourceType=${resourceType}}}` +
                 `{{typeTitle=${type[0]}}} {{type=${type[1]}}} {{conditionTitle=${condition[0]}}} {{condition=${condition[1]}}}` +
                 `{{triggerTitle=${trigger[0]}}} {{trigger=${trigger[1]}}} {{targetTitle=${target[0]}}} {{target=${target[1]}}}` +
                 `{{rangeTitle=${range[0]}}} {{range=${range[1]}}} {{checkTitle=${check[0]}}} {{check=${check[1]}}}` +

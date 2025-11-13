@@ -1,0 +1,98 @@
+<div class="char-settings" spellcheck="false">
+    <input type="hidden" class="overrideSwitch" name="attr_override" />
+
+    <div class="grid">
+        <div class="entry fancy lowkey">
+            <h3>Character type</h3>
+            <p class="medium" style="margin-top: 8px;">Determines if calculations use the selected token or the character sheet.</p>
+            <select name="attr_sheet_type">
+                <option value="generic">Generic</option>
+                <option value="unique">Unique</option>
+            </select>
+        </div>
+
+        <div class="entry fancy lowkey">
+            <h3>Team</h3>
+            <p class="medium" style="margin-top: 8px;">Determines at which step in turn order the character regenerates MP.</p>
+            <select name="attr_team">
+                <option value="">--Select--</option>
+                <option value="adventurer">Adventurer</option>
+                <option value="enemy">Enemy</option>
+            </select>
+        </div>
+
+        <div class="entry fancy lowkey">
+            <h3>Job selector</h3>
+            <p class="medium" style="margin-top: 8px;">Assigns the job, with automatically added actions (only some jobs supported)</p>
+            <select name="attr_job">
+                <option value="">--Select--</option>
+                <option value="DRK">Dark Knight</option>
+                <!--
+                <option value="GNB">Gunbreaker</option>
+                <option value="PLD">Paladin</option>
+                !-->
+                <option value="WAR">Warrior</option>
+                <hr />
+                <option value="AST">Astrologian</option>
+                <!--
+                <option value="SGE">Sage</option>
+                <option value="SCH">Scholar</option>
+                !-->
+                <option value="WHM">White Mage</option>
+                <hr />
+                <!--
+                <option value="DRG">Dragoon</option>
+                <option value="MNK">Monk</option>
+                <option value="NIN">Ninja</option>
+                <option value="RPR">Reaper</option>
+                <option value="SAM">Samurai</option>
+                <option value="VIP">Viper</option>
+                <hr />
+                !-->
+                <option value="BRD">Bard</option>
+                <!--
+                <option value="DNC">Dancer</option>
+                <option value="MCH">Machinist</option>
+                <hr />
+                !-->
+                <option value="BLM">Black Mage</option>
+                <!--
+                <option value="PCT">Pictomancer</option>
+                <option value="RDM">Red Mage</option>
+                <option value="SMN">Summoner</option>
+                <hr />
+                <option value="BLU">Blue Mage</option>
+                -->
+                <hr />
+                <option value="NPC">NPC (initial setup only)</option>
+            </select>
+        </div>
+
+
+        <div class="entry fancy lowkey">
+            <h3>Turn order type</h3>
+            <p class="medium" style="margin-top: 8px;">Players decide on their own turn order within the adventurer phase by setting a specific value.</p>
+            <p class="medium">For enemies, you can randomly distribute their turns within the enemy phase.</p>
+            <p class="medium">"Roll" is the default style for Enemies.</p>
+            <select name="attr_turnOrderStyle" style="margin-top: 8px;">
+                <option value="set">Set to value</option>
+                <option value="roll">Roll d20 + value</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="override fancy lowkey">
+        <h3>Manual Override</h3>
+        <p class="medium" style="margin-top: 8px;">Enables manual input for things the player would normally not mess with, things used mostly during initial sheet creation.</p>
+        <p class="medium">Mess with at your own risk!</p>
+        <input type="text" class="large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" value="" />
+    </div>
+
+    <div class="override overrideContent fancy lowkey">
+        <h3>Roll visibility</h3>
+        <select name="attr_whisper" style="margin-top: 8px;">
+            <option value="">Public</option>
+            <option value="/w gm ">Whisper to GM</option>
+        </select>
+    </div>
+</div>

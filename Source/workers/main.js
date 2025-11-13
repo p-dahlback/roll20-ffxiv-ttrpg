@@ -28,6 +28,17 @@ on("change:job", () => {
     });
 });
 
+on("change:team", () => {
+    getAttrs(["team"], values => {
+        if (values.team === "enemy") {
+            // By default enemies add themselves to turn order by random roll
+            setAttrs({
+                turnOrderStyle: "roll"
+            });
+        }
+    });
+});
+
 // MP Max
 on("change:magicPoints", () => {
     imports.engine.getAttrsAndEffects(["magicPoints", "magicPoints_max"], (values, effects) => {
@@ -65,6 +76,14 @@ on("clicked:rollInt", () => {
 
 on("clicked:rollMnd", () => {
     imports.statRoll.roll("mndEffective", "Mind");
+});
+
+on("clicked:applyTurnOrder", () => {
+    imports.turnOrder.apply();
+});
+
+on("clicked:rollTurnOrder", () => {
+    imports.turnOrder.roll();
 });
 
 // Ability rolls

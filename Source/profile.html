@@ -1,0 +1,359 @@
+<div class="character" spellcheck="false">
+    <div class="grid fancy lowkey fill">
+
+        <!-- Profile page, Level and Profile -->
+
+        <div class="left section">
+            <div class="basic-info fancy horizontal tight">
+                <div class="level flex horizontal tight">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="header large bold">LV</span>
+                    <input class="header large bold" name="attr_level" type="number" value="30">
+                </div>
+                <div class="job vertical">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="header medium bold">Role / Job</span>
+                    <input class="job-input header medium" name="attr_role" type="text">
+                </div>
+            </div>
+        
+            <div class="image-container section">
+                <img class="image" name="attr_character_avatar">
+                <div class="fancy overlay"></div>
+            </div>
+
+            <!-- Profile -->
+
+            <div class="profile section list">
+                <h3 class="small">Profile</h3>
+
+                <!-- Origin  -->
+                <div class="origin">
+                    <span class="header medium bold floatLeft" style="margin-right:8px;">Origin:</span>
+                    <div class="adaptive adaptive--text floatLeft">
+                        <span class="mini-input adaptive--text__span"  name="attr_origin"></span>
+                        <textarea class="mini-input adaptive--text__textarea" name="attr_origin" placeholder="Ex. Survivor, Urbanite"></textarea>
+                    </div>
+                </div>
+
+                <!-- Bonds  -->
+                <div class="bonds list">
+                    <span class="header medium bold">Bonds:</span>
+                    <div class="adaptive adaptive--text floatLeft">
+                        <span class="mini-input adaptive--text__span"  name="attr_bonds"></span>
+                        <textarea class="mini-input adaptive--text__textarea" name="attr_bonds" placeholder="Ex. Debt, Momodi Modi"></textarea>
+                    </div>
+                </div>
+
+                <hr class="small-hr" />
+
+                <!-- Title  -->
+
+                <div class="title">
+                    <span class="header medium bold">Title:</span>
+                    <span class="medium" style="margin-left: 8px;" name="attr_selectedTitle">Select a title from Inventory</span>
+                </div>
+                <div class="title-effect list">
+                    <span class="header medium bold">Effect: </span>
+                    <span class="medium" name="attr_selectedTitleEffect"></span>
+                </div>
+
+                <hr class="small-hr" />
+
+                <!-- Minion -->
+                 
+                <div class="minion">
+                    <span class="header medium bold">Minion:</span> 
+                    <span class="medium" style="margin-left: 8px;" name="attr_selectedMinion">Select a minion from Inventory</span>
+                </div>
+                <div class="minion-effect list">
+                    <span class="header medium bold">Effect: </span>
+                    <span class="medium" name="attr_selectedMinionEffect"></span>
+                </div>
+            </div>
+
+            <!-- Traits -->
+
+            <div class="traits fancy lowkey section">
+                <div style="height: 27px; padding-bottom: 4px;">
+                    <span class="small colored-in floatLeft">Traits</span>
+                    <button type="action" class="floatRight" name="act_expandAllTraits">Expand All</button>
+                    <button type="action" class="floatRight" name="act_collapseAllTraits">Collapse All</button>
+                </div>
+                <fieldset class="repeating_traits">
+                    <div class="trait list">
+                        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+                        <div class="item-header">
+                            <input class="editSwitch" type="hidden" name="attr_editable" />
+                            <input type="hidden" class="trait-icon-switch" name="attr_icon" placeholder="I" />
+                            <img class="trait-icon" name="attr_icon" />
+                            <span class="header medium bold">Trait:</span>
+                            <input class="medium editSwitchBlocked" type="text" name="attr_title" placeholder="Title"></span>
+                            <button type="action" class="ability-action" style="margin-left: auto;" name="act_share">q</button>
+                            <button type="action" class="ability-action" name="act_info">i</button>
+                        </div>
+                        <div class="item-body list expanded-view">
+                            <span class="header medium bold" style="margin-top: 4px;">Effect:</span>
+                            <div class="adaptive adaptive--text floatLeft" style="margin-bottom: 8px;">
+                                <input class="editSwitch" type="hidden" name="attr_editable" />
+                                <span class="mini-input adaptive--text__span"  name="attr_effect"></span>
+                                <textarea class="mini-input adaptive--text__textarea editSwitchBlocked" name="attr_effect" placeholder="The trait's effects"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        
+        <!-- Profile page, Attributes -->
+
+        <div class="right fancy lowkey section">
+            <div class="stat section horizontal tight">
+
+                <!-- Primary -->
+
+                <div class="main-stat list">
+                    <h3 class="medium">Primary Attributes</h3>
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <button class="medium roll" name="act_rollStr" type="action">STR</button>
+                        <span class="stat-effective large" name="attr_strDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_str" type="number" min="-5">)
+                        </div>
+                    </div>
+                    
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <button class="medium roll" name="act_rollDex" type="action">DEX</button>
+                        <span class="stat-effective large" name="attr_dexDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_dex" type="number" min="-5">)
+                        </div>
+                    </div>
+                    
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <button class="medium roll" name="act_rollVit" type="action">VIT</button>
+                        <span class="stat-effective large" name="attr_vitDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_vit" type="number" min="-5">)
+                        </div>
+                    </div>
+                    
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <button class="medium roll" name="act_rollInt" type="action">INT</button>
+                        <span class="stat-effective large" name="attr_intDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_int" type="number" min="-5">)
+                        </div>
+                    </div>
+                    
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <button class="medium roll" name="act_rollMnd" type="action">MND</button>
+                        <span class="stat-effective large" name="attr_mndDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_mnd" type="number" min="-5">)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Secondary -->
+
+                <div class="sub-stat list">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+
+                    <h3 class="medium standard">Secondary Attributes</h3>
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <span class="header medium bold oneline">Defense</span>
+                        <span class="stat-effective medium" name="attr_defenseDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_defense" type="number" min="-5">)
+                        </div>
+                    </div>
+                    
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <span class="header medium bold oneline">Magic Defense</span>
+                        <span class="stat-effective medium" name="attr_magicDefenseDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_magicDefense" type="number" min="-5">)
+                        </div>
+                    </div>
+                    
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <span class="header medium bold oneline">Vigilance</span>
+                        <span class="stat-effective medium" name="attr_vigilanceDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_vigilance" type="number" min="-5">)
+                        </div>
+                    </div>
+                    
+                    <div class="stat-block">
+                        <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                        <span class="header medium bold oneline">Speed</span>
+                        <span class="stat-effective medium" name="attr_speedDisplay"></span>
+                        <div class="stat-edit overrideHide">
+                            (<input class="stat small" name="attr_speed" type="number" min="-5">)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn Order / Fortune -->
+
+            <div class="misc-stat fancy lowkey">
+                <div class="flex horizontal tight floatLeft">
+                    <input type="hidden" class="turnOrderSwitch" name="attr_turnOrderStyle">
+
+                    <span class="header bold medium">Turn Order</span>
+                    <input class="stat medium" name="attr_turnOrder" type="number" min="0" value="1">
+                    <button class="turn-order reverseTurnOrderContent" name="act_applyTurnOrder" type="action">Add</button>
+                    <button class="turn-order roll turnOrderContent" name="act_rollTurnOrder" type="action"></button>
+                </div>
+
+                <div class="fortune fancy lowkey flex horizontal tight floatRight">
+                    <span class="header bold medium">Fortune</span>
+                    <input class="stat medium" name="attr_fortune" type="number" min="0" value="3">
+                </div>
+            </div>
+
+            <!-- Effects -->
+
+            <div class="effects section">
+                <div style="height: 27px; padding-bottom: 4px; background-color: var(--sheet-filled-background);">
+                    <span class="small colored-in floatLeft">Effects</span>
+                    <button type="action" class="floatRight" name="act_expandAllEffects">Expand All</button>
+                    <button type="action" class="floatRight" name="act_collapseAllEffects">Collapse All</button>
+                </div>
+                <fieldset class="repeating_effects">
+                    <div class="effect">
+                        <input class="expand-checkbox hidden" type="checkbox" name="attr_repeatingExpandItem" />
+                        <div class="effect-header">
+                            <input class="expand-checkbox reverse hidden" type="checkbox" name="attr_curable" />
+                            <div class="expanded-view-horizontal" style="padding: 2px 0 2px 0;">
+                                <div class="color-prefix"></div>
+                            </div>
+                            <img class="effect-icon" name="attr_icon" />
+                            <input type="hidden" class="typeSwitch" name="attr_type" />
+                            <input type="hidden" class="editSwitch" name="attr_editable" />
+                            <input type="text" class="effect-specialType typeSwitchDisplayed editSwitchBlocked" name="attr_specialType" placeholder="Effect" />
+                            <select class="effect-type typeSwitchHidden editSwitchBlocked" name="attr_type">
+                                <option value="none">--Select--</option>
+                                <option value="roll(x)">Roll Up(X)</option>
+                                <option value="dreroll">Damage Reroll</option>
+                                <option value="critical(x)">Critical Up(X)</option>
+                                <option value="attribute(x)">Attribute Up(X)</option>
+                                <option value="regen(x)">Regen(X)</option>
+                                <option value="ready(x)">X Ready</option>
+                                <option value="advantage">Advantage</option>
+                                <option value="unstunnable">Stun Immunity</option>
+                                <option value="transcendent">Transcendent</option>
+                                <hr />
+                                <option value="blind">Blind</option>
+                                <option value="bound">Bound</option>
+                                <option value="enmity(x)">Enmity(Penalty)</option>
+                                <option value="dot(x)">DOT(X)</option>
+                                <option value="heavy">Heavy</option>
+                                <option value="paralyzed">Paralyzed</option>
+                                <option value="petrified">Petrified</option>
+                                <option value="prone">Prone</option>
+                                <option value="silence">Silence</option>
+                                <option value="sleep">Sleep</option>
+                                <option value="slow">Slow</option>
+                                <option value="stun">Stun</option>
+                                <hr />
+                                <option value="weak">Weak</option>
+                                <option value="brink">Brink of Death</option>
+                                <hr />
+                                <option value="special">Special</option>
+                            </select>
+                            <select class="effect-expiry" name="attr_expiry">
+                                <option value="use">On use</option>
+                                <hr />
+                                <option value="encounterstart">Start of encounter</option>
+                                <option value="stepstart">Start of the [Adventurer Step]</option>
+                                <option value="start">Start of your turn</option>
+                                <option value="turn">End of your turn</option>
+                                <option value="step">End of the [Adventurer Step]</option>
+                                <option value="round">End of this round</option>
+                                <option value="turn2">End of your next turn</option>
+                                <option value="phase">End of phase</option>
+                                <option value="encounter">End of encounter</option>
+                                <hr />
+                                <option value="rest">After rest</option>
+                                <option value="end">After adventure</option>
+                                <option value="permanent">Permanent</option>
+                                <hr />
+                                <option value="damage">On damage</option>
+                            </select>
+                            <div class="button-container">
+                                <button type="action" class="ability-action floatRight" name="act_info">i</button>
+                                <button type="action" class="ability-action floatRight" name="act_share">q</button>
+                            </div>
+                        </div>
+                        <div class="effect-body expanded-view">
+                            <div class="status-type">
+                                <span class="mini-title floatLeft">Type:</span>
+                                <div class="adaptive adaptive--input floatLeft">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <span class="mini-input adaptive--input__span" name="attr_statusType"></span>
+                                    <input class="mini-input adaptive--input__input editSwitchBlocked" type="text" name="attr_statusType" placeholder="Enhancement/Enfeeblement" />
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">Value:</span>
+                                <div class="adaptive adaptive--input floatLeft">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <span class="mini-input adaptive--input__span" name="attr_value"></span>
+                                    <input class="mini-input adaptive--input__input editSwitchBlocked" type="text" name="attr_value" placeholder="X" />
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">From:</span>
+                                <div class="adaptive adaptive--input floatLeft">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <span class="mini-input adaptive--input__span" name="attr_source"></span>
+                                    <input class="mini-input adaptive--input__input editSwitchBlocked" type="text" name="attr_source" placeholder="Creator?" />
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">Description:</span>
+                                <div class="adaptive adaptive--text floatLeft">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <span class="mini-input adaptive--text__span" name="attr_description"></span>
+                                    <textarea class="mini-input adaptive--text__textarea editSwitchBlocked" type="text" name="attr_description" placeholder="Describe how the effect works"></textarea>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="mini-title floatLeft">Curable:</span>
+                                <div class="sheet-checkbox-container">
+                                    <input type="hidden" class="editSwitch" name="attr_editable" />
+                                    <input class="floatLeft sheet-checkbox editSwitchBlocked" style="position: absolute;" type="checkbox" name="attr_curable" /><span class="sheet-checkbox-before"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <!-- Rest/End of phase -->
+
+            <div class="rest-container colored-in">
+                <div>
+                    <span class="header medium bold">Reset</span>
+                    <span class="small">your attributes and effects</span>
+                </div>
+                <div class="button-container">
+                    <button type="action" class="phase-button" name="act_phase">End of phase</button>
+                    <button type="action" class="end-button" name="act_end">End of adventure</button>
+                    <button type="action" class="rest-button" name="act_rest">Long rest</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

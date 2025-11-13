@@ -8,13 +8,14 @@ const StatRoll = function() {
 
     this.roll = function(stat, statName) {
         engine.getAttrsAndEffects([
-            "d20"
+            "d20", "whisper"
         ], (values, effects) => {
             var roll = `${values.d20} + @{${stat}}`;
             roll = rollModifiers.addEffectsToHitRoll(effects, roll, "stat");
 
-            engine.logd(`Rolling stat &{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`);
-            startRoll(`&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`, results => {
+            let rollTemplate = `${values["whisper"]}&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`;
+            engine.logd(`Rolling stat ${rollTemplate}`);
+            startRoll(rollTemplate, results => {
                 const rollResult = results.results.roll.result;
                 finishRoll(results.rollId, {
                     roll: Math.max(rollResult, 0)

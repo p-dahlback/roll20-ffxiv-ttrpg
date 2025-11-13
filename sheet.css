@@ -175,8 +175,7 @@ input[type=number].sheet-txtfield {
   -moz-appearance: textfield;
 }
 
-button[type=action],
-.ui-dialog .charsheet button[type=roll].turn-order {
+button[type=action] {
   background: none;
   border-radius: 0;
   background-color: var(--sheet-background-color);
@@ -1789,6 +1788,7 @@ textarea {
 /* Flag visibility */
 
 .overrideContent,
+.turnOrderContent,
 .flagTitle {
   display: none;
 }
@@ -1797,6 +1797,18 @@ textarea {
 .overrideSwitch:not([value="auto"]) ~ .flagTitle {
   display: inline-block;
   background-color: var(--sheet-override-field-color);
+}
+
+.turnOrderSwitch[value="roll"] ~ .turnOrderContent {
+  display: inline-block;
+}
+
+.turnOrderSwitch[value="roll"] ~ .reverseTurnOrderContent {
+  display: none;
+}
+
+.overrideSwitch:not([value="auto"]) ~ .overrideContent.override {
+  background-color: var(--sheet-damage-background-color);
 }
 
 /* Repeating section change control visibility */
