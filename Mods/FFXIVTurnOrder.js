@@ -614,12 +614,24 @@ const TokenEffects = function(logger, token, obj=null) {
         }
         var managedMarkers = this.markerMap.filter(value => value.managed);
         var newMarkerMap = [];
+        let markerNames = managedMarkers.map(m => m.marker);
         for (let marker of markers) {
-            if (managedMarkers.length > 0 && marker === managedMarkers[0].marker) {
-                this.logger.d(`Cached marker: ${marker} (${JSON.stringify(managedMarkers[0])})`);
-                newMarkerMap.push(managedMarkers[0]);
-                managedMarkers.splice(0, 1);
-            } else {
+            this.logger.d(`Compare: ${marker} to ${JSON.stringify(markerNames)}`);
+            let foundMatch = false;
+            for (let index in managedMarkers) {
+                let managedMarker = managedMarkers[index];
+                if (marker === managedMarker.marker) {
+                    this.logger.d(`Cached marker: ${marker} (${JSON.stringify(managedMarker)})`);
+                    newMarkerMap.push(managedMarker);
+                    foundMatch = true;
+
+                    // Discard all managed markers up until this match
+                    managedMarkers.splice(0, index + 1);
+                    break;
+                }
+            }
+            if (!foundMatch) {
+                // This marker is unmanaged
                 this.logger.d("Unmanaged marker: " + marker);
                 newMarkerMap.push(new TokenEffectData(null, marker, false));
             }
