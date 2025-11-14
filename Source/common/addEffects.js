@@ -533,13 +533,13 @@ const AddEffects = function(customEngine, customRemove) {
             case "thrill_of_battle": {
                 // Heal by roll total and add a barrier for anything that exceeds max HP
                 let result = parseInt(state.dice.damage.result);
-                if (isNaN(result)) {
+                if (isNaN(result) || result === 0) {
                     this.engine().logi("Invalid dice roll for Thrill of Battle: " + JSON.stringify(state.dice.damage));
                 } else {
                     let difference = state.hitPoints_max - state.hitPoints;
                     var hitPointsToAdd = Math.min(result, difference);
 
-                    if (hitPointsToAdd > 0) {
+                    if (hitPointsToAdd >= 0) {
                         var barrierPoints = state.barrierPoints;
                         if (difference > 0) {
                             summaries.push(`Healed ${hitPointsToAdd} HP`);
