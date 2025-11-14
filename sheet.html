@@ -4661,55 +4661,6 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file tabs
 
 const tabsImports = new (function() {
@@ -4755,114 +4706,6 @@ on("sheet:opened", () => {
             resource2Recovery: values.resource2Recovery ?? 0,
             resource: values.resource ?? "",
             resource2: values.resource2 ?? "none"
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
         });
     });
 });
@@ -4985,6 +4828,114 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
             newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
     });
 });
 
@@ -6616,6 +6567,7 @@ const EffectData = function() {
         thunder: { matches: ["thunder"], type: "special", maskedType: "dot(x)", specialType: "Thunder", statusType: "Enfeeblement", marker: "thunder", name: "Thunder", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         thunderhead_ready: { matches: ["tready", "thunderhead", "thunderhead ready"], type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", statusType: "Enhancement", name: "Thunderhead Ready", expiry: "use", duplicate: "block", description: "Enables one use of a Lightning-aspected ability, such as Thunder or Thunder II." },
         umbral_ice: { matches: ["uice", "umbral ice"], type: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
+        venomous_bite: { matches: ["venom", "vbite", "wbite", "windbite", "venomous bite"], type: "special", specialType: "Venomous Bite", maskedType:"dot(x)", marker: "venomous-bite", statusType: "enfeeblement", name: "Venomous Bite", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         warding_talisman: { matches: ["ward", "talisman", "wtalisman", "warding talisman"], type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "permanent", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
         weak: { matches: ["weak", "weakness"], type: "weak", maskedType: "weak", name: "Weak", statusType: "Enfeeblement", marker: "weak", expiry: "rest", duplicate: "block", description: "A Weakened character incurs a -2 penalty on all checks. If you are afflicted with Weakness from another effect, you are instead afflicted with Brink of Death.\n\nWeakness can only be removed by completing a rest or by effects that specifically remove it." }
     };
@@ -8029,7 +7981,7 @@ const sheets = {
                 ],
                 primary: [
                     { title: "Heavy Shot", type: "Primary, Physical, Ranged, Flurry", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target and enables Arrow Flurry. If the die rolled for this ability check lands on a 15 or higher, the following proc effect triggers.", effectName: "Heavier Shot:", effect: "Grants Hawk's Eye.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Hawk's Eye[d>=15]", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/heavy-shot.png" },
-                    { title: "Venomous Bite + Windbite", type: "Primary, Physical, Ranged, Wind-Aspected, Poison", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts a DOT (4) on the target and enables Arrow Flurry.", directHit: "Deals 1d6 damage to the target.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "1d6", effectTarget: "DOT(4)", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/venomous-bite%2Bwindbite.png" },
+                    { title: "Venomous Bite + Windbite", type: "Primary, Physical, Ranged, Wind-Aspected, Poison", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts a DOT (4) on the target and enables Arrow Flurry.", directHit: "Deals 1d6 damage to the target.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "1d6", effectTarget: "Venomous Bite(4)", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/venomous-bite%2Bwindbite.png" },
                     { title: "Wide Volley", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 5 damage to all targets", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "5", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/wide-volley.png" },
                     { title: "Straight Shot", type: "Primary, Physical, Ranged, Flurry", cost: 0, uses: 0, uses_max: 0, condition: "Under the effect of Hawk's Eye", target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 5 damage to the target and enables Arrow Flurry.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "5", dhValue: "1d6", combo: "Heavy Shot, Straight Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/straight-shot.png" },
                     { title: "Quick Nock", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 3x3 area adjacent to this character", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 3 damage to all targets. If the die rolled for this ability check lands on a 15 or higher, the following proc effect triggers.", effectName: "Enhanced Quick Nock:", effect: "Grant's Hawk's Eye", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Hawk's Eye[d>=15]", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BRD/quick-nock.png" }
@@ -8419,6 +8371,55 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
 });
 
 </script>
