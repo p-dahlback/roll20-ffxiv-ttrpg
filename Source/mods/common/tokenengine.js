@@ -76,6 +76,10 @@ const TokenEngine = function(logger, token, character, cache) {
         });
     };
 
+    this.getSectionValues = function(sections, attributes, completion) {
+        this.modengine.getSectionValues(sections, attributes, completion);
+    };
+
     this.mapAttribute = function(name) {
         switch (name) {
             case "hitPoints":

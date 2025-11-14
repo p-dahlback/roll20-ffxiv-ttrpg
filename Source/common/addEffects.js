@@ -392,7 +392,7 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().logd("Consuming item");
                 summaries.push(`Consumed item ${item}`);
                 let itemAttributes = ["title", "effect", "count"];
-                this.engine().getSectionValues("items", itemAttributes, items => {
+                this.engine().getSectionValues(["items"], itemAttributes, items => {
                     for (let existingItem of items) {
                         let title = existingItem.title.trim();
                         let itemDescription = existingItem.effect;
@@ -477,6 +477,7 @@ const AddEffects = function(customEngine, customRemove) {
             case "restore": {
                 let components = value.split("-");
                 let section = components[0].toLowerCase();
+                let sections = [1,2,3].map(index => `${section}${index}`);
                 let abilityName = components[1];
                 let normalizedName = abilityName.toLowerCase();
                 let increment = parseInt(components[2]);
@@ -488,7 +489,7 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().logd("Restoring uses of " + abilityName);
 
                 let abilityAttributes = ["title", "uses", "uses_max"];
-                this.engine().getSectionValues(section, abilityAttributes, abilities => {
+                this.engine().getSectionValues(sections, abilityAttributes, abilities => {
                     for (let ability of abilities) {
                         let title = ability.title;
                         if (title.toLowerCase() === normalizedName) {
@@ -497,7 +498,7 @@ const AddEffects = function(customEngine, customRemove) {
                             if (uses < max) {
                                 this.engine().logd("Restored " + abilityName);
                                 var attributes = {};
-                                attributes[`repeating_${section}_${id}_uses`] = Math.min(uses + increment, max);
+                                attributes[`${ability.fullId}_uses`] = Math.min(uses + increment, max);
                                 this.engine().set(attributes);
                             }
                             return;

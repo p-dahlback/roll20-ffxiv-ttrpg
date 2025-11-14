@@ -57,20 +57,27 @@ const WorkerEngine = function(logger) {
         });
     };
 
-    this.getSectionValues = function(section, attributes, completion) {
-        getSectionIDs(`repeating_${section}`, ids => {
-            let fullAttributes = ids.flatMap(id => {
-                return attributes.map(attribute => `repeating_${section}_${id}_${attribute}`);
+    this.getSectionValues = function(sections, attributes, completion) {
+        this.allSectionIDs(sections, sectionedIds => {
+            let fullAttributes = sectionedIds.flatMap(sectionedId => {
+                return attributes.map(attribute => `${sectionedId}_${attribute}`);
             });
+
             getAttrs(fullAttributes, values => {
                 var items = [];
-                for (let id of ids) {
+                for (let sectionedId of sectionedIds) {
+                    let match = sectionedId.match(/^repeating_[-\w]+_([-\w]+)/);
+                    if (!match || match.length < 2) {
+                        this.logi("Missing id: " + sectionedId);
+                        continue;
+                    }
+                    let id = match[1];
                     let item = {
                         id: id,
-                        fullId: `repeating_${section}_${id}`
+                        fullId: sectionedId
                     };
                     for (let attribute of attributes) {
-                        item[attribute] = values[`repeating_${section}_${id}_${attribute}`];
+                        item[attribute] = values[`${sectionedId}_${attribute}`];
                     }
                     items.push(item);
                 }

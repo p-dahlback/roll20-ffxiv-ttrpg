@@ -128,14 +128,19 @@ const ModEngine = function(logger, character) {
         completion(filteredAttributes.values, effectUtilities.classify(effects));
     };
 
-    this.getSectionValues = function(section, attributes, completion) {
+    this.getSectionValues = function(sections, attributes, completion) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         let filteredAttributes = allAttributes.reduce(
             (accumulator, currentValue) => {
-                let match = currentValue.get("name").match(new RegExp(`^repeating_${section}_([-\\w]+)_([\\w_]+)$/`));
+                let match = currentValue.get("name").match(/^repeating_([-\w]+)_([-\w]+)_([\w_]+)$/);
                 if (match) {
-                    let id = match[1];
-                    let attributeName = match[2];
+                    let section = match[1];
+                    if (!sections.includes(section)) {
+                        return accumulator;
+                    }
+
+                    let id = match[2];
+                    let attributeName = match[3];
                     let value = currentValue.get("current");
                     let max = currentValue.get("max");
                     if (!accumulator[id]) {

@@ -421,14 +421,19 @@ const ModEngine = function(logger, character) {
         completion(filteredAttributes.values, effectUtilities.classify(effects));
     };
 
-    this.getSectionValues = function(section, attributes, completion) {
+    this.getSectionValues = function(sections, attributes, completion) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         let filteredAttributes = allAttributes.reduce(
             (accumulator, currentValue) => {
-                let match = currentValue.get("name").match(new RegExp(`^repeating_${section}_([-\\w]+)_([\\w_]+)$/`));
+                let match = currentValue.get("name").match(/^repeating_([-\w]+)_([-\w]+)_([\w_]+)$/);
                 if (match) {
-                    let id = match[1];
-                    let attributeName = match[2];
+                    let section = match[1];
+                    if (!sections.includes(section)) {
+                        return accumulator;
+                    }
+
+                    let id = match[2];
+                    let attributeName = match[3];
                     let value = currentValue.get("current");
                     let max = currentValue.get("max");
                     if (!accumulator[id]) {
@@ -731,6 +736,10 @@ const TokenEngine = function(logger, token, character, cache) {
 
             completion(adjustedValues, effectUtilities.classify(effects));
         });
+    };
+
+    this.getSectionValues = function(sections, attributes, completion) {
+        this.modengine.getSectionValues(sections, attributes, completion);
     };
 
     this.mapAttribute = function(name) {
@@ -1235,7 +1244,7 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().logd("Consuming item");
                 summaries.push(`Consumed item ${item}`);
                 let itemAttributes = ["title", "effect", "count"];
-                this.engine().getSectionValues("items", itemAttributes, items => {
+                this.engine().getSectionValues(["items"], itemAttributes, items => {
                     for (let existingItem of items) {
                         let title = existingItem.title.trim();
                         let itemDescription = existingItem.effect;
@@ -1320,6 +1329,7 @@ const AddEffects = function(customEngine, customRemove) {
             case "restore": {
                 let components = value.split("-");
                 let section = components[0].toLowerCase();
+                let sections = [1,2,3].map(index => `${section}${index}`);
                 let abilityName = components[1];
                 let normalizedName = abilityName.toLowerCase();
                 let increment = parseInt(components[2]);
@@ -1331,7 +1341,7 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().logd("Restoring uses of " + abilityName);
 
                 let abilityAttributes = ["title", "uses", "uses_max"];
-                this.engine().getSectionValues(section, abilityAttributes, abilities => {
+                this.engine().getSectionValues(sections, abilityAttributes, abilities => {
                     for (let ability of abilities) {
                         let title = ability.title;
                         if (title.toLowerCase() === normalizedName) {
@@ -1340,7 +1350,7 @@ const AddEffects = function(customEngine, customRemove) {
                             if (uses < max) {
                                 this.engine().logd("Restored " + abilityName);
                                 var attributes = {};
-                                attributes[`repeating_${section}_${id}_uses`] = Math.min(uses + increment, max);
+                                attributes[`${ability.fullId}_uses`] = Math.min(uses + increment, max);
                                 this.engine().set(attributes);
                             }
                             return;
@@ -1661,7 +1671,7 @@ const RemoveEffects = function(customEngine) {
         for (let section of Object.keys(abilityDefinition)) {
             let titles = abilityDefinition[section].map(ability => ability.title);
             let attributeNames = ["title", "type", "augment"];
-            this.engine().getSectionValues(section, attributeNames, abilities => {
+            this.engine().getSectionValues([section], attributeNames, abilities => {
                 for (let ability of abilities) {
                     let title = ability.title;
                     let type = ability.type;

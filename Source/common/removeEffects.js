@@ -171,7 +171,7 @@ const RemoveEffects = function(customEngine) {
         for (let section of Object.keys(abilityDefinition)) {
             let titles = abilityDefinition[section].map(ability => ability.title);
             let attributeNames = ["title", "type", "augment"];
-            this.engine().getSectionValues(section, attributeNames, abilities => {
+            this.engine().getSectionValues([section], attributeNames, abilities => {
                 for (let ability of abilities) {
                     let title = ability.title;
                     let type = ability.type;

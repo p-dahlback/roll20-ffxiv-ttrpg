@@ -4661,6 +4661,55 @@
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file tabs
 
 const tabsImports = new (function() {
@@ -4822,6 +4871,127 @@ on("clicked:repeating_minions:select", eventInfo => {
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file attributes
+
+const attributesImports = new (function() {
+    this.export = {};
+
+const workerName = "attributes"
+
+
+})();
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file toggles
 
 const togglesImports = new (function() {
@@ -4955,55 +5125,6 @@ on("clicked:collapseAllAbilities", () => {
         secondaryHeaderExpandItem: "on",
         instantHeaderExpandItem: "on",
         techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
     });
 });
 
@@ -6646,20 +6767,27 @@ const WorkerEngine = function(logger) {
         });
     };
 
-    this.getSectionValues = function(section, attributes, completion) {
-        getSectionIDs(`repeating_${section}`, ids => {
-            let fullAttributes = ids.flatMap(id => {
-                return attributes.map(attribute => `repeating_${section}_${id}_${attribute}`);
+    this.getSectionValues = function(sections, attributes, completion) {
+        this.allSectionIDs(sections, sectionedIds => {
+            let fullAttributes = sectionedIds.flatMap(sectionedId => {
+                return attributes.map(attribute => `${sectionedId}_${attribute}`);
             });
+
             getAttrs(fullAttributes, values => {
                 var items = [];
-                for (let id of ids) {
+                for (let sectionedId of sectionedIds) {
+                    let match = sectionedId.match(/^repeating_[-\w]+_([-\w]+)/);
+                    if (!match || match.length < 2) {
+                        this.logi("Missing id: " + sectionedId);
+                        continue;
+                    }
+                    let id = match[1];
                     let item = {
                         id: id,
-                        fullId: `repeating_${section}_${id}`
+                        fullId: sectionedId
                     };
                     for (let attribute of attributes) {
-                        item[attribute] = values[`repeating_${section}_${id}_${attribute}`];
+                        item[attribute] = values[`${sectionedId}_${attribute}`];
                     }
                     items.push(item);
                 }
@@ -7116,7 +7244,7 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().logd("Consuming item");
                 summaries.push(`Consumed item ${item}`);
                 let itemAttributes = ["title", "effect", "count"];
-                this.engine().getSectionValues("items", itemAttributes, items => {
+                this.engine().getSectionValues(["items"], itemAttributes, items => {
                     for (let existingItem of items) {
                         let title = existingItem.title.trim();
                         let itemDescription = existingItem.effect;
@@ -7201,6 +7329,7 @@ const AddEffects = function(customEngine, customRemove) {
             case "restore": {
                 let components = value.split("-");
                 let section = components[0].toLowerCase();
+                let sections = [1,2,3].map(index => `${section}${index}`);
                 let abilityName = components[1];
                 let normalizedName = abilityName.toLowerCase();
                 let increment = parseInt(components[2]);
@@ -7212,7 +7341,7 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().logd("Restoring uses of " + abilityName);
 
                 let abilityAttributes = ["title", "uses", "uses_max"];
-                this.engine().getSectionValues(section, abilityAttributes, abilities => {
+                this.engine().getSectionValues(sections, abilityAttributes, abilities => {
                     for (let ability of abilities) {
                         let title = ability.title;
                         if (title.toLowerCase() === normalizedName) {
@@ -7221,7 +7350,7 @@ const AddEffects = function(customEngine, customRemove) {
                             if (uses < max) {
                                 this.engine().logd("Restored " + abilityName);
                                 var attributes = {};
-                                attributes[`repeating_${section}_${id}_uses`] = Math.min(uses + increment, max);
+                                attributes[`${ability.fullId}_uses`] = Math.min(uses + increment, max);
                                 this.engine().set(attributes);
                             }
                             return;
@@ -7542,7 +7671,7 @@ const RemoveEffects = function(customEngine) {
         for (let section of Object.keys(abilityDefinition)) {
             let titles = abilityDefinition[section].map(ability => ability.title);
             let attributeNames = ["title", "type", "augment"];
-            this.engine().getSectionValues(section, attributeNames, abilities => {
+            this.engine().getSectionValues([section], attributeNames, abilities => {
                 for (let ability of abilities) {
                     let title = ability.title;
                     let type = ability.type;
@@ -8290,127 +8419,6 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file attributes
-
-const attributesImports = new (function() {
-    this.export = {};
-
-const workerName = "attributes"
-
-
-})();
-
-// Build: Source/workers/attributes.js
-
-
-// Advantage management
-
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
-        setAttrs({
-            barrierPoints_max: values.barrierPoints
-        });
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
-    });
 });
 
 </script>
