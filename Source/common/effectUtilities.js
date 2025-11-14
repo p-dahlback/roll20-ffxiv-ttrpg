@@ -35,6 +35,9 @@ const EffectUtilities = function() {
                         result.mpMaxIncrease = true;
                     }
                     break;
+                case "brink":
+                    result.isBrink = true;
+                    break;
                 case "critical(x)":
                     if (effect.value) {
                         result.criticalThreshold -= parseInt(effect.value);
@@ -61,6 +64,9 @@ const EffectUtilities = function() {
                     break;
                 case "stun":
                     result.isStunned = true;
+                    break;
+                case "weak":
+                    result.isWeak = true;
                     break;
                 default:
                     break;

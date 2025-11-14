@@ -433,11 +433,16 @@ const AddEffects = function(customEngine, customRemove) {
                 // Clear all non-permanent/adventure-wide effects
                 this.engine().logd(`Clearing all non-permanent/adventure-wide effects from ${effect.type}`);
                 for (let existingEffect of state.existingEffects.effects) {
+                    if (existingEffect.type === "weak" || existingEffect.type === "brink") {
+                        continue;
+                    }
                     if (existingEffect.expiry !== "end" && existingEffect.expiry !== "permanent") {
                         log(`Removing ${existingEffect.data.name}`);
                         this.removeEffects().remove(existingEffect);
                     }
                 }
+                attributes.hitPoints = 0;
+                attributes.barrierPoints = 0;
                 attributes.mpRecoveryBlock = "on";
                 break;
             }
@@ -474,6 +479,13 @@ const AddEffects = function(customEngine, customRemove) {
             case "lucid_dreaming":
                 attributes.mpRecovery = 3;
                 break;
+            case "raise": {
+                // Add/upgrade weak status and add transcendent
+                let weakness = state.existingEffects.isWeak ? "brink" : "weak";
+                summaries.push(this.addBySpecificationString(state, ["transcendent"]));
+                summaries.push(this.addBySpecificationString(state, [weakness]));
+                break;
+            }
             case "restore": {
                 let components = value.split("-");
                 let section = components[0].toLowerCase();
@@ -605,6 +617,14 @@ const AddEffects = function(customEngine, customRemove) {
 
     this.replacementEffect = function(state, effect) {
         switch (effect.adjustedName) {
+            case "knocked_out": {
+                if (state.existingEffects.isBrink) {
+                    let adjustedEffect = this.effectFromSpecification("comatose");
+                    adjustedEffect.source = effect.source;
+                    return { effect: adjustedEffect, valid: true };
+                }
+                break;
+            }
             case "lightweight_refit_proc": {
                 let adjustedEffect = this.effectFromSpecification("attribute");
                 adjustedEffect.value = "speed,1";

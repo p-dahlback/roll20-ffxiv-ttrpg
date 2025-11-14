@@ -73,7 +73,7 @@ const EffectData = function() {
         heavy: { matches: ["heavy"], type: "heavy", maskedType: "heavy", statusType: "Enfeeblement", marker: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to their Speed.\n\nAbility checks targeting you automatically result in direct hits." },
         icecast_focus: { matches: ["icast", "icecast", "icecast focus"], type: "special", maskedType: "augment", augmentType: "ability", ability: "ice", specialType: "Icecast Focus", statusType: "Enhancement", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
         improved_padding: { matches: ["ipad", "ipadding", "improved padding"], type: "special", maskedType: "augment", specialType: "Improved Padding", statusType: "Enhancement", name: "Improved Padding", expiry: "end", duplicate: "block", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
-        knocked_out: { matches: ["ko", "kout", "knocked", "knocked out"], type: "special", specialType: "Knocked Out", name: "Knocked Out", statusType: "Enfeeblement", marker: "ko", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
+        knocked_out: { matches: ["ko", "kout", "knocked", "knocked out"], type: "knocked_out", maskedType: "knocked_out", name: "Knocked Out", statusType: "Enfeeblement", marker: "ko", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
         lightweight_refit: { matches: ["refit", "lrefit", "lightweight refit"], type: "special", maskedType: "augment", specialType: "Lightweight Refit", statusType: "Enhancement", name: "Lightweight Refit", expiry: "end", duplicate: "block", description: "Increases Speed by 1 during this character's first turn of an encounter." },
         lucid_dreaming: { matches: ["lucid", "ldreaming", "lucid dreaming"], type: "special", specialType: "Lucid Dreaming", statusType: "Enhancement", name: "Lucid Dreaming", expiry: "step", duplicate: "replace", description: "Recover an additional 1 MP at the end of this round's [Adventurer Step)." },
         mages_ballad: { matches: ["mballad", "mage's ballad", "mages ballad", "mballad"], type: "special", maskedType: "dreroll", specialType: "Mage's Ballad", statusType: "Enhancement", name: "Mage's Ballad", expiry: "use", duplicate: "block", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
@@ -86,6 +86,7 @@ const EffectData = function() {
         precision_opener: { matches: ["popener", "precision opener"], type: "special", maskedType: "augment", specialType: "Precision Opener", statusType: "Enhancement", name: "Precision Opener", expiry: "end", duplicate: "block", description: "Grants one advantage die on the first ability check this character makes during their first turn of an encounter." },
         prone: { matches: ["prone"], type: "prone", maskedType: "prone", statusType: "Enfeeblement", marker: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot take standard movement action on you turn unless you spend half your Speed (rounded up) to get back on your feet.\n\nProne characters incur a -2 penalty on all checks.\n\nCharacters targeting you receive one advantage die when making an ability check." },
         raging_strikes: { matches: ["rstrikes", "raging strikes"], type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", statusType: "Enhancement", name: "Raging Strikes", expiry: "turn", duplicate: "block", description: "Your primary abilities deal an additional 2 damage until the end of this turn." },
+        raise: { matches: ["raise", "ascend" ], type: "special", specialType: "Raise", statusType: "Enhancement", name: "Raise", expiry: "ephemeral" },
         rampart: { matches: ["rampart"], type: "special", maskedType: "defense(x)", specialType: "Rampart", statusType: "Enhancement", name: "Rampart", expiry: "start", duplicate: "block", description: "Reduces the damage you take from abilities by 2 until the start of your next turn." },
         ready: { matches: ["ready"], type: "ready(x)", maskedType: "ready(x)", statusType: "Enhancement", name: "(X) Ready", expiry: "use", duplicate: "block", description: "You may use an ability that requires you to be under this enhancement. X Ready is removed after the ability is used." },
         regen: { matches: ["regen", "revivify"], type: "regen(x)", maskedType: "regen(x)", statusType: "Enhancement", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
@@ -237,6 +238,9 @@ const EffectUtilities = function() {
                         result.mpMaxIncrease = true;
                     }
                     break;
+                case "brink":
+                    result.isBrink = true;
+                    break;
                 case "critical(x)":
                     if (effect.value) {
                         result.criticalThreshold -= parseInt(effect.value);
@@ -263,6 +267,9 @@ const EffectUtilities = function() {
                     break;
                 case "stun":
                     result.isStunned = true;
+                    break;
+                case "weak":
+                    result.isWeak = true;
                     break;
                 default:
                     break;
@@ -1286,11 +1293,16 @@ const AddEffects = function(customEngine, customRemove) {
                 // Clear all non-permanent/adventure-wide effects
                 this.engine().logd(`Clearing all non-permanent/adventure-wide effects from ${effect.type}`);
                 for (let existingEffect of state.existingEffects.effects) {
+                    if (existingEffect.type === "weak" || existingEffect.type === "brink") {
+                        continue;
+                    }
                     if (existingEffect.expiry !== "end" && existingEffect.expiry !== "permanent") {
                         log(`Removing ${existingEffect.data.name}`);
                         this.removeEffects().remove(existingEffect);
                     }
                 }
+                attributes.hitPoints = 0;
+                attributes.barrierPoints = 0;
                 attributes.mpRecoveryBlock = "on";
                 break;
             }
@@ -1327,6 +1339,13 @@ const AddEffects = function(customEngine, customRemove) {
             case "lucid_dreaming":
                 attributes.mpRecovery = 3;
                 break;
+            case "raise": {
+                // Add/upgrade weak status and add transcendent
+                let weakness = state.existingEffects.isWeak ? "brink" : "weak";
+                summaries.push(this.addBySpecificationString(state, ["transcendent"]));
+                summaries.push(this.addBySpecificationString(state, [weakness]));
+                break;
+            }
             case "restore": {
                 let components = value.split("-");
                 let section = components[0].toLowerCase();
@@ -1458,6 +1477,14 @@ const AddEffects = function(customEngine, customRemove) {
 
     this.replacementEffect = function(state, effect) {
         switch (effect.adjustedName) {
+            case "knocked_out": {
+                if (state.existingEffects.isBrink) {
+                    let adjustedEffect = this.effectFromSpecification("comatose");
+                    adjustedEffect.source = effect.source;
+                    return { effect: adjustedEffect, valid: true };
+                }
+                break;
+            }
             case "lightweight_refit_proc": {
                 let adjustedEffect = this.effectFromSpecification("attribute");
                 adjustedEffect.value = "speed,1";

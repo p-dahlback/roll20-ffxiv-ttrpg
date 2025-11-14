@@ -59,6 +59,9 @@ const ManualEffectTypeChange = function() {
                 engine.getEffects(effects => {
                     log("Removing effects due to comatose/knocked out");
                     for (let effect of effects.effects) {
+                        if (effect.type === "weak" || effect.type === "brink") {
+                            continue;
+                        }
                         if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
                             continue;
                         }

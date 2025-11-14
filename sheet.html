@@ -398,6 +398,8 @@
                                 <hr />
                                 <option value="weak">Weak</option>
                                 <option value="brink">Brink of Death</option>
+                                <option value="knocked_out">Knocked Out</option>
+                                <option value="comatose">Comatose</option>
                                 <hr />
                                 <option value="special">Special</option>
                             </select>
@@ -4726,6 +4728,9 @@ const ManualEffectTypeChange = function() {
                 engine.getEffects(effects => {
                     log("Removing effects due to comatose/knocked out");
                     for (let effect of effects.effects) {
+                        if (effect.type === "weak" || effect.type === "brink") {
+                            continue;
+                        }
                         if (effect.id === rowId || effect.expiry == "end" || effect.expiry == "permanent") {
                             continue;
                         }
@@ -6016,6 +6021,9 @@ const EffectUtilities = function() {
                         result.mpMaxIncrease = true;
                     }
                     break;
+                case "brink":
+                    result.isBrink = true;
+                    break;
                 case "critical(x)":
                     if (effect.value) {
                         result.criticalThreshold -= parseInt(effect.value);
@@ -6042,6 +6050,9 @@ const EffectUtilities = function() {
                     break;
                 case "stun":
                     result.isStunned = true;
+                    break;
+                case "weak":
+                    result.isWeak = true;
                     break;
                 default:
                     break;
@@ -6113,7 +6124,7 @@ const EffectData = function() {
         heavy: { matches: ["heavy"], type: "heavy", maskedType: "heavy", statusType: "Enfeeblement", marker: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to their Speed.\n\nAbility checks targeting you automatically result in direct hits." },
         icecast_focus: { matches: ["icast", "icecast", "icecast focus"], type: "special", maskedType: "augment", augmentType: "ability", ability: "ice", specialType: "Icecast Focus", statusType: "Enhancement", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
         improved_padding: { matches: ["ipad", "ipadding", "improved padding"], type: "special", maskedType: "augment", specialType: "Improved Padding", statusType: "Enhancement", name: "Improved Padding", expiry: "end", duplicate: "block", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
-        knocked_out: { matches: ["ko", "kout", "knocked", "knocked out"], type: "special", specialType: "Knocked Out", name: "Knocked Out", statusType: "Enfeeblement", marker: "ko", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
+        knocked_out: { matches: ["ko", "kout", "knocked", "knocked out"], type: "knocked_out", maskedType: "knocked_out", name: "Knocked Out", statusType: "Enfeeblement", marker: "ko", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
         lightweight_refit: { matches: ["refit", "lrefit", "lightweight refit"], type: "special", maskedType: "augment", specialType: "Lightweight Refit", statusType: "Enhancement", name: "Lightweight Refit", expiry: "end", duplicate: "block", description: "Increases Speed by 1 during this character's first turn of an encounter." },
         lucid_dreaming: { matches: ["lucid", "ldreaming", "lucid dreaming"], type: "special", specialType: "Lucid Dreaming", statusType: "Enhancement", name: "Lucid Dreaming", expiry: "step", duplicate: "replace", description: "Recover an additional 1 MP at the end of this round's [Adventurer Step)." },
         mages_ballad: { matches: ["mballad", "mage's ballad", "mages ballad", "mballad"], type: "special", maskedType: "dreroll", specialType: "Mage's Ballad", statusType: "Enhancement", name: "Mage's Ballad", expiry: "use", duplicate: "block", description: "While under the effect of Mage's Ballad, you may reroll a single die when determining the amount of damage dealt by an ability." },
@@ -6126,6 +6137,7 @@ const EffectData = function() {
         precision_opener: { matches: ["popener", "precision opener"], type: "special", maskedType: "augment", specialType: "Precision Opener", statusType: "Enhancement", name: "Precision Opener", expiry: "end", duplicate: "block", description: "Grants one advantage die on the first ability check this character makes during their first turn of an encounter." },
         prone: { matches: ["prone"], type: "prone", maskedType: "prone", statusType: "Enfeeblement", marker: "prone", name: "Prone", expiry: "encounter", curable: true, duplicate: "block", description: "You cannot take standard movement action on you turn unless you spend half your Speed (rounded up) to get back on your feet.\n\nProne characters incur a -2 penalty on all checks.\n\nCharacters targeting you receive one advantage die when making an ability check." },
         raging_strikes: { matches: ["rstrikes", "raging strikes"], type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", statusType: "Enhancement", name: "Raging Strikes", expiry: "turn", duplicate: "block", description: "Your primary abilities deal an additional 2 damage until the end of this turn." },
+        raise: { matches: ["raise", "ascend" ], type: "special", specialType: "Raise", statusType: "Enhancement", name: "Raise", expiry: "ephemeral" },
         rampart: { matches: ["rampart"], type: "special", maskedType: "defense(x)", specialType: "Rampart", statusType: "Enhancement", name: "Rampart", expiry: "start", duplicate: "block", description: "Reduces the damage you take from abilities by 2 until the start of your next turn." },
         ready: { matches: ["ready"], type: "ready(x)", maskedType: "ready(x)", statusType: "Enhancement", name: "(X) Ready", expiry: "use", duplicate: "block", description: "You may use an ability that requires you to be under this enhancement. X Ready is removed after the ability is used." },
         regen: { matches: ["regen", "revivify"], type: "regen(x)", maskedType: "regen(x)", statusType: "Enhancement", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
@@ -6815,11 +6827,16 @@ const AddEffects = function(customEngine, customRemove) {
                 // Clear all non-permanent/adventure-wide effects
                 this.engine().logd(`Clearing all non-permanent/adventure-wide effects from ${effect.type}`);
                 for (let existingEffect of state.existingEffects.effects) {
+                    if (existingEffect.type === "weak" || existingEffect.type === "brink") {
+                        continue;
+                    }
                     if (existingEffect.expiry !== "end" && existingEffect.expiry !== "permanent") {
                         log(`Removing ${existingEffect.data.name}`);
                         this.removeEffects().remove(existingEffect);
                     }
                 }
+                attributes.hitPoints = 0;
+                attributes.barrierPoints = 0;
                 attributes.mpRecoveryBlock = "on";
                 break;
             }
@@ -6856,6 +6873,13 @@ const AddEffects = function(customEngine, customRemove) {
             case "lucid_dreaming":
                 attributes.mpRecovery = 3;
                 break;
+            case "raise": {
+                // Add/upgrade weak status and add transcendent
+                let weakness = state.existingEffects.isWeak ? "brink" : "weak";
+                summaries.push(this.addBySpecificationString(state, ["transcendent"]));
+                summaries.push(this.addBySpecificationString(state, [weakness]));
+                break;
+            }
             case "restore": {
                 let components = value.split("-");
                 let section = components[0].toLowerCase();
@@ -6987,6 +7011,14 @@ const AddEffects = function(customEngine, customRemove) {
 
     this.replacementEffect = function(state, effect) {
         switch (effect.adjustedName) {
+            case "knocked_out": {
+                if (state.existingEffects.isBrink) {
+                    let adjustedEffect = this.effectFromSpecification("comatose");
+                    adjustedEffect.source = effect.source;
+                    return { effect: adjustedEffect, valid: true };
+                }
+                break;
+            }
             case "lightweight_refit_proc": {
                 let adjustedEffect = this.effectFromSpecification("attribute");
                 adjustedEffect.value = "speed,1";
@@ -7482,7 +7514,7 @@ const sheets = {
                     { title: "Malefic", type: "Primary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/malefic.png" },
                     { title: "Helios", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All allies within range", range: "A 5x5 area centered on this character", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 + 2 HP to all targets.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/helios.png" },
                     { title: "Repose", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 4)", cr: "Target's Magic Defense", baseEffect: "Inflicts Sleep on target.", directHit: "Removes all markers generated by the target.", stat: "MND", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", effectTarget: "Sleep", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Healer/repose.png" },
-                    { title: "Ascend", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 2 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", effectTarget: "Weak, Transcendent", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/ascend.png" },
+                    { title: "Ascend", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 2 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", effectTarget: "Raise", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/ascend.png" },
                     { title: "Benefic II", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 2d6 + 4 HP to the target.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "2d6 + 4", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/AST/benefic-ii.png" }
                 ],
                 secondary: [
@@ -7659,7 +7691,7 @@ const sheets = {
                 primary: [
                     { title: "Stone II", type: "Primary, Magic, Earth-Aspected, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WHM/stone-ii.png" },
                     { title: "Medica", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All allies within range", range: "a 5x5 area centered on this character", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 + 3 HP to all targets.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 3", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WHM/medica.png" },
-                    { title: "Raise", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 3 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", stat: "MND", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 3", effectTarget: "Weak, Transcendent", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WHM/raise.png" },
+                    { title: "Raise", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 3 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", stat: "MND", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 3", effectTarget: "Raise", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WHM/raise.png" },
                     { title: "Repose", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Inflicts Sleep on target.", directHit: "Removes all markers generated by the target.", stat: "MND", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", effectTarget: "Sleep", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Healer/repose.png" },
                     { title: "Cure II", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 5)", baseEffect: "Restores 2d6 + 7 HP", stat: "MND", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "2d6 + 7", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WHM/cure-ii.png" }
                 ],
@@ -7955,120 +7987,52 @@ on("clicked:end", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file attributes
+// Build (version 1.0.0), generated file tabs
 
-const attributesImports = new (function() {
+const tabsImports = new (function() {
     this.export = {};
 
-const workerName = "attributes"
+const workerName = "tabs"
 
 
 })();
 
-// Build: Source/workers/attributes.js
+// Build: Source/workers/tabs.js
 
 
-// Advantage management
+// Tabs
 
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
         setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
-        setAttrs({
-            barrierPoints_max: values.barrierPoints
+            sheetTab: button
         });
     });
 });
 
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
     });
 });
 
@@ -8216,52 +8180,48 @@ on("clicked:collapseAllAbilities", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file tabs
+// Build (version 1.0.0), generated file override
 
-const tabsImports = new (function() {
+const overrideImports = new (function() {
     this.export = {};
 
-const workerName = "tabs"
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
 
 
 })();
 
-// Build: Source/workers/tabs.js
+// Build: Source/workers/override.js
 
 
-// Tabs
 
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
+const imports = overrideImports.export;
 
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
     });
 });
 
@@ -8377,48 +8337,120 @@ on("clicked:repeating_minions:select", eventInfo => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
+// Build (version 1.0.0), generated file attributes
 
-const overrideImports = new (function() {
+const attributesImports = new (function() {
     this.export = {};
 
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
+const workerName = "attributes"
 
 
 })();
 
-// Build: Source/workers/override.js
+// Build: Source/workers/attributes.js
 
 
+// Advantage management
 
-const imports = overrideImports.export;
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
 
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
             });
         }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
     });
 });
 
