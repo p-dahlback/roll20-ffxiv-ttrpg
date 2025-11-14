@@ -1996,7 +1996,7 @@ const FFXIVAddEffect = (() => {
                             who: who,
                             origin: "FFXIVAddEffect"
                         };
-                        let formatMatch = specification.match(/([-_\s\w]+)(?:[([]([-|\s\w]+)[)\]])?/);
+                        let formatMatch = specification.match(/([-'_\s\w]+)(?:[([]([-|\s\w]+)[)\]])?/);
                         if (!formatMatch) {
                             outputEvent("error", "Malformed effect specification " + specification);
                             return;
