@@ -39,7 +39,11 @@ const EffectResolver = function(engine, removeEffects) {
             );
             var summaries = [];
             for (let effect of effects.effects) {
-                summaries.push(this.executeIfApplicable(state, effect));
+                let executeResult = this.executeIfApplicable(state, effect);
+                if (executeResult.summary) {
+                    summaries.push(executeResult.summary);
+                }
+                state = executeResult.state;
                 if (shouldUpdateExpiries) {
                     summaries.push(this.updateIfApplicable(effect));
                 }
@@ -52,7 +56,7 @@ const EffectResolver = function(engine, removeEffects) {
 
     this.executeIfApplicable = function(state, effect) {
         if (!this.isExecutable(effect, state.expiries)) {
-            return "";
+            return { state: state, summary: null };
         }
         return this.executeEffect(state, effect);
     };
@@ -79,16 +83,17 @@ const EffectResolver = function(engine, removeEffects) {
     this.executeEffect = function(state, effect) {
         switch (this.searchValue(effect)) {
             case "aetherial_focus": {
-                this.engine.set({
-                    magicPoints: Math.max(state.magicPoints_max + 1, 6)
+                let magicPoints = Math.max(state.magicPoints_max + 1, 6);
+                let newState = this.set(state, {
+                    magicPoints: magicPoints
                 });
-                return `Executed <b>Aetherial Focus</b>, giving 1 additional MP (6/5)`;
+                return { state: newState, summary: `Executed <b>Aetherial Focus</b>, giving 1 additional MP (6/5)` };
             }
             case "dot", "dot(x)": {
                 var damage = unpackNaN(effect.value);
                 if (damage < 1) {
                     this.engine.logi("Unable to perform dot(x); no value given");
-                    return [];
+                    return { state: state, summary: null };
                 }
                 var barrierDefinition = "";
                 let attributes = {};
@@ -107,19 +112,19 @@ const EffectResolver = function(engine, removeEffects) {
                     attributes.hitPoints = newValue;
                     hitPointDefinition = `${state.hitPoints} to ${newValue}/${state.hitPoints_max} HP`;
                 }
-                this.engine.set(attributes);
+                let newState = this.set(state, attributes);
                 let changeSummary = [barrierDefinition, hitPointDefinition].filter(element => element).join(", ");
-                return `Executed <b>DOT (${effect.value})</b> (${changeSummary})`;
+                return { state: newState, summary: `Executed <b>DOT (${effect.value})</b> (${changeSummary})` };
             }
             case "improved_padding": {
                 if (state.barrierPoints < 1) {
-                    this.engine.set({
+                    let newState = this.set(state, {
                         barrierPoints: 1,
                         barrierPoints_max: 1
                     });
-                    return `Executed <b>Improved Padding</b> (1 Barrier)`;
+                    return { state: newState, summary: `Executed <b>Improved Padding</b> (1 Barrier)` };
                 }
-                return "";
+                return { state: state, summary: null };
             }
             case "lightweight_refit": {
                 // Create effect to make the speed increase temporary
@@ -127,7 +132,7 @@ const EffectResolver = function(engine, removeEffects) {
                 let addState = state.effectState();
                 addEffects.addBySpecificationString(addState, ["lightweight refit proc"]);
 
-                return "Executed <b>Lightweight Refit</b>, +1 to speed until end of turn";
+                return { state: state, summary: "Executed <b>Lightweight Refit</b>, +1 to speed until end of turn" };
             }
             case "precision_opener": {
                 // Create advantage die effect until end of turn
@@ -139,7 +144,7 @@ const EffectResolver = function(engine, removeEffects) {
                 attributes[`repeating_effects_${id}_editable`] = "off";
                 this.engine.set(attributes);
 
-                return "Executed <b>Precision Opener</b>, +1 advantage die on one ability roll (valid until end of turn)";
+                return { state: state, summary: "Executed <b>Precision Opener</b>, +1 advantage die on one ability roll (valid until end of turn)" };
             }
             case "regen", "regen(x)": {
                 var healing = unpackNaN(state.value);
@@ -148,15 +153,26 @@ const EffectResolver = function(engine, removeEffects) {
                     return [];
                 }
                 let newValue = Math.min(state.hitPoints + healing, state.hitPoints_max);
-                this.engine.set({
+                let newState = this.set(state, {
                     hitPoints: newValue
                 });
-                return `Executed <b>Regen (${state.value})</b> (${state.hitPoints} to ${newValue}/${state.hitPoints_max} HP)`;
+                return { state: newState, summary: `Executed <b>Regen (${state.value})</b> (${state.hitPoints} to ${newValue}/${state.hitPoints_max} HP)` };
             }
             default:
                 this.engine.logi("Unrecognized effect " + JSON.stringify(effect.adjustedName));
-                return "";
+                return { state: state, summary: null };
         }
+    };
+
+    this.set = function(state, attributes)  {
+        this.engine.set(attributes);
+        for (let attribute of Object.entries(attributes)) {
+            if (attribute[0].startsWith("repeating")) {
+                continue;
+            }
+            state[attribute[0]] = attribute[1]; 
+        }
+        return state;
     };
 
     this.isExecutable = function(effect, expiries) {
