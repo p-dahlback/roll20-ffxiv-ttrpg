@@ -120,24 +120,27 @@ const FFXIVAddEffect = (() => {
         return summary;
     };
 
-    const outputEvent = (type, event, playerid) => {
+    const outputEvent = (type, who, summary, playerid) => {
+        logger.d("Outputting to chat");
+        let prefix;
+        if (playerIsGM(playerid)) {
+            prefix = "/w gm ";
+        } else {
+            prefix = "";
+        }
         switch (type) {
             case "add": {
-                if (!event.summary) {
+                if (!summary) {
+                    logger.d("Nothing to post; posting an error instead");
+                    sendChat("FFXIV Effects", `${prefix}Unable to post add effect summary; no summary found`);
                     break;
                 }
-                let prefix;
-                if (playerIsGM(playerid)) {
-                    prefix = "/w gm ";
-                } else {
-                    prefix = "";
-                }
-                sendChat(event.who, `${prefix}<h4>Effects:</h4>${event.summary}`);
+                sendChat(who, `${prefix}<h4>Effects:</h4>${summary}`);
                 break;
             }
 
             case "error":
-                sendChat("FFXIV Effects", `/w gm ${event}`);
+                sendChat(who, `${prefix}${summary}`);
                 break;
 
             default:
@@ -317,7 +320,7 @@ const FFXIVAddEffect = (() => {
                         };
                         let formatMatch = specification.match(/([-'_\s\w]+)(?:[([]([-|\s\w]+)[)\]])?/);
                         if (!formatMatch) {
-                            outputEvent("error", "Malformed effect specification " + specification);
+                            outputEvent("error", who, "Malformed effect specification " + specification, msg.playerid);
                             return;
                         }
                         let name = formatMatch[1];
@@ -327,7 +330,7 @@ const FFXIVAddEffect = (() => {
 
                         let match = imports.effectData.matches.find(type => type.matches && type.matches.includes(name.toLowerCase()));
                         if (!match) {
-                            outputEvent("error", "Unknown effect " + name);
+                            outputEvent("error", who, "Unknown effect " + name, msg.playerid);
                             return;
                         }
                         effect.data = match;
@@ -358,19 +361,20 @@ const FFXIVAddEffect = (() => {
         }
         if (effects.length === 0) {
             logger.i("Found no matching effect for " + msg.content);
+            outputEvent("error", who, "Found no matching effect for " + msg.content, msg.playerid);
             return;
         }
         let targetResult = getCharacters(msg, target);
         if (targetResult.error) {
-            outputEvent("error", targetResult.error);
+            outputEvent("error", who, targetResult.error, msg.playerid);
             return;
         }
 
         let characters = targetResult.result;
         let effectCache = new imports.EffectCache(state["FFXIVCache"].effects);
-        let event = addEffects(effects, characters, effectCache);
+        let summary = addEffects(effects, characters, effectCache);
         state["FFXIVCache"].effects = effectCache;
-        outputEvent("add", event, msg.playerid);
+        outputEvent("add", who, summary, msg.playerid);
     };
 
     const reconfigureMarkers = (token) => {
