@@ -124,9 +124,13 @@ const RollModifiers = function() {
 
         if (adds.length > 0 || negatives.length > 0) {
             engine.logd("Adding damage to roll");
-            let damage = damageRoll ? `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}` : `0${adds.join(" + ")}${negatives.join(" - ")}`;
+            if (damageRoll) {
+                damageRoll = `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
+            } else {
+                directHitRoll = `${directHitRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
+            }
             return {
-                damage: damage,
+                damage: damageRoll,
                 directHit: directHitRoll,
                 summaries: summaries
             };
