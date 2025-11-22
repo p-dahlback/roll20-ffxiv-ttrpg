@@ -4407,8 +4407,8 @@
                 <option value="DRK">Dark Knight</option>
                 <!--
                 <option value="GNB">Gunbreaker</option>
-                <option value="PLD">Paladin</option>
                 !-->
+                <option value="PLD">Paladin</option>
                 <option value="WAR">Warrior</option>
                 <hr />
                 <option value="AST">Astrologian</option>
@@ -4663,55 +4663,6 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file toggles
 
 const togglesImports = new (function() {
@@ -4852,6 +4803,55 @@ on("clicked:collapseAllAbilities", () => {
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file attributes
 
 const attributesImports = new (function() {
@@ -4973,106 +4973,51 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
+// Build (version 1.0.0), generated file tabs
 
-const itemsImports = new (function() {
+const tabsImports = new (function() {
     this.export = {};
 
-const workerName = "items"
+const workerName = "tabs"
 
 
 })();
 
-// Build: Source/workers/items.js
+// Build: Source/workers/tabs.js
 
 
+// Tabs
 
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
         setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+            sheetTab: button
         });
     });
 });
 
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
+// Initial setup
+on("sheet:opened", () => {
     getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
     ], values => {
-        // Assign selected minion
         setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
         });
     });
 });
@@ -6540,6 +6485,7 @@ const EffectData = function() {
         elemental_veil: { matches: ["eveil", "eveil1", "eveili", "eveil 1", "eveil i", "elemental veil", "elementail veil 1", "elemental veil i"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
         elemental_veil_ii: { matches: ["eveil2", "eveilii", "eveil 2", "eveil ii", "elemental veil 2", "elemental veil ii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil II", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
         enmity: { matches: ["enmity"], type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", marker: "enmity", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
+        fight_or_flight: { matches: ["fflight", "fight or flight"], type: "special", specialType: "Fight or Flight", statusType: "Enhancement", name: "Fight or Flight", expiry: "turn", duplicate: "block", description: "Grants one advantage die on your next ability check this turn." },
         flamecast_focus: { matches: ["fcast", "flamecast", "flamecast focus"], type: "special", maskedType: "augment", augmentType: "ability", ability: "fire", specialType: "Flamecast Focus", statusType: "Enhancement", name: "Flamecast Focus", expiry: "end", duplicate: "block", description: "Grants the Fire ability." },
         hawks_eye: { matches: ["hawk", "hawke", "heye", "hawkeye", "hawk's eye", "hawks eye"], type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", statusType: "Enhancement", name: "Hawk's Eye", expiry: "use", duplicate: "block", description: "While under the effect of Hawk's Eye, you ignore the penalty incurred on ability checks made while Blinded." },
         heal: { matches: ["heal"], type: "special", specialType: "Heal(X)", statusType: "Enhancement", name: "Heal (X)", expiry: "ephemeral" },
@@ -8067,6 +8013,41 @@ const sheets = {
                 ]
             }
         },
+        pld: {
+            job: "PLD",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png",
+            role: "Tank / Paladin",
+            level: 30,
+            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            attributes: { str: 4, dex: 0, vit: 5, int: 1, mnd: 2, defense: 16, magicDefense: 13, vigilance: 12, speed: 5 },
+            traits: [
+                { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Paladin Combo (Fast Blade + Riot Blade)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target. Combo: Rage of Halone", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(5)", combo: "Rage of Halone", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/paladin-combo.png" },
+                    { title: "Total Eclipse", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All targets within range", range: "A 5x5 area centered on this character", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Inflicts Enmity on all targets.", directHit: "Deals 2 damage to all targets.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/total-eclipse.png" },
+                    { title: "Shield Lob", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/shield-lob.png" },
+                    { title: "Rage of Halone", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage and inflicts Enmity on the target.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/rage-of-halone.png" },
+                    { title: "Shield Bash", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 3 damage, inflicts Enmity and stuns the target until the end of this turn.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectTarget: "Stun, Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/shield-bash.png" }
+                ],
+                secondary: [
+                    { title: "Rampart", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Reduces the damage you take from abilities by 2 until the start of your next turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Rampart(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/rampart.png" },
+                    { title: "Low Blow", type: "Secondary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/low-blow.png" },
+                    { title: "Spirits Within", type: "Secondary, Physical", cost: 0, uses: 2, uses_max: 2, target: "Single", range: "1 square", baseEffect: "Deals 2 damage and inflicts Enmity on the target.", hitType: "None", damageType: "Damage", baseValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/spirits-within.png" }
+                ],
+                instant: [
+                    { title: "Sturdy Shield", type: "Instant", cost: 0, uses: 0, uses_max: 0, trigger: "Immediately after an ability check for an ability that targets you.", baseEffect: "Increases your Defense by 1d6 for the ability check that triggered Sturdy Shield. Use this new value to determine if the ability scores a direct hit.", limitation: "Once per round", hitType: "None", damageType: "Defense", baseValue: "1d6 + @{defense}[Defense]", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/sturdy-shield.png" },
+                    { title: "Provoke", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy begins their turn", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Inflicts Enmity on the target.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/provoke.png" },
+                    { title: "Reprisal", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy within 2 squares is resolved", target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Reduces the damage dealt by the abilities of all targets by 2 until the end of this round.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Reprisal(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/reprisal.png" },
+                    { title: "Fight or Flight", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Any time during your turn", baseEffect: "Grants one advantage die on your next ability check this turn.", limitation: "Once per phase.", hitType: "None", damageType: "Effect", effectSelf: "Fight or Flight", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PLD/fight-or-flight.png" },
+                    { title: "Interject", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When an adjacent enemy uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "1 square", baseEffect: "Interrupts the invoked ability that triggered Interject, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Tank/interject.png" }
+                ],
+                limit: [
+                    { title: "Last Bastion", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Immediately before 1 or more allied adventurers take damage", baseEffect: "Halves the damage (rounded up) taken from the effect that triggered Last Bastion, then restores 3d6 HP and removes a single enfeeblement from all allies. Each ally may choose which enfeeblement to remove.", hitType: "None", damageType: "Healing", baseValue: "3d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
         war: {
             job: "WAR",
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
@@ -8409,51 +8390,106 @@ on("clicked:end", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file tabs
+// Build (version 1.0.0), generated file items
 
-const tabsImports = new (function() {
+const itemsImports = new (function() {
     this.export = {};
 
-const workerName = "tabs"
+const workerName = "items"
 
 
 })();
 
-// Build: Source/workers/tabs.js
+// Build: Source/workers/items.js
 
 
-// Tabs
 
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
         setAttrs({
-            sheetTab: button
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
         });
     });
 });
 
-// Initial setup
-on("sheet:opened", () => {
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
     getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
     ], values => {
+        // Assign selected minion
         setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
         });
     });
 });
