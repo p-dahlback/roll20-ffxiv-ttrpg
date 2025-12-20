@@ -55,6 +55,9 @@ const SheetSetup = function() {
                 for (let section of Object.entries(sheet.abilities)) {
                     for (let index in section[1]) {
                         let ability = section[1][index];
+                        if (ability.spacer) {
+                            continue;
+                        }
                         let sectionName;
                         if (section[0] === "limit") {
                             sectionName = section[0];
