@@ -1,0 +1,184 @@
+<div class="sticky section" spellcheck="false">
+    <div class="top fancy section">
+        <input type="hidden" class="overrideSwitch" name="attr_override" />
+
+        <div class="type">
+            <img name="attr_jobIcon" width="50" />
+        </div>
+
+        <div class="name content vertical tight overrideBlocked">
+            <span class="header small bold">Name</span>
+            <input class="large" name="attr_character_name" type="text">
+        </div>
+        
+        <div class="race content vertical tight overrideBlocked">
+            <span class="header small bold">Race</span>
+            <input class="large" name="attr_character_race" type="text">
+        </div>
+        
+        <div class="char-size content vertical tight overrideBlocked">
+            <span class="header small bold">Size</span>
+            <select name="attr_size">
+                <option value="normal">Normal</option>
+                <option value="large">Large</option>
+                <option value="small">Small</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Shortcut for HP/MP -->
+
+    <div class="stat-shortcut fancy lowkey section">
+        <!-- HP -->
+
+        <div class="points section">
+            <div class="stat-header"></div>
+            <div class="hit-point section">
+                <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                <span class="text header large" style="width: 1em">HP</span>
+                <input class="stat" name="attr_hitPoints" type="number" min="0" value="30">
+                <span>/</span>
+                <input class="stat max" name="attr_hitPoints_max" type="number" min="0" value="30">
+                <span class="text header large">Barrier</span>
+                <input class="stat" name="attr_barrierPoints" type="number" min="0" value="0">
+            </div>
+        </div>
+        
+        <!-- MP, Resource -->
+
+        <div class="points section">
+            <div class="small header bold stat-header">
+                <span>Recover</span>
+                <span name="attr_mpRecovery"></span>
+                <span>MP at the end of the (Adventurer Step)</span>
+            </div>
+            <input type="hidden" class="monkResourceSwitch" name="attr_job" placeholder="placeholder" />
+            <div class="regular-resource">
+                <input type="hidden" class="doubleResourceSwitch" name="attr_resource2" placeholder="placeholder" />
+                <div class="resource-point single-resource">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="text header large" style="width: 1em">MP</span>
+                    <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
+                    <span>/</span>
+                    <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+
+                    <input class="text large resourceSwitch overridable" name="attr_resource" type="text" placeholder=" "/>
+                    <input class="stat resource" name="attr_resourceValue" type="number" min="0">
+                    <span class="resource">/</span>
+                    <input class="stat max resource" name="attr_resourceValue_max" type="number" min="0">
+                </div>
+                <div class="resource-point double-resource compressed">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="text header large" style="width: 1em">MP</span>
+                    <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
+                    <span>/</span>
+                    <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+
+                    <input class="text large overridable" name="attr_resource" type="text" placeholder=" "/>
+                    <input class="stat" name="attr_resourceValue" type="number" min="0">
+                    <span class="">/</span>
+                    <input class="stat max" name="attr_resourceValue_max" type="number" min="0">
+
+                    <input class="text large overridable" name="attr_resource2" type="text" placeholder=" "/>
+                    <input class="stat" name="attr_resource2Value" type="number" min="0">
+                    <span class="">/</span>
+                    <input class="stat max" name="attr_resource2Value_max" type="number" min="0">
+                </div>
+            </div>
+            <div class="monk-resource">
+                <div class="resource-point compressed">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="text header large" style="width: 1em">MP</span>
+                    <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
+                    <span>/</span>
+                    <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+                </div>
+                <div class="horizontal">
+                    <div class="resource-point ranges compressed">
+                        <input type="hidden" class="bestialSwitch" name="attr_hasBestial" placeholder="placeholder" />
+                        <input type="hidden" class="nadiSwitch" name="attr_hasNadi" placeholder="placeholder" />
+                        <span class="text header large" style="width: 1em">Chakra</span>
+                        <div class="radiocontainer">
+                            <input class="radiobox transparent" type="checkbox" name="attr_resourceValue" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_resourceValue" value="1">
+                            <input class="radiobox" type="checkbox" name="attr_resourceValue" value="2">
+                            <input class="radiobox" type="checkbox" name="attr_resourceValue" value="3">
+                        </div>
+
+                        <span class="text header large bestial" style="width: 1em">Bestial</span>
+                        <div class="radiocontainer bestial">
+                            <input class="radiobox transparent" type="checkbox" name="attr_resource2Value" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_resource2Value" value="1">
+                            <input class="radiobox" type="checkbox" name="attr_resource2Value" value="2">
+                            <input class="radiobox" type="checkbox" name="attr_resource2Value" value="3">
+                        </div>
+
+                        <span class="text header large nadi" style="width: 1em">Nadi</span>
+                        <div class="radiocontainer nadi">
+                            <input class="radiobox transparent" type="checkbox" name="attr_resource3Value" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_resource3Value" value="1">
+                        </div>
+                    </div>
+                    <div class="resource-point ranges compressed">
+                        <input type="hidden" class="opoSwitch" name="attr_hasOpo" placeholder="placeholder" />
+                        <span class="text header large opo">Opo</span>
+                        <div class="radiocontainer opo">
+                            <input class="radiobox transparent" type="checkbox" name="attr_range1" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_range1" value="1">
+                        </div>
+
+                        <span class="text header large">Raptor</span>
+                        <div class="radiocontainer">
+                            <input class="radiobox transparent" type="checkbox" name="attr_range2" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_range2" value="1">
+                        </div>
+                        
+                        <span class="text header large">Coeurl</span>
+                        <div class="radiocontainer">
+                            <input class="radiobox transparent" type="checkbox" name="attr_range3" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_range3" value="1">
+                            <input class="radiobox" type="checkbox" name="attr_range3" value="2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advantage -->
+
+        <div class="points advantage" style="width: 25%;">
+            <label class="header large stat-header">Advantage</label>
+            <div class="horizontal">
+                <button class="math-button" type="action" name="act_decreaseAdvantage">-</button>
+                <div>
+                    <span class="large" style="font-family: dicefontd20;">0</span>
+                    <span class="large" name="attr_advantage"></span>
+                </div>
+                <button class="math-button" type="action" name="act_increaseAdvantage">+</button>
+            </div>
+            <button type="action" name="act_clearAdvantage">Clear</button>
+        </div>
+    </div>
+
+    <!-- Tab buttons -->
+
+    <div class="tab">
+        <input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />
+        <button type="action" name="act_character" class="toggle sheet-button0">Character</button>
+        <button type="action" name="act_abilities" class="toggle sheet-button2">Abilities</button>
+        <button type="action" name="act_items" class="toggle sheet-button1">Inventory</button>
+
+        <div class="mini-effects hidden-controls">
+            <fieldset class="repeating_effects">
+                <span class="sheet-tooltip">
+                    <img class="icon" name="attr_icon" />
+                    <span name="attr_name" class="floatLeft"></span>
+                </span>
+            </fieldset>
+        </div>
+
+        <button type="action" name="act_settings" class="toggle sheet-button3">y</button>
+    </div>
+</div>
+
+<input type="hidden" class="tabstoggle" name="attr_sheetTab" value="character" />

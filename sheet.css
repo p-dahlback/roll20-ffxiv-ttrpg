@@ -36,6 +36,9 @@ body,
   --sheet-tooltip-border-color: #dca;
   --sheet-tooltip-shadow-color: #766c4b;
   --sheet-select-border-color: #ccc;
+  --sheet-range-off-color: gray;
+  --sheet-range-on-color: #ffd700;
+  --sheet-range-highlight-color: #f8ff73;
 }
 
 body.sheet-darkmode,
@@ -71,6 +74,9 @@ body.sheet-darkmode,
   --sheet-tooltip-background-color: #00050f;
   --sheet-tooltip-shadow-color: #00050f;
   --sheet-select-border-color: #333333;
+  --sheet-range-off-color: gray;
+  --sheet-range-on-color: #0028ff;
+  --sheet-range-highlight-color: #9787ff;
 }
 
 /*------------------------------------------------*\
@@ -960,8 +966,9 @@ body.sheet-darkmode > .ui-dialog .sheetform {
   height: 256px;
 }
 
-.resource-point.single-resource,
-.ui-dialog .charsheet .resource {
+.ui-dialog .charsheet .resource-point.single-resource,
+.ui-dialog .charsheet .resource,
+.ui-dialog .charsheet .monk-resource {
   display: none;
 }
 
@@ -976,10 +983,17 @@ body.sheet-darkmode > .ui-dialog .sheetform {
   display: inline-block;
 }
 
-input.doubleResourceSwitch[value="none"] ~ .resource-point.single-resource {
+.ui-dialog .charsheet input.doubleResourceSwitch[value="none"] ~ .resource-point.single-resource {
   display: grid;
 }
-input.doubleResourceSwitch[value="none"] ~ .resource-point.double-resource {
+.ui-dialog .charsheet input.doubleResourceSwitch[value="none"] ~ .resource-point.double-resource {
+  display: none;
+}
+
+.ui-dialog .charsheet input.monkResourceSwitch[value="MNK"] ~ .monk-resource {
+  display: inline-block;
+}
+.ui-dialog .charsheet input.monkResourceSwitch[value="MNK"] ~ .regular-resource {
   display: none;
 }
 
@@ -988,13 +1002,91 @@ input.doubleResourceSwitch[value="none"] ~ .resource-point.double-resource {
   gap: 2px;
 }
 
-.resource-point.double-resource .large {
+.resource-point.compressed .large {
   font-size: 1.4rem;
 }
 
-.ui-dialog .charsheet .resource-point.double-resource input[type=number].stat {
+.ui-dialog .charsheet .resource-point.compressed input[type=number].stat {
   font-size: 2.2rem;
 }
+
+.ui-dialog .charsheet .resource-point.ranges {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 2px;
+}
+
+.ui-dialog .charsheet .monk-resource .radiocontainer {
+  display: flex;
+  margin-top: auto;
+  margin-bottom: auto;
+  gap: 0.5rem;
+}
+
+.ui-dialog .charsheet .monk-resource .radiobox {
+  appearance: none;
+  
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: var(--sheet-range-off-color);
+  border: 1px solid var(--sheet-range-off-color);
+  display: block;
+}
+
+.ui-dialog .charsheet .monk-resource .radiobox.transparent,
+.ui-dialog .charsheet .monk-resource .radiobox.transparent:checked,
+.ui-dialog .charsheet .monk-resource .radiobox.transparent:has(~ .radiobox:checked) {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.ui-dialog .charsheet .monk-resource .radiobox.transparent::before,
+.ui-dialog .charsheet .monk-resource .radiobox.transparent:checked::before,
+.ui-dialog .charsheet .monk-resource .radiobox.transparent:has(~ .radiobox:checked)::before {
+  content: " ";
+  display: inline-block;
+  background-color: var(--sheet-range-off-color);
+  clip-path: circle(25%);
+  width: 15px;
+  height: 15px;
+}
+
+.ui-dialog .charsheet .monk-resource .radiobox:focus {
+  outline: none;
+}
+
+.ui-dialog .charsheet .monk-resource .radiobox:checked,
+.ui-dialog .charsheet .monk-resource .radiobox:has(~ .radiobox:checked) {
+  background-color: var(--sheet-range-on-color);
+  box-shadow: 0 0 6px var(--sheet-range-highlight-color);
+  border-color: var(--sheet-range-highlight-color);
+}
+
+.ui-dialog .charsheet .monk-resource .radiobox:checked::before,
+.ui-dialog .charsheet .monk-resource .radiobox:has(~ .radiobox:checked)::before {
+  content: " ";
+  display: inline-block;
+  background-color: var(--sheet-range-highlight-color);
+  clip-path: circle(15% at 50% 50%);
+  width: 13px;
+  height: 14px;
+}
+
+
+.ui-dialog .charsheet .monk-resource .bestial,
+.ui-dialog .charsheet .monk-resource .nadi,
+.ui-dialog .charsheet .monk-resource .opo {
+  display: none;
+}
+
+.ui-dialog .charsheet .monk-resource .bestialSwitch[value="true"] ~ .bestial,
+.ui-dialog .charsheet .monk-resource .nadiSwitch[value="true"] ~ .nadi,
+.ui-dialog .charsheet .monk-resource .opoSwitch[value="true"] ~ .opo {
+  display: flex;
+}
+
 
 .traits.fancy.lowkey {
   width: 100%;

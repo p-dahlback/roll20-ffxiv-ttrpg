@@ -1,5 +1,5 @@
-<!-- Character name and race Task test -->
-
+<!-- Character name, race and resource stats -->
+<!-- build:import header.html -->
 <div class="sticky section" spellcheck="false">
     <div class="top fancy section">
         <input type="hidden" class="overrideSwitch" name="attr_override" />
@@ -54,35 +54,95 @@
                 <span name="attr_mpRecovery"></span>
                 <span>MP at the end of the (Adventurer Step)</span>
             </div>
-            <input type="hidden" class="doubleResourceSwitch" name="attr_resource2" placeholder="placeholder" />
-            <div class="resource-point single-resource">
-                <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                <span class="text header large" style="width: 1em">MP</span>
-                <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
-                <span>/</span>
-                <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+            <input type="hidden" class="monkResourceSwitch" name="attr_job" placeholder="placeholder" />
+            <div class="regular-resource">
+                <input type="hidden" class="doubleResourceSwitch" name="attr_resource2" placeholder="placeholder" />
+                <div class="resource-point single-resource">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="text header large" style="width: 1em">MP</span>
+                    <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
+                    <span>/</span>
+                    <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
 
-                <input class="text large resourceSwitch overridable" name="attr_resource" type="text" placeholder=" "/>
-                <input class="stat resource" name="attr_resourceValue" type="number" min="0">
-                <span class="resource">/</span>
-                <input class="stat max resource" name="attr_resourceValue_max" type="number" min="0">
+                    <input class="text large resourceSwitch overridable" name="attr_resource" type="text" placeholder=" "/>
+                    <input class="stat resource" name="attr_resourceValue" type="number" min="0">
+                    <span class="resource">/</span>
+                    <input class="stat max resource" name="attr_resourceValue_max" type="number" min="0">
+                </div>
+                <div class="resource-point double-resource compressed">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="text header large" style="width: 1em">MP</span>
+                    <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
+                    <span>/</span>
+                    <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+
+                    <input class="text large overridable" name="attr_resource" type="text" placeholder=" "/>
+                    <input class="stat" name="attr_resourceValue" type="number" min="0">
+                    <span class="">/</span>
+                    <input class="stat max" name="attr_resourceValue_max" type="number" min="0">
+
+                    <input class="text large overridable" name="attr_resource2" type="text" placeholder=" "/>
+                    <input class="stat" name="attr_resource2Value" type="number" min="0">
+                    <span class="">/</span>
+                    <input class="stat max" name="attr_resource2Value_max" type="number" min="0">
+                </div>
             </div>
-            <div class="resource-point double-resource">
-                <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
-                <span class="text header large" style="width: 1em">MP</span>
-                <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
-                <span>/</span>
-                <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+            <div class="monk-resource">
+                <div class="resource-point compressed">
+                    <input type="hidden" class="overrideSwitch" name="attr_override" placeholder="placeholder" />
+                    <span class="text header large" style="width: 1em">MP</span>
+                    <input class="stat" name="attr_magicPoints" type="number" min="0" value="5">
+                    <span>/</span>
+                    <input class="stat max" name="attr_magicPoints_max" type="number" min="0" value="5">
+                </div>
+                <div class="horizontal">
+                    <div class="resource-point ranges compressed">
+                        <input type="hidden" class="bestialSwitch" name="attr_hasBestial" placeholder="placeholder" />
+                        <input type="hidden" class="nadiSwitch" name="attr_hasNadi" placeholder="placeholder" />
+                        <span class="text header large" style="width: 1em">Chakra</span>
+                        <div class="radiocontainer">
+                            <input class="radiobox transparent" type="checkbox" name="attr_resourceValue" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_resourceValue" value="1">
+                            <input class="radiobox" type="checkbox" name="attr_resourceValue" value="2">
+                            <input class="radiobox" type="checkbox" name="attr_resourceValue" value="3">
+                        </div>
 
-                <input class="text large overridable" name="attr_resource" type="text" placeholder=" "/>
-                <input class="stat" name="attr_resourceValue" type="number" min="0">
-                <span class="">/</span>
-                <input class="stat max" name="attr_resourceValue_max" type="number" min="0">
+                        <span class="text header large bestial" style="width: 1em">Bestial</span>
+                        <div class="radiocontainer bestial">
+                            <input class="radiobox transparent" type="checkbox" name="attr_resource2Value" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_resource2Value" value="1">
+                            <input class="radiobox" type="checkbox" name="attr_resource2Value" value="2">
+                            <input class="radiobox" type="checkbox" name="attr_resource2Value" value="3">
+                        </div>
 
-                <input class="text large overridable" name="attr_resource2" type="text" placeholder=" "/>
-                <input class="stat" name="attr_resource2Value" type="number" min="0">
-                <span class="">/</span>
-                <input class="stat max" name="attr_resource2Value_max" type="number" min="0">
+                        <span class="text header large nadi" style="width: 1em">Nadi</span>
+                        <div class="radiocontainer nadi">
+                            <input class="radiobox transparent" type="checkbox" name="attr_resource3Value" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_resource3Value" value="1">
+                        </div>
+                    </div>
+                    <div class="resource-point ranges compressed">
+                        <input type="hidden" class="opoSwitch" name="attr_hasOpo" placeholder="placeholder" />
+                        <span class="text header large opo">Opo</span>
+                        <div class="radiocontainer opo">
+                            <input class="radiobox transparent" type="checkbox" name="attr_range1" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_range1" value="1">
+                        </div>
+
+                        <span class="text header large">Raptor</span>
+                        <div class="radiocontainer">
+                            <input class="radiobox transparent" type="checkbox" name="attr_range2" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_range2" value="1">
+                        </div>
+                        
+                        <span class="text header large">Coeurl</span>
+                        <div class="radiocontainer">
+                            <input class="radiobox transparent" type="checkbox" name="attr_range3" value="0">
+                            <input class="radiobox" type="checkbox" name="attr_range3" value="1">
+                            <input class="radiobox" type="checkbox" name="attr_range3" value="2">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -4665,146 +4725,6 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file attributes
 
 const attributesImports = new (function() {
@@ -5026,108 +4946,6 @@ on("clicked:repeating_minions:select", eventInfo => {
             selectedMinionId: rowid,
             selectedMinion: values[`repeating_minions_${rowid}_title`],
             selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
-
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
         });
     });
 });
@@ -8131,7 +7949,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png",
             role: "DPS / Monk",
             level: 30,
-            resources: { hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, resource: "Chakra", resourceValue: 3, resourceValue_max: 3, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: { hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, resource: "Chakra", resourceValue: 3, resourceValue_max: 3, resource2: "none", resource2Value: 0, resource2Value_max: 0, resource3Value: 0, resource3Value_max: 0, range1: 0, range1_max: 0, range2: 0, range2_max: 1, range3: 0, range3_max: 2, resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false" },
             attributes: { str: 4, dex: 3, vit: 2, int: 1, mnd: 2, defense: 14, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
                 { title: "Martial Forms", effect: "Certain effects grant you Opo-Opo Form, Raptor Form, or Coeur Form. While under the effect of a form, receive one advantage die on you ability checks for physical abilities.\n\nIf an effect grants you a new form, your current form is removed and the new form immediately takes effect. Forms are removed at the end your next turn." },
@@ -8144,8 +7962,8 @@ const sheets = {
                     { title: "True Strike", type: "Primary, Physical", condition: "Under the effect of Raptor Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Coeurl Form, and enables Bestial Fury: Raptor.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Coeurl Form,Combo(Raptor's Fury,1d6)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/true-strike.png" },
                     { title: "Snap Punch", type: "Primary, Physical", condition: "Under the effect of Coeurl Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Opo-Opo Form, and enables Bestial Fury: Coeurl.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Opo-Opo Form,Combo(Coeurl's Fury,1d6)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/snap-punch.png" },
                     { title: "Bootshine", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Raptor Form. If this ability is used while under the effect of Opo-Opo Form and results in a direct hit, it automatically scores a critical as well.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Raptor Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/bootshine.png" },
-                    { title: "Twin Snakes", type: "Primary, Physical", condition: "Under the effect of Raptor Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Grants Coeurl Form, and 1 stack of Raptor's Fury.", directHit: "Deals an additional 2 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2", effectSelf: "Coeurl Form,Raptors Fury", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/twin-snakes.png" },
-                    { title: "Demolish", type: "Primary, Physical", condition: "Under the effect of Coeurl Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Grants Opo-Opo Form and 2 stacks of Coeurl's Fury.", directHit: "Deals an additional 2 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2", effectSelf: "Opo-Opo Form,Coeurls Fury(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/demolish.png" },
+                    { title: "Twin Snakes", type: "Primary, Physical", condition: "Under the effect of Raptor Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Grants Coeurl Form, and 1 stack of Raptor's Fury.", directHit: "Deals an additional 2 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2", restore: "1 range2", effectSelf: "Coeurl Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/twin-snakes.png" },
+                    { title: "Demolish", type: "Primary, Physical", condition: "Under the effect of Coeurl Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Grants Opo-Opo Form and 2 stacks of Coeurl's Fury.", directHit: "Deals an additional 2 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2", restore: "2 range3", effectSelf: "Opo-Opo Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/demolish.png" },
                     { title: "Arm of the Destroyer", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 3x3 area centered on this character", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to all targets and grants Raptor Form.", directHit: "Deals an additional 2 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2", effectSelf: "Raptor Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/arm-of-the-destroyer.png" },
                     { spacer: true },
                     { title: "Rockbreaker", type: "Primary, Physical", condition: "Under the effect of Coeurl Form", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 3x3 area centered on this character", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to all targets and grants Opo-Opo Form.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Opo-Opo Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/rockbreaker.png" }
@@ -8572,6 +8390,248 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file tabs
+
+const tabsImports = new (function() {
+    this.export = {};
+
+const workerName = "tabs"
+
+
+})();
+
+// Build: Source/workers/tabs.js
+
+
+// Tabs
+
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
+    });
+});
+
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
+    });
 });
 
 </script>
