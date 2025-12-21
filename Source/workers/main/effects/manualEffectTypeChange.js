@@ -105,6 +105,11 @@ const ManualEffectTypeChange = function() {
                     mpRecoveryBlock: "on"
                 });
             }
+        } else if (["coeurl form", "opo-opo form", "raptor form"].includes(newValue)) {
+            log("Removing Monk Forms to ensure a single form is active");
+            // Remove all Monk Forms excepting the current instance.
+            // This ensures there's only one Form active at any point.
+            removeEffects.removeAll(["coeurl form", "opo-opo form", "raptor form"], rowId);
         } else {
             // Remove duplicates of special effects
             removeEffects.removeAll([newValue], rowId);

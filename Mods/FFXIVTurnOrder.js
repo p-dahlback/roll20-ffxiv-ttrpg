@@ -53,6 +53,7 @@ const EffectData = function() {
         brink: { matches: ["brink", "brink of death"], type: "brink", maskedType: "brink", statusType: "Enfeeblement", marker: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block", description: "You take a -5 penalty on all checks. If you are targeted by another effect that inflicts Weak, you are inflicted with Comatose instead.\n\nBrink of Death can only be removed by completing a rest or by effects that specifically remove it." },
         chicken: { matches: ["chicken"], type: "chicken", statusType: "Enfeeblement", marker: "chicken", name: "Chicken", expiry: "turn", duplicate: "replace", description: "You are a chicken." },
         clear_enfeeblements: { matches: ["clear", "cleare", "clear enfeeblements"], type: "special", specialType: "Clear Enfeeblements", statusType: "Enhancement", name: "Clear Enfeeblements", expiry: "ephemeral" },
+        coeurl_form: { matches: ["coeurl form", "coeurl", "cform", "monk3", "m3"], type: "special", maskedType: "ready(x)", specialType: "Coeurl Form", statusType: "Enhancement", name: "Coeurl Form", expiry: "turn2", duplicate: "replace", description: "Enables you to perform Snap Punch or Demolish." },
         consume: { matches: ["consume", "consume item"], type: "special", specialType: "Consume(X)", statusType: "Enhancement", name: "Consume (X)", expiry: "ephemeral" },
         comatose: { matches: ["coma", "comatose"], type: "comatose", maskedType: "comatose", statusType: "Enfeeblement", marker: "comatose", name: "Comatose", expiry: "rest", duplicate: "block", description: "A Comatose character is treated as if they were Knocked Out for gameplay purposes.\nComatose can only be removed by spending one full day in a location where appropriate medical treatment is available, as determined by the GM.\n\nA Comatose character has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Death." },
         combust: { matches: ["combust"], type: "special", maskedType: "dot(x)", specialType: "Combust", statusType: "Enfeeblement", marker: "combust", name: "Combust", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
@@ -85,6 +86,7 @@ const EffectData = function() {
         major_arcana: { matches: ["marcana", "major arcana"], type: "special", maskedType: "dreroll", specialType: "Major Arcana", statusType: "Enhancement", name: "Major Arcana", expiry: "turn", duplicate: "replace", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
         mana_conduit: { matches: ["mconduit", "mana conduit"], type: "special", maskedType: "augment", specialType: "Mana Conduit", statusType: "Enhancement", name: "Mana Conduit", expiry: "end", duplicate: "block", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
         masterwork_ornamentation: { matches: ["mwork", "masterwork", "ornament", "ornamentation", "masterwork ornamentation"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
+        opo_opo_form: { matches: ["opo-opo form", "opo", "opo form", "opo opo form", "oform", "monk1", "m1"], type: "special", maskedType: "ready(x)", specialType: "Opo-Opo Form", statusType: "Enhancement", name: "Opo-Opo Form", expiry: "turn2", duplicate: "replace", description: "Enhances Bootshine and Dragon Kick." },
         paralyzed: { matches: ["paralysis", "paralyze", "paralyzed"], type: "paralyzed", maskedType: "paralyzed", statusType: "Enfeeblement", marker: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block", description: "If you use a Primary ability and roll a 5 or lower for its ability check, Paralysis interrupts the ability, negating it completely. Do not resolve any of its effects or spend any resources." },
         petrified: { matches: ["petrify", "petrified"], type: "petrified", maskedType: "petrified", statusType: "Enfeeblement", marker: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block", description: "You cannot act during your turn or use Instant abilities. You incur a -5 penalty on all checks.\n\nCharacters targeting you receive one advantage die on their ability check." },
         precision_opener: { matches: ["popener", "precision opener"], type: "special", maskedType: "augment", specialType: "Precision Opener", statusType: "Enhancement", name: "Precision Opener", expiry: "end", duplicate: "block", description: "Grants one advantage die on the first ability check this character makes during their first turn of an encounter." },
@@ -92,6 +94,7 @@ const EffectData = function() {
         raging_strikes: { matches: ["rstrikes", "raging strikes"], type: "special", maskedType: "dps(x)", specialType: "Raging Strikes", statusType: "Enhancement", name: "Raging Strikes", expiry: "turn", duplicate: "block", description: "Your primary abilities deal an additional 2 damage until the end of this turn." },
         raise: { matches: ["raise", "ascend" ], type: "special", specialType: "Raise", statusType: "Enhancement", name: "Raise", expiry: "ephemeral" },
         rampart: { matches: ["rampart"], type: "special", maskedType: "defense(x)", specialType: "Rampart", statusType: "Enhancement", name: "Rampart", expiry: "start", duplicate: "block", description: "Reduces the damage you take from abilities by 2 until the start of your next turn." },
+        raptor_form: { matches: ["raptor form", "raptor", "rform", "monk2", "m2"], type: "special", maskedType: "ready(x)", specialType: "Raptor Form", statusType: "Enhancement", name: "Raptor Form", expiry: "turn2", duplicate: "replace", description: "Enables you to perform True Strike, Twin Snakes or Four-Point Fury." },
         ready: { matches: ["ready"], type: "ready(x)", maskedType: "ready(x)", statusType: "Enhancement", name: "(X) Ready", expiry: "use", duplicate: "block", description: "You may use an ability that requires you to be under this enhancement. X Ready is removed after the ability is used." },
         regen: { matches: ["regen", "revivify"], type: "regen(x)", maskedType: "regen(x)", statusType: "Enhancement", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
         reprisal: { matches: ["repr", "reprisal"], type: "special", maskedType: "ddown(x)", specialType: "Reprisal", statusType: "Enfeeblement", marker: "reprisal", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
@@ -218,7 +221,7 @@ const EffectUtilities = function() {
         }
         return name
             .replaceAll(/(\([-|\s\w]+\))|(\[[-+><=\w]+\])|'/g, "")
-            .replaceAll(" ", "_")
+            .replaceAll(/[ -]/g, "_")
             .trim().toLowerCase();
     };
     
@@ -282,6 +285,11 @@ const EffectUtilities = function() {
                 switch (effect.specialType.trim().toLowerCase()) {
                     case "astral fire":
                         result.astralFire = effect;
+                        break;
+                    case "coeurl form":
+                    case "opo-opo form":
+                    case "raptor form":
+                        result.monkForm = effect;
                         break;
                     case "hawk's eye":
                         result.hawksEye = effect;
@@ -1223,7 +1231,6 @@ const AddEffects = function(customEngine, customRemove) {
 
         this.resolveAbilities(effect.adjustedName);
         this.resolveAttributes(id, effect.adjustedName, value);
-
         switch (effect.adjustedName) {
             case "astral_fire":
                 // Clear MP recovery
@@ -1253,6 +1260,16 @@ const AddEffects = function(customEngine, customRemove) {
                         this.engine().logd(`Clearing ${existingEffect.data.name}`);
                         this.removeEffects().remove(existingEffect);
                     }
+                }
+                break;
+            }
+            case "coeurl_form":
+            case "opo_opo_form":
+            case "raptor_form": {
+                this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
+                if (state.existingEffects.monkForm) {
+                    summaries.push(`Removed ${state.existingEffects.monkForm.data.name}`);
+                    this.engine().remove(state.existingEffects.monkForm);
                 }
                 break;
             }

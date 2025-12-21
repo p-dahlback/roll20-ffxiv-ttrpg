@@ -37,8 +37,8 @@ body,
   --sheet-tooltip-shadow-color: #766c4b;
   --sheet-select-border-color: #ccc;
   --sheet-range-off-color: gray;
-  --sheet-range-on-color: #ffd700;
-  --sheet-range-highlight-color: #f8ff73;
+  --sheet-range-on-color: #2bc0ff;
+  --sheet-range-highlight-color: #d5cfff;
 }
 
 body.sheet-darkmode,
@@ -75,8 +75,8 @@ body.sheet-darkmode,
   --sheet-tooltip-shadow-color: #00050f;
   --sheet-select-border-color: #333333;
   --sheet-range-off-color: gray;
-  --sheet-range-on-color: #0028ff;
-  --sheet-range-highlight-color: #9787ff;
+  --sheet-range-on-color: #0059ff;
+  --sheet-range-highlight-color: #b6acfc;
 }
 
 /*------------------------------------------------*\
@@ -1031,6 +1031,7 @@ body.sheet-darkmode > .ui-dialog .sheetform {
   border-radius: 50%;
   background-color: var(--sheet-range-off-color);
   border: 1px solid var(--sheet-range-off-color);
+  opacity: 0.4;
   display: block;
 }
 
@@ -1048,6 +1049,7 @@ body.sheet-darkmode > .ui-dialog .sheetform {
   content: " ";
   display: inline-block;
   background-color: var(--sheet-range-off-color);
+  opacity: 0.4;
   clip-path: circle(25%);
   width: 15px;
   height: 15px;
@@ -1062,6 +1064,7 @@ body.sheet-darkmode > .ui-dialog .sheetform {
   background-color: var(--sheet-range-on-color);
   box-shadow: 0 0 6px var(--sheet-range-highlight-color);
   border-color: var(--sheet-range-highlight-color);
+  opacity: 1;
 }
 
 .ui-dialog .charsheet .monk-resource .radiobox:checked::before,

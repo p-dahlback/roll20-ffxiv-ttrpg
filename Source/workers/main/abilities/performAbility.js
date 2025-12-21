@@ -177,7 +177,7 @@ const PerformAbility = function() {
                 name: specification.attributeName,
                 value: parts[0]
             });
-            summary += `${parts[0]} ${specification.name}, `;
+            summary += `${parts[0]} ${specification.resourceType}, `;
         }
 
         if (!didRestore) {

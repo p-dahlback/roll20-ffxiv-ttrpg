@@ -347,7 +347,6 @@ const AddEffects = function(customEngine, customRemove) {
 
         this.resolveAbilities(effect.adjustedName);
         this.resolveAttributes(id, effect.adjustedName, value);
-
         switch (effect.adjustedName) {
             case "astral_fire":
                 // Clear MP recovery
@@ -377,6 +376,16 @@ const AddEffects = function(customEngine, customRemove) {
                         this.engine().logd(`Clearing ${existingEffect.data.name}`);
                         this.removeEffects().remove(existingEffect);
                     }
+                }
+                break;
+            }
+            case "coeurl_form":
+            case "opo_opo_form":
+            case "raptor_form": {
+                this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
+                if (state.existingEffects.monkForm) {
+                    summaries.push(`Removed ${state.existingEffects.monkForm.data.name}`);
+                    this.engine().remove(state.existingEffects.monkForm);
                 }
                 break;
             }

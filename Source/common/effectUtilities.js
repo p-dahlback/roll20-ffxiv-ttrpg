@@ -11,7 +11,7 @@ const EffectUtilities = function() {
         }
         return name
             .replaceAll(/(\([-|\s\w]+\))|(\[[-+><=\w]+\])|'/g, "")
-            .replaceAll(" ", "_")
+            .replaceAll(/[ -]/g, "_")
             .trim().toLowerCase();
     };
     
@@ -75,6 +75,11 @@ const EffectUtilities = function() {
                 switch (effect.specialType.trim().toLowerCase()) {
                     case "astral fire":
                         result.astralFire = effect;
+                        break;
+                    case "coeurl form":
+                    case "opo-opo form":
+                    case "raptor form":
+                        result.monkForm = effect;
                         break;
                     case "hawk's eye":
                         result.hawksEye = effect;
