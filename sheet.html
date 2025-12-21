@@ -4725,228 +4725,48 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file attributes
+// Build (version 1.0.0), generated file override
 
-const attributesImports = new (function() {
+const overrideImports = new (function() {
     this.export = {};
 
-const workerName = "attributes"
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
 
 
 })();
 
-// Build: Source/workers/attributes.js
+// Build: Source/workers/override.js
 
 
-// Advantage management
 
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
+const imports = overrideImports.export;
 
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
             });
         }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
-        setAttrs({
-            barrierPoints_max: values.barrierPoints
-        });
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
     });
 });
 
@@ -5874,6 +5694,8 @@ const AbilityRolls = function() {
             "magicPoints", "magicPoints_max",
             "resource", "resourceValue", "resourceValue_max",
             "resource2", "resource2Value", "resource2Value_max",
+            "resource3", "resource3Value", "resource3Value_max",
+            "range1", "range1_max", "range2", "range2_max", "range3", "range3_max",
 
             "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
 
@@ -6731,7 +6553,7 @@ const AddEffects = function(customEngine, customRemove) {
 
         this.engine().logd("Adding effects");
         for (let effect of effects) {
-            if (!effect) {
+            if (!effect || !effect.adjustedName) {
                 continue;
             }
             if (!this.matchesCondition(state, effect)) {
@@ -6747,7 +6569,7 @@ const AddEffects = function(customEngine, customRemove) {
             let adjustedEffect = replacement.effect;
             let data = adjustedEffect.data;
             if (!data) {
-                this.engine().logi("Unhandled effect " + adjustedEffect);
+                this.engine().logi("Unhandled effect " + JSON.stringify(adjustedEffect));
                 continue;
             }
             let duplicatesResult = this.resolveDuplicates(state, adjustedEffect);
@@ -7569,46 +7391,25 @@ const PerformAbility = function() {
         const usesMax = values[`repeating_${section}_${rowId}_uses_max`];
         const restoration = values[`repeating_${section}_${rowId}_restore`];
         const isGeneric = values.sheet_type != "unique";
-        const resourceNames = [values.resource, values.resource2];
 
         var resourceCost = "";
         var resourceResult = false;
         if (cost > 0) {
-            if (resourceType.toLowerCase() == "mp") {
+            let specification = this.resourceSpecification(resourceType, values);
+            if (specification) {
                 let result = this.spend(
                     isGeneric,
                     cost,
-                    resourceType,
-                    values.magicPoints,
-                    values.magicPoints_max,
-                    "magicPoints"
-                );
-                resourceResult = result[0];
-                resourceCost = result[1];
-            } else if (resourceType.toLowerCase() == resourceNames[0].toLowerCase()) {
-                let result = this.spend(
-                    isGeneric,
-                    cost,
-                    resourceType,
-                    values.resourceValue,
-                    values.resourceValue_max,
-                    "resourceValue"
-                );
-                resourceResult = result[0];
-                resourceCost = result[1];
-            } else if (resourceType.toLowerCase() == resourceNames[1].toLowerCase()) {
-                let result = this.spend(
-                    isGeneric,
-                    cost,
-                    resourceType,
-                    values.resource2Value,
-                    values.resource2Value_max,
-                    "resource2Value"
+                    specification.name,
+                    values[specification.attributeName],
+                    values[specification.attributeNameMax],
+                    specification.attributeName
                 );
                 resourceResult = result[0];
                 resourceCost = result[1];
             }
         }
+        
         if (resourceResult || cost == 0) {
             // Spend uses if there are any
             if (usesMax > 0) {
@@ -7633,13 +7434,16 @@ const PerformAbility = function() {
         var summaries = [resourceCost];
 
         // Restore resources
+        engine.logd("Checking to restore");
         if (resourceResult || cost == 0) {
             if (restoration) {
-                summaries.push(this.restore(isGeneric, restoration, resourceType, resourceNames));
+                summaries.push(this.restore(isGeneric, restoration, values));
+            } else {
+                engine.logd("No restore");
             }
             let isIceType = type.toLowerCase().includes("ice-aspect");
             if (isIceType && effects.umbralIce) {
-                summaries.push(`${this.restore(isGeneric, "5 mp", resourceType, resourceNames)} (Umbral Ice)`);
+                summaries.push(`${this.restore(isGeneric, "5 mp", values)} (Umbral Ice)`);
             }
         }
 
@@ -7650,6 +7454,54 @@ const PerformAbility = function() {
         for (let section of abilitySections) {
             this.resetUses(section);
         }
+    };
+
+    this.resourceSpecification = function(resourceType, values) {
+        if (!resourceType) {
+            return null;
+        }
+
+        const resourceNames = [values.resource, values.resource2, values.resource3].filter(name => name);
+        const ranges = [
+            { key: "range1", name: "Opo-opo's Fury" },
+            { key: "range2", name: "Raptor's Fury" },
+            { key: "range3", name: "Coeurl's Fury" }
+        ];
+        let resourceTypeLowerCase = resourceType.toLowerCase();
+        if (resourceTypeLowerCase === "mp") {
+            return {
+                resourceType: "MP",
+                attributeName: "magicPoints",
+                attributeNameMax: "magicPoints_max"
+            };
+        } else if (resourceTypeLowerCase === "hp") {
+            return {
+                resourceType: "HP",
+                attributeName: "hitPoints",
+                attributeNameMax: "hitPoints_max"
+            };
+        } else if (resourceTypeLowerCase.startsWith("range")) {
+            let index = ranges.findIndex(obj => obj.key === resourceTypeLowerCase);
+            if (index !== -1) {
+                return {
+                    resourceType: ranges[index].name,
+                    attributeName: ranges[index].key,
+                    attributeNameMax: `${ranges[index].key}_max`
+                };
+            }
+        } else {
+            let index = resourceNames.findIndex(name => name.toLowerCase() === resourceTypeLowerCase);
+            if (index !== -1) {
+                let key = index === 0 ? "resourceValue" : `resource${index}`;
+                return {
+                    name: resourceNames[index],
+                    attributeName: key,
+                    attributeNameMax: `${key}_max`
+                };
+            }
+        }
+        engine.logi("Don't recognize resource " + resourceType);
+        return null;
     };
 
     this.spend = function(isGeneric, cost, resourceType, value, value_max, attributeName) {
@@ -7674,51 +7526,34 @@ const PerformAbility = function() {
         }
     };
 
-    this.restore = function(isGeneric, restoration, resourceType, resourceNames) {
-        const values = restoration.split(",");
+    this.restore = function(isGeneric, restoration, values) {
+        const restoreValues = restoration.split(",");
         var attributes = [];
         var summary = isGeneric ? "Restore " : "Restored ";
         var didRestore = false;
-        for (let i = 0; i < values.length; i++) {
-            var parts = values[i].trim().split(" ");
+        for (let i = 0; i < restoreValues.length; i++) {
+            var parts = restoreValues[i].trim().split(" ");
             if (parts.length < 2) {
-                engine.logi("Invalid restore declaration " + values[i]);
+                engine.logi("Invalid restore declaration " + restoreValues[i]);
                 continue;
             }
             if (parts.length > 2) {
                 // Account for resources that have spaces in the name
                 parts = [parts[0], parts.slice(1).join(" ")];
             }
-            const typeForValue = parts[1].toLowerCase();
-            if (typeForValue == "mp") {
-                didRestore = true;
-                attributes.push({
-                    name: "magicPoints",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} MP, `;
-            } else if (typeForValue == "hp") {
-                didRestore = true;
-                attributes.push({
-                    name: "hitpoints",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} HP, `;
-            } else if (resourceType && typeForValue == resourceNames[0].toLowerCase()) {
-                didRestore = true;
-                attributes.push({
-                    name: "resourceValue",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} ${resourceType}, `;
-            } else if (resourceType && typeForValue == resourceNames[1].toLowerCase()) {
-                didRestore = true;
-                attributes.push({
-                    name: "resource2Value",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} ${resourceType}, `;
+            const typeForValue = parts[1];
+            let specification = this.resourceSpecification(typeForValue, values);
+            if (!specification) {
+                engine.logi("Unrecognized restore type " + typeForValue);
+                continue;
             }
+            didRestore = true;
+            engine.logi(`Restoring ${parts[0]} ${specification.attributeName}`);
+            attributes.push({
+                name: specification.attributeName,
+                value: parts[0]
+            });
+            summary += `${parts[0]} ${specification.name}, `;
         }
 
         if (!didRestore) {
@@ -8396,6 +8231,180 @@ on("clicked:end", () => {
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file attributes
+
+const attributesImports = new (function() {
+    this.export = {};
+
+const workerName = "attributes"
+
+
+})();
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file tabs
+
+const tabsImports = new (function() {
+    this.export = {};
+
+const workerName = "tabs"
+
+
+})();
+
+// Build: Source/workers/tabs.js
+
+
+// Tabs
+
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
+    });
+});
+
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file toggles
 
 const togglesImports = new (function() {
@@ -8536,100 +8545,106 @@ on("clicked:collapseAllAbilities", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
+// Build (version 1.0.0), generated file items
 
-const overrideImports = new (function() {
+const itemsImports = new (function() {
     this.export = {};
 
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
+const workerName = "items"
 
 
 })();
 
-// Build: Source/workers/override.js
+// Build: Source/workers/items.js
 
 
 
-const imports = overrideImports.export;
+// Items
 
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
         }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
     });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
 });
 
-</script>
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
 
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
         setAttrs({
-            sheetTab: button
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
         });
     });
 });
 
-// Initial setup
-on("sheet:opened", () => {
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
     getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
     ], values => {
+        // Assign selected minion
         setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
         });
     });
 });

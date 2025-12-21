@@ -216,6 +216,8 @@ const AbilityRolls = function() {
             "magicPoints", "magicPoints_max",
             "resource", "resourceValue", "resourceValue_max",
             "resource2", "resource2Value", "resource2Value_max",
+            "resource3", "resource3Value", "resource3Value_max",
+            "range1", "range1_max", "range2", "range2_max", "range3", "range3_max",
 
             "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
 

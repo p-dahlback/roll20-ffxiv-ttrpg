@@ -15,46 +15,25 @@ const PerformAbility = function() {
         const usesMax = values[`repeating_${section}_${rowId}_uses_max`];
         const restoration = values[`repeating_${section}_${rowId}_restore`];
         const isGeneric = values.sheet_type != "unique";
-        const resourceNames = [values.resource, values.resource2];
 
         var resourceCost = "";
         var resourceResult = false;
         if (cost > 0) {
-            if (resourceType.toLowerCase() == "mp") {
+            let specification = this.resourceSpecification(resourceType, values);
+            if (specification) {
                 let result = this.spend(
                     isGeneric,
                     cost,
-                    resourceType,
-                    values.magicPoints,
-                    values.magicPoints_max,
-                    "magicPoints"
-                );
-                resourceResult = result[0];
-                resourceCost = result[1];
-            } else if (resourceType.toLowerCase() == resourceNames[0].toLowerCase()) {
-                let result = this.spend(
-                    isGeneric,
-                    cost,
-                    resourceType,
-                    values.resourceValue,
-                    values.resourceValue_max,
-                    "resourceValue"
-                );
-                resourceResult = result[0];
-                resourceCost = result[1];
-            } else if (resourceType.toLowerCase() == resourceNames[1].toLowerCase()) {
-                let result = this.spend(
-                    isGeneric,
-                    cost,
-                    resourceType,
-                    values.resource2Value,
-                    values.resource2Value_max,
-                    "resource2Value"
+                    specification.name,
+                    values[specification.attributeName],
+                    values[specification.attributeNameMax],
+                    specification.attributeName
                 );
                 resourceResult = result[0];
                 resourceCost = result[1];
             }
         }
+        
         if (resourceResult || cost == 0) {
             // Spend uses if there are any
             if (usesMax > 0) {
@@ -79,13 +58,16 @@ const PerformAbility = function() {
         var summaries = [resourceCost];
 
         // Restore resources
+        engine.logd("Checking to restore");
         if (resourceResult || cost == 0) {
             if (restoration) {
-                summaries.push(this.restore(isGeneric, restoration, resourceType, resourceNames));
+                summaries.push(this.restore(isGeneric, restoration, values));
+            } else {
+                engine.logd("No restore");
             }
             let isIceType = type.toLowerCase().includes("ice-aspect");
             if (isIceType && effects.umbralIce) {
-                summaries.push(`${this.restore(isGeneric, "5 mp", resourceType, resourceNames)} (Umbral Ice)`);
+                summaries.push(`${this.restore(isGeneric, "5 mp", values)} (Umbral Ice)`);
             }
         }
 
@@ -96,6 +78,54 @@ const PerformAbility = function() {
         for (let section of abilitySections) {
             this.resetUses(section);
         }
+    };
+
+    this.resourceSpecification = function(resourceType, values) {
+        if (!resourceType) {
+            return null;
+        }
+
+        const resourceNames = [values.resource, values.resource2, values.resource3].filter(name => name);
+        const ranges = [
+            { key: "range1", name: "Opo-opo's Fury" },
+            { key: "range2", name: "Raptor's Fury" },
+            { key: "range3", name: "Coeurl's Fury" }
+        ];
+        let resourceTypeLowerCase = resourceType.toLowerCase();
+        if (resourceTypeLowerCase === "mp") {
+            return {
+                resourceType: "MP",
+                attributeName: "magicPoints",
+                attributeNameMax: "magicPoints_max"
+            };
+        } else if (resourceTypeLowerCase === "hp") {
+            return {
+                resourceType: "HP",
+                attributeName: "hitPoints",
+                attributeNameMax: "hitPoints_max"
+            };
+        } else if (resourceTypeLowerCase.startsWith("range")) {
+            let index = ranges.findIndex(obj => obj.key === resourceTypeLowerCase);
+            if (index !== -1) {
+                return {
+                    resourceType: ranges[index].name,
+                    attributeName: ranges[index].key,
+                    attributeNameMax: `${ranges[index].key}_max`
+                };
+            }
+        } else {
+            let index = resourceNames.findIndex(name => name.toLowerCase() === resourceTypeLowerCase);
+            if (index !== -1) {
+                let key = index === 0 ? "resourceValue" : `resource${index}`;
+                return {
+                    name: resourceNames[index],
+                    attributeName: key,
+                    attributeNameMax: `${key}_max`
+                };
+            }
+        }
+        engine.logi("Don't recognize resource " + resourceType);
+        return null;
     };
 
     this.spend = function(isGeneric, cost, resourceType, value, value_max, attributeName) {
@@ -120,51 +150,34 @@ const PerformAbility = function() {
         }
     };
 
-    this.restore = function(isGeneric, restoration, resourceType, resourceNames) {
-        const values = restoration.split(",");
+    this.restore = function(isGeneric, restoration, values) {
+        const restoreValues = restoration.split(",");
         var attributes = [];
         var summary = isGeneric ? "Restore " : "Restored ";
         var didRestore = false;
-        for (let i = 0; i < values.length; i++) {
-            var parts = values[i].trim().split(" ");
+        for (let i = 0; i < restoreValues.length; i++) {
+            var parts = restoreValues[i].trim().split(" ");
             if (parts.length < 2) {
-                engine.logi("Invalid restore declaration " + values[i]);
+                engine.logi("Invalid restore declaration " + restoreValues[i]);
                 continue;
             }
             if (parts.length > 2) {
                 // Account for resources that have spaces in the name
                 parts = [parts[0], parts.slice(1).join(" ")];
             }
-            const typeForValue = parts[1].toLowerCase();
-            if (typeForValue == "mp") {
-                didRestore = true;
-                attributes.push({
-                    name: "magicPoints",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} MP, `;
-            } else if (typeForValue == "hp") {
-                didRestore = true;
-                attributes.push({
-                    name: "hitpoints",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} HP, `;
-            } else if (resourceType && typeForValue == resourceNames[0].toLowerCase()) {
-                didRestore = true;
-                attributes.push({
-                    name: "resourceValue",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} ${resourceType}, `;
-            } else if (resourceType && typeForValue == resourceNames[1].toLowerCase()) {
-                didRestore = true;
-                attributes.push({
-                    name: "resource2Value",
-                    value: parts[0]
-                });
-                summary += `${parts[0]} ${resourceType}, `;
+            const typeForValue = parts[1];
+            let specification = this.resourceSpecification(typeForValue, values);
+            if (!specification) {
+                engine.logi("Unrecognized restore type " + typeForValue);
+                continue;
             }
+            didRestore = true;
+            engine.logi(`Restoring ${parts[0]} ${specification.attributeName}`);
+            attributes.push({
+                name: specification.attributeName,
+                value: parts[0]
+            });
+            summary += `${parts[0]} ${specification.name}, `;
         }
 
         if (!didRestore) {

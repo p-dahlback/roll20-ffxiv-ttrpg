@@ -914,7 +914,7 @@ const AddEffects = function(customEngine, customRemove) {
 
         this.engine().logd("Adding effects");
         for (let effect of effects) {
-            if (!effect) {
+            if (!effect || !effect.adjustedName) {
                 continue;
             }
             if (!this.matchesCondition(state, effect)) {
@@ -930,7 +930,7 @@ const AddEffects = function(customEngine, customRemove) {
             let adjustedEffect = replacement.effect;
             let data = adjustedEffect.data;
             if (!data) {
-                this.engine().logi("Unhandled effect " + adjustedEffect);
+                this.engine().logi("Unhandled effect " + JSON.stringify(adjustedEffect));
                 continue;
             }
             let duplicatesResult = this.resolveDuplicates(state, adjustedEffect);
