@@ -1012,7 +1012,13 @@ body.sheet-darkmode > .ui-dialog .sheetform {
 
 .ui-dialog .charsheet .resource-point.ranges {
   display: grid;
-  grid-template-columns: 50px 1fr;
+  grid-template-columns: 60px 1fr;
+  gap: 2px;
+}
+
+.ui-dialog .charsheet .resource-point.ranges.fury {
+  display: grid;
+  grid-template-columns: 90px 1fr;
   gap: 2px;
 }
 

@@ -2,7 +2,7 @@
 /*eslint no-unused-vars: "error"*/
 /*exported abilityRolls*/
 const engine = {};
-const effectData = {}; const effectUtilities = {}; const addEffects = {}; const removeEffects = {};
+const effectData = {}; const effectUtilities = {}; const addEffects = {}; const removeEffects = {}; const AbilityId = {};
 const rollModifiers = {}; const rollTemplates = {}; const performAbility = {};
 const EffectState = {};
 /*build:end*/
@@ -26,6 +26,86 @@ const TargetEffects = function(source) {
         this.effects = this.effects.concat(match[3].trim());
     }
 };
+
+const DamageRoll = function({
+    title, type, damageType, baseRoll, directHitRoll="", hitRoll="", condition="", combos="", cost=0, resource="", 
+    selfEffects="", targetEffects="", restoration="", useRollBonus=false, whisperPrefix=""
+}) {
+
+    this.title = title;
+    this.type = type;
+    this.damageType = damageType;
+    this.baseRoll = baseRoll;
+    this.directHitRoll = directHitRoll;
+    this.hitRoll = hitRoll;
+    this.condition = condition;
+    this.combos = combos;
+    this.comboTitle = combos ? "Combo" : "";
+    this.cost = parseInt(cost);
+    this.resource = resource;
+    this.selfEffects = selfEffects;
+    this.targetEffects = targetEffects;
+    this.restoration =restoration;
+    this.useRollBonus = useRollBonus;
+    this.whisperPrefix = whisperPrefix;
+
+    this.baseEffectTitle = function() {
+        return this.baseRoll ? `${this.damageType}: ` : "";
+    };
+
+    this.baseEffectDice = function() {
+        return this.baseRoll ? `[[${this.baseRoll}]]` : "";
+    };
+    
+    this.directHitTitle = function() {
+        return this.directHitRoll ? "Direct Hit: " : "";
+    };
+
+    this.directHitDice = function() {
+        return this.directHitRoll ? `[[${this.directHitRoll}]]` : "";
+    };
+
+    this.totalTitle = function() {
+        return this.baseRoll && this.directHitRoll ? `Full ${this.damageType}: ` : "";
+    };
+};
+
+const damageAbilityAttributes = function(section, rowId) {
+    return [
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_type`,
+        `repeating_${section}_${rowId}_damageType`,
+        `repeating_${section}_${rowId}_baseValue`,
+        `repeating_${section}_${rowId}_dhValue`,
+        `repeating_${section}_${rowId}_combo`,
+        `repeating_${section}_${rowId}_currentRoll`,
+
+        `repeating_${section}_${rowId}_cost`,
+        `repeating_${section}_${rowId}_uses`,
+        `repeating_${section}_${rowId}_uses_max`,
+        `repeating_${section}_${rowId}_restore`,
+        `repeating_${section}_${rowId}_resource`,
+
+        `repeating_${section}_${rowId}_effectSelf`,
+        `repeating_${section}_${rowId}_effectTarget`,
+        `repeating_${section}_${rowId}_condition`
+    ];
+};
+const damageCharacterAttributes = [
+    "level", "barrierPoints",
+    "hitPoints", "hitPoints_max",
+    "magicPoints", "magicPoints_max",
+    "resource", "resourceValue", "resourceValue_max",
+    "resource2", "resource2Value", "resource2Value_max",
+    "resource3", "resource3Value", "resource3Value_max",
+    "range1", "range1_max", "range2", "range2_max", "range3", "range3_max",
+
+    "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
+
+    "character_name", "sheet_type",
+
+    "whisper", "whisperExemptAbilities"
+];
 
 const AbilityRolls = function() {
 
@@ -94,10 +174,6 @@ const AbilityRolls = function() {
             const effectTarget = values[`repeating_${section}_${rowId}_effectTarget`];
 
             const combo = values[`repeating_${section}_${rowId}_combo`];
-
-            setAttrs({
-                currentCombo: "" // Reset combo indicators
-            });
             const crString = this.stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`]);
             const typeString = this.stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`]);
             const condition = rollTemplates.unpackValueWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`]);
@@ -192,178 +268,101 @@ const AbilityRolls = function() {
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const section = sourceAttributes[1];
         const rowId = sourceAttributes[2];
-        engine.getAttrsAndEffects([
-            `repeating_${section}_${rowId}_title`,
-            `repeating_${section}_${rowId}_type`,
-            `repeating_${section}_${rowId}_damageType`,
-            `repeating_${section}_${rowId}_baseValue`,
-            `repeating_${section}_${rowId}_dhValue`,
-            `repeating_${section}_${rowId}_combo`,
-            `repeating_${section}_${rowId}_currentRoll`,
-
-            `repeating_${section}_${rowId}_cost`,
-            `repeating_${section}_${rowId}_uses`,
-            `repeating_${section}_${rowId}_uses_max`,
-            `repeating_${section}_${rowId}_restore`,
-            `repeating_${section}_${rowId}_resource`,
-
-            `repeating_${section}_${rowId}_effectSelf`,
-            `repeating_${section}_${rowId}_effectTarget`,
-            `repeating_${section}_${rowId}_condition`,
-
-            "level", "barrierPoints",
-            "hitPoints", "hitPoints_max",
-            "magicPoints", "magicPoints_max",
-            "resource", "resourceValue", "resourceValue_max",
-            "resource2", "resource2Value", "resource2Value_max",
-            "resource3", "resource3Value", "resource3Value_max",
-            "range1", "range1_max", "range2", "range2_max", "range3", "range3_max",
-
-            "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
-
-            "character_name", "sheet_type",
-
-            "whisper", "whisperExemptAbilities"
-        ], (values, effects) => {
-            const name = values[`repeating_${section}_${rowId}_title`];
-            const type = values[`repeating_${section}_${rowId}_type`];
-            const baseValue = values[`repeating_${section}_${rowId}_baseValue`];
-            const directHitValue = values[`repeating_${section}_${rowId}_dhValue`];
-            const damageType = values[`repeating_${section}_${rowId}_damageType`];
-            const combo = values[`repeating_${section}_${rowId}_combo`];
-            const roll = parseInt(values[`repeating_${section}_${rowId}_currentRoll`]);
-
-            const selfEffects = values[`repeating_${section}_${rowId}_effectSelf`].split(",");
-            const targetEffects = values[`repeating_${section}_${rowId}_effectTarget`];
-            const condition = values[`repeating_${section}_${rowId}_condition`];
-
-            var bonusValue = 0;
-            if (useRollBonus) {
-                bonusValue = effects.reduce(
-                    (accumulator, currentValue) => {
-                        if (currentValue.data.maskedType != "roll(x)") {
-                            return accumulator;
-                        }
-                        if (currentValue.value) {
-                            return accumulator + parseInt(currentValue.value);
-                        }
-                        return accumulator;
-                    }, 0
-                );
-            }
-
-            var criticalMultiplier = 1;
-            if (roll) {
-                criticalMultiplier = roll + bonusValue >= effects.criticalThreshold ? 2 : 1;
-            }
-
-            // Add crit multiplier to other dice rolls
-            var baseValueWithMultipliers = baseValue;
-            if (baseValue.includes("d")) {
-                baseValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + baseValue[0] + "]]" + baseValue.substring(1);
-            }
-            var directHitValueWithMultipliers = directHitValue;
-            if (directHitValue.includes("d")) {
-                directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1);
-            }
-            let rolls = rollModifiers.addEffectsToPreDamageRolls(effects, values.level, type, damageType, baseValueWithMultipliers, directHitValueWithMultipliers);
-
-            var damageTitle = "";
-            var damageDice = "";
-            if (rolls.damage) {
-                damageTitle = `${damageType}: `;
-                damageDice = `[[${rolls.damage}]]`;
-            }
-            var directHitTitle = "";
-            var directHitDice = "";
-            if (rolls.directHit) {
-                directHitTitle = "Direct Hit: ";
-                directHitDice = `[[${rolls.directHit}]]`;
-            }
-
-            var totalTitle = "";
-            if (rolls.damage && rolls.directHit) {
-                totalTitle = `Full ${damageTitle}`;
-            }
-
-            var button = "";
-            var comboTitle = "";
-            if (combo) {
-                setAttrs({
-                    currentCombo: combo
-                });
-                var choices = [combo];
-                comboTitle = "Combo";
-                if (combo.includes(",")) {
-                    choices = combo.split(",");
-                }
-                for (let i = 0; i < choices.length; i++) {
-                    button += `[${choices[i].trim()}](~${values.character_name}|repeating_${section}_${rowId}_runcombo${i + 1})`;
-                }
-            }
-
-            const resourceCost = performAbility.resolveResources(section, rowId, values, effects);
-
-            if (!damageDice && !directHitDice && !combo && !resourceCost && !selfEffects && !targetEffects) {
-                engine.logd("No reason to roll damage");
-                return;
-            }
-
-            var targetEffectTitle = "";
-            let targetEffectButton = "";
-            if (targetEffects) {
-                let calculatedEffects = new TargetEffects(targetEffects);
-                targetEffectButton = this.buttonForTargetEffects(calculatedEffects, values.character_name);
-                if (targetEffectButton) {
-                    targetEffectTitle = "Effect";
-                }
-            }
-
-            let whisper = values.whisper;
-            if (values.whisper && values.whisperExemptAbilities === "on") {
-                whisper = "";
-            }
-            // Roll damage
-            let rollTemplate = `${whisper}&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
-                `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
-                `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
-                `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
-            engine.logd(rollTemplate);
-            startRoll(rollTemplate, results => {
-                const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
-                const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
-
-                let computedResults = rollModifiers.addEffectsToPostDamageRolls(effects, damageType, [damageRoll, directHitRoll]);
-                let consumedEffectSummary = removeEffects.consumeOnAbility(name, condition, effects);
-
-                let state = new EffectState(
-                    values.hitPoints, 
-                    values.hitPoints_max, 
-                    values.barrierPoints, 
-                    {
-                        hit: roll,
-                        damage: damageRoll,
-                        directHit: directHitRoll
-                    }, 
-                    effects
-                );
-                let effectSummary = addEffects.addBySpecificationString(state, selfEffects);
-                let procSummary = rolls.summaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
-
-                var attributes = {};
-                attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1;
-                setAttrs(attributes);
-
-                finishRoll(
-                    results.rollId,
-                    {
-                        proc: procSummary,
-                        damage: computedResults.rolls[0],
-                        directHit: computedResults.rolls[1],
-                        total: totalTitle ? computedResults.total : ""
-                    }
-                );
+        let attributes = damageAbilityAttributes(section, rowId).concat(damageCharacterAttributes);
+        engine.getAttrsAndEffects(attributes, (values, effects) => {
+            let damageRoll = new DamageRoll({
+                title: values[`repeating_${section}_${rowId}_title`],
+                type: values[`repeating_${section}_${rowId}_type`],
+                damageType: values[`repeating_${section}_${rowId}_damageType`],
+                baseRoll: values[`repeating_${section}_${rowId}_baseValue`],
+                directHitRoll: values[`repeating_${section}_${rowId}_dhValue`],
+                hitRoll: parseInt(values[`repeating_${section}_${rowId}_currentRoll`]),
+                condition: values[`repeating_${section}_${rowId}_condition`],
+                combos: values[`repeating_${section}_${rowId}_combo`],
+                cost: values[`repeating_${section}_${rowId}_cost`],
+                resource: values[`repeating_${section}_${rowId}_resource`],
+                selfEffects: values[`repeating_${section}_${rowId}_effectSelf`],
+                targetEffects: values[`repeating_${section}_${rowId}_effectTarget`],
+                restoration: values[`repeating_${section}_${rowId}_restore`],
+                useRollBonus: useRollBonus,
+                whisperPrefix: values.whisperExemptAbilities === "on" ? "" : values.whisper
             });
+            let abilityId = new AbilityId(section, rowId);
+            this.performDamageRoll(damageRoll, abilityId, values, effects);
+        });
+    };
+
+    this.performDamageRoll = function(damageRoll, abilityId=null, values, effects) {
+        let modifiedRoll = rollModifiers.applyCriticalMultiplierIfNeeded(damageRoll, effects);
+        let summariedRoll = rollModifiers.applyEffectModifiersToDamageRolls(modifiedRoll, values.level, effects);
+        let modifierSummaries = summariedRoll.summaries;
+        modifiedRoll = summariedRoll.damageRoll;
+
+        const comboButtons = performAbility.resolveAvailableCombos(modifiedRoll.combos, abilityId, values);
+        const comboTitle = comboButtons ? "Combo" : "";
+
+        const resourceCost = performAbility.resolveResources(modifiedRoll, abilityId, values, effects);
+        const hasDamage = modifiedRoll.baseRoll || modifiedRoll.directHitRoll;
+        const hasEffects = modifiedRoll.selfEffects || modifiedRoll.targetEffects;
+        if (!hasDamage && !hasEffects && !resourceCost && !comboButtons) {
+            engine.logd("No reason to roll damage");
+            return;
+        }
+
+        var targetEffectTitle = "";
+        let targetEffectButton = "";
+        if (modifiedRoll.targetEffects) {
+            let calculatedEffects = new TargetEffects(modifiedRoll.targetEffects);
+            targetEffectButton = this.buttonForTargetEffects(calculatedEffects, values.character_name);
+            if (targetEffectButton) {
+                targetEffectTitle = "Effect";
+            }
+        }
+
+        // Roll damage
+        let rollTemplate = `${modifiedRoll.whisperPrefix}&{template:damage} {{title=${modifiedRoll.title}}} ` + 
+            `{{damageTitle=${modifiedRoll.baseEffectTitle()}}} {{damage=${modifiedRoll.baseEffectDice()}}} ` +
+            `{{directHitTitle=${modifiedRoll.directHitTitle()}}} {{directHit=${modifiedRoll.directHitDice()}}} ` +
+            `{{totalTitle=${modifiedRoll.totalTitle()}}} {{total=[[0]]}}` +
+            `{{comboTitle=${comboTitle}}} {{button=${comboButtons}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
+            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
+        engine.logd(rollTemplate);
+        startRoll(rollTemplate, results => {
+            const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
+            const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
+
+            let computedResults = rollModifiers.applyEffectModifiersAfterDamageRolls(effects, modifiedRoll.damageType, [damageRoll, directHitRoll]);
+            let consumedEffectSummary = removeEffects.consumeOnAbility(modifiedRoll.title, modifiedRoll.condition, effects);
+
+            let state = new EffectState(
+                values.hitPoints, 
+                values.hitPoints_max, 
+                values.barrierPoints, 
+                {
+                    hit: modifiedRoll.hitRoll,
+                    damage: damageRoll,
+                    directHit: directHitRoll
+                }, 
+                effects
+            );
+            let effectSummary = addEffects.addBySpecificationString(state, modifiedRoll.selfEffects.split(","));
+            let fullSummary = modifierSummaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
+
+            if (abilityId) {
+                var attributes = {};
+                attributes[`repeating_${abilityId.section}_${abilityId.rowId}_currentCriticalMultiplier`] = 1;
+                setAttrs(attributes);
+            }
+
+            finishRoll(
+                results.rollId,
+                {
+                    proc: fullSummary,
+                    damage: computedResults.rolls[0],
+                    directHit: computedResults.rolls[1],
+                    total: modifiedRoll.totalTitle() ? computedResults.total : ""
+                }
+            );
         });
     };
 
@@ -373,39 +372,64 @@ const AbilityRolls = function() {
         const rowId = sourceAttributes[2];
         engine.logd("Combo activated " + JSON.stringify(eventInfo));
         getAttrs([
-            `repeating_${section}_${rowId}_combo`
+            `repeating_${section}_${rowId}_combo`,
+            `repeating_${section}_${rowId}_currentRoll`,
+
+            "whisper", "whisperExemptAbilities"
         ], values => {
             const combo = values[`repeating_${section}_${rowId}_combo`];
-            var abilityName = combo.trim().toLowerCase();
+            var chosenCombo = combo;
             if (combo.includes(",")) {
                 const choices = combo.split(",");
                 if (index < choices.length) {
-                    abilityName = choices[index].trim().toLowerCase();
+                    chosenCombo = choices[index];
                 } else {
                     engine.logi(`Combo index out of bonds: selected ${index}, not in ${combo}`);
                     return;
                 }
             }
-            let rawSection = section.replace(/[\d]+/, "");
-            let sections = [1, 2, 3].map(index => `${rawSection}${index}`);
-            engine.allSectionIDs(sections, sectionIds => {
-                const attributes = sectionIds.map((element) => `${element}_title`);
-                getAttrs(attributes, values => {
-                    for (let i = 0; i < sectionIds.length; i++) {
-                        const sectionId = sectionIds[i];
-                        const attribute = attributes[i];
-                        if (values[attribute].trim().toLowerCase() == abilityName) {
-                            const triggerEvent = {
-                                sourceAttribute: `${sectionId}_runcomboFrom_${rowId}`
-                            };
-                            engine.logd("Activating " + abilityName);
-                            this.roll(triggerEvent);
-                            return;
-                        }
-                    }
-                    engine.logd("Couldn't find ability with name " + abilityName);
+            let comboSpecifications = performAbility.parseCombo(chosenCombo);
+            let comboSpecification = comboSpecifications ? comboSpecifications[0] : null;
+            if (comboSpecification.roll || comboSpecification.cost) {
+                // Custom combo, roll the specified damage and spend the given cost
+                let damageRoll = new DamageRoll({
+                    title: comboSpecification.name,
+                    type: "Special",
+                    damageType: "Damage",
+                    baseRoll: comboSpecification.roll,
+                    hitRoll: values[`repeating_${section}_${rowId}_currentRoll`],
+                    cost: comboSpecification.cost,
+                    resource: comboSpecification.cost_resource,
+                    whisperPrefix: values.whisperExemptAbilities ? "" : values.whisper
                 });
-            });
+                engine.logd("Activating custom combo " + JSON.stringify(comboSpecification));
+                engine.getAttrsAndEffects(damageCharacterAttributes, (values, effects) => {
+                    this.performDamageRoll(damageRoll, null, values, effects);
+                });
+            } else {
+                // Search abilities for the chosen combo
+                let abilityName = comboSpecification.name.toLowerCase();
+                let rawSection = section.replace(/[\d]+/, "");
+                let sections = [1, 2, 3].map(index => `${rawSection}${index}`);
+                engine.allSectionIDs(sections, sectionIds => {
+                    const attributes = sectionIds.map((element) => `${element}_title`);
+                    getAttrs(attributes, values => {
+                        for (let i = 0; i < sectionIds.length; i++) {
+                            const sectionId = sectionIds[i];
+                            const attribute = attributes[i];
+                            if (values[attribute].trim().toLowerCase() == abilityName) {
+                                const triggerEvent = {
+                                    sourceAttribute: `${sectionId}_runcomboFrom_${rowId}`
+                                };
+                                engine.logd("Activating " + abilityName);
+                                this.roll(triggerEvent);
+                                return;
+                            }
+                        }
+                        engine.logd("Couldn't find ability with name " + abilityName);
+                    });
+                });
+            }
         });
     };
 
@@ -452,4 +476,5 @@ const AbilityRolls = function() {
 
 const abilityRolls = new AbilityRolls();
 this.export.AbilityRolls = AbilityRolls;
+this.export.DamageRoll = DamageRoll;
 this.export.abilityRolls = abilityRolls;

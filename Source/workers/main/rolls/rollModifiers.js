@@ -5,7 +5,7 @@ const engine = {};
 /*build:end*/
 
 const RollModifiers = function() {
-    
+
     this.addEffectsToHitRoll = function(effects, rollMacro, rollType) {
         var penalty = 0;
         var hasParalysis = false;
@@ -87,21 +87,68 @@ const RollModifiers = function() {
         return updatedMacro;
     };
 
-    this.addEffectsToPreDamageRolls = function(effects, level, type, damageType, damageRoll, directHitRoll) {
+    this.applyCriticalMultiplierIfNeeded = function(damageRoll, effects) {
+        // Calculate hit roll with added bonuses
+        var bonusValue = 0;
+        if (damageRoll.useRollBonus) {
+            bonusValue = effects.reduce(
+                (accumulator, currentValue) => {
+                    if (currentValue.data.maskedType != "roll(x)") {
+                        return accumulator;
+                    }
+                    if (currentValue.value) {
+                        return accumulator + parseInt(currentValue.value);
+                    }
+                    return accumulator;
+                }, 0
+            );
+        }
+
+        // Determine critical multiplier
+        var criticalMultiplier = 1;
+        if (damageRoll.hitRoll) {
+            criticalMultiplier = damageRoll.hitRoll + bonusValue >= effects.criticalThreshold ? 2 : 1;
+        }
+        if (criticalMultiplier > 1) {
+            var modifiedRoll = damageRoll;
+            let baseRoll = modifiedRoll.baseRoll;
+            if (baseRoll && baseRoll.includes("d")) {
+                baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);
+                modifiedRoll.baseRoll = baseRoll;
+            }
+        }
+
+        // For Direct Hit, force crit if this ability is Bootshine and the character is in Opo-Opo Form
+        if (effects.monkForm.specialType === "Opo-Opo Form" && damageRoll.title === "Bootshine") {
+            criticalMultiplier = 2;
+        }
+        if (criticalMultiplier > 1) {
+            let directHitRoll = modifiedRoll.directHitRoll;
+            if (directHitRoll && directHitRoll.includes("d")) {
+                directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
+                modifiedRoll.directHitRoll = directHitRoll;
+            }
+            return modifiedRoll;
+        } else {
+            return damageRoll;
+        }
+    };
+
+    this.applyEffectModifiersToDamageRolls = function(damageRoll, characterLevel, effects) {
         var adds = [];
         var negatives = [];
         var summaries = [];
 
-        let isFireType = type.toLowerCase().includes("fire-aspect");
+        let isFireType = damageRoll.type.toLowerCase().includes("fire-aspect");
         if (isFireType && effects.astralFire) {
-            let addedDamage = level >= 50 ? "2d6" : "1d6";
+            let addedDamage = characterLevel >= 50 ? "2d6" : "1d6";
             adds.push(`${addedDamage}[Astral Fire]`);
             summaries.push("Astral Fire proc");
         }
 
-        if (effects.dpsChanges && damageType === "Damage") {
+        if (effects.dpsChanges && damageRoll.damageType === "Damage") {
             for (let effect of effects.dpsChanges) {
-                if (effect.data.name == "Raging Strikes" && !type.includes("Primary")) {
+                if (effect.data.name == "Raging Strikes" && !damageRoll.type.includes("Primary")) {
                     // This effect only applies to primary abilities
                     continue;
                 }
@@ -124,26 +171,29 @@ const RollModifiers = function() {
 
         if (adds.length > 0 || negatives.length > 0) {
             engine.logd("Adding damage to roll");
-            if (damageRoll) {
-                damageRoll = `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
-            } else {
+            var modifiedRoll = damageRoll;
+            let baseRoll = modifiedRoll.baseRoll;
+            let directHitRoll = modifiedRoll.directHitRoll;
+            if (baseRoll) {
+                baseRoll = `${baseRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
+                modifiedRoll.baseRoll = baseRoll;
+            } else if(directHitRoll) {
                 directHitRoll = `${directHitRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
+                modifiedRoll.directHitRoll = directHitRoll;
             }
             return {
-                damage: damageRoll,
-                directHit: directHitRoll,
+                damageRoll: modifiedRoll,
                 summaries: summaries
             };
         } else {
             return {
-                damage: damageRoll,
-                directHit: directHitRoll,
+                damageRoll: damageRoll,
                 summaries: []
             };
         }
     };
 
-    this.addEffectsToPostDamageRolls = function(effects, damageType, damageRolls) {
+    this.applyEffectModifiersAfterDamageRolls = function(effects, damageType, damageRolls) {
         var result = {};
         var summaries = [];
         if (damageType == "Damage" && effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {

@@ -1,30 +1,34 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-/*exported performAbility*/
+/*exported performAbility, AbilityId*/
 const engine = {};
 const abilitySections = [];
 /*build:end*/
 
+const AbilityId = function(section, rowId) {
+    this.section = section;
+    this.rowId = rowId;
+};
+
 const PerformAbility = function() {
 
-    this.resolveResources = function(section, rowId, values, effects) {
-        const type = values[`repeating_${section}_${rowId}_type`];
-        const cost = values[`repeating_${section}_${rowId}_cost`];
-        const resourceType = values[`repeating_${section}_${rowId}_resource`];
-        const uses = values[`repeating_${section}_${rowId}_uses`];
-        const usesMax = values[`repeating_${section}_${rowId}_uses_max`];
-        const restoration = values[`repeating_${section}_${rowId}_restore`];
+    this.resolveResources = function(damageRoll, abilityId, values, effects) {
+        
+        const uses = abilityId ? values[`repeating_${abilityId.section}_${abilityId.rowId}_uses`] : 0;
+        const usesMax = abilityId ? values[`repeating_${abilityId.section}_${abilityId.rowId}_uses_max`] : 0;
+
         const isGeneric = values.sheet_type != "unique";
 
         var resourceCost = "";
         var resourceResult = false;
-        if (cost > 0) {
-            let specification = this.resourceSpecification(resourceType, values);
+        if (damageRoll.cost > 0) {
+            let specification = this.resourceSpecification(damageRoll.resource, values);
             if (specification) {
+                engine.logd("Spending resources");
                 let result = this.spend(
                     isGeneric,
-                    cost,
-                    specification.name,
+                    damageRoll.cost,
+                    specification.resourceType,
                     values[specification.attributeName],
                     values[specification.attributeNameMax],
                     specification.attributeName
@@ -34,43 +38,43 @@ const PerformAbility = function() {
             }
         }
         
-        if (resourceResult || cost == 0) {
-            // Spend uses if there are any
-            if (usesMax > 0) {
-                let result = this.spend(
-                    isGeneric,
-                    1,
-                    "uses",
-                    uses,
-                    usesMax,
-                    `repeating_${section}_${rowId}_uses`
-                );
-                if (result[1]) {
-                    if (resourceCost) {
-                        resourceCost += `\n${result[1]}`;
-                    } else {
-                        resourceCost = result[1];
-                    }
+        if (damageRoll.cost > 0 && !resourceResult) {
+            return "";
+        }
+
+        // Spend uses if there are any
+        if (abilityId && usesMax > 0) {
+            engine.logd("Spending uses");
+            let result = this.spend(
+                isGeneric,
+                1,
+                "uses",
+                uses,
+                usesMax,
+                `repeating_${abilityId.section}_${abilityId.rowId}_uses`
+            );
+            if (result[1]) {
+                if (resourceCost) {
+                    resourceCost += `\n${result[1]}`;
+                } else {
+                    resourceCost = result[1];
                 }
             }
         }
-
         var summaries = [resourceCost];
 
         // Restore resources
         engine.logd("Checking to restore");
-        if (resourceResult || cost == 0) {
-            if (restoration) {
-                summaries.push(this.restore(isGeneric, restoration, values));
-            } else {
-                engine.logd("No restore");
-            }
-            let isIceType = type.toLowerCase().includes("ice-aspect");
-            if (isIceType && effects.umbralIce) {
-                summaries.push(`${this.restore(isGeneric, "5 mp", values)} (Umbral Ice)`);
-            }
+        if (damageRoll.restoration) {
+            summaries.push(this.restore(isGeneric, damageRoll.restoration, values));
+        } else {
+            engine.logd("No restore");
         }
-
+        // Perform Umbral Ice restoration if applicable
+        let isIceType = damageRoll.type.toLowerCase().includes("ice-aspect");
+        if (isIceType && effects.umbralIce) {
+            summaries.push(`${this.restore(isGeneric, "5 mp", values)} (Umbral Ice)`);
+        }
         return summaries.filter(element => element).join("\n");
     };
 
@@ -218,8 +222,83 @@ const PerformAbility = function() {
             });
         });
     };
+
+    this.resolveAvailableCombos = function(combo, abilityId, values) {
+        engine.logd("Resolving available combos");
+        if (!combo || !abilityId) {
+            return "";
+        }
+        let specifications = this.parseCombo(combo);
+        return this.buttonsForComboSpecifications(specifications, abilityId, values);
+    };
+
+    this.parseCombo = function(combo) {
+        let choices = combo.split(",");
+        return choices.map(choice => {
+            let matches = choice.match(/([\w ':]+)(\([\w |':-]*\))?/);
+            if (!matches || !matches[1]) {
+                engine.logd("Unable to parse combo " + choice);
+                return null;
+            }
+            return this.specificationForCombo(matches[1], matches[2]);
+        }).filter(spec => spec);
+    };
+
+    this.specificationForCombo = function(name, parameters) {
+        var specification = {
+            name: name
+        };
+        if (parameters) {
+            engine.logd("Parsing combo parameters");
+            let parameterList = parameters.split("|");
+            for (let parameter of parameterList) {
+                let matches = parameter.match(/([\w]+):\s*([\w-]+)\s*([\w-]+)?/);
+                let key = matches[1];
+                let value = matches[2];
+                let resource = matches[3];
+                if (!key || !value) {
+                    engine.logd("Unable to parse combo parameter " + parameter);
+                    continue;
+                }
+                specification[key] = value;
+                if (resource) {
+                    specification[`${key}_resource`] = resource;
+                }
+            }
+        }
+        return specification;
+    };
+
+    this.buttonsForComboSpecifications = function(comboSpecifications, abilityId, values) {
+        if (!abilityId) {
+            return "";
+        }
+        var buttons = "";
+        for (let index = 0; index < comboSpecifications.length; index++)  {
+            let combo = comboSpecifications[index];
+            if (combo.cost && combo.cost_resource) {
+                let currentValue = parseInt(values[combo.cost_resource]);
+                if (isNaN(currentValue)) {
+                    engine.logd("Unrecognized resource " + combo.cost_resource);
+                    continue;
+                }
+                let cost = parseInt(combo.cost);
+                if (isNaN(cost)) {
+                    engine.logd("Cannot parse combo cost " + combo.cost);
+                    continue;
+                }
+                if (cost > currentValue) {
+                    engine.logd(`Skipping ${combo.name}; cost too high (${cost} > ${currentValue})`);
+                    continue;
+                }
+            }
+            buttons += `[${combo.name}](~${values.character_name}|repeating_${abilityId.section}_${abilityId.rowId}_runcombo${index + 1})`;
+        }
+        return buttons;
+    };
 };
 
 const performAbility = new PerformAbility();
 this.export.PerformAbility = PerformAbility;
+this.export.AbilityId = AbilityId;
 this.export.performAbility = performAbility;

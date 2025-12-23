@@ -121,21 +121,21 @@
                             <input class="radiobox" type="checkbox" name="attr_resource3Value" value="1">
                         </div>
                     </div>
-                    <div class="resource-point ranges compressed">
+                    <div class="resource-point ranges fury compressed">
                         <input type="hidden" class="opoSwitch" name="attr_hasOpo" placeholder="placeholder" />
-                        <span class="text header large opo">Opo</span>
+                        <span class="text header large opo">Opo's Fury</span>
                         <div class="radiocontainer opo">
                             <input class="radiobox transparent" type="checkbox" name="attr_range1" value="0">
                             <input class="radiobox" type="checkbox" name="attr_range1" value="1">
                         </div>
 
-                        <span class="text header large">Raptor</span>
+                        <span class="text header large">Raptor's Fury</span>
                         <div class="radiocontainer">
                             <input class="radiobox transparent" type="checkbox" name="attr_range2" value="0">
                             <input class="radiobox" type="checkbox" name="attr_range2" value="1">
                         </div>
                         
-                        <span class="text header large">Coeurl</span>
+                        <span class="text header large">Coeurl's Fury</span>
                         <div class="radiocontainer">
                             <input class="radiobox transparent" type="checkbox" name="attr_range3" value="0">
                             <input class="radiobox" type="checkbox" name="attr_range3" value="1">
@@ -4725,107 +4725,222 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
+// Build (version 1.0.0), generated file tabs
 
-const itemsImports = new (function() {
+const tabsImports = new (function() {
     this.export = {};
 
-const workerName = "items"
+const workerName = "tabs"
 
 
 })();
 
-// Build: Source/workers/items.js
+// Build: Source/workers/tabs.js
 
 
+// Tabs
 
-// Items
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
+    });
+});
 
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
+// Initial setup
+on("sheet:opened", () => {
     getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
     ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
+    });
+});
 
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
         }
+    });
+});
 
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file attributes
+
+const attributesImports = new (function() {
+    this.export = {};
+
+const workerName = "attributes"
+
+
+})();
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
         });
     });
 }
 
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
 });
 
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
 });
 
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
         setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+            barrierPoints_max: values.barrierPoints
         });
     });
 });
 
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
     });
 });
 
@@ -4973,120 +5088,107 @@ on("clicked:collapseAllAbilities", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file attributes
+// Build (version 1.0.0), generated file items
 
-const attributesImports = new (function() {
+const itemsImports = new (function() {
     this.export = {};
 
-const workerName = "attributes"
+const workerName = "items"
 
 
 })();
 
-// Build: Source/workers/attributes.js
+// Build: Source/workers/items.js
 
 
-// Advantage management
 
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
         }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
         });
     });
 }
 
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
 });
 
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
 });
 
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
         setAttrs({
-            barrierPoints_max: values.barrierPoints
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
         });
     });
 });
 
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
     });
 });
 
@@ -5551,7 +5653,7 @@ this.export.effectInfo = effectInfo;
 
 
 const RollModifiers = function() {
-    
+
     this.addEffectsToHitRoll = function(effects, rollMacro, rollType) {
         var penalty = 0;
         var hasParalysis = false;
@@ -5633,21 +5735,68 @@ const RollModifiers = function() {
         return updatedMacro;
     };
 
-    this.addEffectsToPreDamageRolls = function(effects, level, type, damageType, damageRoll, directHitRoll) {
+    this.applyCriticalMultiplierIfNeeded = function(damageRoll, effects) {
+        // Calculate hit roll with added bonuses
+        var bonusValue = 0;
+        if (damageRoll.useRollBonus) {
+            bonusValue = effects.reduce(
+                (accumulator, currentValue) => {
+                    if (currentValue.data.maskedType != "roll(x)") {
+                        return accumulator;
+                    }
+                    if (currentValue.value) {
+                        return accumulator + parseInt(currentValue.value);
+                    }
+                    return accumulator;
+                }, 0
+            );
+        }
+
+        // Determine critical multiplier
+        var criticalMultiplier = 1;
+        if (damageRoll.hitRoll) {
+            criticalMultiplier = damageRoll.hitRoll + bonusValue >= effects.criticalThreshold ? 2 : 1;
+        }
+        if (criticalMultiplier > 1) {
+            var modifiedRoll = damageRoll;
+            let baseRoll = modifiedRoll.baseRoll;
+            if (baseRoll && baseRoll.includes("d")) {
+                baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);
+                modifiedRoll.baseRoll = baseRoll;
+            }
+        }
+
+        // For Direct Hit, force crit if this ability is Bootshine and the character is in Opo-Opo Form
+        if (effects.monkForm.specialType === "Opo-Opo Form" && damageRoll.title === "Bootshine") {
+            criticalMultiplier = 2;
+        }
+        if (criticalMultiplier > 1) {
+            let directHitRoll = modifiedRoll.directHitRoll;
+            if (directHitRoll && directHitRoll.includes("d")) {
+                directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
+                modifiedRoll.directHitRoll = directHitRoll;
+            }
+            return modifiedRoll;
+        } else {
+            return damageRoll;
+        }
+    };
+
+    this.applyEffectModifiersToDamageRolls = function(damageRoll, characterLevel, effects) {
         var adds = [];
         var negatives = [];
         var summaries = [];
 
-        let isFireType = type.toLowerCase().includes("fire-aspect");
+        let isFireType = damageRoll.type.toLowerCase().includes("fire-aspect");
         if (isFireType && effects.astralFire) {
-            let addedDamage = level >= 50 ? "2d6" : "1d6";
+            let addedDamage = characterLevel >= 50 ? "2d6" : "1d6";
             adds.push(`${addedDamage}[Astral Fire]`);
             summaries.push("Astral Fire proc");
         }
 
-        if (effects.dpsChanges && damageType === "Damage") {
+        if (effects.dpsChanges && damageRoll.damageType === "Damage") {
             for (let effect of effects.dpsChanges) {
-                if (effect.data.name == "Raging Strikes" && !type.includes("Primary")) {
+                if (effect.data.name == "Raging Strikes" && !damageRoll.type.includes("Primary")) {
                     // This effect only applies to primary abilities
                     continue;
                 }
@@ -5670,26 +5819,29 @@ const RollModifiers = function() {
 
         if (adds.length > 0 || negatives.length > 0) {
             engine.logd("Adding damage to roll");
-            if (damageRoll) {
-                damageRoll = `${damageRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
-            } else {
+            var modifiedRoll = damageRoll;
+            let baseRoll = modifiedRoll.baseRoll;
+            let directHitRoll = modifiedRoll.directHitRoll;
+            if (baseRoll) {
+                baseRoll = `${baseRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
+                modifiedRoll.baseRoll = baseRoll;
+            } else if(directHitRoll) {
                 directHitRoll = `${directHitRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
+                modifiedRoll.directHitRoll = directHitRoll;
             }
             return {
-                damage: damageRoll,
-                directHit: directHitRoll,
+                damageRoll: modifiedRoll,
                 summaries: summaries
             };
         } else {
             return {
-                damage: damageRoll,
-                directHit: directHitRoll,
+                damageRoll: damageRoll,
                 summaries: []
             };
         }
     };
 
-    this.addEffectsToPostDamageRolls = function(effects, damageType, damageRolls) {
+    this.applyEffectModifiersAfterDamageRolls = function(effects, damageType, damageRolls) {
         var result = {};
         var summaries = [];
         if (damageType == "Damage" && effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
@@ -5830,6 +5982,86 @@ const TargetEffects = function(source) {
     }
 };
 
+const DamageRoll = function({
+    title, type, damageType, baseRoll, directHitRoll="", hitRoll="", condition="", combos="", cost=0, resource="", 
+    selfEffects="", targetEffects="", restoration="", useRollBonus=false, whisperPrefix=""
+}) {
+
+    this.title = title;
+    this.type = type;
+    this.damageType = damageType;
+    this.baseRoll = baseRoll;
+    this.directHitRoll = directHitRoll;
+    this.hitRoll = hitRoll;
+    this.condition = condition;
+    this.combos = combos;
+    this.comboTitle = combos ? "Combo" : "";
+    this.cost = parseInt(cost);
+    this.resource = resource;
+    this.selfEffects = selfEffects;
+    this.targetEffects = targetEffects;
+    this.restoration =restoration;
+    this.useRollBonus = useRollBonus;
+    this.whisperPrefix = whisperPrefix;
+
+    this.baseEffectTitle = function() {
+        return this.baseRoll ? `${this.damageType}: ` : "";
+    };
+
+    this.baseEffectDice = function() {
+        return this.baseRoll ? `[[${this.baseRoll}]]` : "";
+    };
+    
+    this.directHitTitle = function() {
+        return this.directHitRoll ? "Direct Hit: " : "";
+    };
+
+    this.directHitDice = function() {
+        return this.directHitRoll ? `[[${this.directHitRoll}]]` : "";
+    };
+
+    this.totalTitle = function() {
+        return this.baseRoll && this.directHitRoll ? `Full ${this.damageType}: ` : "";
+    };
+};
+
+const damageAbilityAttributes = function(section, rowId) {
+    return [
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_type`,
+        `repeating_${section}_${rowId}_damageType`,
+        `repeating_${section}_${rowId}_baseValue`,
+        `repeating_${section}_${rowId}_dhValue`,
+        `repeating_${section}_${rowId}_combo`,
+        `repeating_${section}_${rowId}_currentRoll`,
+
+        `repeating_${section}_${rowId}_cost`,
+        `repeating_${section}_${rowId}_uses`,
+        `repeating_${section}_${rowId}_uses_max`,
+        `repeating_${section}_${rowId}_restore`,
+        `repeating_${section}_${rowId}_resource`,
+
+        `repeating_${section}_${rowId}_effectSelf`,
+        `repeating_${section}_${rowId}_effectTarget`,
+        `repeating_${section}_${rowId}_condition`
+    ];
+};
+const damageCharacterAttributes = [
+    "level", "barrierPoints",
+    "hitPoints", "hitPoints_max",
+    "magicPoints", "magicPoints_max",
+    "resource", "resourceValue", "resourceValue_max",
+    "resource2", "resource2Value", "resource2Value_max",
+    "resource3", "resource3Value", "resource3Value_max",
+    "range1", "range1_max", "range2", "range2_max", "range3", "range3_max",
+
+    "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
+
+    "character_name", "sheet_type",
+
+    "whisper", "whisperExemptAbilities"
+];
+
 const AbilityRolls = function() {
 
     // Roll ability
@@ -5897,10 +6129,6 @@ const AbilityRolls = function() {
             const effectTarget = values[`repeating_${section}_${rowId}_effectTarget`];
 
             const combo = values[`repeating_${section}_${rowId}_combo`];
-
-            setAttrs({
-                currentCombo: "" // Reset combo indicators
-            });
             const crString = this.stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`]);
             const typeString = this.stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`]);
             const condition = rollTemplates.unpackValueWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`]);
@@ -5995,178 +6223,101 @@ const AbilityRolls = function() {
         const sourceAttributes = eventInfo.sourceAttribute.split("_");
         const section = sourceAttributes[1];
         const rowId = sourceAttributes[2];
-        engine.getAttrsAndEffects([
-            `repeating_${section}_${rowId}_title`,
-            `repeating_${section}_${rowId}_type`,
-            `repeating_${section}_${rowId}_damageType`,
-            `repeating_${section}_${rowId}_baseValue`,
-            `repeating_${section}_${rowId}_dhValue`,
-            `repeating_${section}_${rowId}_combo`,
-            `repeating_${section}_${rowId}_currentRoll`,
-
-            `repeating_${section}_${rowId}_cost`,
-            `repeating_${section}_${rowId}_uses`,
-            `repeating_${section}_${rowId}_uses_max`,
-            `repeating_${section}_${rowId}_restore`,
-            `repeating_${section}_${rowId}_resource`,
-
-            `repeating_${section}_${rowId}_effectSelf`,
-            `repeating_${section}_${rowId}_effectTarget`,
-            `repeating_${section}_${rowId}_condition`,
-
-            "level", "barrierPoints",
-            "hitPoints", "hitPoints_max",
-            "magicPoints", "magicPoints_max",
-            "resource", "resourceValue", "resourceValue_max",
-            "resource2", "resource2Value", "resource2Value_max",
-            "resource3", "resource3Value", "resource3Value_max",
-            "range1", "range1_max", "range2", "range2_max", "range3", "range3_max",
-
-            "speedEffective", "speedBlock", "speedUnblocked", "speedOriginal",
-
-            "character_name", "sheet_type",
-
-            "whisper", "whisperExemptAbilities"
-        ], (values, effects) => {
-            const name = values[`repeating_${section}_${rowId}_title`];
-            const type = values[`repeating_${section}_${rowId}_type`];
-            const baseValue = values[`repeating_${section}_${rowId}_baseValue`];
-            const directHitValue = values[`repeating_${section}_${rowId}_dhValue`];
-            const damageType = values[`repeating_${section}_${rowId}_damageType`];
-            const combo = values[`repeating_${section}_${rowId}_combo`];
-            const roll = parseInt(values[`repeating_${section}_${rowId}_currentRoll`]);
-
-            const selfEffects = values[`repeating_${section}_${rowId}_effectSelf`].split(",");
-            const targetEffects = values[`repeating_${section}_${rowId}_effectTarget`];
-            const condition = values[`repeating_${section}_${rowId}_condition`];
-
-            var bonusValue = 0;
-            if (useRollBonus) {
-                bonusValue = effects.reduce(
-                    (accumulator, currentValue) => {
-                        if (currentValue.data.maskedType != "roll(x)") {
-                            return accumulator;
-                        }
-                        if (currentValue.value) {
-                            return accumulator + parseInt(currentValue.value);
-                        }
-                        return accumulator;
-                    }, 0
-                );
-            }
-
-            var criticalMultiplier = 1;
-            if (roll) {
-                criticalMultiplier = roll + bonusValue >= effects.criticalThreshold ? 2 : 1;
-            }
-
-            // Add crit multiplier to other dice rolls
-            var baseValueWithMultipliers = baseValue;
-            if (baseValue.includes("d")) {
-                baseValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + baseValue[0] + "]]" + baseValue.substring(1);
-            }
-            var directHitValueWithMultipliers = directHitValue;
-            if (directHitValue.includes("d")) {
-                directHitValueWithMultipliers = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitValue[0] + "]]" + directHitValue.substring(1);
-            }
-            let rolls = rollModifiers.addEffectsToPreDamageRolls(effects, values.level, type, damageType, baseValueWithMultipliers, directHitValueWithMultipliers);
-
-            var damageTitle = "";
-            var damageDice = "";
-            if (rolls.damage) {
-                damageTitle = `${damageType}: `;
-                damageDice = `[[${rolls.damage}]]`;
-            }
-            var directHitTitle = "";
-            var directHitDice = "";
-            if (rolls.directHit) {
-                directHitTitle = "Direct Hit: ";
-                directHitDice = `[[${rolls.directHit}]]`;
-            }
-
-            var totalTitle = "";
-            if (rolls.damage && rolls.directHit) {
-                totalTitle = `Full ${damageTitle}`;
-            }
-
-            var button = "";
-            var comboTitle = "";
-            if (combo) {
-                setAttrs({
-                    currentCombo: combo
-                });
-                var choices = [combo];
-                comboTitle = "Combo";
-                if (combo.includes(",")) {
-                    choices = combo.split(",");
-                }
-                for (let i = 0; i < choices.length; i++) {
-                    button += `[${choices[i].trim()}](~${values.character_name}|repeating_${section}_${rowId}_runcombo${i + 1})`;
-                }
-            }
-
-            const resourceCost = performAbility.resolveResources(section, rowId, values, effects);
-
-            if (!damageDice && !directHitDice && !combo && !resourceCost && !selfEffects && !targetEffects) {
-                engine.logd("No reason to roll damage");
-                return;
-            }
-
-            var targetEffectTitle = "";
-            let targetEffectButton = "";
-            if (targetEffects) {
-                let calculatedEffects = new TargetEffects(targetEffects);
-                targetEffectButton = this.buttonForTargetEffects(calculatedEffects, values.character_name);
-                if (targetEffectButton) {
-                    targetEffectTitle = "Effect";
-                }
-            }
-
-            let whisper = values.whisper;
-            if (values.whisper && values.whisperExemptAbilities === "on") {
-                whisper = "";
-            }
-            // Roll damage
-            let rollTemplate = `${whisper}&{template:damage} {{title=${name}}} {{damageTitle=${damageTitle}}} {{damage=${damageDice}}} ` +
-                `{{directHitTitle=${directHitTitle}}} {{directHit=${directHitDice}}} {{totalTitle=${totalTitle}}} {{total=[[0]]}}` +
-                `{{comboTitle=${comboTitle}}} {{button=${button}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
-                `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
-            engine.logd(rollTemplate);
-            startRoll(rollTemplate, results => {
-                const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
-                const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
-
-                let computedResults = rollModifiers.addEffectsToPostDamageRolls(effects, damageType, [damageRoll, directHitRoll]);
-                let consumedEffectSummary = removeEffects.consumeOnAbility(name, condition, effects);
-
-                let state = new EffectState(
-                    values.hitPoints, 
-                    values.hitPoints_max, 
-                    values.barrierPoints, 
-                    {
-                        hit: roll,
-                        damage: damageRoll,
-                        directHit: directHitRoll
-                    }, 
-                    effects
-                );
-                let effectSummary = addEffects.addBySpecificationString(state, selfEffects);
-                let procSummary = rolls.summaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
-
-                var attributes = {};
-                attributes[`repeating_${section}_${rowId}_currentCriticalMultiplier`] = 1;
-                setAttrs(attributes);
-
-                finishRoll(
-                    results.rollId,
-                    {
-                        proc: procSummary,
-                        damage: computedResults.rolls[0],
-                        directHit: computedResults.rolls[1],
-                        total: totalTitle ? computedResults.total : ""
-                    }
-                );
+        let attributes = damageAbilityAttributes(section, rowId).concat(damageCharacterAttributes);
+        engine.getAttrsAndEffects(attributes, (values, effects) => {
+            let damageRoll = new DamageRoll({
+                title: values[`repeating_${section}_${rowId}_title`],
+                type: values[`repeating_${section}_${rowId}_type`],
+                damageType: values[`repeating_${section}_${rowId}_damageType`],
+                baseRoll: values[`repeating_${section}_${rowId}_baseValue`],
+                directHitRoll: values[`repeating_${section}_${rowId}_dhValue`],
+                hitRoll: parseInt(values[`repeating_${section}_${rowId}_currentRoll`]),
+                condition: values[`repeating_${section}_${rowId}_condition`],
+                combos: values[`repeating_${section}_${rowId}_combo`],
+                cost: values[`repeating_${section}_${rowId}_cost`],
+                resource: values[`repeating_${section}_${rowId}_resource`],
+                selfEffects: values[`repeating_${section}_${rowId}_effectSelf`],
+                targetEffects: values[`repeating_${section}_${rowId}_effectTarget`],
+                restoration: values[`repeating_${section}_${rowId}_restore`],
+                useRollBonus: useRollBonus,
+                whisperPrefix: values.whisperExemptAbilities === "on" ? "" : values.whisper
             });
+            let abilityId = new AbilityId(section, rowId);
+            this.performDamageRoll(damageRoll, abilityId, values, effects);
+        });
+    };
+
+    this.performDamageRoll = function(damageRoll, abilityId=null, values, effects) {
+        let modifiedRoll = rollModifiers.applyCriticalMultiplierIfNeeded(damageRoll, effects);
+        let summariedRoll = rollModifiers.applyEffectModifiersToDamageRolls(modifiedRoll, values.level, effects);
+        let modifierSummaries = summariedRoll.summaries;
+        modifiedRoll = summariedRoll.damageRoll;
+
+        const comboButtons = performAbility.resolveAvailableCombos(modifiedRoll.combos, abilityId, values);
+        const comboTitle = comboButtons ? "Combo" : "";
+
+        const resourceCost = performAbility.resolveResources(modifiedRoll, abilityId, values, effects);
+        const hasDamage = modifiedRoll.baseRoll || modifiedRoll.directHitRoll;
+        const hasEffects = modifiedRoll.selfEffects || modifiedRoll.targetEffects;
+        if (!hasDamage && !hasEffects && !resourceCost && !comboButtons) {
+            engine.logd("No reason to roll damage");
+            return;
+        }
+
+        var targetEffectTitle = "";
+        let targetEffectButton = "";
+        if (modifiedRoll.targetEffects) {
+            let calculatedEffects = new TargetEffects(modifiedRoll.targetEffects);
+            targetEffectButton = this.buttonForTargetEffects(calculatedEffects, values.character_name);
+            if (targetEffectButton) {
+                targetEffectTitle = "Effect";
+            }
+        }
+
+        // Roll damage
+        let rollTemplate = `${modifiedRoll.whisperPrefix}&{template:damage} {{title=${modifiedRoll.title}}} ` + 
+            `{{damageTitle=${modifiedRoll.baseEffectTitle()}}} {{damage=${modifiedRoll.baseEffectDice()}}} ` +
+            `{{directHitTitle=${modifiedRoll.directHitTitle()}}} {{directHit=${modifiedRoll.directHitDice()}}} ` +
+            `{{totalTitle=${modifiedRoll.totalTitle()}}} {{total=[[0]]}}` +
+            `{{comboTitle=${comboTitle}}} {{button=${comboButtons}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
+            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
+        engine.logd(rollTemplate);
+        startRoll(rollTemplate, results => {
+            const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
+            const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
+
+            let computedResults = rollModifiers.applyEffectModifiersAfterDamageRolls(effects, modifiedRoll.damageType, [damageRoll, directHitRoll]);
+            let consumedEffectSummary = removeEffects.consumeOnAbility(modifiedRoll.title, modifiedRoll.condition, effects);
+
+            let state = new EffectState(
+                values.hitPoints, 
+                values.hitPoints_max, 
+                values.barrierPoints, 
+                {
+                    hit: modifiedRoll.hitRoll,
+                    damage: damageRoll,
+                    directHit: directHitRoll
+                }, 
+                effects
+            );
+            let effectSummary = addEffects.addBySpecificationString(state, modifiedRoll.selfEffects.split(","));
+            let fullSummary = modifierSummaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
+
+            if (abilityId) {
+                var attributes = {};
+                attributes[`repeating_${abilityId.section}_${abilityId.rowId}_currentCriticalMultiplier`] = 1;
+                setAttrs(attributes);
+            }
+
+            finishRoll(
+                results.rollId,
+                {
+                    proc: fullSummary,
+                    damage: computedResults.rolls[0],
+                    directHit: computedResults.rolls[1],
+                    total: modifiedRoll.totalTitle() ? computedResults.total : ""
+                }
+            );
         });
     };
 
@@ -6176,39 +6327,64 @@ const AbilityRolls = function() {
         const rowId = sourceAttributes[2];
         engine.logd("Combo activated " + JSON.stringify(eventInfo));
         getAttrs([
-            `repeating_${section}_${rowId}_combo`
+            `repeating_${section}_${rowId}_combo`,
+            `repeating_${section}_${rowId}_currentRoll`,
+
+            "whisper", "whisperExemptAbilities"
         ], values => {
             const combo = values[`repeating_${section}_${rowId}_combo`];
-            var abilityName = combo.trim().toLowerCase();
+            var chosenCombo = combo;
             if (combo.includes(",")) {
                 const choices = combo.split(",");
                 if (index < choices.length) {
-                    abilityName = choices[index].trim().toLowerCase();
+                    chosenCombo = choices[index];
                 } else {
                     engine.logi(`Combo index out of bonds: selected ${index}, not in ${combo}`);
                     return;
                 }
             }
-            let rawSection = section.replace(/[\d]+/, "");
-            let sections = [1, 2, 3].map(index => `${rawSection}${index}`);
-            engine.allSectionIDs(sections, sectionIds => {
-                const attributes = sectionIds.map((element) => `${element}_title`);
-                getAttrs(attributes, values => {
-                    for (let i = 0; i < sectionIds.length; i++) {
-                        const sectionId = sectionIds[i];
-                        const attribute = attributes[i];
-                        if (values[attribute].trim().toLowerCase() == abilityName) {
-                            const triggerEvent = {
-                                sourceAttribute: `${sectionId}_runcomboFrom_${rowId}`
-                            };
-                            engine.logd("Activating " + abilityName);
-                            this.roll(triggerEvent);
-                            return;
-                        }
-                    }
-                    engine.logd("Couldn't find ability with name " + abilityName);
+            let comboSpecifications = performAbility.parseCombo(chosenCombo);
+            let comboSpecification = comboSpecifications ? comboSpecifications[0] : null;
+            if (comboSpecification.roll || comboSpecification.cost) {
+                // Custom combo, roll the specified damage and spend the given cost
+                let damageRoll = new DamageRoll({
+                    title: comboSpecification.name,
+                    type: "Special",
+                    damageType: "Damage",
+                    baseRoll: comboSpecification.roll,
+                    hitRoll: values[`repeating_${section}_${rowId}_currentRoll`],
+                    cost: comboSpecification.cost,
+                    resource: comboSpecification.cost_resource,
+                    whisperPrefix: values.whisperExemptAbilities ? "" : values.whisper
                 });
-            });
+                engine.logd("Activating custom combo " + JSON.stringify(comboSpecification));
+                engine.getAttrsAndEffects(damageCharacterAttributes, (values, effects) => {
+                    this.performDamageRoll(damageRoll, null, values, effects);
+                });
+            } else {
+                // Search abilities for the chosen combo
+                let abilityName = comboSpecification.name.toLowerCase();
+                let rawSection = section.replace(/[\d]+/, "");
+                let sections = [1, 2, 3].map(index => `${rawSection}${index}`);
+                engine.allSectionIDs(sections, sectionIds => {
+                    const attributes = sectionIds.map((element) => `${element}_title`);
+                    getAttrs(attributes, values => {
+                        for (let i = 0; i < sectionIds.length; i++) {
+                            const sectionId = sectionIds[i];
+                            const attribute = attributes[i];
+                            if (values[attribute].trim().toLowerCase() == abilityName) {
+                                const triggerEvent = {
+                                    sourceAttribute: `${sectionId}_runcomboFrom_${rowId}`
+                                };
+                                engine.logd("Activating " + abilityName);
+                                this.roll(triggerEvent);
+                                return;
+                            }
+                        }
+                        engine.logd("Couldn't find ability with name " + abilityName);
+                    });
+                });
+            }
         });
     };
 
@@ -6255,6 +6431,7 @@ const AbilityRolls = function() {
 
 const abilityRolls = new AbilityRolls();
 this.export.AbilityRolls = AbilityRolls;
+this.export.DamageRoll = DamageRoll;
 this.export.abilityRolls = abilityRolls;
 
 // Build (version 1.0.0): Source/workers/main/rolls/turnorder.js
@@ -7723,26 +7900,30 @@ this.export.removeEffects = removeEffects;
 // Build (version 1.0.0): Source/workers/main/abilities/performAbility.js
 
 
+const AbilityId = function(section, rowId) {
+    this.section = section;
+    this.rowId = rowId;
+};
+
 const PerformAbility = function() {
 
-    this.resolveResources = function(section, rowId, values, effects) {
-        const type = values[`repeating_${section}_${rowId}_type`];
-        const cost = values[`repeating_${section}_${rowId}_cost`];
-        const resourceType = values[`repeating_${section}_${rowId}_resource`];
-        const uses = values[`repeating_${section}_${rowId}_uses`];
-        const usesMax = values[`repeating_${section}_${rowId}_uses_max`];
-        const restoration = values[`repeating_${section}_${rowId}_restore`];
+    this.resolveResources = function(damageRoll, abilityId, values, effects) {
+        
+        const uses = abilityId ? values[`repeating_${abilityId.section}_${abilityId.rowId}_uses`] : 0;
+        const usesMax = abilityId ? values[`repeating_${abilityId.section}_${abilityId.rowId}_uses_max`] : 0;
+
         const isGeneric = values.sheet_type != "unique";
 
         var resourceCost = "";
         var resourceResult = false;
-        if (cost > 0) {
-            let specification = this.resourceSpecification(resourceType, values);
+        if (damageRoll.cost > 0) {
+            let specification = this.resourceSpecification(damageRoll.resource, values);
             if (specification) {
+                engine.logd("Spending resources");
                 let result = this.spend(
                     isGeneric,
-                    cost,
-                    specification.name,
+                    damageRoll.cost,
+                    specification.resourceType,
                     values[specification.attributeName],
                     values[specification.attributeNameMax],
                     specification.attributeName
@@ -7752,43 +7933,43 @@ const PerformAbility = function() {
             }
         }
         
-        if (resourceResult || cost == 0) {
-            // Spend uses if there are any
-            if (usesMax > 0) {
-                let result = this.spend(
-                    isGeneric,
-                    1,
-                    "uses",
-                    uses,
-                    usesMax,
-                    `repeating_${section}_${rowId}_uses`
-                );
-                if (result[1]) {
-                    if (resourceCost) {
-                        resourceCost += `\n${result[1]}`;
-                    } else {
-                        resourceCost = result[1];
-                    }
+        if (damageRoll.cost > 0 && !resourceResult) {
+            return "";
+        }
+
+        // Spend uses if there are any
+        if (abilityId && usesMax > 0) {
+            engine.logd("Spending uses");
+            let result = this.spend(
+                isGeneric,
+                1,
+                "uses",
+                uses,
+                usesMax,
+                `repeating_${abilityId.section}_${abilityId.rowId}_uses`
+            );
+            if (result[1]) {
+                if (resourceCost) {
+                    resourceCost += `\n${result[1]}`;
+                } else {
+                    resourceCost = result[1];
                 }
             }
         }
-
         var summaries = [resourceCost];
 
         // Restore resources
         engine.logd("Checking to restore");
-        if (resourceResult || cost == 0) {
-            if (restoration) {
-                summaries.push(this.restore(isGeneric, restoration, values));
-            } else {
-                engine.logd("No restore");
-            }
-            let isIceType = type.toLowerCase().includes("ice-aspect");
-            if (isIceType && effects.umbralIce) {
-                summaries.push(`${this.restore(isGeneric, "5 mp", values)} (Umbral Ice)`);
-            }
+        if (damageRoll.restoration) {
+            summaries.push(this.restore(isGeneric, damageRoll.restoration, values));
+        } else {
+            engine.logd("No restore");
         }
-
+        // Perform Umbral Ice restoration if applicable
+        let isIceType = damageRoll.type.toLowerCase().includes("ice-aspect");
+        if (isIceType && effects.umbralIce) {
+            summaries.push(`${this.restore(isGeneric, "5 mp", values)} (Umbral Ice)`);
+        }
         return summaries.filter(element => element).join("\n");
     };
 
@@ -7936,10 +8117,85 @@ const PerformAbility = function() {
             });
         });
     };
+
+    this.resolveAvailableCombos = function(combo, abilityId, values) {
+        engine.logd("Resolving available combos");
+        if (!combo || !abilityId) {
+            return "";
+        }
+        let specifications = this.parseCombo(combo);
+        return this.buttonsForComboSpecifications(specifications, abilityId, values);
+    };
+
+    this.parseCombo = function(combo) {
+        let choices = combo.split(",");
+        return choices.map(choice => {
+            let matches = choice.match(/([\w ':]+)(\([\w |':-]*\))?/);
+            if (!matches || !matches[1]) {
+                engine.logd("Unable to parse combo " + choice);
+                return null;
+            }
+            return this.specificationForCombo(matches[1], matches[2]);
+        }).filter(spec => spec);
+    };
+
+    this.specificationForCombo = function(name, parameters) {
+        var specification = {
+            name: name
+        };
+        if (parameters) {
+            engine.logd("Parsing combo parameters");
+            let parameterList = parameters.split("|");
+            for (let parameter of parameterList) {
+                let matches = parameter.match(/([\w]+):\s*([\w-]+)\s*([\w-]+)?/);
+                let key = matches[1];
+                let value = matches[2];
+                let resource = matches[3];
+                if (!key || !value) {
+                    engine.logd("Unable to parse combo parameter " + parameter);
+                    continue;
+                }
+                specification[key] = value;
+                if (resource) {
+                    specification[`${key}_resource`] = resource;
+                }
+            }
+        }
+        return specification;
+    };
+
+    this.buttonsForComboSpecifications = function(comboSpecifications, abilityId, values) {
+        if (!abilityId) {
+            return "";
+        }
+        var buttons = "";
+        for (let index = 0; index < comboSpecifications.length; index++)  {
+            let combo = comboSpecifications[index];
+            if (combo.cost && combo.cost_resource) {
+                let currentValue = parseInt(values[combo.cost_resource]);
+                if (isNaN(currentValue)) {
+                    engine.logd("Unrecognized resource " + combo.cost_resource);
+                    continue;
+                }
+                let cost = parseInt(combo.cost);
+                if (isNaN(cost)) {
+                    engine.logd("Cannot parse combo cost " + combo.cost);
+                    continue;
+                }
+                if (cost > currentValue) {
+                    engine.logd(`Skipping ${combo.name}; cost too high (${cost} > ${currentValue})`);
+                    continue;
+                }
+            }
+            buttons += `[${combo.name}](~${values.character_name}|repeating_${abilityId.section}_${abilityId.rowId}_runcombo${index + 1})`;
+        }
+        return buttons;
+    };
 };
 
 const performAbility = new PerformAbility();
 this.export.PerformAbility = PerformAbility;
+this.export.AbilityId = AbilityId;
 this.export.performAbility = performAbility;
 
 // Build (version 1.0.0): Source/workers/main/setup/sheets.js
@@ -8136,8 +8392,8 @@ const sheets = {
             abilities: {
                 primary: [
                     { title: "Monk Combo", type: "Primary", cost: 0, uses: 0, uses_max: 0, baseEffect: "You may perform up to three additional primary actions this turn. They primary actions granted by this effect can only be used for physical primary abilities.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/monk-combo.png" },
-                    { title: "True Strike", type: "Primary, Physical", condition: "Under the effect of Raptor Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Coeurl Form, and enables Bestial Fury: Raptor.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Coeurl Form,Combo(Raptor's Fury,1d6)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/true-strike.png" },
-                    { title: "Snap Punch", type: "Primary, Physical", condition: "Under the effect of Coeurl Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Opo-Opo Form, and enables Bestial Fury: Coeurl.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Opo-Opo Form,Combo(Coeurl's Fury,1d6)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/snap-punch.png" },
+                    { title: "True Strike", type: "Primary, Physical", condition: "Under the effect of Raptor Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Coeurl Form, and enables Bestial Fury: Raptor.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Coeurl Form", combo: "Bestial Fury: Raptor(cost:1 range2|roll:1d6)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/true-strike.png" },
+                    { title: "Snap Punch", type: "Primary, Physical", condition: "Under the effect of Coeurl Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Opo-Opo Form, and enables Bestial Fury: Coeurl.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Opo-Opo Form", combo: "Bestial Fury: Coeurl(cost:1 range3|roll:1d6)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/snap-punch.png" },
                     { title: "Bootshine", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target, grants Raptor Form. If this ability is used while under the effect of Opo-Opo Form and results in a direct hit, it automatically scores a critical as well.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", effectSelf: "Raptor Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/bootshine.png" },
                     { title: "Twin Snakes", type: "Primary, Physical", condition: "Under the effect of Raptor Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Grants Coeurl Form, and 1 stack of Raptor's Fury.", directHit: "Deals an additional 2 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2", restore: "1 range2", effectSelf: "Coeurl Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/twin-snakes.png" },
                     { title: "Demolish", type: "Primary, Physical", condition: "Under the effect of Coeurl Form", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Grants Opo-Opo Form and 2 stacks of Coeurl's Fury.", directHit: "Deals an additional 2 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2", restore: "2 range3", effectSelf: "Opo-Opo Form", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MNK/demolish.png" },
@@ -8567,108 +8823,6 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
-
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
 });
 
 </script>
