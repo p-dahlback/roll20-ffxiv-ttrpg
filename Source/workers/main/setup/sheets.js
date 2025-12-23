@@ -184,7 +184,7 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png",
             role: "DPS / Monk",
             level: 30,
-            resources: { hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, resource: "Chakra", resourceValue: 3, resourceValue_max: 3, resource2: "none", resource2Value: 0, resource2Value_max: 0, resource3Value: 0, resource3Value_max: 0, range1: 0, range1_max: 0, range2: 0, range2_max: 1, range3: 0, range3_max: 2, resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false" },
+            resources: { hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, resource: "Chakra", resourceValue: 3, resourceValue_max: 3, resource2: "none", resource2Value: 0, resource2Value_max: 0, resource3Value: 0, resource3Value_max: 0, range1: 0, range1_max: 0, range2: 0, range2_max: 1, range3: 0, range3_max: 2, resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" },
             attributes: { str: 4, dex: 3, vit: 2, int: 1, mnd: 2, defense: 14, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
                 { title: "Martial Forms", effect: "Certain effects grant you Opo-Opo Form, Raptor Form, or Coeur Form. While under the effect of a form, receive one advantage die on you ability checks for physical abilities.\n\nIf an effect grants you a new form, your current form is removed and the new form immediately takes effect. Forms are removed at the end your next turn." },

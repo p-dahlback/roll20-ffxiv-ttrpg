@@ -1972,7 +1972,7 @@ div[data-groupname=repeating_technique3].repcontrol,
 
 .job-type[value="BRD"] ~ .top-abilities,
 .job-type[value="NIN"] ~ .sub-abilities,
-.job-type[value="MNK"] ~ .conditional-abilities {
+.techniqueSwitch[value="true"] ~ .conditional-abilities {
   display: block;
 }
 
