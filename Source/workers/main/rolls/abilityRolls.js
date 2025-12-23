@@ -29,7 +29,7 @@ const TargetEffects = function(source) {
 
 const DamageRoll = function({
     title, type, damageType, baseRoll, directHitRoll="", hitRoll="", condition="", combos="", cost=0, resource="", 
-    selfEffects="", targetEffects="", restoration="", useRollBonus=false, whisperPrefix=""
+    selfEffects="", targetEffects="", restoration="", monkForm="", useRollBonus=false, whisperPrefix=""
 }) {
 
     this.title = title;
@@ -45,7 +45,8 @@ const DamageRoll = function({
     this.resource = resource;
     this.selfEffects = selfEffects;
     this.targetEffects = targetEffects;
-    this.restoration =restoration;
+    this.restoration = restoration;
+    this.monkForm = monkForm;
     this.useRollBonus = useRollBonus;
     this.whisperPrefix = whisperPrefix;
 
@@ -79,6 +80,7 @@ const damageAbilityAttributes = function(section, rowId) {
         `repeating_${section}_${rowId}_dhValue`,
         `repeating_${section}_${rowId}_combo`,
         `repeating_${section}_${rowId}_currentRoll`,
+        `repeating_${section}_${rowId}_currentMonkForm`,
 
         `repeating_${section}_${rowId}_cost`,
         `repeating_${section}_${rowId}_uses`,
@@ -217,6 +219,7 @@ const AbilityRolls = function() {
 
             var attributes = {};
             attributes[`repeating_${section}_${rowId}_currentRoll`] = "";
+            attributes[`repeating_${section}_${rowId}_currentMonkForm`] = effects.monkForm ? effects.monkForm.specialType : "";
             setAttrs(attributes);
 
             let whisper = values.whisper;
@@ -248,13 +251,13 @@ const AbilityRolls = function() {
                     else {
                         die = Math.max(...hitRoll.dice);
                     }
+                    let attributes = {};
                     attributes[`repeating_${section}_${rowId}_currentRoll`] = die;
+                    setAttrs(attributes);
                 }
                 if (hitValue && parseInt(computedValue) < 0) {
                     computedValue = 0;
                 }
-
-                setAttrs(attributes);
 
                 finishRoll(results.rollId, {
                     hit: computedValue
@@ -284,6 +287,7 @@ const AbilityRolls = function() {
                 selfEffects: values[`repeating_${section}_${rowId}_effectSelf`],
                 targetEffects: values[`repeating_${section}_${rowId}_effectTarget`],
                 restoration: values[`repeating_${section}_${rowId}_restore`],
+                monkForm: values[`repeating_${section}_${rowId}_currentMonkForm`],
                 useRollBonus: useRollBonus,
                 whisperPrefix: values.whisperExemptAbilities === "on" ? "" : values.whisper
             });
@@ -374,6 +378,7 @@ const AbilityRolls = function() {
         getAttrs([
             `repeating_${section}_${rowId}_combo`,
             `repeating_${section}_${rowId}_currentRoll`,
+            `repeating_${section}_${rowId}_currentMonkForm`,
 
             "whisper", "whisperExemptAbilities"
         ], values => {
@@ -400,8 +405,12 @@ const AbilityRolls = function() {
                     hitRoll: values[`repeating_${section}_${rowId}_currentRoll`],
                     cost: comboSpecification.cost,
                     resource: comboSpecification.cost_resource,
+                    monkForm: values[`repeating_${section}_${rowId}_currentMonkForm`],
                     whisperPrefix: values.whisperExemptAbilities ? "" : values.whisper
                 });
+                // TODO: Bootshine combo into Bestial Fury may trigger Bestial Fury: Opo-Opo to crit if it's a DH.
+                // Proposed solve: Bootshine: Opo-Opo has a DH-roll of 1d6, so we get base (1d6) optionally + DH (1d6).
+                // User can then determine to use just base or total value depending on how the hit roll compares to target CR.
                 engine.logd("Activating custom combo " + JSON.stringify(comboSpecification));
                 engine.getAttrsAndEffects(damageCharacterAttributes, (values, effects) => {
                     this.performDamageRoll(damageRoll, null, values, effects);

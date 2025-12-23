@@ -235,7 +235,7 @@ const PerformAbility = function() {
     this.parseCombo = function(combo) {
         let choices = combo.split(",");
         return choices.map(choice => {
-            let matches = choice.match(/([\w ':]+)(\([\w |':-]*\))?/);
+            let matches = choice.match(/([\w ':-]+)(\([\w |':-]*\))?/);
             if (!matches || !matches[1]) {
                 engine.logd("Unable to parse combo " + choice);
                 return null;
@@ -252,7 +252,7 @@ const PerformAbility = function() {
             engine.logd("Parsing combo parameters");
             let parameterList = parameters.split("|");
             for (let parameter of parameterList) {
-                let matches = parameter.match(/([\w]+):\s*([\w-]+)\s*([\w-]+)?/);
+                let matches = parameter.match(/([\w-]+):\s*([\w-]+)\s*([\w-]+)?/);
                 let key = matches[1];
                 let value = matches[2];
                 let resource = matches[3];

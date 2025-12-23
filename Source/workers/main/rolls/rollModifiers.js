@@ -109,24 +109,35 @@ const RollModifiers = function() {
         if (damageRoll.hitRoll) {
             criticalMultiplier = damageRoll.hitRoll + bonusValue >= effects.criticalThreshold ? 2 : 1;
         }
+        let baseRoll = damageRoll.baseRoll;
+        var modifiedRoll = damageRoll;
         if (criticalMultiplier > 1) {
-            var modifiedRoll = damageRoll;
-            let baseRoll = modifiedRoll.baseRoll;
             if (baseRoll && baseRoll.includes("d")) {
-                baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);
-                modifiedRoll.baseRoll = baseRoll;
+                modifiedRoll.baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);;
             }
         }
 
-        // For Direct Hit, force crit if this ability is Bootshine and the character is in Opo-Opo Form
-        if (effects.monkForm.specialType === "Opo-Opo Form" && damageRoll.title === "Bootshine") {
-            criticalMultiplier = 2;
+        // Monk's Opo-Opo Form forces crits in two particular circumstances:
+        // - 1. 'Bootshine' Direct Hits
+        // - 2. 'Bestial Fury: Opo-Opo' when comboed from a Direct Hitting Bootshine
+        if (damageRoll.monkForm === "Opo-Opo Form") {
+            if (damageRoll.title === "Bootshine") {
+                // Force crit on 'Bootshine' Direct Hit
+                criticalMultiplier = 2;
+            } else if (damageRoll.title === "Bestial Fury: Opo-Opo" && criticalMultiplier < 2) {
+                // If the initial hit roll was an outright crit, it's already been applied as a modifier to the base roll and we don't need to do anything here.
+                // Otherwise, we handle the forced crit scenario by adding a duplicate roll to Direct Hit to simulate the forced crit.
+                // I.e.: Base Roll + Direct Hit Roll = 2 x Base Roll, which is the same as a crit.
+                // This way players can choose the base value or the full damage total depending on if the ability Direct Hits (crits) their chosen target.
+                modifiedRoll.directHitRoll = baseRoll;
+                return modifiedRoll;
+            }
         }
+
         if (criticalMultiplier > 1) {
             let directHitRoll = modifiedRoll.directHitRoll;
             if (directHitRoll && directHitRoll.includes("d")) {
-                directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
-                modifiedRoll.directHitRoll = directHitRoll;
+                modifiedRoll.directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
             }
             return modifiedRoll;
         } else {

@@ -4778,424 +4778,6 @@ on("sheet:opened", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file attributes
-
-const attributesImports = new (function() {
-    this.export = {};
-
-const workerName = "attributes"
-
-
-})();
-
-// Build: Source/workers/attributes.js
-
-
-// Advantage management
-
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
-        setAttrs({
-            barrierPoints_max: values.barrierPoints
-        });
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file main
 
 const mainImports = new (function() {
@@ -5757,24 +5339,35 @@ const RollModifiers = function() {
         if (damageRoll.hitRoll) {
             criticalMultiplier = damageRoll.hitRoll + bonusValue >= effects.criticalThreshold ? 2 : 1;
         }
+        let baseRoll = damageRoll.baseRoll;
+        var modifiedRoll = damageRoll;
         if (criticalMultiplier > 1) {
-            var modifiedRoll = damageRoll;
-            let baseRoll = modifiedRoll.baseRoll;
             if (baseRoll && baseRoll.includes("d")) {
-                baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);
-                modifiedRoll.baseRoll = baseRoll;
+                modifiedRoll.baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);;
             }
         }
 
-        // For Direct Hit, force crit if this ability is Bootshine and the character is in Opo-Opo Form
-        if (effects.monkForm.specialType === "Opo-Opo Form" && damageRoll.title === "Bootshine") {
-            criticalMultiplier = 2;
+        // Monk's Opo-Opo Form forces crits in two particular circumstances:
+        // - 1. 'Bootshine' Direct Hits
+        // - 2. 'Bestial Fury: Opo-Opo' when comboed from a Direct Hitting Bootshine
+        if (damageRoll.monkForm === "Opo-Opo Form") {
+            if (damageRoll.title === "Bootshine") {
+                // Force crit on 'Bootshine' Direct Hit
+                criticalMultiplier = 2;
+            } else if (damageRoll.title === "Bestial Fury: Opo-Opo" && criticalMultiplier < 2) {
+                // If the initial hit roll was an outright crit, it's already been applied as a modifier to the base roll and we don't need to do anything here.
+                // Otherwise, we handle the forced crit scenario by adding a duplicate roll to Direct Hit to simulate the forced crit.
+                // I.e.: Base Roll + Direct Hit Roll = 2 x Base Roll, which is the same as a crit.
+                // This way players can choose the base value or the full damage total depending on if the ability Direct Hits (crits) their chosen target.
+                modifiedRoll.directHitRoll = baseRoll;
+                return modifiedRoll;
+            }
         }
+
         if (criticalMultiplier > 1) {
             let directHitRoll = modifiedRoll.directHitRoll;
             if (directHitRoll && directHitRoll.includes("d")) {
-                directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
-                modifiedRoll.directHitRoll = directHitRoll;
+                modifiedRoll.directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
             }
             return modifiedRoll;
         } else {
@@ -5984,7 +5577,7 @@ const TargetEffects = function(source) {
 
 const DamageRoll = function({
     title, type, damageType, baseRoll, directHitRoll="", hitRoll="", condition="", combos="", cost=0, resource="", 
-    selfEffects="", targetEffects="", restoration="", useRollBonus=false, whisperPrefix=""
+    selfEffects="", targetEffects="", restoration="", monkForm="", useRollBonus=false, whisperPrefix=""
 }) {
 
     this.title = title;
@@ -6000,7 +5593,8 @@ const DamageRoll = function({
     this.resource = resource;
     this.selfEffects = selfEffects;
     this.targetEffects = targetEffects;
-    this.restoration =restoration;
+    this.restoration = restoration;
+    this.monkForm = monkForm;
     this.useRollBonus = useRollBonus;
     this.whisperPrefix = whisperPrefix;
 
@@ -6034,6 +5628,7 @@ const damageAbilityAttributes = function(section, rowId) {
         `repeating_${section}_${rowId}_dhValue`,
         `repeating_${section}_${rowId}_combo`,
         `repeating_${section}_${rowId}_currentRoll`,
+        `repeating_${section}_${rowId}_currentMonkForm`,
 
         `repeating_${section}_${rowId}_cost`,
         `repeating_${section}_${rowId}_uses`,
@@ -6172,6 +5767,7 @@ const AbilityRolls = function() {
 
             var attributes = {};
             attributes[`repeating_${section}_${rowId}_currentRoll`] = "";
+            attributes[`repeating_${section}_${rowId}_currentMonkForm`] = effects.monkForm ? effects.monkForm.specialType : "";
             setAttrs(attributes);
 
             let whisper = values.whisper;
@@ -6203,13 +5799,13 @@ const AbilityRolls = function() {
                     else {
                         die = Math.max(...hitRoll.dice);
                     }
+                    let attributes = {};
                     attributes[`repeating_${section}_${rowId}_currentRoll`] = die;
+                    setAttrs(attributes);
                 }
                 if (hitValue && parseInt(computedValue) < 0) {
                     computedValue = 0;
                 }
-
-                setAttrs(attributes);
 
                 finishRoll(results.rollId, {
                     hit: computedValue
@@ -6239,6 +5835,7 @@ const AbilityRolls = function() {
                 selfEffects: values[`repeating_${section}_${rowId}_effectSelf`],
                 targetEffects: values[`repeating_${section}_${rowId}_effectTarget`],
                 restoration: values[`repeating_${section}_${rowId}_restore`],
+                monkForm: values[`repeating_${section}_${rowId}_currentMonkForm`],
                 useRollBonus: useRollBonus,
                 whisperPrefix: values.whisperExemptAbilities === "on" ? "" : values.whisper
             });
@@ -6329,6 +5926,7 @@ const AbilityRolls = function() {
         getAttrs([
             `repeating_${section}_${rowId}_combo`,
             `repeating_${section}_${rowId}_currentRoll`,
+            `repeating_${section}_${rowId}_currentMonkForm`,
 
             "whisper", "whisperExemptAbilities"
         ], values => {
@@ -6355,8 +5953,12 @@ const AbilityRolls = function() {
                     hitRoll: values[`repeating_${section}_${rowId}_currentRoll`],
                     cost: comboSpecification.cost,
                     resource: comboSpecification.cost_resource,
+                    monkForm: values[`repeating_${section}_${rowId}_currentMonkForm`],
                     whisperPrefix: values.whisperExemptAbilities ? "" : values.whisper
                 });
+                // TODO: Bootshine combo into Bestial Fury may trigger Bestial Fury: Opo-Opo to crit if it's a DH.
+                // Proposed solve: Bootshine: Opo-Opo has a DH-roll of 1d6, so we get base (1d6) optionally + DH (1d6).
+                // User can then determine to use just base or total value depending on how the hit roll compares to target CR.
                 engine.logd("Activating custom combo " + JSON.stringify(comboSpecification));
                 engine.getAttrsAndEffects(damageCharacterAttributes, (values, effects) => {
                     this.performDamageRoll(damageRoll, null, values, effects);
@@ -8130,7 +7732,7 @@ const PerformAbility = function() {
     this.parseCombo = function(combo) {
         let choices = combo.split(",");
         return choices.map(choice => {
-            let matches = choice.match(/([\w ':]+)(\([\w |':-]*\))?/);
+            let matches = choice.match(/([\w ':-]+)(\([\w |':-]*\))?/);
             if (!matches || !matches[1]) {
                 engine.logd("Unable to parse combo " + choice);
                 return null;
@@ -8147,7 +7749,7 @@ const PerformAbility = function() {
             engine.logd("Parsing combo parameters");
             let parameterList = parameters.split("|");
             for (let parameter of parameterList) {
-                let matches = parameter.match(/([\w]+):\s*([\w-]+)\s*([\w-]+)?/);
+                let matches = parameter.match(/([\w-]+):\s*([\w-]+)\s*([\w-]+)?/);
                 let key = matches[1];
                 let value = matches[2];
                 let resource = matches[3];
@@ -8823,6 +8425,424 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file attributes
+
+const attributesImports = new (function() {
+    this.export = {};
+
+const workerName = "attributes"
+
+
+})();
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
 });
 
 </script>
