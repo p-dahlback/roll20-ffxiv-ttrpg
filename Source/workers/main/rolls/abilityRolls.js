@@ -426,7 +426,7 @@ const AbilityRolls = function() {
                         for (let i = 0; i < sectionIds.length; i++) {
                             const sectionId = sectionIds[i];
                             const attribute = attributes[i];
-                            if (values[attribute].trim().toLowerCase() == abilityName) {
+                            if (values[attribute].trim().toLowerCase().startsWith(abilityName)) {
                                 const triggerEvent = {
                                     sourceAttribute: `${sectionId}_runcomboFrom_${rowId}`
                                 };
