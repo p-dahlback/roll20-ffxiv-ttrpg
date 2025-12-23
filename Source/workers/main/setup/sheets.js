@@ -9,7 +9,14 @@ const sheets = {
         jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/X.png",
         role: "X / Y",
         level: 30,
-        resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+        resources: { 
+            hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
+            resource: "", resourceValue: 0, resourceValue_max: 0, 
+            resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+            resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+            range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+            resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+        },
         attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
         traits: [
             { title: "", effect: "" }
@@ -26,7 +33,14 @@ const sheets = {
         role: "",
         level: 30,
         override: "manual",
-        resources: { hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+        resources: { 
+            hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0, 
+            resource: "", resourceValue: 0, resourceValue_max: 0, 
+            resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+            resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+            range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+            resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+        },
         attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 0 }
     },
 
@@ -36,7 +50,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
             role: "Healer / Astrologian",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: { 
+                hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            },
             attributes: { str: 2, dex: 2, vit: 2, int: 2, mnd: 4, defense: 12, magicDefense: 13, vigilance: 14, speed: 5 },
             traits: [
                 { title: "Play Arcana", effect: "At the start of your turn, grant a single ally of your choosing within 10 squares Major Arcana and a barrier of 1 HP." },
@@ -72,7 +93,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
             role: "DPS / Black Mage",
             level: 30,
-            resources: { hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: { 
+                hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, 
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
             attributes: { str: 0, dex: 2, vit: 1, int: 5, mnd: 4, defense: 11, magicDefense: 15, vigilance: 14, speed: 5 },
             traits: [
                 { title: "Consecutive Invocation", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may forgo all standard movement until the end of your turn to use a additional invoked primary ability. You may choose a new target when using this additional ability. Consecutive Invocation can only be used once per turn, and does not prevent you from using focus to perform additional secondary action." },
@@ -111,7 +139,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
             role: "DPS / Bard",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: { 
+                hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            },
             attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
                 { title: "Arrow Flurry", effect: "On your turn, after resolving the effects of an ability that enables this trait, you may use an additional flurry ability. You may choose a new target when using this additional ability.\n\nArrow Flurry can only be used once per turn." },
@@ -146,12 +181,62 @@ const sheets = {
                 ]
             }
         },
+        drg: {
+            job: "DRG",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png",
+            role: "DPS / Dragoon",
+            level: 30,
+            resources: { 
+                hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            },
+            attributes: { str: 5, dex: 3, vit: 2, int: 1, mnd: 1, defense: 14, magicDefense: 11, vigilance: 11, speed: 5 },
+            traits: [
+                { title: "Power Surge", effect: "While under the effect of Power Surge, your abilities deal an additional 2 damage." },
+                { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "True Thrust", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR(d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 3 damage to the target. Combo: Dragoon Combo or Disembowel.", directHit: "Deals an additional 2d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "2d6", combo: "Dragoon Combo,Disembowel", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRG/true-thrust.png" },
+                    { title: "Piercing Talon", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "STR (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 3 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRG/piercing-talon.png" },
+                    { title: "Jump", type: "Primary, Physical", cost: 0, uses: 1, uses_max: 1, target: "Single", range: "5 squares", check: "STR (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 2d6 + 3 damage to the target.", directHit: "Deals an additional 2d6 damage.", limitation: "Once per phase", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2d6 + 3", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRG/jump.png" },
+                    { title: "Dragoon Combo (Vorpal Thrust + Full Thrust)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 3 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRG/dragoon-combo.png" },
+                    { spacer: true },
+                    { spacer: true },
+                    { title: "Disembowel", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "STR (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 3 damage to the target and grants Power Surge.", directHit: "Deals an additional 1d6 damage.", stat: "STR", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", effectSelf: "Power Surge", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRG/disembowel.png" }
+                ],
+                secondary: [
+                    { title: "Life Surge", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Grants Drain(2) until the end of this turn and one advantage die on your next ability check this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Life Surge(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRG/life-surge.png" },
+                    { title: "Bloodbath", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Grants Drain(2) until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Bloodbath(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/bloodbath.png" },
+                    { title: "Lance Charge", type: "Secondary", cost: 0, uses: 2, uses_max: 2, baseEffect: "Your abilities deal an additional 2 damage until the end of this turn.", limitation: "Twice per phase", hitType: "None", damageType: "Effect", effectSelf: "Lance Charge(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/DRG/lance-charge.png" },
+                    { title: "Leg Sweep", type: "Secondary, Physical", cost: 0, uses: 1, uses_max: 1, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/leg-sweep.png" }
+                ],
+                instant: [
+                    { title: "Second Wind", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Restores 1d6 + 2 HP", limitation: "Once per phase", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/dps/second-wind.png" },
+                    { title: "Feint", type: "Instant, Physical", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy is resolved.", target: "The enemy that triggered this ability.", range: "2 squares", baseEffect: "Reduces the damage dealt by the target's abilities by 2 until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Feint", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/feint.png" }
+                ],
+                limit: [
+                    { title: "Dragonsong Dive", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "Single", range: "5 squares", baseEffect: "Deals 6d6 damage to the target, then move to an empty square adjacent to the target if one is available.", hitType: "None", damageType: "Damage", baseValue: "6d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
         drk: {
             job: "DRK",
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png",
             role: "Tank / Dark Knight",
             level: 30,
-            resources: { hitPoints: 32, hitPoints_max: 32, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: { 
+                hitPoints: 32, hitPoints_max: 32, magicPoints: 5, magicPoints_max: 5, 
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            },
             attributes: { str: 4, dex: 0, vit: 4, int: 0, mnd: 4, defense: 15, magicDefense: 14, vigilance: 14, speed: 5 },
             traits: [
                 { title: "Darkside", effect: "While under the effect of Darkside, you may spend 2 MP when you score a direct hit on an enemy with a single-target ability to treat any roll of 1. 2, or 3 as if it were a 0 and any roll of 4, 5, or 6 as if it were a 10 when determining damage. Darkside is removed at the end of your next turn it the effect is not renewed." },
@@ -184,7 +269,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png",
             role: "DPS / Monk",
             level: 30,
-            resources: { hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, resource: "Chakra", resourceValue: 3, resourceValue_max: 3, resource2: "none", resource2Value: 0, resource2Value_max: 0, resource3Value: 0, resource3Value_max: 0, range1: 0, range1_max: 0, range2: 0, range2_max: 1, range3: 0, range3_max: 2, resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" },
+            resources: { 
+                hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
+                resource: "Chakra", resourceValue: 3, resourceValue_max: 3, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 1, range3: 0, range3_max: 2, 
+                resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
             attributes: { str: 4, dex: 3, vit: 2, int: 1, mnd: 2, defense: 14, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
                 { title: "Martial Forms", effect: "Certain effects grant you Opo-Opo Form, Raptor Form, or Coeur Form. While under the effect of a form, receive one advantage die on you ability checks for physical abilities.\n\nIf an effect grants you a new form, your current form is removed and the new form immediately takes effect. Forms are removed at the end your next turn." },
@@ -223,7 +315,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png",
             role: "Tank / Paladin",
             level: 30,
-            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: {
+                hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
             attributes: { str: 4, dex: 0, vit: 5, int: 1, mnd: 2, defense: 16, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
                 { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
@@ -258,7 +357,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png",
             role: "Healer / Scholar",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: {
+                hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
             attributes: { str: 0, dex: 1, vit: 2, int: 4, mnd: 5, defense: 12, magicDefense: 15, vigilance: 15, speed: 5 },
             traits: [
                 { title: "Summon Eos", effect: "At the start of an encounter, summon the faerie Eos in your starting square. Eos is resummoned any time you recover from being Knocked Out, as well at the start of a new phase if she isn't already present on the encounter map." },
@@ -291,7 +397,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
             role: "Tank / Warrior",
             level: 30,
-            resources: { hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: {
+                hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
             attributes: { str: 4, dex: 2, vit: 5, int: 0, mnd: 1, defense: 15, magicDefense: 12, vigilance: 11, speed: 5 },
             traits: [
                 { title: "Combo", effect: "After resolving the effects of an ability with Combo, you may use one of the specified abilities at any point during your turn. You may move before doing so, and may choose a new target when using this additional ability." }
@@ -324,7 +437,14 @@ const sheets = {
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png",
             role: "Healer / White Mage",
             level: 30,
-            resources: { hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, resource: "", resourceValue: 0, resourceValue_max: 0, resource2: "none", resource2Value: 0, resource2Value_max: 0 },
+            resources: {
+                hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
             attributes: { str: 1, dex: 1, vit: 2, int: 3, mnd: 5, defense: 11, magicDefense: 14, vigilance: 15, speed: 5 },
             traits: [
             ],
