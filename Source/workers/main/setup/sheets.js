@@ -310,6 +310,53 @@ const sheets = {
                 ]
             }
         },
+        nin: {
+            job: "NIN",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png",
+            role: "DPS / Ninja",
+            level: 30,
+            resources: { 
+                hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
+                resource: "Mudra", resourceValue: 0, resourceValue_max: 3, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0,
+                resource3: "none", resource3Value: 0, resource3Value_max: 0,
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            },
+            attributes: { str: 1, dex: 5, vit: 2, int: 1, mnd: 3, defense: 13, magicDefense: 12, vigilance: 13, speed: 5 },
+            traits: [
+                { title: "Sign Weaver", effect: "Certain effects grant you Mudra. You can have up to 1 Mudra at any given time. All Mudra are removed when you perform an action other than Ritual Weave." },
+                { title: "Hide", effect: "At the start of an encounter, grants Hidden unless you were caught by surprise." },
+                { title: "Hidden", effect: "While under the effect of Hidden, receive one advantage die on your ability checks. Hidden is removed when you take or deal damage or perform a primary or secondary action." },
+                { title: "Ninjutsu Cooldown", effect: "Ninjutsu Cooldown is an enhancement, and cannot be removed by effects that remove enfeeblements. Ninjutsu Cooldown is removed at the end of your next turn." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Ninja Combo (Spinning Edge + Gust Slash)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "DEX (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Combo: Aeolian Edge.", directHit: "Deals an additional 2d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2d6", combo: "Aeolian Edge", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/ninja-combo.png" },
+                    { title: "Throwing Dagger", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "DEX (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 3 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/throwing-dagger.png" },
+                    { title: "Ninjutsu", type: "Primary", cost: 0, uses: 0, uses_max: 0, condition: "1 or more Mudra and not under the effect of Ninjutsu Cooldown", target: "Single", baseEffect: "Immediately use one of your ninjutsu abilities. Some ninjutsu abilities can only be used if you spend 1 or more Mudra for this ability. Grants Ninjutsu Cooldown after resolving the ninjutsu ability's effects.", hitType: "None", damageType: "Effect", combo: "Fuma Shuriken", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/ninjutsu.png" },
+                    { title: "Aeolian Edge", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "DEX (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/aeolian-edge.png" }
+                ],
+                ninjutsu: [
+                    { title: "Fuma Shuriken", type: "Primary, Phyical, Ninjutsu", cost: 1, resource: "Mudra", uses: 0, uses_max: 0, target: "Single", range: "12 squares", baseEffect: "Deals 10 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "10", effectSelf: "Ninjutsu Cooldown", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/fuma-shuriken.png" }
+                ],
+                secondary: [
+                    { title: "Leg Sweep", type: "Secondary, Physical", cost: 0, uses: 1, uses_max: 1, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/leg-sweep.png" },
+                    { title: "Mug", type: "Secondary, Physical", cost: 0, uses: 1, uses_max: 1, target: "Single", range: "1 square", baseEffect: "Increases the damage the target takes from abilities by 1 until the start of your next turn", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Mug(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/mug.png" },
+                    { title: "Ritual Weave", type: "Secondary", cost: 0, uses: 0, uses_max: 0, baseEffect: "Grants 1 Mudra.", hitType: "None", damageType: "Effect", restore: "1 Mudra", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/ritual-weave.png" },
+                    { title: "Bloodbath", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Grants Drain(2) until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Bloodbath(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/bloodbath.png" }
+                ],
+                instant: [
+                    { title: "Shade Shift", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you.", baseEffect: "Increases your Defense and Magic Defense by 1d6 for the ability check that triggered Shade Shift. Use this new value to determine if the ability scores a direct hit.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/shade-shift.png" },
+                    { title: "Trick Attack", type: "Instant, Physical", cost: 0, uses: 0, uses_max: 0, condition: "Under the effect of Hidden", trigger: "Any time", target: "Single", range: "1 square", baseEffect: "Deals 2d6 damage to the target and grants one advantage die on your next ability check.", hitType: "None", damageType: "Damage", baseValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/trick-attack.png" },
+                    { title: "Feint", type: "Instant, Physical", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy is resolved.", target: "The enemy that triggered this ability.", range: "2 squares", baseEffect: "Reduces the damage dealt by the target's abilities by 2 until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Feint", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/feint.png" },
+                    { title: "Second Wind", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Restores 1d6 + 2 HP", limitation: "Once per phase", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/dps/second-wind.png" }
+                ],
+                limit: [
+                    { title: "Chimatsuri", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "Single", range: "1 square", baseEffect: "Deals 4d6 damage to the target and grants Hidden.", hitType: "None", damageType: "Damage", baseValue: "4d6", effectSelf: "Hidden", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
         pld: {
             job: "PLD",
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png",
