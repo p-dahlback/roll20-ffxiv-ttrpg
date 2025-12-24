@@ -3,7 +3,7 @@
 /*exported abilityRolls*/
 const engine = {};
 const effectData = {}; const effectUtilities = {}; const addEffects = {}; const removeEffects = {}; const AbilityId = {};
-const rollModifiers = {}; const rollTemplates = {}; const performAbility = {};
+const rollModifiers = {}; const rollTemplates = {}; const performAbility = {}; const abilityCombos = {};
 const EffectState = {};
 /*build:end*/
 
@@ -302,7 +302,7 @@ const AbilityRolls = function() {
         let modifierSummaries = summariedRoll.summaries;
         modifiedRoll = summariedRoll.damageRoll;
 
-        const comboButtons = performAbility.resolveAvailableCombos(modifiedRoll.combos, abilityId, values);
+        const comboButtons = abilityCombos.resolveAvailableCombos(modifiedRoll.combos, abilityId, values);
         const comboTitle = comboButtons ? "Combo" : "";
 
         const resourceCost = performAbility.resolveResources(modifiedRoll, abilityId, values, effects);
@@ -393,7 +393,7 @@ const AbilityRolls = function() {
                     return;
                 }
             }
-            let comboSpecifications = performAbility.parseCombo(chosenCombo);
+            let comboSpecifications = abilityCombos.parseCombo(chosenCombo);
             let comboSpecification = comboSpecifications ? comboSpecifications[0] : null;
             if (comboSpecification.roll || comboSpecification.cost) {
                 // Custom combo, roll the specified damage and spend the given cost

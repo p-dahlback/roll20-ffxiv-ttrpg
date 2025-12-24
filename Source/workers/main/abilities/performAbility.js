@@ -19,7 +19,7 @@ const PerformAbility = function() {
 
         const isGeneric = values.sheet_type != "unique";
 
-        var resourceCost = "";
+        var summaries = [];
         var resourceResult = false;
         if (damageRoll.cost > 0) {
             let specification = this.resourceSpecification(damageRoll.resource, values);
@@ -34,13 +34,16 @@ const PerformAbility = function() {
                     specification.attributeName
                 );
                 resourceResult = result[0];
-                resourceCost = result[1];
+                summaries.push(result[1]);
             }
         }
-        
+
         if (damageRoll.cost > 0 && !resourceResult) {
             return "";
         }
+
+        // Special handling for Ninja's Mudra
+        summaries.push(this.clearMudraIfNeeded(damageRoll, values));
 
         // Spend uses if there are any
         if (abilityId && usesMax > 0) {
@@ -54,14 +57,9 @@ const PerformAbility = function() {
                 `repeating_${abilityId.section}_${abilityId.rowId}_uses`
             );
             if (result[1]) {
-                if (resourceCost) {
-                    resourceCost += `\n${result[1]}`;
-                } else {
-                    resourceCost = result[1];
-                }
+                summaries.push(result[1]);
             }
         }
-        var summaries = [resourceCost];
 
         // Restore resources
         engine.logd("Checking to restore");
@@ -223,78 +221,22 @@ const PerformAbility = function() {
         });
     };
 
-    this.resolveAvailableCombos = function(combo, abilityId, values) {
-        engine.logd("Resolving available combos");
-        if (!combo || !abilityId) {
-            return "";
+    this.clearMudraIfNeeded = function(damageRoll, values) {
+        if (values.resource.toLowerCase() !== "mudra") {
+            return null;
         }
-        let specifications = this.parseCombo(combo);
-        return this.buttonsForComboSpecifications(specifications, abilityId, values);
-    };
+        let title = damageRoll.title;
+        if (title === "Ritual Weave" || title === "Kassatsu" || title === "Ninjutsu") {
+            return null;
+        }
 
-    this.parseCombo = function(combo) {
-        let choices = combo.split(",");
-        return choices.map(choice => {
-            let matches = choice.match(/([\w ':-]+)(\([\w |':-]*\))?/);
-            if (!matches || !matches[1]) {
-                engine.logd("Unable to parse combo " + choice);
-                return null;
-            }
-            return this.specificationForCombo(matches[1], matches[2]);
-        }).filter(spec => spec);
-    };
-
-    this.specificationForCombo = function(name, parameters) {
-        var specification = {
-            name: name
-        };
-        if (parameters) {
-            engine.logd("Parsing combo parameters");
-            let parameterList = parameters.split("|");
-            for (let parameter of parameterList) {
-                let matches = parameter.match(/([\w-]+):\s*([\w-]+)\s*([\w-]+)?/);
-                let key = matches[1];
-                let value = matches[2];
-                let resource = matches[3];
-                if (!key || !value) {
-                    engine.logd("Unable to parse combo parameter " + parameter);
-                    continue;
-                }
-                specification[key] = value;
-                if (resource) {
-                    specification[`${key}_resource`] = resource;
-                }
-            }
-        }
-        return specification;
-    };
-
-    this.buttonsForComboSpecifications = function(comboSpecifications, abilityId, values) {
-        if (!abilityId) {
-            return "";
-        }
-        var buttons = "";
-        for (let index = 0; index < comboSpecifications.length; index++)  {
-            let combo = comboSpecifications[index];
-            if (combo.cost && combo.cost_resource) {
-                let currentValue = parseInt(values[combo.cost_resource]);
-                if (isNaN(currentValue)) {
-                    engine.logd("Unrecognized resource " + combo.cost_resource);
-                    continue;
-                }
-                let cost = parseInt(combo.cost);
-                if (isNaN(cost)) {
-                    engine.logd("Cannot parse combo cost " + combo.cost);
-                    continue;
-                }
-                if (cost > currentValue) {
-                    engine.logd(`Skipping ${combo.name}; cost too high (${cost} > ${currentValue})`);
-                    continue;
-                }
-            }
-            buttons += `[${combo.name}](~${values.character_name}|repeating_${abilityId.section}_${abilityId.rowId}_runcombo${index + 1})`;
-        }
-        return buttons;
+        engine.logd("Clearing Mudra");
+        
+        //  Reset Mudra resource when rolling unrelated abilities on Ninja
+        setAttrs({
+            resourceValue: 0
+        });
+        return "Cleared Mudra";
     };
 };
 

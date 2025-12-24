@@ -4481,8 +4481,8 @@
                 <hr />
                 <option value="DRG">Dragoon</option>
                 <option value="MNK">Monk</option>
-                <!--
                 <option value="NIN">Ninja</option>
+                <!--
                 <option value="RPR">Reaper</option>
                 <option value="SAM">Samurai</option>
                 <option value="VIP">Viper</option>
@@ -4724,188 +4724,52 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
+// Build (version 1.0.0), generated file tabs
 
-const overrideImports = new (function() {
+const tabsImports = new (function() {
     this.export = {};
 
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
+const workerName = "tabs"
 
 
 })();
 
-// Build: Source/workers/override.js
+// Build: Source/workers/tabs.js
 
 
+// Tabs
 
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
     });
 });
 
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
     });
 });
 
@@ -5985,7 +5849,7 @@ const AbilityRolls = function() {
         let modifierSummaries = summariedRoll.summaries;
         modifiedRoll = summariedRoll.damageRoll;
 
-        const comboButtons = performAbility.resolveAvailableCombos(modifiedRoll.combos, abilityId, values);
+        const comboButtons = abilityCombos.resolveAvailableCombos(modifiedRoll.combos, abilityId, values);
         const comboTitle = comboButtons ? "Combo" : "";
 
         const resourceCost = performAbility.resolveResources(modifiedRoll, abilityId, values, effects);
@@ -6076,7 +5940,7 @@ const AbilityRolls = function() {
                     return;
                 }
             }
-            let comboSpecifications = performAbility.parseCombo(chosenCombo);
+            let comboSpecifications = abilityCombos.parseCombo(chosenCombo);
             let comboSpecification = comboSpecifications ? comboSpecifications[0] : null;
             if (comboSpecification.roll || comboSpecification.cost) {
                 // Custom combo, roll the specified damage and spend the given cost
@@ -6488,6 +6352,7 @@ const EffectData = function() {
         hawks_eye: { matches: ["hawk", "hawke", "heye", "hawkeye", "hawk's eye", "hawks eye"], type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", statusType: "Enhancement", name: "Hawk's Eye", expiry: "use", duplicate: "block", description: "While under the effect of Hawk's Eye, you ignore the penalty incurred on ability checks made while Blinded." },
         heal: { matches: ["heal"], type: "special", specialType: "Heal(X)", statusType: "Enhancement", name: "Heal (X)", expiry: "ephemeral" },
         heavy: { matches: ["heavy"], type: "heavy", maskedType: "heavy", statusType: "Enfeeblement", marker: "heavy", name: "Heavy", expiry: "turn", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to their Speed.\n\nAbility checks targeting you automatically result in direct hits." },
+        hidden: { matches: ["hidden", "hide"], type: "special", maskedType: "advantage", specialType: "Hidden", statusType: "Enhancement", name: "Hidden", expiry: "damage", duplicate: "block", description: "Receive one advantage die on your ability checks. Hidden is removed when you take or deal damage or perform a primary or secondary action." },
         icecast_focus: { matches: ["icast", "icecast", "icecast focus"], type: "special", maskedType: "augment", augmentType: "ability", ability: "ice", specialType: "Icecast Focus", statusType: "Enhancement", name: "Icecast Focus", expiry: "end", duplicate: "block", description: "Grants the Ice ability." },
         improved_padding: { matches: ["ipad", "ipadding", "improved padding"], type: "special", maskedType: "augment", specialType: "Improved Padding", statusType: "Enhancement", name: "Improved Padding", expiry: "end", duplicate: "block", description: "Grants a barrier of 1 HP at the start of the [Adventurer Step]." },
         knocked_out: { matches: ["ko", "kout", "knocked", "knocked out"], type: "knocked_out", maskedType: "knocked_out", name: "Knocked Out", statusType: "Enfeeblement", marker: "ko", expiry: "rest", duplicate: "block", description: "A character that has been Knocked Out is unconscious and cannot perceive their surroundings. They cannot use abilities or perform other actions during their turn.\n\nThey are treated as both Prone and Stunned.\n\nThey cannot recover HP or MP.\n\nKnocked Out can only be removed by effects that specifically remove it.\n\nA character that has been knocked out has all enhancements and enfeeblements removed. They cannot be granted any enhancements or afflicted with further enfeeblements other than Comatose." },
@@ -6500,6 +6365,7 @@ const EffectData = function() {
         major_arcana: { matches: ["marcana", "major arcana"], type: "special", maskedType: "dreroll", specialType: "Major Arcana", statusType: "Enhancement", name: "Major Arcana", expiry: "turn", duplicate: "replace", description: "While a character is under the effect of Major Arcana, they may reroll a single die of their choosing when determining the amount of damage dealt by an ability. Any die rerolled in this way cannot be rerolled again, and its result must be used.\n\nMajor Arcana is removed when its effect is resolved or at the end of the character's turn." },
         mana_conduit: { matches: ["mconduit", "mana conduit"], type: "special", maskedType: "augment", specialType: "Mana Conduit", statusType: "Enhancement", name: "Mana Conduit", expiry: "end", duplicate: "block", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
         masterwork_ornamentation: { matches: ["mwork", "masterwork", "ornament", "ornamentation", "masterwork ornamentation"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
+        ninjutsu_cooldown: { matches: ["ninjutsu cooldown", "ncooldown", "ninjutsu"], type: "special", specialType: "Ninjutsu Cooldown", name: "Ninjutsu Cooldown", statusType: "Enhancement", expiry: "turn2", duplicate: "replace", description: "You cannot use Ninjutsu abilities. Ninjutsu Cooldown cannot be removed by effects that remove enfeeblements." },
         opo_opo_form: { matches: ["opo-opo form", "opo", "opo form", "opo opo form", "oform", "monk1", "m1"], type: "special", maskedType: "ready(x)", specialType: "Opo-Opo Form", statusType: "Enhancement", name: "Opo-Opo Form", expiry: "turn2", duplicate: "replace", description: "Enhances Bootshine and Dragon Kick." },
         paralyzed: { matches: ["paralysis", "paralyze", "paralyzed"], type: "paralyzed", maskedType: "paralyzed", statusType: "Enfeeblement", marker: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block", description: "If you use a Primary ability and roll a 5 or lower for its ability check, Paralysis interrupts the ability, negating it completely. Do not resolve any of its effects or spend any resources." },
         petrified: { matches: ["petrify", "petrified"], type: "petrified", maskedType: "petrified", statusType: "Enfeeblement", marker: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block", description: "You cannot act during your turn or use Instant abilities. You incur a -5 penalty on all checks.\n\nCharacters targeting you receive one advantage die on their ability check." },
@@ -7637,6 +7503,90 @@ const removeEffects = new RemoveEffects();
 this.export.RemoveEffects = RemoveEffects;
 this.export.removeEffects = removeEffects;
 
+// Build (version 1.0.0): Source/workers/main/abilities/abilityCombos.js
+
+
+const AbilityCombos = function() {
+
+    this.resolveAvailableCombos = function(combo, abilityId, values) {
+        engine.logd("Resolving available combos");
+        if (!combo || !abilityId) {
+            return "";
+        }
+        let specifications = this.parseCombo(combo);
+        return this.buttonsForComboSpecifications(specifications, abilityId, values);
+    };
+
+    this.parseCombo = function(combo) {
+        let choices = combo.split(",");
+        return choices.map(choice => {
+            let matches = choice.match(/([\w ':-]+)(\([\w |':-]*\))?/);
+            if (!matches || !matches[1]) {
+                engine.logd("Unable to parse combo " + choice);
+                return null;
+            }
+            return this.specificationForCombo(matches[1], matches[2]);
+        }).filter(spec => spec);
+    };
+
+    this.specificationForCombo = function(name, parameters) {
+        var specification = {
+            name: name
+        };
+        if (parameters) {
+            engine.logd("Parsing combo parameters");
+            let parameterList = parameters.split("|");
+            for (let parameter of parameterList) {
+                let matches = parameter.match(/([\w-]+):\s*([\w-]+)\s*([\w-]+)?/);
+                let key = matches[1];
+                let value = matches[2];
+                let resource = matches[3];
+                if (!key || !value) {
+                    engine.logd("Unable to parse combo parameter " + parameter);
+                    continue;
+                }
+                specification[key] = value;
+                if (resource) {
+                    specification[`${key}_resource`] = resource;
+                }
+            }
+        }
+        return specification;
+    };
+
+    this.buttonsForComboSpecifications = function(comboSpecifications, abilityId, values) {
+        if (!abilityId) {
+            return "";
+        }
+        var buttons = "";
+        for (let index = 0; index < comboSpecifications.length; index++)  {
+            let combo = comboSpecifications[index];
+            if (combo.cost && combo.cost_resource) {
+                let currentValue = parseInt(values[combo.cost_resource]);
+                if (isNaN(currentValue)) {
+                    engine.logd("Unrecognized resource " + combo.cost_resource);
+                    continue;
+                }
+                let cost = parseInt(combo.cost);
+                if (isNaN(cost)) {
+                    engine.logd("Cannot parse combo cost " + combo.cost);
+                    continue;
+                }
+                if (cost > currentValue) {
+                    engine.logd(`Skipping ${combo.name}; cost too high (${cost} > ${currentValue})`);
+                    continue;
+                }
+            }
+            buttons += `[${combo.name}](~${values.character_name}|repeating_${abilityId.section}_${abilityId.rowId}_runcombo${index + 1})`;
+        }
+        return buttons;
+    };
+};
+
+const abilityCombos = new AbilityCombos();
+this.export.AbilityCombos = AbilityCombos;
+this.export.abilityCombos = abilityCombos;
+
 // Build (version 1.0.0): Source/workers/main/abilities/performAbility.js
 
 
@@ -7654,7 +7604,7 @@ const PerformAbility = function() {
 
         const isGeneric = values.sheet_type != "unique";
 
-        var resourceCost = "";
+        var summaries = [];
         var resourceResult = false;
         if (damageRoll.cost > 0) {
             let specification = this.resourceSpecification(damageRoll.resource, values);
@@ -7669,13 +7619,16 @@ const PerformAbility = function() {
                     specification.attributeName
                 );
                 resourceResult = result[0];
-                resourceCost = result[1];
+                summaries.push(result[1]);
             }
         }
-        
+
         if (damageRoll.cost > 0 && !resourceResult) {
             return "";
         }
+
+        // Special handling for Ninja's Mudra
+        summaries.push(this.clearMudraIfNeeded(damageRoll, values));
 
         // Spend uses if there are any
         if (abilityId && usesMax > 0) {
@@ -7689,14 +7642,9 @@ const PerformAbility = function() {
                 `repeating_${abilityId.section}_${abilityId.rowId}_uses`
             );
             if (result[1]) {
-                if (resourceCost) {
-                    resourceCost += `\n${result[1]}`;
-                } else {
-                    resourceCost = result[1];
-                }
+                summaries.push(result[1]);
             }
         }
-        var summaries = [resourceCost];
 
         // Restore resources
         engine.logd("Checking to restore");
@@ -7858,78 +7806,22 @@ const PerformAbility = function() {
         });
     };
 
-    this.resolveAvailableCombos = function(combo, abilityId, values) {
-        engine.logd("Resolving available combos");
-        if (!combo || !abilityId) {
-            return "";
+    this.clearMudraIfNeeded = function(damageRoll, values) {
+        if (values.resource.toLowerCase() !== "mudra") {
+            return null;
         }
-        let specifications = this.parseCombo(combo);
-        return this.buttonsForComboSpecifications(specifications, abilityId, values);
-    };
+        let title = damageRoll.title;
+        if (title === "Ritual Weave" || title === "Kassatsu" || title === "Ninjutsu") {
+            return null;
+        }
 
-    this.parseCombo = function(combo) {
-        let choices = combo.split(",");
-        return choices.map(choice => {
-            let matches = choice.match(/([\w ':-]+)(\([\w |':-]*\))?/);
-            if (!matches || !matches[1]) {
-                engine.logd("Unable to parse combo " + choice);
-                return null;
-            }
-            return this.specificationForCombo(matches[1], matches[2]);
-        }).filter(spec => spec);
-    };
-
-    this.specificationForCombo = function(name, parameters) {
-        var specification = {
-            name: name
-        };
-        if (parameters) {
-            engine.logd("Parsing combo parameters");
-            let parameterList = parameters.split("|");
-            for (let parameter of parameterList) {
-                let matches = parameter.match(/([\w-]+):\s*([\w-]+)\s*([\w-]+)?/);
-                let key = matches[1];
-                let value = matches[2];
-                let resource = matches[3];
-                if (!key || !value) {
-                    engine.logd("Unable to parse combo parameter " + parameter);
-                    continue;
-                }
-                specification[key] = value;
-                if (resource) {
-                    specification[`${key}_resource`] = resource;
-                }
-            }
-        }
-        return specification;
-    };
-
-    this.buttonsForComboSpecifications = function(comboSpecifications, abilityId, values) {
-        if (!abilityId) {
-            return "";
-        }
-        var buttons = "";
-        for (let index = 0; index < comboSpecifications.length; index++)  {
-            let combo = comboSpecifications[index];
-            if (combo.cost && combo.cost_resource) {
-                let currentValue = parseInt(values[combo.cost_resource]);
-                if (isNaN(currentValue)) {
-                    engine.logd("Unrecognized resource " + combo.cost_resource);
-                    continue;
-                }
-                let cost = parseInt(combo.cost);
-                if (isNaN(cost)) {
-                    engine.logd("Cannot parse combo cost " + combo.cost);
-                    continue;
-                }
-                if (cost > currentValue) {
-                    engine.logd(`Skipping ${combo.name}; cost too high (${cost} > ${currentValue})`);
-                    continue;
-                }
-            }
-            buttons += `[${combo.name}](~${values.character_name}|repeating_${abilityId.section}_${abilityId.rowId}_runcombo${index + 1})`;
-        }
-        return buttons;
+        engine.logd("Clearing Mudra");
+        
+        //  Reset Mudra resource when rolling unrelated abilities on Ninja
+        setAttrs({
+            resourceValue: 0
+        });
+        return "Cleared Mudra";
     };
 };
 
@@ -8245,6 +8137,53 @@ const sheets = {
                 ],
                 limit: [
                     { title: "Final Heaven", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", baseEffect: "Immediately perform a primary action.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
+        nin: {
+            job: "NIN",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png",
+            role: "DPS / Ninja",
+            level: 30,
+            resources: { 
+                hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
+                resource: "Mudra", resourceValue: 0, resourceValue_max: 3, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0,
+                resource3: "none", resource3Value: 0, resource3Value_max: 0,
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            },
+            attributes: { str: 1, dex: 5, vit: 2, int: 1, mnd: 3, defense: 13, magicDefense: 12, vigilance: 13, speed: 5 },
+            traits: [
+                { title: "Sign Weaver", effect: "Certain effects grant you Mudra. You can have up to 1 Mudra at any given time. All Mudra are removed when you perform an action other than Ritual Weave." },
+                { title: "Hide", effect: "At the start of an encounter, grants Hidden unless you were caught by surprise." },
+                { title: "Hidden", effect: "While under the effect of Hidden, receive one advantage die on your ability checks. Hidden is removed when you take or deal damage or perform a primary or secondary action." },
+                { title: "Ninjutsu Cooldown", effect: "Ninjutsu Cooldown is an enhancement, and cannot be removed by effects that remove enfeeblements. Ninjutsu Cooldown is removed at the end of your next turn." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Ninja Combo (Spinning Edge + Gust Slash)", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "DEX (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target. Combo: Aeolian Edge.", directHit: "Deals an additional 2d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2d6", combo: "Aeolian Edge", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/ninja-combo.png" },
+                    { title: "Throwing Dagger", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "5 squares", check: "DEX (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 3 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/throwing-dagger.png" },
+                    { title: "Ninjutsu", type: "Primary", cost: 0, uses: 0, uses_max: 0, condition: "1 or more Mudra and not under the effect of Ninjutsu Cooldown", target: "Single", baseEffect: "Immediately use one of your ninjutsu abilities. Some ninjutsu abilities can only be used if you spend 1 or more Mudra for this ability. Grants Ninjutsu Cooldown after resolving the ninjutsu ability's effects.", hitType: "None", damageType: "Effect", combo: "Fuma Shuriken", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/ninjutsu.png" },
+                    { title: "Aeolian Edge", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", check: "DEX (d20 + 5)", cr: "Target's Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/aeolian-edge.png" }
+                ],
+                ninjutsu: [
+                    { title: "Fuma Shuriken", type: "Primary, Phyical, Ninjutsu", cost: 1, resource: "Mudra", uses: 0, uses_max: 0, target: "Single", range: "12 squares", baseEffect: "Deals 10 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "10", effectSelf: "Ninjutsu Cooldown", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/fuma-shuriken.png" }
+                ],
+                secondary: [
+                    { title: "Leg Sweep", type: "Secondary, Physical", cost: 0, uses: 1, uses_max: 1, target: "Single", range: "1 square", baseEffect: "Stuns the target until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Stun", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/leg-sweep.png" },
+                    { title: "Mug", type: "Secondary, Physical", cost: 0, uses: 1, uses_max: 1, target: "Single", range: "1 square", baseEffect: "Increases the damage the target takes from abilities by 1 until the start of your next turn", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Mug(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/mug.png" },
+                    { title: "Ritual Weave", type: "Secondary", cost: 0, uses: 0, uses_max: 0, baseEffect: "Grants 1 Mudra.", hitType: "None", damageType: "Effect", restore: "1 Mudra", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/ritual-weave.png" },
+                    { title: "Bloodbath", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Grants Drain(2) until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Bloodbath(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/bloodbath.png" }
+                ],
+                instant: [
+                    { title: "Shade Shift", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an ability check for an ability that targets you.", baseEffect: "Increases your Defense and Magic Defense by 1d6 for the ability check that triggered Shade Shift. Use this new value to determine if the ability scores a direct hit.", limitation: "Once per phase", hitType: "None", damageType: "Defense", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/shade-shift.png" },
+                    { title: "Trick Attack", type: "Instant, Physical", cost: 0, uses: 0, uses_max: 0, condition: "Under the effect of Hidden", trigger: "Any time", target: "Single", range: "1 square", baseEffect: "Deals 2d6 damage to the target and grants one advantage die on your next ability check.", hitType: "None", damageType: "Damage", baseValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/NIN/trick-attack.png" },
+                    { title: "Feint", type: "Instant, Physical", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy is resolved.", target: "The enemy that triggered this ability.", range: "2 squares", baseEffect: "Reduces the damage dealt by the target's abilities by 2 until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Feint", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Melee/feint.png" },
+                    { title: "Second Wind", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Restores 1d6 + 2 HP", limitation: "Once per phase", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/dps/second-wind.png" }
+                ],
+                limit: [
+                    { title: "Chimatsuri", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "Single", range: "1 square", baseEffect: "Deals 4d6 damage to the target and grants Hidden.", hitType: "None", damageType: "Damage", baseValue: "4d6", effectSelf: "Hidden", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
                 ]
             }
         },
@@ -8689,51 +8628,246 @@ on("clicked:end", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file tabs
+// Build (version 1.0.0), generated file toggles
 
-const tabsImports = new (function() {
+const togglesImports = new (function() {
     this.export = {};
 
-const workerName = "tabs"
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
 
 
 })();
 
-// Build: Source/workers/tabs.js
+// Build: Source/workers/toggles.js
 
 
-// Tabs
 
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
         setAttrs({
-            sheetTab: button
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
         });
     });
 });
 
-// Initial setup
-on("sheet:opened", () => {
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
     getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
     ], values => {
+        // Assign selected minion
         setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
         });
     });
 });
@@ -8863,107 +8997,48 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
+// Build (version 1.0.0), generated file override
 
-const itemsImports = new (function() {
+const overrideImports = new (function() {
     this.export = {};
 
-const workerName = "items"
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
 
 
 })();
 
-// Build: Source/workers/items.js
+// Build: Source/workers/override.js
 
 
 
-// Items
+const imports = overrideImports.export;
 
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
         }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
     });
 });
 
