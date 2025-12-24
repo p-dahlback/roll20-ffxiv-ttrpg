@@ -1,3 +1,7 @@
+* Look into automating "Advantage on next ability check"
+  * Stat rolls
+  * Ability hit/crit rolls
+
 FIX
 * (test consume + restore + removing augment ability)
 

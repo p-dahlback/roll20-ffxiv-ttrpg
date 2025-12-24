@@ -30,6 +30,15 @@ const EffectUtilities = function() {
             result.effects.push(effect);
 
             switch (effect.data.maskedType || effect.type) {
+                case "advantage":
+                    if (effect.expiry === "ability" || effect.specialType.trim().toLowerCase() === "hidden") {
+                        if (result.abilityAdvantages) {
+                            result.abilityAdvantages.push(effect);
+                        } else {
+                            result.abilityAdvantages = [effect];
+                        }
+                    }
+                    break;
                 case "augment":
                     if (effect.specialType.trim().toLowerCase() == "aetherial focus") {
                         result.mpMaxIncrease = true;
