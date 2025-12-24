@@ -120,7 +120,7 @@ const PerformAbility = function() {
             if (index !== -1) {
                 let key = index === 0 ? "resourceValue" : `resource${index}`;
                 return {
-                    name: resourceNames[index],
+                    resourceType: resourceNames[index],
                     attributeName: key,
                     attributeNameMax: `${key}_max`
                 };
@@ -231,7 +231,7 @@ const PerformAbility = function() {
         }
 
         engine.logd("Clearing Mudra");
-        
+
         //  Reset Mudra resource when rolling unrelated abilities on Ninja
         setAttrs({
             resourceValue: 0
