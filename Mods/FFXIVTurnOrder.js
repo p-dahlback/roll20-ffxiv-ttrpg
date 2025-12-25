@@ -91,6 +91,7 @@ const EffectData = function() {
         masterwork_ornamentation: { matches: ["mwork", "masterwork", "ornament", "ornamentation", "masterwork ornamentation"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
         ninjutsu_cooldown: { matches: ["ninjutsu cooldown", "ncooldown", "ninjutsu"], type: "special", specialType: "Ninjutsu Cooldown", name: "Ninjutsu Cooldown", statusType: "Enhancement", expiry: "turn2", duplicate: "replace", description: "You cannot use Ninjutsu abilities. Ninjutsu Cooldown cannot be removed by effects that remove enfeeblements." },
         opo_opo_form: { matches: ["opo-opo form", "opo", "opo form", "opo opo form", "oform", "monk1", "m1"], type: "special", maskedType: "ready(x)", specialType: "Opo-Opo Form", statusType: "Enhancement", name: "Opo-Opo Form", expiry: "turn2", duplicate: "replace", description: "Enhances Bootshine and Dragon Kick." },
+        overheated: { matches: ["overheated", "overheat", "heat"], type: "special", specialType: "Overheated", name: "Overheated", statusType: "Enhancement", expiry: "start", duplicate: "block", description: "While under the effect of Overheated, use the lower of the target's Defense or Magic Defense as the CR for your ability checks." },
         paralyzed: { matches: ["paralysis", "paralyze", "paralyzed"], type: "paralyzed", maskedType: "paralyzed", statusType: "Enfeeblement", marker: "paralyzed", name: "Paralyzed", expiry: "turn", curable: true, duplicate: "block", description: "If you use a Primary ability and roll a 5 or lower for its ability check, Paralysis interrupts the ability, negating it completely. Do not resolve any of its effects or spend any resources." },
         petrified: { matches: ["petrify", "petrified"], type: "petrified", maskedType: "petrified", statusType: "Enfeeblement", marker: "petrified", name: "Petrified", expiry: "turn2", curable: true, duplicate: "block", description: "You cannot act during your turn or use Instant abilities. You incur a -5 penalty on all checks.\n\nCharacters targeting you receive one advantage die on their ability check." },
         power_surge: { matches: ["power surge", "psurge"], type: "special", maskedType: "dps(x)", specialType: "Power Surge", name: "Power Surge", statusType: "Enhancement", expiry: "phase", duplicate: "bigger", description: "Your abilities deal additional damage." },
@@ -101,6 +102,7 @@ const EffectData = function() {
         rampart: { matches: ["rampart"], type: "special", maskedType: "defense(x)", specialType: "Rampart", statusType: "Enhancement", name: "Rampart", expiry: "start", duplicate: "block", description: "Reduces the damage you take from abilities by 2 until the start of your next turn." },
         raptor_form: { matches: ["raptor form", "raptor", "rform", "monk2", "m2"], type: "special", maskedType: "ready(x)", specialType: "Raptor Form", statusType: "Enhancement", name: "Raptor Form", expiry: "turn2", duplicate: "replace", description: "Enables you to perform True Strike, Twin Snakes or Four-Point Fury." },
         ready: { matches: ["ready"], type: "ready(x)", maskedType: "ready(x)", statusType: "Enhancement", name: "(X) Ready", expiry: "use", duplicate: "block", description: "You may use an ability that requires you to be under this enhancement. X Ready is removed after the ability is used." },
+        reassemble: { matches: ["reassemble"], type: "special", specialType: "Reassemble", name: "Reassemble", statusType: "Enhancement", expiry: "turn", description: "The next ability you use this turn automatically scores a critical unless it is interrupted or otherwise negated." },
         regen: { matches: ["regen", "revivify"], type: "regen(x)", maskedType: "regen(x)", statusType: "Enhancement", name: "Regen (X)", expiry: "phase", description: "Restores a given amount of HP at the end of the [Adventurer Step]." },
         reprisal: { matches: ["repr", "reprisal"], type: "special", maskedType: "ddown(x)", specialType: "Reprisal", statusType: "Enfeeblement", marker: "reprisal", name: "Reprisal", expiry: "round", duplicate: "block", description: "Reduces the damage you deal with abilities by 2 until the end of this round." },
         restore: { matches: ["restore"], type: "restore(x)", maskedType: "restore(x)", statusType: "Enhancement", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
@@ -245,6 +247,15 @@ const EffectUtilities = function() {
             result.effects.push(effect);
 
             switch (effect.data.maskedType || effect.type) {
+                case "advantage":
+                    if (effect.expiry === "ability" || effect.specialType.trim().toLowerCase() === "hidden") {
+                        if (result.abilityAdvantages) {
+                            result.abilityAdvantages.push(effect);
+                        } else {
+                            result.abilityAdvantages = [effect];
+                        }
+                    }
+                    break;
                 case "augment":
                     if (effect.specialType.trim().toLowerCase() == "aetherial focus") {
                         result.mpMaxIncrease = true;

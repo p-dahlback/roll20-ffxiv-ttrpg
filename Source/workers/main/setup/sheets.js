@@ -177,7 +177,7 @@ const sheets = {
                     { title: "Head Graze", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy within 10 squares of this character uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Interrupts the invoked ability that triggered Head Graze, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/head-graze.png" }
                 ],
                 limit: [
-                    { title: "Sagittarius Arrow", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "All enemies within range", range: "A 5x area extending in a straight line from 1 square adjacent to this character.", baseEffect: "Deals 6d6 damage divided evenly (rounded up) amongst all targets and inflicts a DOT (4) on all targets.", hitType: "None", damageType: "Damage", baseValue: "6d6", effectTarget: "DOT(4)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                    { title: "Sagittarius Arrow", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time", target: "All enemies within range", range: "A 5x area extending in a straight line across the entire encounter map from 1 square adjacent to this character.", baseEffect: "Deals 6d6 damage divided evenly (rounded up) amongst all targets and inflicts a DOT (4) on all targets.", hitType: "None", damageType: "Damage", baseValue: "6d6", effectTarget: "DOT(4)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
                 ]
             }
         },
@@ -261,6 +261,48 @@ const sheets = {
                 ],
                 limit: [
                     { title: "Dark Force", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Immediately before an effect that deals damage or inflicts enfeeblements is resolved", target: "Single", baseEffect: "Prevents all damage and enfeeblements that the effect that triggered Dark Force inflicts on the target.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
+        mch: {
+            job: "MCH",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png",
+            role: "DPS / Machinist",
+            level: 30,
+            resources: { 
+                hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
+                resource: "Heat", resourceValue: 0, resourceValue_max: 4, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            },
+            attributes: { str: 3, dex: 4, vit: 2, int: 2, mnd: 1, defense: 14, magicDefense: 12, vigilance: 11, speed: 5 },
+            traits: [
+                { title: "Mechanized Sharpshooter", effect: "You may use any number of instant abilities on your turn." },
+                { title: "Thermal Trap", effect: "Certain effects grant you Heat. You can have up to 4 Heat at any time." },
+                { title: "Overheated", effect: "While under the effect of Overheated, use the lower of the target's Defense or Magic Defense as the CR for your ability checks. Overheated is removed at the start of your next turn." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Machinist Combo (Split Shot + Slug Shot)", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 4 damage to the target and grants 1 Heat. Combo: Clean Shot.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "4", dhValue: "1d6", restore: "1 Heat", combo: "Clean Shot", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MCH/machinist-combo.png" },
+                    { title: "Hot Shot", type: "Primary, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 7 damage to the target.", directHit: "Deals an additional 2d6 damage.", limitation: "Once per phase.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "7", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MCH/hot-shot.png" },
+                    { title: "Spread Shot", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area adjacent to this character", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 4 damage to all targets and grants 1 Heat.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "4", dhValue: "1d6", restore: "1 Heat", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MCH/spread-shot.png" },
+                    { title: "Clean Shot", type: "Primary, Physical, Ranged", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "Deals 4 damage to the target and grants 1 Heat.", directHit: "Deals an additional 1d6 damage.", stat: "DEX", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "4", dhValue: "1d6", restore: "1 Heat", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MCH/clean-shot.png" }
+                ],
+                secondary: [
+                    { title: "Reassemble", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "The next ability you use this turn automatically scores a critical unless it is interrupted or otherwise negated.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Reassemble", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MCH/reassemble.png" },
+                    { title: "Hypercharge", type: "Secondary", cost: 2, resource: "Heat", uses: 0, uses_max: 0, baseEffect: "Grants Overheated until the start of your next turn.", hitType: "None", damageType: "Effect", effectSelf: "Overheated", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MCH/hypercharge.png" }
+                ],
+                instant: [
+                    { title: "Leg Graze", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately after an enemy makes an ability check", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Reduces the total of the ability check that triggered Leg Graze by 1d6.", limitation: "Once per phase", hitType: "None", damageType: "Effect", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/leg-graze.png" },
+                    { title: "Foot Graze", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an enemy moves", target: "The enemy that triggered this ability", range: "10 squares", check: "DEX (d20 + 4)", cr: "Target's Defense", baseEffect: "None.", directHit: "Inflicts Bound on the target until the end of this turn.", limitation: "Once per phase", stat: "DEX", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", effectTarget: "bound", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/foot-graze.png" },
+                    { title: "Head Graze", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "When an enemy within 10 squares of this character uses an invoked ability, or is using an invoked ability to generate a marker", target: "The enemy that triggered this ability", range: "10 squares", baseEffect: "Interrupts the invoked ability that triggered Head Graze, negating it completely.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Ranged/head-graze.png" },
+                    { title: "Second Wind", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Restores 1d6 + 2 HP", limitation: "Once per phase", hitType: "None", damageType: "Healing", baseValue: "1d6 + 2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/dps/second-wind.png" },
+                    { title: "Gauss Round", type: "Instant, Physical, Ranged", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", target: "Single", range: "10 squares", baseEffect: "Deals 5 damage to the target.", limitation: "Once per phase", hitType: "None", damageType: "Damage", baseValue: "5", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/MCH/gauss-round.png" }
+                ],
+                limit: [
+                    { title: "Satellite Beam", type: "Limit Break, Physical", cost: 0, uses: 1, uses_max: 1, condition: "Limit Breaks have been made available for this encounter.", trigger: "Any time during your turn as a primary action", target: "All enemies within range", range: "A 5x area extending in a straight line across the entire encounter map from 1 square adjacent to this character.", baseEffect: "Deals 6d6 + 20 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "6d6 + 20", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
                 ]
             }
         },
