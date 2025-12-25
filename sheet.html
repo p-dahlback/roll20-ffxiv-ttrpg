@@ -4486,8 +4486,8 @@
                 <option value="RPR">Reaper</option>
                 <option value="SAM">Samurai</option>
                 <option value="VIP">Viper</option>
-                <hr />
                 !-->
+                <hr />
                 <option value="BRD">Bard</option>
                 <!--
                 <option value="DNC">Dancer</option>
@@ -4498,7 +4498,9 @@
                 <!--
                 <option value="PCT">Pictomancer</option>
                 <option value="RDM">Red Mage</option>
+                -->
                 <option value="SMN">Summoner</option>
+                <!--
                 <hr />
                 <option value="BLU">Blue Mage</option>
                 -->
@@ -4721,477 +4723,6 @@
 
 <!-- -----------------SHEET WORKERS (version 1.0.0)----------------- -->
 
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file attributes
-
-const attributesImports = new (function() {
-    this.export = {};
-
-const workerName = "attributes"
-
-
-})();
-
-// Build: Source/workers/attributes.js
-
-
-// Advantage management
-
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
-        setAttrs({
-            barrierPoints_max: values.barrierPoints
-        });
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
-
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
-    });
-});
-
-</script>
 
 <script type="text/worker">
 
@@ -8820,6 +8351,54 @@ const sheets = {
                 ]
             }
         },
+        smn: {
+            job: "SMN",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png",
+            role: "DPS / Summoner",
+            level: 30,
+            resources: {
+                hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5,
+                resource: "Aetherflow", resourceValue: 2, resourceValue_max: 2, 
+                resource2: "Arcanum", resource2Value: 1, resource2Value_max: 1,
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
+            attributes: { str: 1, dex: 3, vit: 1, int: 5, mnd: 2, defense: 13, magicDefense: 15, vigilance: 12, speed: 5 },
+            traits: [
+                { title: "Aetherdam", effect: "Certain effects grant you Aetherflow. You can have up to 2 stacks of Aetherflow at any given time. At the start of an encounter and each new phase, gain 2 stacks of Aetherflow." },
+                { title: "Aethercharge", effect: "While under the effect of Aethercharge, Ruin II and Outburst have additional effects. Aethercharge is removed at the end of your turn." },
+                { title: "Enhanced Aethercharge", effect: "Certain effects grant you Gemstone Arcanum. You can have up to 1 Gemstone Arcanum at any given time." },
+                { title: "Summon Carbuncle", effect: "At the start of every encounter, summon Carbuncle in your starting square. Carbuncle is resummoned any time you recover from being Knocked Out, as well as at the start of a new phase if it isn't already present on the encounter map.\n\nYour pet will transform when you use Summon Gem." },
+                { title: "Carbuncle", effect: "You can summon a pet (Carbuncle) to aid you during encounters. Your pet is immune to all effects other than those caused by your traits and abilities, and can enter and end its movement in occupied squares. Other characters may also move through or end their turn in the same square as your pet. So long as your pet remains on the encounter map, you benefit from the effects of its traits.\n  During encounters, your pet takes its turn immediately before you. On its turn, a pet can perform a standard movement action to move up to its Speed and use one of its abilities. It cannot perform any other actions.\n  Your pet is immediately dismissed and removed from the encounter map when you are Knocked Out.\n  If your pet is already present on the encounter map, any effects that would summon a pet are ignored." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Ruin II", type: "Primary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to the target. If this ability is used while under the effect of Aethercharge, deals an additional 1d6 damage.", directHit: "Deals an additional 2d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", conditionalValue: "Aethercharge(1d6)", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/ruin-ii.png" },
+                    { title: "Outburst", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to all targets. If this ability is used while under the effect of Aethercharge, deals an additional 1d6 damage.", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", conditionalValue: "Aethercharge(1d6)", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/outburst.png" },
+                    { title: "Resurrection", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 2 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", effectTarget: "Raise", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SCH/resurrection.png" },
+                    { title: "Gemshine", type: "Primary, Magic, Gem, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", condition: "This ability has additional effects determined by your pet.", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 4 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "4", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/gemshine.png" },
+                    { title: "Precious Brilliance", type: "Primary, Magic, Gem, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", condition: "This ability has additional effects determined by your pet", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to all targets.", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/precious-brilliance.png" },
+                    { title: "Sleep", type: "Primary, Magic, Invoked", cost: 2, resource: "MP", uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Inflicts Sleep on all targets.", directHit: "Removes all markers generated by all targets.", stat: "INT", hitType: "Hit", damageType: "Effect", hitDie: "1d20cs20", baseValue: "", dhValue: "", effectSelf: "", effectTarget: "Sleep", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/sleep.png" }
+                ],
+                secondary: [
+                    { title: "Heel", type: "Secondary", cost: 0, uses: 0, uses_max: 0, target: "Your pet", range: "The entire encounter map", baseEffect: "Move your pet to 1 square occupied by this character.", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/heel.png" },
+                    { title: "Aethercharge", type: "Secondary", cost: 0, uses: 0, uses_max: 0, condition: "You have Carbuncle summoned", baseEffect: "Grants Aethercharge until the end of this turn and 1 Gemstone Arcanum.", hitType: "None", damageType: "Effect", restore: "1 Arcanum", effectSelf: "Aethercharge", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/aethercharge.png" },
+                    { title: "Lucid Dreaming", type: "Secondary", cost: 0, uses: 1, uses_max: 1, baseEffect: "Recover an additional 1 MP at the end of this round's [Adventurer Step].", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectSelf: "Lucid Dreaming", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/lucid-dreaming.png" },
+                    { title: "Physick", type: "Secondary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "Special (d20, Critical)", baseEffect: "Restores 1d6 HP to the target.", hitType: "Critical", damageType: "Healing", baseValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SCH/physick.png" }
+                ],
+                instant: [
+                    { title: "Summon Gem", type: "Instant", cost: 1, resource: "Arcanum", uses: 0, uses_max: 0, trigger: "When your pet begins its turn", baseEffect: "Transforms your pet into Ruby Carbuncle, Topaz Carbuncle or Emerald Carbuncle until the start of your pet's next turn.", hitType: "None", damageType: "Effect", effectTarget: "Ruby, Topaz, Emerald", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/summon-gem.png" },
+                    { title: "Energy Drain", type: "Instant, Magic", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", target: "Single", range: "10 squares", baseEffect: "Deals 3 damage to the target and grants 2 stacks of Aetherflow.", limitation: "Once per phase", hitType: "None", damageType: "Damage", baseValue: "3", restore: "2 Aetherflow", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/energy-drain.png" },
+                    { title: "Swiftcast", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Immediately use one of your magic abilities.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/swiftcast.png" },
+                    { title: "Addle", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy is resolved", target: "The enemy that triggered this ability", range: "5 squares", baseEffect: "Reduces the damage dealt by the target's abilities by 2 until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Addle", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/addle.png" },
+                    { title: "Fester", type: "Instant, Magic", cost: 1, resource: "Aetherflow", uses: 0, uses_max: 0, trigger: "When any character ends their turn", target: "Single", range: "10 squares", baseEffect: "Deals 5 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "5", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/fester.png" }
+                ],
+                limit: [
+                    { title: "Teraflare", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", condition: "Limit Breaks have been made available for this encounter.", target: "All enemies within range", range: "The entire encounter map*", baseEffect: "Deals 3d6 damage to all targets. This ability has additional effects determined by your pet.\nRuby Carbuncle: Deals an additional 1d6 damage.\nTopaz Carbuncle: Reduces the damage all allies take from abilities by 3 until the end of this turn.\nEmerald Carbuncle: All allies may move up to 1 square.\nOther: Deals an additional 2 damage.", hitType: "None", damageType: "Damage", baseValue: "3d6", combo: "Ruby(roll:1d6|type:Damage),Topaz(effectTarget:Topaz(3)),Emerald(),Other(roll:2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                ]
+            }
+        },
         war: {
             job: "WAR",
             jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
@@ -9173,6 +8752,477 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file tabs
+
+const tabsImports = new (function() {
+    this.export = {};
+
+const workerName = "tabs"
+
+
+})();
+
+// Build: Source/workers/tabs.js
+
+
+// Tabs
+
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
+    });
+});
+
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file attributes
+
+const attributesImports = new (function() {
+    this.export = {};
+
+const workerName = "attributes"
+
+
+})();
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
 });
 
 </script>
