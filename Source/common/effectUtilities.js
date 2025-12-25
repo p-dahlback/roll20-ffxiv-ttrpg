@@ -90,6 +90,7 @@ const EffectUtilities = function() {
                         result.hawksEye = effect;
                         break;
                     case "hidden":
+                        result.abilityAdvantages.push(effect);
                         result.expireOnPrimaryUse.push(effect);
                         result.expireOnSecondaryUse.push(effect);
                         break;

@@ -152,6 +152,7 @@ const RollModifiers = function() {
         var adds = [];
         var negatives = [];
         var summaries = effects.notifyProcs;
+        summaries.push(...this.getHitModifierSummaries(damageRoll, effects));
 
         let isFireType = damageRoll.type.toLowerCase().includes("fire-aspect");
         if (isFireType && effects.astralFire) {
@@ -280,9 +281,28 @@ const RollModifiers = function() {
         return result;
     };
 
-    this.applyAdvantage = function(advantage, dice, effects) {
+    this.getHitModifierSummaries = function(damageRoll, effects) {
+        if (!damageRoll.hitRoll) {
+            return [];
+        }
+
+        var summaries = [];
+        if (effects.expireOnHitRoll.find(effect => effect.specialType === "Reassemble")) {
+            summaries.push("Reassemble proc");
+        }
+        summaries.push(...effects.abilityAdvantages.map(advantageEffect => `${advantageEffect.data.name} proc`));
+        if (effects.monkForm && damageRoll.type.includes("Physical")) {
+            summaries.push(`${effects.monkForm.data.name} advantage`);
+        }
+        return summaries;
+    };
+
+    this.applyAdvantage = function(advantage, abilityType, dice, effects) {
         if (effects.abilityAdvantages) {
             advantage += effects.abilityAdvantages.length;
+        }
+        if (effects.monkForm && abilityType.includes("Physical")) {
+            advantage += 1;
         }
         if (advantage === 0) {
             return dice;
@@ -290,6 +310,7 @@ const RollModifiers = function() {
         if (!dice.includes("d")) {
             return dice;
         }
+
         const highOrLow = advantage > 0 ? "kh" : "kl";
         const multiplier = Math.abs(advantage) + 1;
 

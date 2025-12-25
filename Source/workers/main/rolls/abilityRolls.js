@@ -162,6 +162,7 @@ const AbilityRolls = function() {
 
             const cost = values[`repeating_${section}_${rowId}_cost`];
 
+            const type = values[`repeating_${section}_${rowId}_type`];
             const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase();
             const damageType = values[`repeating_${section}_${rowId}_damageType`];
             const hitType = values[`repeating_${section}_${rowId}_hitType`];
@@ -177,12 +178,12 @@ const AbilityRolls = function() {
 
             const combo = values[`repeating_${section}_${rowId}_combo`];
             const crString = this.stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`]);
-            const typeString = this.stringWithTitle("Type:", values[`repeating_${section}_${rowId}_type`]);
+            const typeString = this.stringWithTitle("Type:", type);
             const condition = rollTemplates.unpackValueWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`]);
             const triggerString = this.stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`]);
 
             var hitDie = values[`repeating_${section}_${rowId}_hitDie`];
-            hitDie = rollModifiers.applyAdvantage(values.advantage, hitDie, effects);
+            hitDie = rollModifiers.applyAdvantage(values.advantage, type, hitDie, effects);
 
             var hitTitle = "";
             var hitDefinition = "";
