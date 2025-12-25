@@ -225,6 +225,10 @@ const PerformAbility = function() {
         if (values.resource.toLowerCase() !== "mudra") {
             return null;
         }
+        if (parseInt(values.resourceValue) === 0) {
+            return null;
+        }
+        
         let title = damageRoll.title;
         if (title === "Ritual Weave" || title === "Kassatsu" || title === "Ninjutsu") {
             return null;

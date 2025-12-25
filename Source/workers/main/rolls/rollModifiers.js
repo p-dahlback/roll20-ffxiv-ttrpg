@@ -44,6 +44,9 @@ const RollModifiers = function() {
                 case "prone":
                     penalty += 2;
                     break;
+                case "reassemble":
+                    criticalUp += 99;
+                    break;
                 case "sleep":
                     penalty += 3;
                     break;
@@ -63,7 +66,7 @@ const RollModifiers = function() {
             updatedMacro = updatedMacro.replace(/cs>?20/, "cs>20cf<5[chance of paralysis]");
         }
         if (criticalUp > 0) {
-            updatedMacro = updatedMacro.replace(/cs>?20/, `cs>${20 - criticalUp}`);
+            updatedMacro = updatedMacro.replace(/cs>?20/, `cs>${20 - Math.min(criticalUp, 19)}`);
         }
         if (!hasHawksEye) {
             // Hawk's Eye nullifies penalty from Blind
@@ -148,7 +151,9 @@ const RollModifiers = function() {
     this.applyEffectModifiersToDamageRolls = function(damageRoll, characterLevel, effects) {
         var adds = [];
         var negatives = [];
-        var summaries = [];
+        var summaries = effects.notifyProcs;
+
+        engine.logd("Procs: " + JSON.stringify(summaries));
 
         let isFireType = damageRoll.type.toLowerCase().includes("fire-aspect");
         if (isFireType && effects.astralFire) {
@@ -199,7 +204,7 @@ const RollModifiers = function() {
         } else {
             return {
                 damageRoll: damageRoll,
-                summaries: []
+                summaries: summaries
             };
         }
     };
@@ -207,7 +212,8 @@ const RollModifiers = function() {
     this.applyEffectModifiersAfterDamageRolls = function(effects, damageType, damageRolls) {
         var result = {};
         var summaries = [];
-        if (damageType == "Damage" && effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
+
+        if (damageType == "Damage" && effects.damageRerolls.length > 0 && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
             summaries.push(`Damage reroll available (${effects.damageRerolls.join(", ")})`);
         }
 

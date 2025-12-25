@@ -4724,6 +4724,303 @@
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file tabs
 
 const tabsImports = new (function() {
@@ -4891,163 +5188,6 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
             newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
     });
 });
 
@@ -5551,6 +5691,9 @@ const RollModifiers = function() {
                 case "prone":
                     penalty += 2;
                     break;
+                case "reassemble":
+                    criticalUp += 99;
+                    break;
                 case "sleep":
                     penalty += 3;
                     break;
@@ -5570,7 +5713,7 @@ const RollModifiers = function() {
             updatedMacro = updatedMacro.replace(/cs>?20/, "cs>20cf<5[chance of paralysis]");
         }
         if (criticalUp > 0) {
-            updatedMacro = updatedMacro.replace(/cs>?20/, `cs>${20 - criticalUp}`);
+            updatedMacro = updatedMacro.replace(/cs>?20/, `cs>${20 - Math.min(criticalUp, 19)}`);
         }
         if (!hasHawksEye) {
             // Hawk's Eye nullifies penalty from Blind
@@ -5655,7 +5798,9 @@ const RollModifiers = function() {
     this.applyEffectModifiersToDamageRolls = function(damageRoll, characterLevel, effects) {
         var adds = [];
         var negatives = [];
-        var summaries = [];
+        var summaries = effects.notifyProcs;
+
+        engine.logd("Procs: " + JSON.stringify(summaries));
 
         let isFireType = damageRoll.type.toLowerCase().includes("fire-aspect");
         if (isFireType && effects.astralFire) {
@@ -5706,7 +5851,7 @@ const RollModifiers = function() {
         } else {
             return {
                 damageRoll: damageRoll,
-                summaries: []
+                summaries: summaries
             };
         }
     };
@@ -5714,7 +5859,12 @@ const RollModifiers = function() {
     this.applyEffectModifiersAfterDamageRolls = function(effects, damageType, damageRolls) {
         var result = {};
         var summaries = [];
-        if (damageType == "Damage" && effects.damageRerolls && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
+
+        if (!effects.damageRerolls) {
+            engine.logd("Missing rerolls " + JSON.stringify(effects));
+        }
+
+        if (damageType == "Damage" && effects.damageRerolls.length > 0 && damageRolls.some(roll => roll.dice && roll.dice.length > 0)) {
             summaries.push(`Damage reroll available (${effects.damageRerolls.join(", ")})`);
         }
 
@@ -6161,7 +6311,7 @@ const AbilityRolls = function() {
             const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
 
             let computedResults = rollModifiers.applyEffectModifiersAfterDamageRolls(effects, modifiedRoll.damageType, [damageRoll, directHitRoll]);
-            let consumedEffectSummary = removeEffects.consumeOnAbility(modifiedRoll.title, modifiedRoll.condition, effects);
+            let consumedEffectSummary = removeEffects.consumeOnAbility(modifiedRoll, effects);
 
             let state = new EffectState(
                 values.hitPoints, 
@@ -6502,7 +6652,14 @@ const EffectUtilities = function() {
     this.classify = function(effects) {
         var result = {
             effects: [],
-            criticalThreshold: 20
+            abilityAdvantages: [],
+            damageRerolls: [],
+            dpsChanges: [],
+            expireOnHitRoll: [],
+            expireOnPrimaryUse: [],
+            expireOnSecondaryUse: [],
+            notifyProcs: [],
+            readyEffects: []
         };
         for (var effect of effects) {
             let adjustedName = this.searchableName(effect.specialType || effect.type);
@@ -6515,12 +6672,8 @@ const EffectUtilities = function() {
 
             switch (effect.data.maskedType || effect.type) {
                 case "advantage":
-                    if (effect.expiry === "ability" || effect.specialType.trim().toLowerCase() === "hidden") {
-                        if (result.abilityAdvantages) {
-                            result.abilityAdvantages.push(effect);
-                        } else {
-                            result.abilityAdvantages = [effect];
-                        }
+                    if (effect.expiry === "ability") {
+                        result.abilityAdvantages.push(effect);
                     }
                     break;
                 case "augment":
@@ -6538,19 +6691,13 @@ const EffectUtilities = function() {
                     break;
                 case "ddown(x)":
                 case "dps(x)":
-                    if (result.dpsChanges) {
-                        result.dpsChanges.push(effect);
-                    } else {
-                        result.dpsChanges = [effect];
-                    }
-                    log("dpsChanges: " + JSON.stringify(result.dpsChanges));
+                    result.dpsChanges.push(effect);
                     break;
                 case "dreroll":
-                    if (result.damageRerolls) {
-                        result.damageRerolls.push(effect.data.name);
-                    } else {
-                        result.damageRerolls = [effect.data.name];
-                    }
+                    result.damageRerolls.push(effect.data.name);
+                    break;
+                case "ready":
+                    result.readyEffects.push(effect);
                     break;
                 case "silence":
                     result.isSilenced = true;
@@ -6576,6 +6723,17 @@ const EffectUtilities = function() {
                         break;
                     case "hawk's eye":
                         result.hawksEye = effect;
+                        break;
+                    case "hidden":
+                        result.expireOnPrimaryUse.push(effect);
+                        result.expireOnSecondaryUse.push(effect);
+                        break;
+                    case "overheated":
+                        result.notifyProcs.push("Overheated proc: Target the lowest CR");
+                        break;
+                    case "reassemble":
+                        result.expireOnHitRoll.push(effect);
+                        result.criticalThreshold = 0;
                         break;
                     case "surging tempest":
                         result.surgingTempest = effect;
@@ -7632,35 +7790,55 @@ const RemoveEffects = function(customEngine) {
         });
     };
 
-    this.consumeOnAbility = function(name, condition, effects) {
+    this.consumeOnAbility = function(damageRoll, effects) {
         var summaries = [];
-        for (let effect of effects.effects) {
-            let normalizedName = name.toLowerCase();
-            let normalizedCondition = condition.toLowerCase();
-            let specialType = (effect.specialType ?? "").toLowerCase();
-            let maskedType = (effect.data.maskedType ?? "").toLowerCase();
-            let value = (effect.value ?? "").toLowerCase();
-            let isReadyType = effect.type == "ready(x)";
+        if (damageRoll.hitRoll) {
+            summaries.push(...this.consumeEffectsInList(effects.expireOnHitRoll));
+        }
+        if (damageRoll.type.includes("Primary")) {
+            summaries.push(...this.consumeEffectsInList(effects.expireOnPrimaryUse));
+        } else if (damageRoll.type.includes("Secondary")) {
+            summaries.push(...this.consumeEffectsInList(effects.expireOnSecondaryUse));
+        }
 
-            if (!isReadyType && !specialType.includes(" ready") && !maskedType.includes(" ready")) {
-                continue;
-            }
-
-            if (
-                specialType.includes(normalizedName) ||
-                normalizedCondition.includes(specialType) ||
-                (isReadyType && value == normalizedName) ||
-                (isReadyType && normalizedCondition.includes(value))
-            ) {
-                this.engine().logd("Consuming effect " + JSON.stringify(effect));
-                // Consume X Ready
-                this.engine().remove(effect);
-
-                let effectName = effect.specialType || effectData.effects[effect.type.replace("(x)", "")].name;
-                summaries.push(`Consumed ${(effectName.replace("(X)", effect.value))}`);
+        // Consume any X ready effects that enable this ability
+        for (let effect of effects.readyEffects) {
+            if (this.shouldConsumeReadyEffect(effect)) {
+                summaries.push(this.consumeEffect(effect));
             }
         }
         return summaries.join(", ");
+    };
+
+    this.consumeEffectsInList = function (effects) {
+        var summaries = [];
+        for (let effect of effects) {
+            summaries.push(this.consumeEffect(effect));
+        }
+        return summaries;
+    };
+
+    this.consumeEffect = function (effect) {
+        this.engine().logd("Consuming effect " + JSON.stringify(effect));
+        this.engine().remove(effect);
+
+        let effectName = effect.specialType || effectData.effects[effect.type.replace("(x)", "")].name;
+        return `Consumed ${(effectName.replace("(X)", effect.value))}`;
+    };
+
+    this.shouldConsumeReadyEffect = function(damageRoll, effect) {
+        let isReadyType = effect.type === "ready(x)" || effect.maskedType === "ready(x)";
+        if (!isReadyType) {
+            return false;
+        }
+        let specialType = effect.specialType.toLowerCase();
+        let normalizedName = damageRoll.title.toLowerCase();
+        let normalizedCondition = damageRoll.condition.toLowerCase();
+        let value = (effect.value ?? "").toLowerCase();
+        return specialType.includes(normalizedName) ||
+               normalizedCondition.includes(specialType) ||
+               (isReadyType && value === normalizedName) ||
+               (isReadyType && normalizedCondition.includes(value));
     };
 
     this.resetSpecialEffects = function(name) {
@@ -8099,6 +8277,10 @@ const PerformAbility = function() {
         if (values.resource.toLowerCase() !== "mudra") {
             return null;
         }
+        if (parseInt(values.resourceValue) === 0) {
+            return null;
+        }
+        
         let title = damageRoll.title;
         if (title === "Ritual Weave" || title === "Kassatsu" || title === "Ninjutsu") {
             return null;
@@ -8953,146 +9135,6 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
 });
 
 </script>

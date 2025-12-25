@@ -336,7 +336,7 @@ const AbilityRolls = function() {
             const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
 
             let computedResults = rollModifiers.applyEffectModifiersAfterDamageRolls(effects, modifiedRoll.damageType, [damageRoll, directHitRoll]);
-            let consumedEffectSummary = removeEffects.consumeOnAbility(modifiedRoll.title, modifiedRoll.condition, effects);
+            let consumedEffectSummary = removeEffects.consumeOnAbility(modifiedRoll, effects);
 
             let state = new EffectState(
                 values.hitPoints, 

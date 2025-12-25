@@ -35,35 +35,55 @@ const RemoveEffects = function(customEngine) {
         });
     };
 
-    this.consumeOnAbility = function(name, condition, effects) {
+    this.consumeOnAbility = function(damageRoll, effects) {
         var summaries = [];
-        for (let effect of effects.effects) {
-            let normalizedName = name.toLowerCase();
-            let normalizedCondition = condition.toLowerCase();
-            let specialType = (effect.specialType ?? "").toLowerCase();
-            let maskedType = (effect.data.maskedType ?? "").toLowerCase();
-            let value = (effect.value ?? "").toLowerCase();
-            let isReadyType = effect.type == "ready(x)";
+        if (damageRoll.hitRoll) {
+            summaries.push(...this.consumeEffectsInList(effects.expireOnHitRoll));
+        }
+        if (damageRoll.type.includes("Primary")) {
+            summaries.push(...this.consumeEffectsInList(effects.expireOnPrimaryUse));
+        } else if (damageRoll.type.includes("Secondary")) {
+            summaries.push(...this.consumeEffectsInList(effects.expireOnSecondaryUse));
+        }
 
-            if (!isReadyType && !specialType.includes(" ready") && !maskedType.includes(" ready")) {
-                continue;
-            }
-
-            if (
-                specialType.includes(normalizedName) ||
-                normalizedCondition.includes(specialType) ||
-                (isReadyType && value == normalizedName) ||
-                (isReadyType && normalizedCondition.includes(value))
-            ) {
-                this.engine().logd("Consuming effect " + JSON.stringify(effect));
-                // Consume X Ready
-                this.engine().remove(effect);
-
-                let effectName = effect.specialType || effectData.effects[effect.type.replace("(x)", "")].name;
-                summaries.push(`Consumed ${(effectName.replace("(X)", effect.value))}`);
+        // Consume any X ready effects that enable this ability
+        for (let effect of effects.readyEffects) {
+            if (this.shouldConsumeReadyEffect(effect)) {
+                summaries.push(this.consumeEffect(effect));
             }
         }
         return summaries.join(", ");
+    };
+
+    this.consumeEffectsInList = function (effects) {
+        var summaries = [];
+        for (let effect of effects) {
+            summaries.push(this.consumeEffect(effect));
+        }
+        return summaries;
+    };
+
+    this.consumeEffect = function (effect) {
+        this.engine().logd("Consuming effect " + JSON.stringify(effect));
+        this.engine().remove(effect);
+
+        let effectName = effect.specialType || effectData.effects[effect.type.replace("(x)", "")].name;
+        return `Consumed ${(effectName.replace("(X)", effect.value))}`;
+    };
+
+    this.shouldConsumeReadyEffect = function(damageRoll, effect) {
+        let isReadyType = effect.type === "ready(x)" || effect.maskedType === "ready(x)";
+        if (!isReadyType) {
+            return false;
+        }
+        let specialType = effect.specialType.toLowerCase();
+        let normalizedName = damageRoll.title.toLowerCase();
+        let normalizedCondition = damageRoll.condition.toLowerCase();
+        let value = (effect.value ?? "").toLowerCase();
+        return specialType.includes(normalizedName) ||
+               normalizedCondition.includes(specialType) ||
+               (isReadyType && value === normalizedName) ||
+               (isReadyType && normalizedCondition.includes(value));
     };
 
     this.resetSpecialEffects = function(name) {

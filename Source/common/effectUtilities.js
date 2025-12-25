@@ -18,7 +18,14 @@ const EffectUtilities = function() {
     this.classify = function(effects) {
         var result = {
             effects: [],
-            criticalThreshold: 20
+            abilityAdvantages: [],
+            damageRerolls: [],
+            dpsChanges: [],
+            expireOnHitRoll: [],
+            expireOnPrimaryUse: [],
+            expireOnSecondaryUse: [],
+            notifyProcs: [],
+            readyEffects: []
         };
         for (var effect of effects) {
             let adjustedName = this.searchableName(effect.specialType || effect.type);
@@ -31,12 +38,8 @@ const EffectUtilities = function() {
 
             switch (effect.data.maskedType || effect.type) {
                 case "advantage":
-                    if (effect.expiry === "ability" || effect.specialType.trim().toLowerCase() === "hidden") {
-                        if (result.abilityAdvantages) {
-                            result.abilityAdvantages.push(effect);
-                        } else {
-                            result.abilityAdvantages = [effect];
-                        }
+                    if (effect.expiry === "ability") {
+                        result.abilityAdvantages.push(effect);
                     }
                     break;
                 case "augment":
@@ -54,19 +57,13 @@ const EffectUtilities = function() {
                     break;
                 case "ddown(x)":
                 case "dps(x)":
-                    if (result.dpsChanges) {
-                        result.dpsChanges.push(effect);
-                    } else {
-                        result.dpsChanges = [effect];
-                    }
-                    log("dpsChanges: " + JSON.stringify(result.dpsChanges));
+                    result.dpsChanges.push(effect);
                     break;
                 case "dreroll":
-                    if (result.damageRerolls) {
-                        result.damageRerolls.push(effect.data.name);
-                    } else {
-                        result.damageRerolls = [effect.data.name];
-                    }
+                    result.damageRerolls.push(effect.data.name);
+                    break;
+                case "ready":
+                    result.readyEffects.push(effect);
                     break;
                 case "silence":
                     result.isSilenced = true;
@@ -92,6 +89,17 @@ const EffectUtilities = function() {
                         break;
                     case "hawk's eye":
                         result.hawksEye = effect;
+                        break;
+                    case "hidden":
+                        result.expireOnPrimaryUse.push(effect);
+                        result.expireOnSecondaryUse.push(effect);
+                        break;
+                    case "overheated":
+                        result.notifyProcs.push("Overheated proc: Target the lowest CR");
+                        break;
+                    case "reassemble":
+                        result.expireOnHitRoll.push(effect);
+                        result.criticalThreshold = 0;
                         break;
                     case "surging tempest":
                         result.surgingTempest = effect;
