@@ -1,6 +1,6 @@
 * Look into automating "Advantage on next ability check"
-  * Stat rolls
   * Ability hit/crit rolls
+  * Monk Form advantages on Physical abilities
 * Handle effect expiry on other characters' turns (NIN Mug effect)
 
 FIX

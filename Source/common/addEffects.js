@@ -485,6 +485,22 @@ const AddEffects = function(customEngine, customRemove) {
                 summaries.push(`Granted ${newValue - hitPoints} HP`);
                 break;
             }
+            case "life_surge": {
+                var data = effectData.effects.advantage;
+                data.expiry = "turn";
+                let turnBasedAdvantage = {
+                    type: data.type,
+                    value: "1",
+                    adjustedName: "advantage",
+                    statusType: data.statusType,
+                    description: data.description,
+                    expiry: "turn",
+                    data: data
+                };
+                turnBasedAdvantage.icon = effectData.icon(turnBasedAdvantage);
+                summaries.push(this.add(state, [turnBasedAdvantage]));
+                break;
+            }
             case "lucid_dreaming":
                 attributes.mpRecovery = 3;
                 break;

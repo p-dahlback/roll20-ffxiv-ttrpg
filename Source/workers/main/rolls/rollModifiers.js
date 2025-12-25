@@ -153,8 +153,6 @@ const RollModifiers = function() {
         var negatives = [];
         var summaries = effects.notifyProcs;
 
-        engine.logd("Procs: " + JSON.stringify(summaries));
-
         let isFireType = damageRoll.type.toLowerCase().includes("fire-aspect");
         if (isFireType && effects.astralFire) {
             let addedDamage = characterLevel >= 50 ? "2d6" : "1d6";
@@ -282,8 +280,11 @@ const RollModifiers = function() {
         return result;
     };
 
-    this.applyAdvantage = function(advantage, dice) {
-        if (advantage == 0) {
+    this.applyAdvantage = function(advantage, dice, effects) {
+        if (effects.abilityAdvantages) {
+            advantage += effects.abilityAdvantages.length;
+        }
+        if (advantage === 0) {
             return dice;
         }
         if (!dice.includes("d")) {

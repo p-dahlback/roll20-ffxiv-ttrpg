@@ -71,7 +71,7 @@ const EffectData = function() {
         elemental_veil_ii: { matches: ["eveil2", "eveilii", "eveil 2", "eveil ii", "elemental veil 2", "elemental veil ii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil II", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
         enmity: { matches: ["enmity"], type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", marker: "enmity", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
         feint: { matches: ["feint"], type: "special", maskedType: "ddown", statusType: "Enfeeblement", specialType: "Feint", marker: "feint", name: "Feint", expiry: "turn", description: "Reduces the damage dealt by your abilities." },
-        fight_or_flight: { matches: ["fflight", "fight or flight"], type: "special", specialType: "Fight or Flight", statusType: "Enhancement", name: "Fight or Flight", expiry: "turn", duplicate: "block", description: "Grants one advantage die on your next ability check this turn." },
+        fight_or_flight: { matches: ["fflight", "fight or flight"], type: "special", maskedType: "advantage", specialType: "Fight or Flight", statusType: "Enhancement", name: "Fight or Flight", expiry: "turn", duplicate: "block", description: "Grants one advantage die on your next ability check this turn." },
         flamecast_focus: { matches: ["fcast", "flamecast", "flamecast focus"], type: "special", maskedType: "augment", augmentType: "ability", ability: "fire", specialType: "Flamecast Focus", statusType: "Enhancement", name: "Flamecast Focus", expiry: "end", duplicate: "block", description: "Grants the Fire ability." },
         hawks_eye: { matches: ["hawk", "hawke", "heye", "hawkeye", "hawk's eye", "hawks eye"], type: "special", maskedType: "Straight Shot Ready", specialType: "Hawk's Eye", statusType: "Enhancement", name: "Hawk's Eye", expiry: "use", duplicate: "block", description: "While under the effect of Hawk's Eye, you ignore the penalty incurred on ability checks made while Blinded." },
         heal: { matches: ["heal"], type: "special", specialType: "Heal(X)", statusType: "Enhancement", name: "Heal (X)", expiry: "ephemeral" },
@@ -255,9 +255,8 @@ const EffectUtilities = function() {
 
             switch (effect.data.maskedType || effect.type) {
                 case "advantage":
-                    if (effect.expiry === "ability") {
-                        result.abilityAdvantages.push(effect);
-                    }
+                    result.abilityAdvantages.push(effect);
+                    result.expireOnHitRoll.push(effect);
                     break;
                 case "augment":
                     if (effect.specialType.trim().toLowerCase() == "aetherial focus") {
@@ -1391,6 +1390,22 @@ const AddEffects = function(customEngine, customRemove) {
                     hitPoints: newValue
                 });
                 summaries.push(`Granted ${newValue - hitPoints} HP`);
+                break;
+            }
+            case "life_surge": {
+                var data = effectData.effects.advantage;
+                data.expiry = "turn";
+                let turnBasedAdvantage = {
+                    type: data.type,
+                    value: "1",
+                    adjustedName: "advantage",
+                    statusType: data.statusType,
+                    description: data.description,
+                    expiry: "turn",
+                    data: data
+                };
+                turnBasedAdvantage.icon = effectData.icon(turnBasedAdvantage);
+                summaries.push(this.add(state, [turnBasedAdvantage]));
                 break;
             }
             case "lucid_dreaming":

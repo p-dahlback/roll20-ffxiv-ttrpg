@@ -182,7 +182,7 @@ const AbilityRolls = function() {
             const triggerString = this.stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`]);
 
             var hitDie = values[`repeating_${section}_${rowId}_hitDie`];
-            hitDie = rollModifiers.applyAdvantage(values.advantage, hitDie);
+            hitDie = rollModifiers.applyAdvantage(values.advantage, hitDie, effects);
 
             var hitTitle = "";
             var hitDefinition = "";

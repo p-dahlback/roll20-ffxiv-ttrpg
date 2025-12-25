@@ -38,9 +38,8 @@ const EffectUtilities = function() {
 
             switch (effect.data.maskedType || effect.type) {
                 case "advantage":
-                    if (effect.expiry === "ability") {
-                        result.abilityAdvantages.push(effect);
-                    }
+                    result.abilityAdvantages.push(effect);
+                    result.expireOnHitRoll.push(effect);
                     break;
                 case "augment":
                     if (effect.specialType.trim().toLowerCase() == "aetherial focus") {
