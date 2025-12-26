@@ -52,6 +52,7 @@ const EffectData = function() {
         bloodbath: { matches: ["bloodbath"], type: "special", maskedType: "drain", specialType: "Bloodbath", statusType: "Enhancement", name: "Bloodbath", expiry: "turn", duplicate: "bigger", description: "You regain HP each time you deal damage this turn. When using abilities that affect multiple targets or deal multiple instances of damage, HP is recovered for each target damaged or each instance of damage dealt." },
         bound: { matches: ["bind", "bound"], type: "bound", maskedType: "bound", statusType: "Enfeeblement", marker: "bound", name: "Bound", expiry: "encounter", curable: true, duplicate: "block", description: "When Bound, Small and Medium characters' Speed falls to 0, while larger characters' Speed is reduced by 2.\n\nCharacters receive one advantage die when targeting you." },
         brink: { matches: ["brink", "brink of death"], type: "brink", maskedType: "brink", statusType: "Enfeeblement", marker: "brink", name: "Brink of Death", expiry: "rest", duplicate: "block", description: "You take a -5 penalty on all checks. If you are targeted by another effect that inflicts Weak, you are inflicted with Comatose instead.\n\nBrink of Death can only be removed by completing a rest or by effects that specifically remove it." },
+        carbuncle: { matches: ["carbuncle"], type: "special", maskedType: "gem", specialType: "Carbuncle", statusType: "Enhancement", marker: "carbuncle", name: "Carbuncle", expiry: "refresh", duplicate: "block", description: "You recover 1 MP when your MP falls to 0. This effect can only be used once per turn." },
         chicken: { matches: ["chicken"], type: "chicken", statusType: "Enfeeblement", marker: "chicken", name: "Chicken", expiry: "turn", duplicate: "replace", description: "You are a chicken." },
         clear_enfeeblements: { matches: ["clear", "cleare", "clear enfeeblements"], type: "special", specialType: "Clear Enfeeblements", statusType: "Enhancement", name: "Clear Enfeeblements", expiry: "ephemeral" },
         coeurl_form: { matches: ["coeurl form", "coeurl", "cform", "monk3", "m3"], type: "special", maskedType: "ready(x)", specialType: "Coeurl Form", statusType: "Enhancement", name: "Coeurl Form", expiry: "turn2", duplicate: "replace", description: "Enables you to perform Snap Punch or Demolish." },
@@ -137,6 +138,7 @@ const EffectData = function() {
         encounterstart: "Start of an encounter",
         stepstart: "Start of the [Adventurer Step]",
         start: "Start of your turn",
+        start2: "Start of your turn next round",
         turn: "End of your turn",
         turn2: "End of your next turn",
         step: "End of the [Adventurer Step]",
@@ -147,7 +149,8 @@ const EffectData = function() {
         end: "After adventure",
         permanent: "Permanent",
         use: "On use",
-        damage: "On damage"
+        damage: "On damage",
+        refresh: "Refreshes each turn"
     };
 
     this.expiryTypes = Object.keys(this.expiries);
@@ -1372,6 +1375,17 @@ const AddEffects = function(customEngine, customRemove) {
                 attributes.mpRecoveryBlock = "on";
                 break;
             }
+            case "carbuncle":
+            case "emerald":
+            case "ruby":
+            case "topaz": {
+                if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
+                    this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
+                    summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
+                    this.engine().remove(state.existingEffects.gemEffect);
+                }
+                break;
+            }
             case "damage": {
                 let damageValue = parseInt(value);
                 let barrierDamage = 0;
@@ -1390,16 +1404,6 @@ const AddEffects = function(customEngine, customRemove) {
                     hitPoints: Math.max(hitPoints - remainingDamage, 0)
                 });
                 summaries.push(`Dealt ${value} damage`);
-                break;
-            }
-            case "emerald":
-            case "ruby":
-            case "topaz": {
-                if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
-                    this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
-                    summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
-                    this.engine().remove(state.existingEffects.gemEffect);
-                }
                 break;
             }
             case "heal": {

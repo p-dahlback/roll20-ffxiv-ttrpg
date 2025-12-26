@@ -455,6 +455,17 @@ const AddEffects = function(customEngine, customRemove) {
                 attributes.mpRecoveryBlock = "on";
                 break;
             }
+            case "carbuncle":
+            case "emerald":
+            case "ruby":
+            case "topaz": {
+                if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
+                    this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
+                    summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
+                    this.engine().remove(state.existingEffects.gemEffect);
+                }
+                break;
+            }
             case "damage": {
                 let damageValue = parseInt(value);
                 let barrierDamage = 0;
@@ -473,16 +484,6 @@ const AddEffects = function(customEngine, customRemove) {
                     hitPoints: Math.max(hitPoints - remainingDamage, 0)
                 });
                 summaries.push(`Dealt ${value} damage`);
-                break;
-            }
-            case "emerald":
-            case "ruby":
-            case "topaz": {
-                if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
-                    this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
-                    summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
-                    this.engine().remove(state.existingEffects.gemEffect);
-                }
                 break;
             }
             case "heal": {
