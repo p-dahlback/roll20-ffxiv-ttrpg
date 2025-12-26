@@ -110,6 +110,11 @@ const ManualEffectTypeChange = function() {
             // Remove all Monk Forms excepting the current instance.
             // This ensures there's only one Form active at any point.
             removeEffects.removeAll(["coeurl form", "opo-opo form", "raptor form"], rowId);
+        } else if (["carbuncle", "ruby", "topaz", "emerald"].includes(newValue)) {
+            log("Removing Gem effects to ensure a single gem is active");
+            // Remove all Gem effects excepting the current instance.
+            // This ensures there's only one Gem active at any point.
+            removeEffects.removeAll(["carbuncle", "ruby", "topaz", "emerald"], rowId);
         } else {
             // Remove duplicates of special effects
             removeEffects.removeAll([newValue], rowId);

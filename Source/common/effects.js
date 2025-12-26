@@ -179,7 +179,11 @@ const EffectData = function() {
         } else {
             descriptions.push(name);
         }
-        descriptions.push(`expires ${this.expiries[expiry]}`);
+        if (expiry === "refresh") {
+            descriptions.push("refreshes each turn");
+        } else {
+            descriptions.push(`expires ${this.expiries[expiry]}`);
+        }
         if (curable === "on") {
             descriptions.push("can be cured");
         }

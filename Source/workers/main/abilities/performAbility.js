@@ -3,6 +3,7 @@
 /*exported performAbility, AbilityId*/
 const engine = {};
 const abilitySections = [];
+const effectUtilities = {};
 /*build:end*/
 
 const AbilityId = function(section, rowId) {
@@ -13,67 +14,140 @@ const AbilityId = function(section, rowId) {
 const PerformAbility = function() {
 
     this.resolveResources = function(damageRoll, abilityId, values, effects) {
-        
-        const uses = abilityId ? values[`repeating_${abilityId.section}_${abilityId.rowId}_uses`] : 0;
-        const usesMax = abilityId ? values[`repeating_${abilityId.section}_${abilityId.rowId}_uses_max`] : 0;
+        const abilityPath = abilityId ? `repeating_${abilityId.section}_${abilityId.rowId}` : "";
+        const uses = abilityId ? values[`${abilityPath}_uses`] : 0;
+        const usesMax = abilityId ? values[`${abilityPath}_uses_max`] : 0;
 
-        const isGeneric = values.sheet_type != "unique";
+        var state = {
+            isGeneric: values.sheet_type != "unique",
+            hitPoints: values.hitPoints, hitPoints_max: values.hitPoints_max,
+            magicPoints: values.magicPoints, magicPoints_max: values.magicPoints_max,
+            resource: values.resource, resourceValue: values.resourceValue, resourceValue_max: values.resourceValue_max,
+            resource2: values.resource2, resource2Value: values.resource2Value, resource2Value_max: values.resource2Value_max,
+            resource3: values.resource3, resource3Value: values.resource3Value, resource3Value_max: values.resource3Value_max,
+            range1: values.range1, range1_max: values.range1_max,
+            range2: values.range2, range2_max: values.range2_max,
+            range3: values.range3, range3_max: values.range3_max,
+            uses: uses, usesMax: usesMax, abilityPath: abilityPath
+        };
+        state[`${abilityPath}_uses`] = uses;
+        state[`${abilityPath}_uses_max`] = usesMax;
 
-        var summaries = [];
-        var resourceResult = false;
-        if (damageRoll.cost > 0) {
-            let specification = this.resourceSpecification(damageRoll.resource, values);
-            if (specification) {
-                engine.logd("Spending resources");
-                let result = this.spend(
-                    isGeneric,
-                    damageRoll.cost,
-                    specification.resourceType,
-                    values[specification.attributeName],
-                    values[specification.attributeNameMax],
-                    specification.attributeName
-                );
-                resourceResult = result[0];
-                summaries.push(result[1]);
-            }
+        // Spend cost
+        let costResult = this.spendCostIfNeeded(damageRoll, state);
+        if (!costResult.success) {
+            return costResult.summary;
         }
+        state = costResult.state;
 
-        if (damageRoll.cost > 0 && !resourceResult) {
-            return "";
+        // Spend uses
+        let usesResult = this.spendUsesIfNeeded(damageRoll, state);
+        if (!usesResult.success) {
+            return usesResult.summary;
         }
+        state = usesResult.state;
+        var summaries = [costResult.summary, usesResult.summary];
 
         // Special handling for Ninja's Mudra
-        summaries.push(this.clearMudraIfNeeded(damageRoll, values));
-
-        // Spend uses if there are any
-        if (abilityId && usesMax > 0) {
-            engine.logd("Spending uses");
-            let result = this.spend(
-                isGeneric,
-                1,
-                "uses",
-                uses,
-                usesMax,
-                `repeating_${abilityId.section}_${abilityId.rowId}_uses`
-            );
-            if (result[1]) {
-                summaries.push(result[1]);
-            }
-        }
+        summaries.push(this.clearMudraIfNeeded(damageRoll, state));
 
         // Restore resources
-        engine.logd("Checking to restore");
         if (damageRoll.restoration) {
-            summaries.push(this.restore(isGeneric, damageRoll.restoration, values));
-        } else {
-            engine.logd("No restore");
+            let result = this.restoreByStringSpecification(damageRoll.restoration, state);
+            state = result.state;
+            summaries.push(result.summary);
         }
+
         // Perform Umbral Ice restoration if applicable
-        let isIceType = damageRoll.type.toLowerCase().includes("ice-aspect");
-        if (isIceType && effects.umbralIce) {
-            summaries.push(`${this.restore(isGeneric, "5 mp", values)} (Umbral Ice)`);
+        if (effects.umbralIce && effectUtilities.isEffectOfType(damageRoll, "ice-aspect")) {
+            let result = this.restore(5, "MP", state);
+            state = result.state;
+            summaries.push(`${result.summary} (Umbral Ice)`);
         }
+
+        // Handle Summoner's auto-restore
+        summaries.push(this.restoreViaCarbuncleIfNeeded(state, effects));
+
         return summaries.filter(element => element).join("\n");
+    };
+
+    //#region Cost
+    this.spendCostIfNeeded = function(damageRoll, state) {
+        if (!damageRoll.cost || damageRoll.cost <= 0) {
+            return {
+                success: true,
+                state: state,
+                summary: ""
+            };
+        }
+        let specification = this.resourceSpecification(damageRoll.resource, state);
+        if (!specification) {
+            return {
+                success: false,
+                state: state,
+                summary: `Couldn't parse resource ${damageRoll.resource}`
+            };
+        }
+        engine.logd("Spending resources");
+        let previousValue = state[specification.attributeName];
+        let result = this.spendResource(damageRoll.cost, specification, state);
+        var modifiedState = result.state;
+        if (result.success) {
+            modifiedState.didSpendAllMp = specification.resourceType === "MP" && damageRoll.cost == previousValue;
+        }
+        return {
+            success: result.success,
+            state: modifiedState,
+            summary: result.summary
+        };
+    };
+    //#endregion
+
+    //#region Uses
+    this.spendUsesIfNeeded = function(damageRoll, state) {
+        let usesMax = state[`${state.abilityPath}_uses_max`];
+        if (!state.abilityPath || !usesMax || usesMax <= 0) {
+            return {
+                success: true,
+                state: state,
+                summary: ""
+            };
+        }
+        engine.logd("Spending uses");
+        let specification = {
+            resourceType: "uses",
+            attributeName: `${state.abilityPath}_uses`,
+            attributeNameMax: `${state.abilityPath}_uses_max`
+        };
+        let result = this.spendResource(1, specification, state);
+        var modifiedState = result.state;
+
+        if (!result.success && damageRoll.cost > 0) {
+            // Refund the cost if necessary
+            let restoreResult = this.restore(damageRoll.cost, damageRoll.resource, modifiedState);
+            modifiedState = restoreResult.state;
+        }         
+        return {
+            success: false,
+            state: modifiedState,
+            summary: result.summary
+        };
+    };
+
+    this.resetUses = function(section) {
+        engine.logd("Resetting uses for section " + section);
+        getSectionIDs(`repeating_${section}`, ids => {
+            let attributes = ids.flatMap(id => [`repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`]);
+            getAttrs(attributes, values => {
+                var updatedAttributes = {};
+                for (let id of ids) {
+                    if (parseInt(values[`repeating_${section}_${id}_uses_max`]) > 0) {
+                        updatedAttributes[`repeating_${section}_${id}_uses`] = values[`repeating_${section}_${id}_uses_max`];
+                    }
+                }
+                setAttrs(updatedAttributes);
+            });
+        });
     };
 
     this.resetAllUses = function() {
@@ -81,13 +155,160 @@ const PerformAbility = function() {
             this.resetUses(section);
         }
     };
+    //#endregion
 
-    this.resourceSpecification = function(resourceType, values) {
+    //#region Restoration
+    this.restoreByStringSpecification = function(restoration, state) {
+        if (!restoration) {
+            return {
+                state: state,
+                summary: ""
+            };
+        }
+
+        const restoreValues = restoration.split(",");
+        let summaryPrefix = state.isGeneric ? "Restore" : "Restored";
+        var summaries = [];
+        var modifiedState = state;
+        for (let i = 0; i < restoreValues.length; i++) {
+            var parts = restoreValues[i].trim().split(" ");
+            if (parts.length < 2) {
+                engine.logi("Invalid restore declaration " + restoreValues[i]);
+                continue;
+            }
+            if (parts.length > 2) {
+                // Account for resources that have spaces in the name
+                parts = [parts[0], parts.slice(1).join(" ")];
+            }
+            const value = parts[0];
+            const resource = parts[1];
+            let result = this.restore(value, resource, state);
+            summaries.push(result.summary);
+            modifiedState = result.state;
+        }
+
+        return {
+            state: modifiedState,
+            summary: `${summaryPrefix} ${summaries.join(", ")}`
+        };
+    };
+
+    this.restore = function(value, resource, state) {
+        let specification = this.resourceSpecification(resource, state);
+        if (!specification) {
+            engine.logi("Unrecognized restore type " + resource);
+            return {
+                success: false,
+                state: state,
+                summary: `Unable to restore; couldn't parse resource ${resource}`
+            };
+        }
+        var modifiedState = state;
+
+        engine.logi(`Restoring ${value} ${specification.attributeName}`);
+        if (!state.isGeneric) {
+            const max = state[specification.attributeNameMax];
+            const sum = +value + +state[specification.attributeName];
+            const newValue = Math.min(sum, max);
+            var attributes = {};
+            attributes[specification.attributeName] = newValue;
+            modifiedState[specification.attributeName] = newValue;
+            setAttrs(attributes);
+            engine.logd(`Restored ${specification.attributeName} to ${newValue}`);
+        }
+        return {
+            success: true,
+            state: modifiedState,
+            summary: `${value} ${specification.resourceType}`
+        };
+    };
+
+    this.restoreViaCarbuncleIfNeeded = function(state, effects) {
+        if (!state.didSpendAllMp || state.magicPoints === state.magicPoints_max) {
+            return "";
+        }
+        if (effects.gemEffect.adjustedName === "carbuncle" && effects.gemEffect.value === "1") {
+            // Clear the effect for this turn
+            var attrs = {};
+            attrs[`${effects.gemEffect.fullId}_value`] = "0";
+            setAttrs(attrs);
+
+            let result = this.restore(1, "MP", state);
+            if (result.success) {
+                let prefix = state.isGeneric ? "Restore" : "Restored";
+                return `${prefix} ${result.summary} (Carbuncle)`;
+            } else {
+                return result.summary;
+            }
+        }
+        return "";
+    };
+    //#endregion
+
+    //#region Helpers
+    this.spendResource = function(cost, specification, state) {
+        if (state.isGeneric) {
+            return { 
+                state: state, 
+                success: true, 
+                summary: `Spend ${cost} ${specification.resourceType}`
+            };
+        }
+        if (!specification.resourceType) {
+            return {
+                state: state,
+                success: false,
+                summary: `Unable to expend ability cost - resource was not defined`
+            };
+        }
+        if (cost <= 0) {
+            return {
+                state: state,
+                success: false,
+                summary: `Unable to expend ability cost - cost ${cost} needs to be greater than zero`
+            };
+        }
+
+        let value = state[specification.attributeName];
+        let value_max = state[specification.attributeNameMax];
+        if (value >= 0 && value_max >= 0) {
+            if (value < cost) {
+                return {
+                    state: state,
+                    success: false,
+                    summary: `${cost} ${specification.resourceType} - Insufficient (${value}/${value_max})`
+                };
+            } else {
+                var modifiedState = state;
+                const newValue = value - cost;
+                var attributes = {};
+                attributes[specification.attributeName] = newValue;
+                modifiedState[specification.attributeName] = newValue;
+                setAttrs(attributes);
+
+                const resultString = `Spent ${cost} ${specification.resourceType} (${newValue}/${value_max})`;
+                engine.logd(resultString);
+                return {
+                    state: modifiedState,
+                    success: true,
+                    summary: resultString
+                };
+            }
+        } else {
+            return {
+                state: state,
+                success: false,
+                summary: `${cost} ${specification.resourceType} - Character has no ${specification.resourceType}!`
+            };
+        }
+    };
+
+    this.resourceSpecification = function(resourceType, state) {
         if (!resourceType) {
             return null;
         }
 
-        const resourceNames = [values.resource, values.resource2, values.resource3].filter(name => name);
+        const resourceNames = [state.resource, state.resource2, state.resource3].filter(name => name);
         const ranges = [
             { key: "range1", name: "Opo-opo's Fury" },
             { key: "range2", name: "Raptor's Fury" },
@@ -130,97 +351,6 @@ const PerformAbility = function() {
         return null;
     };
 
-    this.spend = function(isGeneric, cost, resourceType, value, value_max, attributeName) {
-        if (isGeneric) {
-            return [true, `Spend ${cost} ${resourceType}`];
-        }
-
-        if (cost > 0 && resourceType && value >= 0 && value_max >= 0) {
-            if (value < cost) {
-                return [false, `${cost} ${resourceType} - Insufficient (${value}/${value_max})`];
-            } else {
-                const newValue = value - cost;
-                var attributes = {};
-                attributes[attributeName] = newValue;
-                setAttrs(attributes);
-                const resultString = `Spent ${cost} ${resourceType} (${newValue}/${value_max})`;
-                engine.logd(resultString);
-                return [true, resultString];
-            }
-        } else {
-            return [false, `${cost} ${resourceType} - Character has no ${resourceType}!`];
-        }
-    };
-
-    this.restore = function(isGeneric, restoration, values) {
-        const restoreValues = restoration.split(",");
-        var attributes = [];
-        var summary = isGeneric ? "Restore " : "Restored ";
-        var didRestore = false;
-        for (let i = 0; i < restoreValues.length; i++) {
-            var parts = restoreValues[i].trim().split(" ");
-            if (parts.length < 2) {
-                engine.logi("Invalid restore declaration " + restoreValues[i]);
-                continue;
-            }
-            if (parts.length > 2) {
-                // Account for resources that have spaces in the name
-                parts = [parts[0], parts.slice(1).join(" ")];
-            }
-            const typeForValue = parts[1];
-            let specification = this.resourceSpecification(typeForValue, values);
-            if (!specification) {
-                engine.logi("Unrecognized restore type " + typeForValue);
-                continue;
-            }
-            didRestore = true;
-            engine.logi(`Restoring ${parts[0]} ${specification.attributeName}`);
-            attributes.push({
-                name: specification.attributeName,
-                value: parts[0]
-            });
-            summary += `${parts[0]} ${specification.resourceType}, `;
-        }
-
-        if (!didRestore) {
-            return "";
-        }
-
-        if (!isGeneric) {
-            const attributeNames = attributes.flatMap((element) => [element.name, element.name + "_max"]);
-            getAttrs(attributeNames, values => {
-                var newValues = {};
-                for (let attribute of attributes) {
-                    const value = values[attribute.name];
-                    const max = values[attribute.name + "_max"];
-                    const sum = +value + +attribute.value;
-                    const newValue = Math.min(sum, max);
-                    newValues[attribute.name] = newValue;
-                    engine.logd("Restored " + attribute.name + " to " + newValue);
-                }
-                setAttrs(newValues);
-            });
-        }
-
-        return summary.substring(0, summary.length - 2);
-    };
-
-    this.resetUses = function(section) {
-        engine.logd("Resetting uses for section " + section);
-        getSectionIDs(`repeating_${section}`, ids => {
-            let attributes = ids.flatMap(id => [`repeating_${section}_${id}_uses`, `repeating_${section}_${id}_uses_max`]);
-            getAttrs(attributes, values => {
-                var updatedAttributes = {};
-                for (let id of ids) {
-                    if (parseInt(values[`repeating_${section}_${id}_uses_max`]) > 0) {
-                        updatedAttributes[`repeating_${section}_${id}_uses`] = values[`repeating_${section}_${id}_uses_max`];
-                    }
-                }
-                setAttrs(updatedAttributes);
-            });
-        });
-    };
-
     this.clearMudraIfNeeded = function(damageRoll, values) {
         if (values.resource.toLowerCase() !== "mudra") {
             return null;
@@ -242,6 +372,7 @@ const PerformAbility = function() {
         });
         return "Cleared Mudra";
     };
+    //#endregion
 };
 
 const performAbility = new PerformAbility();

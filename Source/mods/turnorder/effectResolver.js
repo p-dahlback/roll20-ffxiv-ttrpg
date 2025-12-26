@@ -71,13 +71,28 @@ const EffectResolver = function(engine, removeEffects) {
     };
 
     this.updateIfApplicable = function(effect) {
-        if (effect.expiry !== "turn2") {
-            return "";
+        let newExpiry;
+        switch (effect.expiry) {
+            case "start2":
+                newExpiry = "start";
+                break;
+            case "turn2":
+                newExpiry = "turn";
+                break;
+            default:
+                return "";
         }
         var attributes = {};
-        attributes[`${effect.fullId}_expiry`] = "turn";
+        attributes[`${effect.fullId}_expiry`] = newExpiry;
+
+        let summary = "";
+        if (effect.specialType === "Carbuncle" && effect.value === "0") {
+            // Refresh the MP gain effect when Carbuncle is summoned
+            attributes[`${effect.fullId}_value`] = "1";
+            summary = "Carbuncle is able to recover your MP again";
+        }
         this.engine.set(attributes);
-        return "";
+        return summary;
     };
     
     this.executeEffect = function(state, effect) {

@@ -213,7 +213,11 @@ const EffectData = function() {
         } else {
             descriptions.push(name);
         }
-        descriptions.push(`expires ${this.expiries[expiry]}`);
+        if (expiry === "refresh") {
+            descriptions.push("refreshes each turn");
+        } else {
+            descriptions.push(`expires ${this.expiries[expiry]}`);
+        }
         if (curable === "on") {
             descriptions.push("can be cured");
         }
@@ -239,6 +243,11 @@ const EffectUtilities = function() {
             .replaceAll(/(\([-|\s\w]+\))|(\[[-+><=\w]+\])|'/g, "")
             .replaceAll(/[ -]/g, "_")
             .trim().toLowerCase();
+    };
+
+    this.isEffectOfType = function(effect, type) {
+        let fullType = effect.type.toLowerCase();
+        return fullType.includes(type.toLowerCase());
     };
     
     this.classify = function(effects) {

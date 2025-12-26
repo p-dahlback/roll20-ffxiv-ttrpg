@@ -286,6 +286,9 @@ const RollModifiers = function() {
     };
 
     this.typeAdjustedForGemEffect = function(type, gemEffect) {
+        if (!gemEffect) {
+            return type;
+        }
         switch (gemEffect.specialType) {
             case "Emerald":
                 return type.replace("Gem", "Wind-Aspected");

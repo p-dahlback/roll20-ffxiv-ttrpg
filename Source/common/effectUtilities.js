@@ -14,6 +14,11 @@ const EffectUtilities = function() {
             .replaceAll(/[ -]/g, "_")
             .trim().toLowerCase();
     };
+
+    this.isEffectOfType = function(effect, type) {
+        let fullType = effect.type.toLowerCase();
+        return fullType.includes(type.toLowerCase());
+    };
     
     this.classify = function(effects) {
         var result = {
