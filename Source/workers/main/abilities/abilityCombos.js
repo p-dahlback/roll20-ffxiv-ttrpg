@@ -29,10 +29,14 @@ const AbilityCombos = function() {
 
     this.specificationForCombo = function(name, parameters) {
         var specification = {
-            name: name
+            name: name,
+            selfEffects: "",
+            targetEffects: "",
+            isCustom: false
         };
         if (parameters) {
             engine.logd("Parsing combo parameters");
+            specification.isCustom = true;
             let parameterList = parameters.split("|");
             for (let parameter of parameterList) {
                 let matches = parameter.match(/([\w-]+):\s*([\w-]+)\s*([\w-]+)?/);

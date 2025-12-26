@@ -149,16 +149,21 @@ const RollModifiers = function() {
     };
 
     this.applyEffectModifiersToDamageRolls = function(damageRoll, characterLevel, effects) {
+        var modifiedRoll = damageRoll;
         var adds = [];
         var negatives = [];
         var summaries = effects.notifyProcs;
         summaries.push(...this.getHitModifierSummaries(damageRoll, effects));
 
-        let isFireType = damageRoll.type.toLowerCase().includes("fire-aspect");
-        if (isFireType && effects.astralFire) {
+        if (effects.astralFire && damageRoll.type.includes("Fire-aspect")) {
             let addedDamage = characterLevel >= 50 ? "2d6" : "1d6";
             adds.push(`${addedDamage}[Astral Fire]`);
             summaries.push("Astral Fire proc");
+        } else if (effects.gemEffect && damageRoll.type.includes("Gem")) {
+            let result = this.applyGemEffect(damageRoll, effects.gemEffect);
+            modifiedRoll = result.roll;
+            adds.push(...result.adds);
+            summaries.push(result.summary);
         }
 
         if (effects.dpsChanges && damageRoll.damageType === "Damage") {
@@ -186,7 +191,6 @@ const RollModifiers = function() {
 
         if (adds.length > 0 || negatives.length > 0) {
             engine.logd("Adding damage to roll");
-            var modifiedRoll = damageRoll;
             let baseRoll = modifiedRoll.baseRoll;
             let directHitRoll = modifiedRoll.directHitRoll;
             if (baseRoll) {
@@ -202,7 +206,7 @@ const RollModifiers = function() {
             };
         } else {
             return {
-                damageRoll: damageRoll,
+                damageRoll: modifiedRoll,
                 summaries: summaries
             };
         }
@@ -279,6 +283,47 @@ const RollModifiers = function() {
         result.summary = summaries.join(", ");
 
         return result;
+    };
+
+    this.typeAdjustedForGemEffect = function(type, gemEffect) {
+        switch (gemEffect.specialType) {
+            case "Emerald":
+                return type.replace("Gem", "Wind-Aspected");
+            case "Ruby":
+                return type.replace("Gem", "Fire-Aspected");
+            case "Topaz":
+                return type.replace("Gem", "Earth-Aspected");
+            default:
+                return type;
+        }
+    };
+
+    this.applyGemEffect = function(damageRoll, gemEffect) {
+        var modifiedRoll = damageRoll;
+        var adds = [];
+        let summary;
+
+        modifiedRoll.type = this.typeAdjustedForGemEffect(damageRoll.type, gemEffect);
+        switch (gemEffect.specialType) {
+            case "Emerald":
+                summary = "Emerald proc; target two additional characters within 10 squares of you";
+                break;
+            case "Ruby":
+                adds.push("1d6[Ruby]");
+                summary = "Ruby proc";
+                break;
+            case "Topaz":
+                adds.push("2[Topaz]");
+                summary = "Topaz proc";
+                break;
+            default:
+                break;
+        }
+        return {
+            roll: modifiedRoll,
+            adds: adds,
+            summary: summary
+        };
     };
 
     this.getHitModifierSummaries = function(damageRoll, effects) {

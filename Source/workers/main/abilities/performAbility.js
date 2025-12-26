@@ -118,7 +118,7 @@ const PerformAbility = function() {
         } else {
             let index = resourceNames.findIndex(name => name.toLowerCase() === resourceTypeLowerCase);
             if (index !== -1) {
-                let key = index === 0 ? "resourceValue" : `resource${index}`;
+                let key = index === 0 ? "resourceValue" : `resource${index + 1}Value`;
                 return {
                     resourceType: resourceNames[index],
                     attributeName: key,

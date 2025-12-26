@@ -61,6 +61,9 @@ const EffectUtilities = function() {
                 case "dreroll":
                     result.damageRerolls.push(effect.data.name);
                     break;
+                case "gem":
+                    result.gemEffect = effect;
+                    break;
                 case "ready":
                     result.readyEffects.push(effect);
                     break;

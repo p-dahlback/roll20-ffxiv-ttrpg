@@ -161,8 +161,6 @@ const AbilityRolls = function() {
             const usesMax = values[`repeating_${section}_${rowId}_uses_max`];
 
             const cost = values[`repeating_${section}_${rowId}_cost`];
-
-            const type = values[`repeating_${section}_${rowId}_type`];
             const statType = values[`repeating_${section}_${rowId}_stat`].toLowerCase();
             const damageType = values[`repeating_${section}_${rowId}_damageType`];
             const hitType = values[`repeating_${section}_${rowId}_hitType`];
@@ -178,12 +176,14 @@ const AbilityRolls = function() {
 
             const combo = values[`repeating_${section}_${rowId}_combo`];
             const crString = this.stringWithTitle("CR:", values[`repeating_${section}_${rowId}_cr`]);
-            const typeString = this.stringWithTitle("Type:", type);
             const condition = rollTemplates.unpackValueWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`]);
             const triggerString = this.stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`]);
 
+            let adjustedType = rollModifiers.typeAdjustedForGemEffect(values[`repeating_${section}_${rowId}_type`], effects.gemEffect);
+            const typeString = this.stringWithTitle("Type:", adjustedType);
+
             var hitDie = values[`repeating_${section}_${rowId}_hitDie`];
-            hitDie = rollModifiers.applyAdvantage(values.advantage, type, hitDie, effects);
+            hitDie = rollModifiers.applyAdvantage(values.advantage, adjustedType, hitDie, effects);
 
             var hitTitle = "";
             var hitDefinition = "";
@@ -396,16 +396,18 @@ const AbilityRolls = function() {
             }
             let comboSpecifications = abilityCombos.parseCombo(chosenCombo);
             let comboSpecification = comboSpecifications ? comboSpecifications[0] : null;
-            if (comboSpecification.roll || comboSpecification.cost) {
+            if (comboSpecification.isCustom) {
                 // Custom combo, roll the specified damage and spend the given cost
                 let damageRoll = new DamageRoll({
                     title: comboSpecification.name,
                     type: "Special",
-                    damageType: "Damage",
+                    damageType: comboSpecification.damageType ? comboSpecification.damageType : "Damage",
                     baseRoll: comboSpecification.roll,
                     hitRoll: values[`repeating_${section}_${rowId}_currentRoll`],
                     cost: comboSpecification.cost,
                     resource: comboSpecification.cost_resource,
+                    selfEffects: comboSpecification.selfEffects,
+                    targetEffects: comboSpecification.targetEffects,
                     monkForm: values[`repeating_${section}_${rowId}_currentMonkForm`],
                     whisperPrefix: values.whisperExemptAbilities ? "" : values.whisper
                 });

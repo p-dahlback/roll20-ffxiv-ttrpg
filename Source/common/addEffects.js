@@ -382,8 +382,8 @@ const AddEffects = function(customEngine, customRemove) {
             case "coeurl_form":
             case "opo_opo_form":
             case "raptor_form": {
-                this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
-                if (state.existingEffects.monkForm) {
+                if (state.existingEffects.monkForm && state.existingEffects.monkForm.adjustedName !== effect.adjustedName) {
+                    this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
                     summaries.push(`Removed ${state.existingEffects.monkForm.data.name}`);
                     this.engine().remove(state.existingEffects.monkForm);
                 }
@@ -473,6 +473,16 @@ const AddEffects = function(customEngine, customRemove) {
                     hitPoints: Math.max(hitPoints - remainingDamage, 0)
                 });
                 summaries.push(`Dealt ${value} damage`);
+                break;
+            }
+            case "emerald":
+            case "ruby":
+            case "topaz": {
+                if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
+                    this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
+                    summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
+                    this.engine().remove(state.existingEffects.gemEffect);
+                }
                 break;
             }
             case "heal": {

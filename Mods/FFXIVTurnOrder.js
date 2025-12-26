@@ -39,6 +39,7 @@ this.export.unpackNaN = unpackNaN;
 const EffectData = function() {
     this.effects = {
         aero: { matches: ["aero"], type: "special", maskedType: "dot(x)", specialType: "Aero", statusType: "Enfeeblement", marker: "aero", name: "Aero", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
+        aethercharge: { matches: ["aethercharge", "acharge"], type: "special", specialType: "Aethercharge", name: "Aethercharge", statusType: "Enhancement", expiry: "turn", duplicate: "block", description: "While under the effect of Aethercharge, Ruin II, Ruin III and Outburst have additional effects."},
         aetherial_focus: { matches: ["afocus", "aetherial focus"], type: "special", maskedType: "augment", specialType: "Aetherial Focus", statusType: "Enhancement", name: "Aetherial Focus", expiry: "end", duplicate: "block", description: "Begin encounters with X MP. This effect does not increase Max MP." },
         addle: { matches: ["addle"], type: "special", maskedType: "ddown", statusType: "Enfeeblement", specialType: "Addle", marker: "addle", name: "Addle", expiry: "turn", description: "Reduces the damage dealt by your abilities." },
         advantage: { matches: ["adv", "advantage"], type: "advantage", maskedType: "advantage", statusType: "Enhancement", name: "Advantage", expiry: "use", description: "Provides an advantage die that can be used once for any ability roll." },
@@ -69,6 +70,7 @@ const EffectData = function() {
         dot: { matches: ["dot"], type: "dot(x)", maskedType: "dot(x)", statusType: "Enfeeblement", marker: "dot", name: "DOT (X)", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         elemental_veil: { matches: ["eveil", "eveil1", "eveili", "eveil 1", "eveil i", "elemental veil", "elementail veil 1", "elemental veil i"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
         elemental_veil_ii: { matches: ["eveil2", "eveilii", "eveil 2", "eveil ii", "elemental veil 2", "elemental veil ii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil II", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
+        emerald: { matches: ["emerald", "em"], type: "special", maskedType: "gem", specialType: "Emerald", name: "Emerald", marker: "emerald", statusType: "Enhancement", expiry: "start", duplicate: "replace",description: "Your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1." },
         enmity: { matches: ["enmity"], type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", marker: "enmity", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
         feint: { matches: ["feint"], type: "special", maskedType: "ddown", statusType: "Enfeeblement", specialType: "Feint", marker: "feint", name: "Feint", expiry: "turn", description: "Reduces the damage dealt by your abilities." },
         fight_or_flight: { matches: ["fflight", "fight or flight"], type: "special", maskedType: "advantage", specialType: "Fight or Flight", statusType: "Enhancement", name: "Fight or Flight", expiry: "turn", duplicate: "block", description: "Grants one advantage die on your next ability check this turn." },
@@ -110,6 +112,7 @@ const EffectData = function() {
         restore: { matches: ["restore"], type: "restore(x)", maskedType: "restore(x)", statusType: "Enhancement", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
         restore_magic: { matches: ["restorem", "restore magic"], type: "special", specialType: "Restore Magic", statusType: "Enhancement", name: "Restore Magic", expiry: "ephemeral" },
         roll: { matches: ["roll", "roll up"], type: "roll(x)", maskedType: "roll(x)", statusType: "Enhancement", name: "Increment Ability Roll (X)", expiry: "use", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
+        ruby: { matches: ["ruby"], type: "special", maskedType: "gem", specialType: "Ruby", name: "Ruby", statusType: "Enhancement", expiry: "start", duplicate: "replace", description: "Your gem abilities become fire-aspected and deal an additional 1d6 damage. When your pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn." },
         silence: { matches: ["silence"], type: "silence", maskedType: "silence", statusType: "Enfeeblement", marker: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block", description: "You cannot use invoked abilities." },
         sleep: { matches: ["sleep"], type: "sleep", maskedType: "sleep", statusType: "Enfeeblement", marker: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block", description: "You incur a -3 penalty on all checks. Sleep is removed when you take damage.\n\nCharacters may use a Primary action to wake a Sleeping character in an adjacent square." },
         slow: { matches: ["slow"], type: "slow", maskedType: "slow", statusType: "Enfeeblement", marker: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to your Speed.\n\nYou incur a -2 penalty on all checks." },
@@ -121,6 +124,7 @@ const EffectData = function() {
         thrill_of_battle: { matches: ["thrill", "tbattle", "thrill of battle"], type: "special", specialType: "Thrill of Battle", statusType: "Enhancement", name: "Thrill of Battle", expiry: "ephemeral", duplicate: "allow" },
         thunder: { matches: ["thunder"], type: "special", maskedType: "dot(x)", specialType: "Thunder", statusType: "Enfeeblement", marker: "thunder", name: "Thunder", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         thunderhead_ready: { matches: ["tready", "thunderhead", "thunderhead ready"], type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", statusType: "Enhancement", name: "Thunderhead Ready", expiry: "use", duplicate: "block", description: "Enables one use of a Lightning-aspected ability, such as Thunder or Thunder II." },
+        topaz: { matches: ["topaz"], type: "special", maskedType: "gem", specialType: "Topaz", name: "Topaz", statusType: "Enhancement", expiry: "start", duplicate: "replace", description: "Your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities." },
         umbral_ice: { matches: ["uice", "umbral ice"], type: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
         venomous_bite: { matches: ["venom", "vbite", "wbite", "windbite", "venomous bite"], type: "special", specialType: "Venomous Bite", maskedType:"dot(x)", marker: "venomous-bite", statusType: "enfeeblement", name: "Venomous Bite", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         warding_talisman: { matches: ["ward", "talisman", "wtalisman", "warding talisman"], type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "permanent", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
@@ -279,6 +283,9 @@ const EffectUtilities = function() {
                     break;
                 case "dreroll":
                     result.damageRerolls.push(effect.data.name);
+                    break;
+                case "gem":
+                    result.gemEffect = effect;
                     break;
                 case "ready":
                     result.readyEffects.push(effect);
@@ -1292,8 +1299,8 @@ const AddEffects = function(customEngine, customRemove) {
             case "coeurl_form":
             case "opo_opo_form":
             case "raptor_form": {
-                this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
-                if (state.existingEffects.monkForm) {
+                if (state.existingEffects.monkForm && state.existingEffects.monkForm.adjustedName !== effect.adjustedName) {
+                    this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
                     summaries.push(`Removed ${state.existingEffects.monkForm.data.name}`);
                     this.engine().remove(state.existingEffects.monkForm);
                 }
@@ -1383,6 +1390,16 @@ const AddEffects = function(customEngine, customRemove) {
                     hitPoints: Math.max(hitPoints - remainingDamage, 0)
                 });
                 summaries.push(`Dealt ${value} damage`);
+                break;
+            }
+            case "emerald":
+            case "ruby":
+            case "topaz": {
+                if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
+                    this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
+                    summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
+                    this.engine().remove(state.existingEffects.gemEffect);
+                }
                 break;
             }
             case "heal": {
