@@ -28,7 +28,8 @@ const WorkerEngine = function(logger) {
                 `repeating_effects_${element}_curable`,
                 `repeating_effects_${element}_description`,
                 `repeating_effects_${element}_attribute`,
-                `repeating_effects_${element}_attributeValue`
+                `repeating_effects_${element}_attributeValue`,
+                `repeating_effects_${element}_conditionalValue`
             ]);
             getAttrs(attributes.concat(bonusAttributes), values => {
                 var sortedValues = {};

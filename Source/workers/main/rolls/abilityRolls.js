@@ -3,7 +3,7 @@
 /*exported abilityRolls*/
 const engine = {};
 const effectData = {}; const effectUtilities = {}; const addEffects = {}; const removeEffects = {}; const AbilityId = {};
-const rollModifiers = {}; const rollTemplates = {}; const performAbility = {}; const abilityCombos = {};
+const hitModifiers = {}; const damageModifiers = {}; const rollTemplates = {}; const performAbility = {}; const abilityCombos = {};
 const EffectState = {};
 /*build:end*/
 
@@ -28,7 +28,7 @@ const TargetEffects = function(source) {
 };
 
 const DamageRoll = function({
-    title, type, damageType, baseRoll, directHitRoll="", hitRoll="", condition="", combos="", cost=0, resource="", 
+    title, type, damageType, baseRoll, directHitRoll="", hitRoll="", conditionalValue="", condition="", combos="", cost=0, resource="", 
     selfEffects="", targetEffects="", restoration="", monkForm="", useRollBonus=false, whisperPrefix=""
 }) {
 
@@ -37,6 +37,7 @@ const DamageRoll = function({
     this.damageType = damageType;
     this.baseRoll = baseRoll;
     this.directHitRoll = directHitRoll;
+    this.conditionalValue = conditionalValue;
     this.hitRoll = hitRoll;
     this.condition = condition;
     this.combos = combos;
@@ -78,6 +79,7 @@ const damageAbilityAttributes = function(section, rowId) {
         `repeating_${section}_${rowId}_damageType`,
         `repeating_${section}_${rowId}_baseValue`,
         `repeating_${section}_${rowId}_dhValue`,
+        `repeating_${section}_${rowId}_conditionalValue`,
         `repeating_${section}_${rowId}_combo`,
         `repeating_${section}_${rowId}_currentRoll`,
         `repeating_${section}_${rowId}_currentMonkForm`,
@@ -179,11 +181,11 @@ const AbilityRolls = function() {
             const condition = rollTemplates.unpackValueWithTitle("Condition:", values[`repeating_${section}_${rowId}_condition`]);
             const triggerString = this.stringWithTitle("Trigger:", values[`repeating_${section}_${rowId}_trigger`]);
 
-            let adjustedType = rollModifiers.typeAdjustedForGemEffect(values[`repeating_${section}_${rowId}_type`], effects.gemEffect);
+            let adjustedType = damageModifiers.typeAdjustedForGemEffect(values[`repeating_${section}_${rowId}_type`], effects.gemEffect);
             const typeString = this.stringWithTitle("Type:", adjustedType);
 
             var hitDie = values[`repeating_${section}_${rowId}_hitDie`];
-            hitDie = rollModifiers.applyAdvantage(values.advantage, adjustedType, hitDie, effects);
+            hitDie = hitModifiers.applyAdvantage(values.advantage, adjustedType, hitDie, effects);
 
             var hitTitle = "";
             var hitDefinition = "";
@@ -200,7 +202,7 @@ const AbilityRolls = function() {
                     if (statValue > 0) {
                         hitDie = `${hitDie} + @{${statType}Display}`;
                     }
-                    hitDie = rollModifiers.addEffectsToHitRoll(effects, hitDie, section);
+                    hitDie = hitModifiers.applyEffectModifiers(effects, hitDie, section);
                     hitDefinition = `[[${hitDie}]]`;
 
                     // Option to improve the hit roll
@@ -281,6 +283,7 @@ const AbilityRolls = function() {
                 baseRoll: values[`repeating_${section}_${rowId}_baseValue`],
                 directHitRoll: values[`repeating_${section}_${rowId}_dhValue`],
                 hitRoll: parseInt(values[`repeating_${section}_${rowId}_currentRoll`]),
+                conditionalValue: values[`repeating_${section}_${rowId}_conditionalValue`],
                 condition: values[`repeating_${section}_${rowId}_condition`],
                 combos: values[`repeating_${section}_${rowId}_combo`],
                 cost: values[`repeating_${section}_${rowId}_cost`],
@@ -298,10 +301,9 @@ const AbilityRolls = function() {
     };
 
     this.performDamageRoll = function(damageRoll, abilityId=null, values, effects) {
-        let modifiedRoll = rollModifiers.applyCriticalMultiplierIfNeeded(damageRoll, effects);
-        let summariedRoll = rollModifiers.applyEffectModifiersToDamageRolls(modifiedRoll, values.level, effects);
+        let summariedRoll = damageModifiers.applyEffectModifiersToRolls(damageRoll, values.level, effects);
         let modifierSummaries = summariedRoll.summaries;
-        modifiedRoll = summariedRoll.damageRoll;
+        let modifiedRoll = summariedRoll.damageRoll;
 
         const comboButtons = abilityCombos.resolveAvailableCombos(modifiedRoll.combos, abilityId, values);
         const comboTitle = comboButtons ? "Combo" : "";
@@ -336,7 +338,7 @@ const AbilityRolls = function() {
             const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
             const directHitRoll = results.results.directHit ?? { result: 0, dice: [], expression: "" };
 
-            let computedResults = rollModifiers.applyEffectModifiersAfterDamageRolls(effects, modifiedRoll.damageType, [damageRoll, directHitRoll]);
+            let computedResults = damageModifiers.applyEffectModifiersAfterRolls(effects, modifiedRoll.damageType, [damageRoll, directHitRoll]);
             let consumedEffectSummary = removeEffects.consumeOnAbility(modifiedRoll, effects);
 
             let state = new EffectState(
