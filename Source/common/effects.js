@@ -105,6 +105,7 @@ const EffectData = function() {
         stepstart: "Start of the [Adventurer Step]",
         start: "Start of your turn",
         start2: "Start of your turn next round",
+        sourceStart: "Start of the originator's turn",
         turn: "End of your turn",
         turn2: "End of your next turn",
         step: "End of the [Adventurer Step]",
