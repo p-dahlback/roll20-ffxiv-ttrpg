@@ -62,15 +62,23 @@ const EffectResolver = function(engine, removeEffects) {
     };
     
     this.removeIfApplicable = function(state, effect) {
-        if (state.expiries.includes(effect.expiry)) {
-            this.engine.logd("Slating effect for removal: " + effect.adjustedName);
-            this.removeEffects.remove(effect);
-            return `Expired <b>${effect.data.name}</b>`;
+        if (!state.expiries.includes(effect.expiry)) {
+            return "";
         }
-        return "";
+        this.engine.logd("Slating effect for removal: " + effect.adjustedName);
+        var summary = `Expired <b>${effect.data.name}</b>`;
+        if (effect.data.maskedType === "gem" && effect.adjustedName !== "carbuncle") {
+            let addEffects = new AddEffects(this.engine, this.removeEffects);
+            let addState = state.effectState();
+            addEffects.addBySpecificationString(addState, ["carbuncle"]);
+            summary += `, activated <b>Carbuncle</b>`;
+        }
+        this.removeEffects.remove(effect);
+        return summary;
     };
 
     this.updateIfApplicable = function(effect) {
+        var attributes = {};
         let newExpiry;
         switch (effect.expiry) {
             case "start2":
@@ -79,20 +87,20 @@ const EffectResolver = function(engine, removeEffects) {
             case "turn2":
                 newExpiry = "turn";
                 break;
+            case "refresh":
+                if (effect.value == "0") {
+                    // Refresh the MP gain effect when Carbuncle is summoned
+                    attributes[`${effect.fullId}_value`] = "1";
+                    this.engine.set(attributes);
+                    return "Carbuncle is able to recover your MP again";
+                }
+                return "";
             default:
                 return "";
         }
-        var attributes = {};
         attributes[`${effect.fullId}_expiry`] = newExpiry;
-
-        let summary = "";
-        if (effect.specialType === "Carbuncle" && effect.value === "0") {
-            // Refresh the MP gain effect when Carbuncle is summoned
-            attributes[`${effect.fullId}_value`] = "1";
-            summary = "Carbuncle is able to recover your MP again";
-        }
         this.engine.set(attributes);
-        return summary;
+        return "";
     };
     
     this.executeEffect = function(state, effect) {
