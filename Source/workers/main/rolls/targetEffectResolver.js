@@ -42,6 +42,7 @@ const TargetEffectResolver = function() {
         let initialName = "";
         let hasLink = false;
         let linkDefinition = "";
+        let expirationDefinition = "";
         for (let effect of targetEffects.effects) {
             let adjustedEffect = effectUtilities.searchableName(effect.trim());
             let data = effectData.effects[adjustedEffect];
@@ -50,6 +51,10 @@ const TargetEffectResolver = function() {
                 continue;
             }
 
+            if (data.maskedType === "gem") {
+                // Assigning gems to Cabuncle; should expire start of Carbuncle's next turn
+                expirationDefinition = "--expire start";
+            }
             if (data.expiry === "sourceStart") {
                 hasLink = true;
                 linkDefinition = "--match true";
@@ -70,7 +75,8 @@ const TargetEffectResolver = function() {
             effectDefinitions.push(effectDefinition);
         }
         return {
-            button: `[${targetEffects.name || initialName}](!ffe --${effectDefinitions.join(",")} --source ${characterName} ${linkDefinition} --edit ${0})`,
+            button: `[${targetEffects.name || initialName}](!ffe --${effectDefinitions.join(",")} ` +
+                `--source ${characterName} ${linkDefinition} ${expirationDefinition} --edit ${0})`,
             hasLink: hasLink,
             title: "Effect"
         };

@@ -246,6 +246,15 @@ const EffectUtilities = function() {
             .trim().toLowerCase();
     };
 
+    this.enrichEffect = function(effect) {
+        let adjustedName = this.searchableName(effect.specialType || effect.type);
+        if (adjustedName) {
+            effect.adjustedName = adjustedName;
+            effect.data = effectData.effects[adjustedName];
+        }
+        return effect;
+    };
+
     this.isEffectOfType = function(effect, type) {
         let fullType = effect.type.toLowerCase();
         return fullType.includes(type.toLowerCase());
@@ -461,6 +470,19 @@ const ModEngine = function(logger, character) {
         });
     };
 
+    this.getEffect = function(id, completion) {
+        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
+        let effects = Object.values(filteredAttributes.effects);
+        if (!effects || effects.length == 0) {
+            completion(null);
+            return;
+        }
+        if (effects.length > 1) {
+            this.logi("Unexpectedly found more than one effect");
+        }
+        completion(effectUtilities.enrichEffect(effects[0]));
+    };
+
     this.getSectionValues = function(sections, attributes, completion) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         let filteredAttributes = allAttributes.reduce(
@@ -532,19 +554,6 @@ const ModEngine = function(logger, character) {
     //#endregion
 
     //#region Helpers
-    this.getEffect = function(id, completion) {
-        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
-        let effects = Object.values(filteredAttributes.effects);
-        if (!effects || effects.length == 0) {
-            completion(null);
-            return;
-        }
-        if (effects.length > 1) {
-            this.logi("Unexpectedly found more than one effect");
-        }
-        completion(effects[0]);
-    };
-
     this.getFilteredAttributesAndEffects = function(attributeNames, effectIds = []) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         return allAttributes.reduce(
@@ -862,6 +871,17 @@ const TokenEngine = function(logger, token, character, cache) {
     this.getEffects = function(completion) {
         this.getAttrsAndEffects([], (_, effects) => {
             completion(effects);
+        });
+    };
+
+    this.getEffect = function(id, completion) {
+        this.getEffects(effects => {
+            let effect = effects.effects.find(effect => effect.id === id);
+            if (!effect) {
+                completion(null);
+                return;
+            }
+            completion(effect);
         });
     };
 
@@ -1292,6 +1312,10 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveDuplicates = function(state, effect) {
+        if (!state) {
+            return { result: true, summaries: [] };
+        }
+
         if (effect.data.duplicate === "block" && state.existingEffectTypes.includes(effect.adjustedName)) {
             this.engine().logd("Effect " + effect.name + " already exists, skipping");
             return { result: false, summaries: [] };
@@ -1333,6 +1357,14 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveSpecialEffects = function(state, id, effect, value) {
+        if (!state) {
+            return {
+                attributes: {},
+                summaries: [],
+                skip: false
+            };
+        }
+
         var attributes = {};
         var summaries = [];
         let skip = effect.data.expiry === "ephemeral";
@@ -1610,7 +1642,7 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.matchesCondition = function(state, effect) {
-        if (!state.dice || !effect.specification) {
+        if (!state || !state.dice || !effect.specification) {
             return true;
         }
 
@@ -1650,6 +1682,9 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.replacementEffect = function(state, effect) {
+        if (!state) {
+            return { effect: effect, valid: true };
+        }
         switch (effect.adjustedName) {
             case "knocked_out": {
                 if (state.existingEffects.isBrink) {
@@ -1990,10 +2025,7 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
         this.engine.logd("Slating effect for removal: " + effect.adjustedName);
         var summary = `Expired <b>${effect.data.name}</b>`;
         if (effect.data.maskedType === "gem" && effect.adjustedName !== "carbuncle") {
-            let addEffects = new AddEffects(this.engine, this.removeEffects);
-            let addState = state.effectState();
-            addEffects.addBySpecificationString(addState, ["carbuncle"]);
-            summary += `, activated <b>Carbuncle</b>`;
+            summary += this.addBaseCarbuncleEffect(state.effectState(), this.engine, this.removeEffects);
         }
         this.removeEffects.remove(effect);
         summary += this.removeLinkedEffectIfNeeded(effect);
@@ -2004,7 +2036,7 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
         if (!effect.linkedId || !effect.linkedType || !effect.linkedEffectId || !effect.linkedName) {
             return "";
         }
-        this.engine.logd("Removing linked effect on character/token " + effect.linkedType);
+        this.engine.logd("Removing linked effect on character/token");
         let targetCharacter;
         let targetToken;
         let name;
@@ -2024,8 +2056,22 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
 
         let engine = this.engineFactory(effect.linkedType, targetToken, targetCharacter);
         let removeEffects = new RemoveEffects(engine);
-        removeEffects.removeById(effect.linkedEffectId);
+        engine.getEffect(effect.linkedEffectId, effect => {
+            if (!effect) {
+                return;
+            }
+            removeEffects.remove(effect);
+            if (effect.data.maskedType === "gem") {
+                this.addBaseCarbuncleEffect(null, engine, removeEffects);
+            }
+        });
         return `, expired linked effect <b>${effect.linkedName}</b> on <b>${name}</b>`;
+    };
+
+    this.addBaseCarbuncleEffect = function(state, engine, removeEffects) {
+        let addEffects = new AddEffects(engine, removeEffects);
+        addEffects.addBySpecificationString(state, ["Carbuncle(1)"]);
+        return `, activated <b>Carbuncle</b>`;
     };
 
     this.updateIfApplicable = function(effect) {

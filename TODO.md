@@ -1,6 +1,4 @@
 FUNCTIONAL
-* Handle effect expiry on other characters' turns (NIN Mug effect, Carbuncle gem statuses)
-* (test) Handle expiration of gem effects => base carbuncle effect
 * Add auto-generated sheets for pets (SCH, SMN)
 
 FIX

@@ -83,6 +83,17 @@ const TokenEngine = function(logger, token, character, cache) {
         });
     };
 
+    this.getEffect = function(id, completion) {
+        this.getEffects(effects => {
+            let effect = effects.effects.find(effect => effect.id === id);
+            if (!effect) {
+                completion(null);
+                return;
+            }
+            completion(effect);
+        });
+    };
+
     this.getSectionValues = function(sections, attributes, completion) {
         this.modengine.getSectionValues(sections, attributes, completion);
     };

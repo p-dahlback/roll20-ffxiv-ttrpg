@@ -306,6 +306,10 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveDuplicates = function(state, effect) {
+        if (!state) {
+            return { result: true, summaries: [] };
+        }
+
         if (effect.data.duplicate === "block" && state.existingEffectTypes.includes(effect.adjustedName)) {
             this.engine().logd("Effect " + effect.name + " already exists, skipping");
             return { result: false, summaries: [] };
@@ -347,6 +351,14 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveSpecialEffects = function(state, id, effect, value) {
+        if (!state) {
+            return {
+                attributes: {},
+                summaries: [],
+                skip: false
+            };
+        }
+
         var attributes = {};
         var summaries = [];
         let skip = effect.data.expiry === "ephemeral";
@@ -624,7 +636,7 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.matchesCondition = function(state, effect) {
-        if (!state.dice || !effect.specification) {
+        if (!state || !state.dice || !effect.specification) {
             return true;
         }
 
@@ -664,6 +676,9 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.replacementEffect = function(state, effect) {
+        if (!state) {
+            return { effect: effect, valid: true };
+        }
         switch (effect.adjustedName) {
             case "knocked_out": {
                 if (state.existingEffects.isBrink) {

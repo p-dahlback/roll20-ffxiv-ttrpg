@@ -246,6 +246,15 @@ const EffectUtilities = function() {
             .trim().toLowerCase();
     };
 
+    this.enrichEffect = function(effect) {
+        let adjustedName = this.searchableName(effect.specialType || effect.type);
+        if (adjustedName) {
+            effect.adjustedName = adjustedName;
+            effect.data = effectData.effects[adjustedName];
+        }
+        return effect;
+    };
+
     this.isEffectOfType = function(effect, type) {
         let fullType = effect.type.toLowerCase();
         return fullType.includes(type.toLowerCase());
@@ -461,6 +470,19 @@ const ModEngine = function(logger, character) {
         });
     };
 
+    this.getEffect = function(id, completion) {
+        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
+        let effects = Object.values(filteredAttributes.effects);
+        if (!effects || effects.length == 0) {
+            completion(null);
+            return;
+        }
+        if (effects.length > 1) {
+            this.logi("Unexpectedly found more than one effect");
+        }
+        completion(effectUtilities.enrichEffect(effects[0]));
+    };
+
     this.getSectionValues = function(sections, attributes, completion) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         let filteredAttributes = allAttributes.reduce(
@@ -532,19 +554,6 @@ const ModEngine = function(logger, character) {
     //#endregion
 
     //#region Helpers
-    this.getEffect = function(id, completion) {
-        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
-        let effects = Object.values(filteredAttributes.effects);
-        if (!effects || effects.length == 0) {
-            completion(null);
-            return;
-        }
-        if (effects.length > 1) {
-            this.logi("Unexpectedly found more than one effect");
-        }
-        completion(effects[0]);
-    };
-
     this.getFilteredAttributesAndEffects = function(attributeNames, effectIds = []) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         return allAttributes.reduce(
@@ -862,6 +871,17 @@ const TokenEngine = function(logger, token, character, cache) {
     this.getEffects = function(completion) {
         this.getAttrsAndEffects([], (_, effects) => {
             completion(effects);
+        });
+    };
+
+    this.getEffect = function(id, completion) {
+        this.getEffects(effects => {
+            let effect = effects.effects.find(effect => effect.id === id);
+            if (!effect) {
+                completion(null);
+                return;
+            }
+            completion(effect);
         });
     };
 
@@ -1292,6 +1312,10 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveDuplicates = function(state, effect) {
+        if (!state) {
+            return { result: true, summaries: [] };
+        }
+
         if (effect.data.duplicate === "block" && state.existingEffectTypes.includes(effect.adjustedName)) {
             this.engine().logd("Effect " + effect.name + " already exists, skipping");
             return { result: false, summaries: [] };
@@ -1333,6 +1357,14 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.resolveSpecialEffects = function(state, id, effect, value) {
+        if (!state) {
+            return {
+                attributes: {},
+                summaries: [],
+                skip: false
+            };
+        }
+
         var attributes = {};
         var summaries = [];
         let skip = effect.data.expiry === "ephemeral";
@@ -1610,7 +1642,7 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.matchesCondition = function(state, effect) {
-        if (!state.dice || !effect.specification) {
+        if (!state || !state.dice || !effect.specification) {
             return true;
         }
 
@@ -1650,6 +1682,9 @@ const AddEffects = function(customEngine, customRemove) {
     };
 
     this.replacementEffect = function(state, effect) {
+        if (!state) {
+            return { effect: effect, valid: true };
+        }
         switch (effect.adjustedName) {
             case "knocked_out": {
                 if (state.existingEffects.isBrink) {
@@ -1985,6 +2020,7 @@ const AddEffectParser = function(msg) {
             effect.type = data.type;
             effect.statusType = data.statusType;
             effect.description = data.description;
+            effect.expiry = data.expiry;
             effects.push(effect);
         }
         return {
@@ -2037,7 +2073,7 @@ const AddEffectResolver = function(logger) {
                     let result = addHandler.add(state, [effect]);
                     if (result.addedIds && result.addedIds.length > 0) {
                         effect.id = result.addedIds[0];
-                        effect.fullId = `$repeating_effects_${effect.id}`;
+                        effect.fullId = `repeating_effects_${effect.id}`;
                         this.linkWithSourceEffectIfNeeded(character, engine, sheetType, effect);
                         summaries.push(`${result.summary} on <b>${character.get("name")}</b>`);
                     } else {
@@ -2055,6 +2091,10 @@ const AddEffectResolver = function(logger) {
 
     this.linkWithSourceEffectIfNeeded = function(character, engine, sheetType, effect) {
         if (!effect.source || effect.source === "Self") {
+            return;
+        }
+        if (!effect.fullId) {
+            engine.logi("Missing effect id!");
             return;
         }
         let filteredCharacters = findObjs({ _type: "character", name: effect.source });
@@ -2236,12 +2276,13 @@ const FFXIVAddEffect = (() => {
             `<li><code>--help</code> - displays this message in chat.</li>` +
             `<li><code>--clean</code> - cleans out the internal cache for token status markers.<li>` +
             `<li><code>--source {X}</code> - the name of the character that originated the effect, or "Self."</li>` +
-            `<li><code>--match {X}</code> - the id of a matching effect on the character that originated this effect. Used to link effects together between two characters./li>` +
-            `<li><code>--expire {X}</code> - when the effect should expire. <b>Default:</b><code>turn</code>. Valid values are:</li>` +
+            `<li><code>--match {X}</code> - the id of a matching effect on the character that originated this effect, or "true" if the mod should attempt to find the source effect itself. Used to link effects together between two characters./li>` +
+            `<li><code>--expire {X}</code> - when the effect should expire. <b>Default: Each effect has its own default, see README. Valid values are:</li>` +
             `<ul>` +
             `<li><code>encounterstart</code> - Start of an encounter</li>` +
             `<li><code>stepstart</code> - Start of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
             `<li><code>start</code> - Start of the character's turn</li>` +
+            `<li><code>sourceStart</code> - Start of the originating character's turn</li>` +
             `<li><code>turn</code> - End of the character's turn</li>` +
             `<li><code>turn2</code> - End of the character's next turn</li>` +
             `<li><code>step</code> - End of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
@@ -2253,6 +2294,7 @@ const FFXIVAddEffect = (() => {
             `<li><code>permanent</code> - Never expires</li>` +
             `<li><code>use</code> - On use</li>` +
             `<li><code>damage</code> - When the character receives damage</li>` +
+            `<li><code>refresh</code> - Doesn't expire, but refreshes the effect every turn</li>` +
             `</ul>` +
             `<li><code>--edit {X}</code> - whether the effect should be manually editable in the character sheet. 1 or on to enable editing, 0 or off to disable. <b>Default:</b> enabled.</li>` +
             `<li><code>--curable {X}</code> - if the effect can be removed by abilities like Esuna, or certain items. 1 or on to enable, 0 or off to disable. <b>Default:</b> disabled.</li>` +

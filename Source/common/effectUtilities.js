@@ -15,6 +15,15 @@ const EffectUtilities = function() {
             .trim().toLowerCase();
     };
 
+    this.enrichEffect = function(effect) {
+        let adjustedName = this.searchableName(effect.specialType || effect.type);
+        if (adjustedName) {
+            effect.adjustedName = adjustedName;
+            effect.data = effectData.effects[adjustedName];
+        }
+        return effect;
+    };
+
     this.isEffectOfType = function(effect, type) {
         let fullType = effect.type.toLowerCase();
         return fullType.includes(type.toLowerCase());

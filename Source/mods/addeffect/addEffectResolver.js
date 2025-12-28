@@ -42,7 +42,7 @@ const AddEffectResolver = function(logger) {
                     let result = addHandler.add(state, [effect]);
                     if (result.addedIds && result.addedIds.length > 0) {
                         effect.id = result.addedIds[0];
-                        effect.fullId = `$repeating_effects_${effect.id}`;
+                        effect.fullId = `repeating_effects_${effect.id}`;
                         this.linkWithSourceEffectIfNeeded(character, engine, sheetType, effect);
                         summaries.push(`${result.summary} on <b>${character.get("name")}</b>`);
                     } else {
@@ -60,6 +60,10 @@ const AddEffectResolver = function(logger) {
 
     this.linkWithSourceEffectIfNeeded = function(character, engine, sheetType, effect) {
         if (!effect.source || effect.source === "Self") {
+            return;
+        }
+        if (!effect.fullId) {
+            engine.logi("Missing effect id!");
             return;
         }
         let filteredCharacters = findObjs({ _type: "character", name: effect.source });

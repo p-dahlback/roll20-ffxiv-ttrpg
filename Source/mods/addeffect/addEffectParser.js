@@ -64,6 +64,7 @@ const AddEffectParser = function(msg) {
             effect.type = data.type;
             effect.statusType = data.statusType;
             effect.description = data.description;
+            effect.expiry = data.expiry;
             effects.push(effect);
         }
         return {

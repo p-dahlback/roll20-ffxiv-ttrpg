@@ -123,12 +123,13 @@ const FFXIVAddEffect = (() => {
             `<li><code>--help</code> - displays this message in chat.</li>` +
             `<li><code>--clean</code> - cleans out the internal cache for token status markers.<li>` +
             `<li><code>--source {X}</code> - the name of the character that originated the effect, or "Self."</li>` +
-            `<li><code>--match {X}</code> - the id of a matching effect on the character that originated this effect. Used to link effects together between two characters./li>` +
-            `<li><code>--expire {X}</code> - when the effect should expire. <b>Default:</b><code>turn</code>. Valid values are:</li>` +
+            `<li><code>--match {X}</code> - the id of a matching effect on the character that originated this effect, or "true" if the mod should attempt to find the source effect itself. Used to link effects together between two characters./li>` +
+            `<li><code>--expire {X}</code> - when the effect should expire. <b>Default: Each effect has its own default, see README. Valid values are:</li>` +
             `<ul>` +
             `<li><code>encounterstart</code> - Start of an encounter</li>` +
             `<li><code>stepstart</code> - Start of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
             `<li><code>start</code> - Start of the character's turn</li>` +
+            `<li><code>sourceStart</code> - Start of the originating character's turn</li>` +
             `<li><code>turn</code> - End of the character's turn</li>` +
             `<li><code>turn2</code> - End of the character's next turn</li>` +
             `<li><code>step</code> - End of the [Adventurer Step]/[Enemy step], depending on the character's affiliation</li>` +
@@ -140,6 +141,7 @@ const FFXIVAddEffect = (() => {
             `<li><code>permanent</code> - Never expires</li>` +
             `<li><code>use</code> - On use</li>` +
             `<li><code>damage</code> - When the character receives damage</li>` +
+            `<li><code>refresh</code> - Doesn't expire, but refreshes the effect every turn</li>` +
             `</ul>` +
             `<li><code>--edit {X}</code> - whether the effect should be manually editable in the character sheet. 1 or on to enable editing, 0 or off to disable. <b>Default:</b> enabled.</li>` +
             `<li><code>--curable {X}</code> - if the effect can be removed by abilities like Esuna, or certain items. 1 or on to enable, 0 or off to disable. <b>Default:</b> disabled.</li>` +

@@ -69,10 +69,7 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
         this.engine.logd("Slating effect for removal: " + effect.adjustedName);
         var summary = `Expired <b>${effect.data.name}</b>`;
         if (effect.data.maskedType === "gem" && effect.adjustedName !== "carbuncle") {
-            let addEffects = new AddEffects(this.engine, this.removeEffects);
-            let addState = state.effectState();
-            addEffects.addBySpecificationString(addState, ["carbuncle"]);
-            summary += `, activated <b>Carbuncle</b>`;
+            summary += this.addBaseCarbuncleEffect(state.effectState(), this.engine, this.removeEffects);
         }
         this.removeEffects.remove(effect);
         summary += this.removeLinkedEffectIfNeeded(effect);
@@ -103,8 +100,22 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
 
         let engine = this.engineFactory(effect.linkedType, targetToken, targetCharacter);
         let removeEffects = new RemoveEffects(engine);
-        removeEffects.removeById(effect.linkedEffectId);
+        engine.getEffect(effect.linkedEffectId, effect => {
+            if (!effect) {
+                return;
+            }
+            removeEffects.remove(effect);
+            if (effect.data.maskedType === "gem") {
+                this.addBaseCarbuncleEffect(null, engine, removeEffects);
+            }
+        });
         return `, expired linked effect <b>${effect.linkedName}</b> on <b>${name}</b>`;
+    };
+
+    this.addBaseCarbuncleEffect = function(state, engine, removeEffects) {
+        let addEffects = new AddEffects(engine, removeEffects);
+        addEffects.addBySpecificationString(state, ["Carbuncle(1)"]);
+        return `, activated <b>Carbuncle</b>`;
     };
 
     this.updateIfApplicable = function(effect) {

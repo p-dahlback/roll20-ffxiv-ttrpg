@@ -102,6 +102,19 @@ const ModEngine = function(logger, character) {
         });
     };
 
+    this.getEffect = function(id, completion) {
+        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
+        let effects = Object.values(filteredAttributes.effects);
+        if (!effects || effects.length == 0) {
+            completion(null);
+            return;
+        }
+        if (effects.length > 1) {
+            this.logi("Unexpectedly found more than one effect");
+        }
+        completion(effectUtilities.enrichEffect(effects[0]));
+    };
+
     this.getSectionValues = function(sections, attributes, completion) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         let filteredAttributes = allAttributes.reduce(
@@ -173,19 +186,6 @@ const ModEngine = function(logger, character) {
     //#endregion
 
     //#region Helpers
-    this.getEffect = function(id, completion) {
-        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
-        let effects = Object.values(filteredAttributes.effects);
-        if (!effects || effects.length == 0) {
-            completion(null);
-            return;
-        }
-        if (effects.length > 1) {
-            this.logi("Unexpectedly found more than one effect");
-        }
-        completion(effects[0]);
-    };
-
     this.getFilteredAttributesAndEffects = function(attributeNames, effectIds = []) {
         let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
         return allAttributes.reduce(

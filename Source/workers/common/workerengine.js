@@ -47,6 +47,32 @@ const WorkerEngine = function(logger) {
         });
     };
 
+    this.getEffect = function(id, completion) {
+        const attributes = this.effectAttributes(id);
+        getAttrs(attributes, values => {
+            var sortedValues = {};
+            const effectKeys = Object.keys(values);
+            for (let attribute of effectKeys) {
+                let components = attribute.split("_");
+                let id = components[2];
+                let attributeName = components[3];
+                if (!sortedValues[id]) {
+                    sortedValues[id] = {
+                        id: id,
+                        fullId: `repeating_effects_${id}`
+                    };
+                }
+                sortedValues[id][attributeName] = values[attribute];
+            }
+            let effect = sortedValues[id];
+            if (!effect) {
+                completion(null);
+                return;
+            }
+            completion(effectUtilities.enrichEffect(effect));
+        });
+    };
+
     this.getSectionValues = function(sections, attributes, completion) {
         this.allSectionIDs(sections, sectionedIds => {
             let fullAttributes = sectionedIds.flatMap(sectionedId => {
