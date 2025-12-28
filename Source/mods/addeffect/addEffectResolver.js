@@ -1,7 +1,8 @@
 
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-const unpackAttribute = {}; const ModEngine = {}; const TokenEngine = {};
+const unpackAttribute = {}; const setAttribute = {}; const ModEngine = {}; const TokenEngine = {};
+const effectUtilities = {}; const effectData = {};
 const RemoveEffects = {}; const AddEffects = {}; const EffectState = {};
 /*build:end*/
 
@@ -38,9 +39,15 @@ const AddEffectResolver = function(logger) {
                         null, 
                         effects
                     );
-                    let summary = addHandler.add(state, [effect]);
-                    this.linkWithSourceEffectIfNeeded(character, engine, sheetType, effect);
-                    summaries.push(`${summary} on <b>${character.get("name")}</b>`);
+                    let result = addHandler.add(state, [effect]);
+                    if (result.addedIds && result.addedIds.length > 0) {
+                        effect.id = result.addedIds[0];
+                        effect.fullId = `$repeating_effects_${effect.id}`;
+                        this.linkWithSourceEffectIfNeeded(character, engine, sheetType, effect);
+                        summaries.push(`${result.summary} on <b>${character.get("name")}</b>`);
+                    } else {
+                        engine.logi("Failed to add effect " + JSON.stringify(effect));
+                    }
                 });
             }
         }
@@ -55,33 +62,63 @@ const AddEffectResolver = function(logger) {
         if (!effect.source || effect.source === "Self") {
             return;
         }
-        let sourceCharacter = findObjs({ _type: "character", name: effect.source });
-        if (!sourceCharacter) {
+        let filteredCharacters = findObjs({ _type: "character", name: effect.source });
+        if (!filteredCharacters || filteredCharacters.length < 1) {
             return;
         }
-        if (!effect.match) {
+        let sourceCharacter = filteredCharacters[0];
+        if (!effect.match || effect.match == "false") {
             return;
         }
         this.logger.d("Linking effect to source character");
         let id = sourceCharacter.get("id");
         var attributes = {};
-        attributes[`${effect.fullId}_sourceId`] = id;
-        attributes[`${effect.fullId}_sourceEffectId`] = effect.match;
+        attributes[`${effect.fullId}_linkedId`] = id;
+        let sourceEffectId;
+        if (effect.match == "true") {
+            sourceEffectId = unpackAttribute(sourceCharacter, "addedEffectId", "").get("current");
+        } else {
+            sourceEffectId = effect.match;
+        }
+        if (!sourceEffectId) {
+            engine.logi("Missing source effect id!");
+            return;
+        }
+        attributes[`${effect.fullId}_linkedEffectId`] = sourceEffectId;
+        attributes[`${effect.fullId}_linkedType`] = unpackAttribute(sourceCharacter, "sheet_type").get("current");
+        let sourceData = this.sourceEffectData(sourceEffectId, sourceCharacter);
+        if (sourceData) {
+            attributes[`${effect.fullId}_linkedName`] = sourceData.name;
+        } else {
+            attributes[`${effect.fullId}_linkedName`] = effect.data.name;
+        }
+
         engine.set(attributes);
 
-        this.linkEffectToSourceCharacter(character, sourceCharacter, sheetType, effect);
+        this.linkSourceToTargetCharacter(character, sourceCharacter, sourceEffectId, sheetType, effect);
     };
 
-    this.linkEffectToSourceCharacter = function(character, sourceCharacter, sheetType, effect) {
-        this.logger.d("Linking source character back to effect");
-        let sourceEffectId = effect.match;
-        let targetId = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_targetId`);
-        let targetEffectId = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_targetEffectId`);
-        let targetType = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_targetType`);
+    this.sourceEffectData = function(sourceEffectId, sourceCharacter) {
+        let type = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_type`).get("current");
+        let specialType = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_specialType`).get("current");
+        if (!type && !specialType) {
+            return null;
+        }
+        let adjustedName = effectUtilities.searchableName(specialType || type);
+        return effectData.effects[adjustedName];
+    };
 
-        targetId.set("current", character.get("id"));
-        targetEffectId.set("current", effect.id);
-        targetType.set("current", sheetType);
+    this.linkSourceToTargetCharacter = function(character, sourceCharacter, sourceEffectId, sheetType, effect) {
+        this.logger.d("Linking source character back to effect");
+        let linkedId = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedId`);
+        let linkedEffectId = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedEffectId`);
+        let linkedType = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedType`);
+        let linkedName = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedName`);
+
+        setAttribute(linkedId, "current", character.get("id"));
+        setAttribute(linkedEffectId, "current", effect.id);
+        setAttribute(linkedType, "current", sheetType);
+        setAttribute(linkedName, "current", effect.data.name);
     };
 };
 

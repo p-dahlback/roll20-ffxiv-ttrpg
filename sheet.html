@@ -470,6 +470,7 @@
                                 <option value="stepstart">Start of the [Adventurer Step]</option>
                                 <option value="start">Start of your turn</option>
                                 <option value="start2">Start of your turn next round</option>
+                                <option value="sourceStart">Start of the originator's turn</option>
                                 <option value="turn">End of your turn</option>
                                 <option value="step">End of the [Adventurer Step]</option>
                                 <option value="round">End of this round</option>
@@ -4728,146 +4729,6 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file items
 
 const itemsImports = new (function() {
@@ -6040,26 +5901,6 @@ this.export.damageModifiers = damageModifiers;
 // Build (version 1.0.0): Source/workers/main/rolls/abilityRolls.js
 
 
-const TargetEffects = function(source) {
-    let match  = source.match(/^(?:([-'\s\w]+):)?((?:[-'\s\w()]+,)*)([-'\s\w()]+)$/);
-    if (match && match.length > 1) {
-        this.name = match[1];
-    } else {
-        this.name = null;
-        this.effects = [];
-        return;
-    }
-
-    this.effects = [];
-    if (match.length > 2 && match[2]) {
-        let commaSeparatedEffects = match[2].slice(0, -1);
-        this.effects = this.effects.concat(commaSeparatedEffects.split(",").map(value => value.trim()));
-    }
-    if (match.length > 3 && match[3]) {
-        this.effects = this.effects.concat(match[3].trim());
-    }
-};
-
 const DamageRoll = function({
     title, type, damageType, baseRoll, directHitRoll="", hitRoll="", conditionalValue="", condition="", combos="", cost=0, resource="", 
     selfEffects="", targetEffects="", restoration="", monkForm="", useRollBonus=false, whisperPrefix=""
@@ -6256,6 +6097,7 @@ const AbilityRolls = function() {
             var attributes = {};
             attributes[`repeating_${section}_${rowId}_currentRoll`] = "";
             attributes[`repeating_${section}_${rowId}_currentMonkForm`] = effects.monkForm ? effects.monkForm.specialType : "";
+            attributes[`addedEffectId`] = "";
             setAttrs(attributes);
 
             let whisper = values.whisper;
@@ -6348,16 +6190,7 @@ const AbilityRolls = function() {
             engine.logd("No reason to roll damage");
             return;
         }
-
-        var targetEffectTitle = "";
-        let targetEffectButton = "";
-        if (modifiedRoll.targetEffects) {
-            let calculatedEffects = new TargetEffects(modifiedRoll.targetEffects);
-            targetEffectButton = this.buttonForTargetEffects(calculatedEffects, values.character_name);
-            if (targetEffectButton) {
-                targetEffectTitle = "Effect";
-            }
-        }
+        let targetEffects = targetEffectResolver.getButton(modifiedRoll.targetEffects, values.character_name);
 
         // Roll damage
         let rollTemplate = `${modifiedRoll.whisperPrefix}&{template:damage} {{title=${modifiedRoll.title}}} ` + 
@@ -6365,7 +6198,7 @@ const AbilityRolls = function() {
             `{{directHitTitle=${modifiedRoll.directHitTitle()}}} {{directHit=${modifiedRoll.directHitDice()}}} ` +
             `{{totalTitle=${modifiedRoll.totalTitle()}}} {{total=[[0]]}}` +
             `{{comboTitle=${comboTitle}}} {{button=${comboButtons}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
-            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
+            `{{targetEffectTitle=${targetEffects.title}}} {{targetEffects=${targetEffects.button}}}`;
         engine.logd(rollTemplate);
         startRoll(rollTemplate, results => {
             const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
@@ -6385,12 +6218,19 @@ const AbilityRolls = function() {
                 }, 
                 effects
             );
-            let effectSummary = addEffects.addBySpecificationString(state, modifiedRoll.selfEffects.split(","));
-            let fullSummary = modifierSummaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
+            let effectResult = addEffects.addBySpecificationString(state, modifiedRoll.selfEffects.split(","));
+            let allSummaries = modifierSummaries.concat([computedResults.summary, consumedEffectSummary, effectResult.summary]);
+            let fullSummary = allSummaries.filter(element => element).join(", ");
 
             if (abilityId) {
-                var attributes = {};
+                let attributes = {};
                 attributes[`repeating_${abilityId.section}_${abilityId.rowId}_currentCriticalMultiplier`] = 1;
+                setAttrs(attributes);
+            }
+            if (targetEffects.hasLink && effectResult.addedIds.length > 0) {
+                engine.logd("Preparing to link target effect");
+                let attributes = {};
+                attributes[`addedEffectId`] = effectResult.addedIds[0];
                 setAttrs(attributes);
             }
 
@@ -6480,20 +6320,70 @@ const AbilityRolls = function() {
         });
     };
 
-    this.buttonForTargetEffects = function(effects, characterName) {
-        if (effects.effects.length === 0) {
-            return null;
+    this.stringWithTitle = function(title, value) {
+        if (value) {
+            return `${title} ${value}`;
+        }
+        return "";
+    };
+};
+
+const abilityRolls = new AbilityRolls();
+this.export.AbilityRolls = AbilityRolls;
+this.export.DamageRoll = DamageRoll;
+this.export.abilityRolls = abilityRolls;
+
+// Build (version 1.0.0): Source/workers/main/rolls/targetEffectResolver.js
+
+
+const TargetEffects = function(source) {
+    let match  = source.match(/^(?:([-'\s\w]+):)?((?:[-'\s\w()]+,)*)([-'\s\w()]+)$/);
+    if (match && match.length > 1) {
+        this.name = match[1];
+    } else {
+        this.name = null;
+        this.effects = [];
+        return;
+    }
+
+    this.effects = [];
+    if (match.length > 2 && match[2]) {
+        let commaSeparatedEffects = match[2].slice(0, -1);
+        this.effects = this.effects.concat(commaSeparatedEffects.split(",").map(value => value.trim()));
+    }
+    if (match.length > 3 && match[3]) {
+        this.effects = this.effects.concat(match[3].trim());
+    }
+};
+
+const TargetEffectResolver = function() {
+
+    this.getButton = function(effects, characterName) {
+        let targetEffects = new TargetEffects(effects);
+        if (targetEffects.effects.length === 0) {
+            return {
+                button: "",
+                hasLink: false,
+                title: ""
+            };
         }
         var effectDefinitions = [];
 
-        engine.logd("Preparing target effects: " + JSON.stringify(effects));
+        engine.logd("Preparing target effects: " + JSON.stringify(targetEffects));
         let initialName = "";
-        for (let effect of effects.effects) {
+        let hasLink = false;
+        let linkDefinition = "";
+        for (let effect of targetEffects.effects) {
             let adjustedEffect = effectUtilities.searchableName(effect.trim());
             let data = effectData.effects[adjustedEffect];
             if (!data) {
                 engine.logi("Unhandled effect " + adjustedEffect);
                 continue;
+            }
+
+            if (data.expiry === "sourceStart") {
+                hasLink = true;
+                linkDefinition = "--match true";
             }
 
             var value = "";
@@ -6510,21 +6400,17 @@ const AbilityRolls = function() {
             let effectDefinition = `${effectName}${valueDefinition}`;
             effectDefinitions.push(effectDefinition);
         }
-        return `[${effects.name || initialName}](!ffe --${effectDefinitions.join(",")} --source ${characterName} --edit ${0})`;
-    };
-
-    this.stringWithTitle = function(title, value) {
-        if (value) {
-            return `${title} ${value}`;
-        }
-        return "";
+        return {
+            button: `[${targetEffects.name || initialName}](!ffe --${effectDefinitions.join(",")} --source ${characterName} ${linkDefinition} --edit ${0})`,
+            hasLink: hasLink,
+            title: "Effect"
+        };
     };
 };
 
-const abilityRolls = new AbilityRolls();
-this.export.AbilityRolls = AbilityRolls;
-this.export.DamageRoll = DamageRoll;
-this.export.abilityRolls = abilityRolls;
+const targetEffectResolver = new TargetEffectResolver();
+this.export.TargetEffectResolver = TargetEffectResolver;
+this.export.targetEffectResolver = targetEffectResolver;
 
 // Build (version 1.0.0): Source/workers/main/rolls/turnorder.js
 
@@ -6863,7 +6749,7 @@ const EffectData = function() {
         dot: { matches: ["dot"], type: "dot(x)", maskedType: "dot(x)", statusType: "Enfeeblement", marker: "dot", name: "DOT (X)", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         elemental_veil: { matches: ["eveil", "eveil1", "eveili", "eveil 1", "eveil i", "elemental veil", "elementail veil 1", "elemental veil i"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
         elemental_veil_ii: { matches: ["eveil2", "eveilii", "eveil 2", "eveil ii", "elemental veil 2", "elemental veil ii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil II", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
-        emerald: { matches: ["emerald", "em"], type: "special", maskedType: "gem", specialType: "Emerald", name: "Emerald", marker: "emerald", statusType: "Enhancement", expiry: "start", duplicate: "replace",description: "Your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1." },
+        emerald: { matches: ["emerald", "em"], type: "special", maskedType: "gem", specialType: "Emerald", name: "Emerald", marker: "emerald", statusType: "Enhancement", expiry: "sourceStart", duplicate: "replace",description: "Your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1." },
         enmity: { matches: ["enmity"], type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", marker: "enmity", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
         feint: { matches: ["feint"], type: "special", maskedType: "ddown", statusType: "Enfeeblement", specialType: "Feint", marker: "feint", name: "Feint", expiry: "turn", description: "Reduces the damage dealt by your abilities." },
         fight_or_flight: { matches: ["fflight", "fight or flight"], type: "special", maskedType: "advantage", specialType: "Fight or Flight", statusType: "Enhancement", name: "Fight or Flight", expiry: "turn", duplicate: "block", description: "Grants one advantage die on your next ability check this turn." },
@@ -6885,7 +6771,7 @@ const EffectData = function() {
         mana_conduit: { matches: ["mconduit", "mana conduit"], type: "special", maskedType: "augment", specialType: "Mana Conduit", statusType: "Enhancement", name: "Mana Conduit", expiry: "end", duplicate: "block", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
         masterwork_ornamentation: { matches: ["mwork", "masterwork", "ornament", "ornamentation", "masterwork ornamentation"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
         mug: { matches: ["mug", "mugging"], type: "special", maskedType: "matched", matchingType: "mugged", specialType: "Mug", name: "Mug", statusType: "Enhancement", expiry: "start", duplicate: "block", description: "Increases the damage the target takes from abilities by 1." },
-        mugged: { matches: ["mug", "mugging"], type: "special", specialType: "Mugged", name: "Mugged", marker: "mugged", statusType: "Enfeeblement", expiry: "encounter", description: "Increases the damage you take from abilities by 1 until the character who inflicted this status starts their next turn." },
+        mugged: { matches: ["mugged"], type: "special", specialType: "Mugged", name: "Mugged", marker: "mugged", statusType: "Enfeeblement", expiry: "sourceStart", description: "Increases the damage you take from abilities by 1 until the character who inflicted this status starts their next turn." },
         ninjutsu_cooldown: { matches: ["ninjutsu cooldown", "ncooldown", "ninjutsu"], type: "special", specialType: "Ninjutsu Cooldown", name: "Ninjutsu Cooldown", statusType: "Enhancement", expiry: "turn2", duplicate: "replace", description: "You cannot use Ninjutsu abilities. Ninjutsu Cooldown cannot be removed by effects that remove enfeeblements." },
         opo_opo_form: { matches: ["opo-opo form", "opo", "opo form", "opo opo form", "oform", "monk1", "m1"], type: "special", maskedType: "ready(x)", specialType: "Opo-Opo Form", statusType: "Enhancement", name: "Opo-Opo Form", expiry: "turn2", duplicate: "replace", description: "Enhances Bootshine and Dragon Kick." },
         overheated: { matches: ["overheated", "overheat", "heat"], type: "special", specialType: "Overheated", name: "Overheated", statusType: "Enhancement", expiry: "start", duplicate: "block", description: "While under the effect of Overheated, use the lower of the target's Defense or Magic Defense as the CR for your ability checks." },
@@ -6905,7 +6791,7 @@ const EffectData = function() {
         restore: { matches: ["restore"], type: "restore(x)", maskedType: "restore(x)", statusType: "Enhancement", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
         restore_magic: { matches: ["restorem", "restore magic"], type: "special", specialType: "Restore Magic", statusType: "Enhancement", name: "Restore Magic", expiry: "ephemeral" },
         roll: { matches: ["roll", "roll up"], type: "roll(x)", maskedType: "roll(x)", statusType: "Enhancement", name: "Increment Ability Roll (X)", expiry: "use", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
-        ruby: { matches: ["ruby"], type: "special", maskedType: "gem", specialType: "Ruby", name: "Ruby", statusType: "Enhancement", expiry: "start", duplicate: "replace", description: "Your gem abilities become fire-aspected and deal an additional 1d6 damage. When your pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn." },
+        ruby: { matches: ["ruby"], type: "special", maskedType: "gem", specialType: "Ruby", name: "Ruby", statusType: "Enhancement", expiry: "sourceStart", duplicate: "replace", description: "Your gem abilities become fire-aspected and deal an additional 1d6 damage. When your pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn." },
         silence: { matches: ["silence"], type: "silence", maskedType: "silence", statusType: "Enfeeblement", marker: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block", description: "You cannot use invoked abilities." },
         sleep: { matches: ["sleep"], type: "sleep", maskedType: "sleep", statusType: "Enfeeblement", marker: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block", description: "You incur a -3 penalty on all checks. Sleep is removed when you take damage.\n\nCharacters may use a Primary action to wake a Sleeping character in an adjacent square." },
         slow: { matches: ["slow"], type: "slow", maskedType: "slow", statusType: "Enfeeblement", marker: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to your Speed.\n\nYou incur a -2 penalty on all checks." },
@@ -6917,7 +6803,7 @@ const EffectData = function() {
         thrill_of_battle: { matches: ["thrill", "tbattle", "thrill of battle"], type: "special", specialType: "Thrill of Battle", statusType: "Enhancement", name: "Thrill of Battle", expiry: "ephemeral", duplicate: "allow" },
         thunder: { matches: ["thunder"], type: "special", maskedType: "dot(x)", specialType: "Thunder", statusType: "Enfeeblement", marker: "thunder", name: "Thunder", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         thunderhead_ready: { matches: ["tready", "thunderhead", "thunderhead ready"], type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", statusType: "Enhancement", name: "Thunderhead Ready", expiry: "use", duplicate: "block", description: "Enables one use of a Lightning-aspected ability, such as Thunder or Thunder II." },
-        topaz: { matches: ["topaz"], type: "special", maskedType: "gem", specialType: "Topaz", name: "Topaz", statusType: "Enhancement", expiry: "start", duplicate: "replace", description: "Your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities." },
+        topaz: { matches: ["topaz"], type: "special", maskedType: "gem", specialType: "Topaz", name: "Topaz", statusType: "Enhancement", expiry: "sourceStart", duplicate: "replace", description: "Your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities." },
         umbral_ice: { matches: ["uice", "umbral ice"], type: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
         venomous_bite: { matches: ["venom", "vbite", "wbite", "windbite", "venomous bite"], type: "special", specialType: "Venomous Bite", maskedType:"dot(x)", marker: "venomous-bite", statusType: "enfeeblement", name: "Venomous Bite", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         warding_talisman: { matches: ["ward", "talisman", "wtalisman", "warding talisman"], type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "permanent", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
@@ -6931,6 +6817,7 @@ const EffectData = function() {
         stepstart: "Start of the [Adventurer Step]",
         start: "Start of your turn",
         start2: "Start of your turn next round",
+        sourceStart: "Start of the originator's turn",
         turn: "End of your turn",
         turn2: "End of your next turn",
         step: "End of the [Adventurer Step]",
@@ -7028,6 +6915,7 @@ this.export.effectData = effectData;
 const WorkerEngine = function(logger) {
     this.logger = logger;
 
+    //#region Interface
     this.set = function(attributes) {
         setAttrs(attributes);
     };
@@ -7038,19 +6926,7 @@ const WorkerEngine = function(logger) {
 
     this.getAttrsAndEffects = function(bonusAttributes, completion) {
         getSectionIDs("repeating_effects", ids => {
-            const attributes = ids.flatMap((element) => [
-                `repeating_effects_${element}_type`,
-                `repeating_effects_${element}_specialType`,
-                `repeating_effects_${element}_statusType`,
-                `repeating_effects_${element}_value`,
-                `repeating_effects_${element}_expiry`,
-                `repeating_effects_${element}_source`,
-                `repeating_effects_${element}_curable`,
-                `repeating_effects_${element}_description`,
-                `repeating_effects_${element}_attribute`,
-                `repeating_effects_${element}_attributeValue`,
-                `repeating_effects_${element}_conditionalValue`
-            ]);
+            const attributes = ids.flatMap((element) => this.effectAttributes(element));
             getAttrs(attributes.concat(bonusAttributes), values => {
                 var sortedValues = {};
                 const effectKeys = Object.keys(values).filter((key) => key.includes("repeating_effects"));
@@ -7111,6 +6987,10 @@ const WorkerEngine = function(logger) {
         removeRepeatingRow(object.fullId);
     };
 
+    this.removeEffectById = function(id) {
+        removeRepeatingRow(`repeating_effects_${id}`);
+    };
+
     this.generateId = function() {
         return generateRowID();
     };
@@ -7142,6 +7022,28 @@ const WorkerEngine = function(logger) {
 
         getSectionIDs(sections[0], recursionBlock);
     };
+    //#endregion
+
+    //#region Helpers
+    this.effectAttributes = function(id) {
+        return [
+            `repeating_effects_${id}_type`,
+            `repeating_effects_${id}_specialType`,
+            `repeating_effects_${id}_statusType`,
+            `repeating_effects_${id}_value`,
+            `repeating_effects_${id}_expiry`,
+            `repeating_effects_${id}_source`,
+            `repeating_effects_${id}_curable`,
+            `repeating_effects_${id}_description`,
+            `repeating_effects_${id}_attribute`,
+            `repeating_effects_${id}_attributeValue`,
+            `repeating_effects_${id}_conditionalValue`,
+            `repeating_effects_${id}_linkedId`,
+            `repeating_effects_${id}_linkedType`,
+            `repeating_effects_${id}_linkedEffectId`
+        ];
+    };
+    ///#endregion
 };
 
 const engine = new WorkerEngine(new Logger(workerName, true));
@@ -7200,6 +7102,7 @@ const AddEffects = function(customEngine, customRemove) {
         var summaries = [];
 
         this.engine().logd("Adding effects");
+        var effectIds = [];
         for (let effect of effects) {
             if (!effect || !effect.adjustedName) {
                 continue;
@@ -7222,6 +7125,7 @@ const AddEffects = function(customEngine, customRemove) {
             }
             let duplicatesResult = this.resolveDuplicates(state, adjustedEffect);
             if (!duplicatesResult.result) {
+                this.engine().logd("Skipping effect due to duplicate");
                 continue;
             }
             summaries = summaries.concat(duplicatesResult.summaries);
@@ -7273,6 +7177,7 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_repeatingExpandItem`] = "on";
             attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
+            effectIds.push(initValues.id);
 
             if (duplicatesResult.summaries.length === 0) {
                 summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
@@ -7281,7 +7186,10 @@ const AddEffects = function(customEngine, customRemove) {
         if (Object.keys(attributes).length > 0) {
             this.engine().set(attributes);
         }
-        return summaries.join(", ");
+        return {
+            addedIds: effectIds,
+            summary: summaries.join(", ")
+        };
     };
 
     this.resolveAttributes = function(id, effectName, value) {
@@ -7511,7 +7419,7 @@ const AddEffects = function(customEngine, customRemove) {
         this.resolveAbilities(effect.adjustedName);
         this.resolveAttributes(id, effect.adjustedName, value);
         switch (effect.adjustedName) {
-            case "astral_fire":
+            case "astral_fire": {
                 // Clear MP recovery
                 attributes.mpRecoveryBlock = "on";
 
@@ -7520,8 +7428,10 @@ const AddEffects = function(customEngine, customRemove) {
                     summaries.push("Removed Umbral Ice");
                     this.engine().remove(state.existingEffects.umbralIce);
                 }
-                summaries.push(this.addBySpecificationString(state, ["Thunderhead Ready"]));
+                let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
+                summaries.push(result.summary);
                 break;
+            }
             case "barrier": {
                 let barrierValue = Math.max(parseInt(state.barrierPoints), parseInt(value));
                 this.engine().set({
@@ -7672,7 +7582,8 @@ const AddEffects = function(customEngine, customRemove) {
                     data: data
                 };
                 turnBasedAdvantage.icon = effectData.icon(turnBasedAdvantage);
-                summaries.push(this.add(state, [turnBasedAdvantage]));
+                let result = this.add(state, [turnBasedAdvantage]);
+                summaries.push(result);
                 break;
             }
             case "lucid_dreaming":
@@ -7681,8 +7592,9 @@ const AddEffects = function(customEngine, customRemove) {
             case "raise": {
                 // Add/upgrade weak status and add transcendent
                 let weakness = state.existingEffects.isWeak ? "brink" : "weak";
-                summaries.push(this.addBySpecificationString(state, ["transcendent"]));
-                summaries.push(this.addBySpecificationString(state, [weakness]));
+                let transcendentResult = this.addBySpecificationString(state, ["transcendent"]);
+                let weaknessResult = this.addBySpecificationString(state, [weakness]);
+                summaries.push(...[transcendentResult.summary, weaknessResult.summary]);
                 break;
             }
             case "restore": {
@@ -7757,7 +7669,7 @@ const AddEffects = function(customEngine, customRemove) {
                 }
                 break;
             }
-            case "umbral_ice":
+            case "umbral_ice": {
                 if (state.existingEffects.astralFire) {
                     summaries.push("Removed Astral Fire");
                     this.engine().remove(state.existingEffects.astralFire);
@@ -7765,8 +7677,10 @@ const AddEffects = function(customEngine, customRemove) {
                     // Reset MP recovery
                     attributes.mpRecoveryBlock = "off";
                 }
-                summaries.push(this.addBySpecificationString(state, ["Thunderhead Ready"]));
+                let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
+                summaries.push(result.summary);
                 break;
+            }
             default:
                 break;
         }
@@ -7885,6 +7799,10 @@ const RemoveEffects = function(customEngine) {
         this.engine().remove(effect);
         this.resetSpecialEffects(adjustedName);
         this.resetAttributeChanges(adjustedName, effect.attribute, effect.attributeValue);
+    };
+
+    this.removeById = function(id) {
+        this.engine().removeEffectById(id);
     };
 
     this.removeAll = function(names, skipId) {
@@ -9483,6 +9401,146 @@ on("sheet:opened", () => {
             resource: values.resource ?? "",
             resource2: values.resource2 ?? "none"
         });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
     });
 });
 

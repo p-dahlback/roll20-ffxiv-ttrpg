@@ -42,6 +42,7 @@ const ModEngine = function(logger, character) {
         logger.i("Character must be specified for mods");
     }
 
+    //#region Interface
     this.set = function(attributes) {
         for (let attribute of Object.entries(attributes)) {
             let name = attribute[0];
@@ -90,42 +91,15 @@ const ModEngine = function(logger, character) {
     };
 
     this.getAttrsAndEffects = function(attributes, completion) {
-        let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
-        let filteredAttributes = allAttributes.reduce(
-            (accumulator, currentValue) => {
-                let name = currentValue.get("name");
-                let match = currentValue.get("name").match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
-                if (match) {
-                    let id = match[1];
-                    let effectAttributeName = match[2];
-                    let value = currentValue.get("current");
-                    let max = currentValue.get("max");
-                    if (!accumulator.effects[id]) {
-                        accumulator.effects[id] = {
-                            id: id,
-                            fullId: `repeating_effects_${id}`,
-                            _vars: []
-                        };
-                    }
-                    accumulator.effects[id][effectAttributeName] = value;
-                    if (max) {
-                        accumulator.effects[id][`${effectAttributeName}_max`] = max;
-                    }
-                    accumulator.effects[id]._vars.push(currentValue);
-                } else if (attributes.includes(name)) {
-                    let value = currentValue.get("current");
-                    let max = currentValue.get("max");
-                    accumulator.values[name] = value;
-                    if (max) {
-                        accumulator.values[`${name}_max`] = max;
-                    }
-                }
-                return accumulator;
-            },
-            { effects: {}, values: {} }
-        );
+        let filteredAttributes = this.getFilteredAttributesAndEffects(attributes);
         let effects = Object.values(filteredAttributes.effects);
         completion(filteredAttributes.values, effectUtilities.classify(effects));
+    };
+
+    this.getEffects = function(completion) {
+        this.getAttrsAndEffects([], (_, effects) => {
+            completion(effects);
+        });
     };
 
     this.getSectionValues = function(sections, attributes, completion) {
@@ -175,6 +149,16 @@ const ModEngine = function(logger, character) {
         }
     };
 
+    this.removeEffectById = function(id) {
+        this.getEffect(id, effect => {
+            if (!effect) {
+                this.logi("Couldn't find effect to remove");
+                return;
+            }
+            this.remove(effect);
+        });
+    };
+
     this.generateId = function() { 
         return generateUUID().replace(/_/g, "Z"); 
     };
@@ -186,6 +170,64 @@ const ModEngine = function(logger, character) {
     this.logd = function(value) {
         this.logger.d(value);
     };
+    //#endregion
+
+    //#region Helpers
+    this.getEffect = function(id, completion) {
+        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
+        let effects = Object.values(filteredAttributes.effects);
+        if (!effects || effects.length == 0) {
+            completion(null);
+            return;
+        }
+        if (effects.length > 1) {
+            this.logi("Unexpectedly found more than one effect");
+        }
+        completion(effects[0]);
+    };
+
+    this.getFilteredAttributesAndEffects = function(attributeNames, effectIds = []) {
+        let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
+        return allAttributes.reduce(
+            (accumulator, currentValue) => {
+                let name = currentValue.get("name");
+                let match = currentValue.get("name").match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
+                if (match) {
+                    let id = match[1];
+                    if (effectIds.length > 0 && !effectIds.includes(id)) {
+                        // Skipping effect
+                        return accumulator;
+                    }
+
+                    let effectAttributeName = match[2];
+                    let value = currentValue.get("current");
+                    let max = currentValue.get("max");
+                    if (!accumulator.effects[id]) {
+                        accumulator.effects[id] = {
+                            id: id,
+                            fullId: `repeating_effects_${id}`,
+                            _vars: []
+                        };
+                    }
+                    accumulator.effects[id][effectAttributeName] = value;
+                    if (max) {
+                        accumulator.effects[id][`${effectAttributeName}_max`] = max;
+                    }
+                    accumulator.effects[id]._vars.push(currentValue);
+                } else if (attributeNames.includes(name)) {
+                    let value = currentValue.get("current");
+                    let max = currentValue.get("max");
+                    accumulator.values[name] = value;
+                    if (max) {
+                        accumulator.values[`${name}_max`] = max;
+                    }
+                }
+                return accumulator;
+            },
+            { effects: {}, values: {} }
+        );
+    };
+    //#endregion
 };
 
 const engine = null;

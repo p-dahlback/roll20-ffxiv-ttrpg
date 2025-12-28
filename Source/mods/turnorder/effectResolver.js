@@ -1,6 +1,6 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-class AddEffects {}; class EffectState {}; const unpackNaN = {};
+class AddEffects {}; class RemoveEffects {}; class EffectState {}; const unpackNaN = {};
 /*build:end*/
 
 const EffectResolverState = function(hitPoints, hitPoints_max, barrierPoints, magicPoints, existingEffects, expiries) {
@@ -22,9 +22,10 @@ const EffectResolverState = function(hitPoints, hitPoints_max, barrierPoints, ma
     };
 };
 
-const EffectResolver = function(engine, removeEffects) {
+const EffectResolver = function(engine, removeEffects, engineFactory) {
     this.engine = engine;
     this.removeEffects = removeEffects;
+    this.engineFactory = engineFactory;
 
     this.resolve = function(expiries, shouldUpdateExpiries, completion) {
         let attributes = ["hitPoints", "hitPoints_max", "barrierPoints", "magicPoints"];
@@ -74,7 +75,36 @@ const EffectResolver = function(engine, removeEffects) {
             summary += `, activated <b>Carbuncle</b>`;
         }
         this.removeEffects.remove(effect);
+        summary += this.removeLinkedEffectIfNeeded(effect);
         return summary;
+    };
+
+    this.removeLinkedEffectIfNeeded = function(effect) {
+        if (!effect.linkedId || !effect.linkedType || !effect.linkedEffectId || !effect.linkedName) {
+            return "";
+        }
+        this.engine.logd("Removing linked effect on character/token");
+        let targetCharacter;
+        let targetToken;
+        let name;
+        if (effect.linkedType === "unique") {
+            targetCharacter = getObj("character", effect.linkedId);
+            name = targetCharacter.get("name");
+            targetToken = null;
+        } else {
+            targetToken = getObj("graphic", effect.linkedId);
+            name = targetToken.get("name");
+            targetCharacter = getObj("character", targetToken.get("represents"));
+        }
+        if (!targetCharacter) {
+            this.engine.logi("Couldn't find character for id " + effect.linkedId);
+            return "";
+        }
+
+        let engine = this.engineFactory(effect.linkedType, targetToken, targetCharacter);
+        let removeEffects = new RemoveEffects(engine);
+        removeEffects.removeById(effect.linkedEffectId);
+        return `, expired linked effect <b>${effect.linkedName}</b> on <b>${name}</b>`;
     };
 
     this.updateIfApplicable = function(effect) {

@@ -37,6 +37,7 @@ const AddEffects = function(customEngine, customRemove) {
         var summaries = [];
 
         this.engine().logd("Adding effects");
+        var effectIds = [];
         for (let effect of effects) {
             if (!effect || !effect.adjustedName) {
                 continue;
@@ -59,6 +60,7 @@ const AddEffects = function(customEngine, customRemove) {
             }
             let duplicatesResult = this.resolveDuplicates(state, adjustedEffect);
             if (!duplicatesResult.result) {
+                this.engine().logd("Skipping effect due to duplicate");
                 continue;
             }
             summaries = summaries.concat(duplicatesResult.summaries);
@@ -110,6 +112,7 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_repeatingExpandItem`] = "on";
             attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
+            effectIds.push(initValues.id);
 
             if (duplicatesResult.summaries.length === 0) {
                 summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
@@ -118,7 +121,10 @@ const AddEffects = function(customEngine, customRemove) {
         if (Object.keys(attributes).length > 0) {
             this.engine().set(attributes);
         }
-        return summaries.join(", ");
+        return {
+            addedIds: effectIds,
+            summary: summaries.join(", ")
+        };
     };
 
     this.resolveAttributes = function(id, effectName, value) {
@@ -348,7 +354,7 @@ const AddEffects = function(customEngine, customRemove) {
         this.resolveAbilities(effect.adjustedName);
         this.resolveAttributes(id, effect.adjustedName, value);
         switch (effect.adjustedName) {
-            case "astral_fire":
+            case "astral_fire": {
                 // Clear MP recovery
                 attributes.mpRecoveryBlock = "on";
 
@@ -357,8 +363,10 @@ const AddEffects = function(customEngine, customRemove) {
                     summaries.push("Removed Umbral Ice");
                     this.engine().remove(state.existingEffects.umbralIce);
                 }
-                summaries.push(this.addBySpecificationString(state, ["Thunderhead Ready"]));
+                let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
+                summaries.push(result.summary);
                 break;
+            }
             case "barrier": {
                 let barrierValue = Math.max(parseInt(state.barrierPoints), parseInt(value));
                 this.engine().set({
@@ -509,7 +517,8 @@ const AddEffects = function(customEngine, customRemove) {
                     data: data
                 };
                 turnBasedAdvantage.icon = effectData.icon(turnBasedAdvantage);
-                summaries.push(this.add(state, [turnBasedAdvantage]));
+                let result = this.add(state, [turnBasedAdvantage]);
+                summaries.push(result);
                 break;
             }
             case "lucid_dreaming":
@@ -518,8 +527,9 @@ const AddEffects = function(customEngine, customRemove) {
             case "raise": {
                 // Add/upgrade weak status and add transcendent
                 let weakness = state.existingEffects.isWeak ? "brink" : "weak";
-                summaries.push(this.addBySpecificationString(state, ["transcendent"]));
-                summaries.push(this.addBySpecificationString(state, [weakness]));
+                let transcendentResult = this.addBySpecificationString(state, ["transcendent"]);
+                let weaknessResult = this.addBySpecificationString(state, [weakness]);
+                summaries.push(...[transcendentResult.summary, weaknessResult.summary]);
                 break;
             }
             case "restore": {
@@ -594,7 +604,7 @@ const AddEffects = function(customEngine, customRemove) {
                 }
                 break;
             }
-            case "umbral_ice":
+            case "umbral_ice": {
                 if (state.existingEffects.astralFire) {
                     summaries.push("Removed Astral Fire");
                     this.engine().remove(state.existingEffects.astralFire);
@@ -602,8 +612,10 @@ const AddEffects = function(customEngine, customRemove) {
                     // Reset MP recovery
                     attributes.mpRecoveryBlock = "off";
                 }
-                summaries.push(this.addBySpecificationString(state, ["Thunderhead Ready"]));
+                let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
+                summaries.push(result.summary);
                 break;
+            }
             default:
                 break;
         }

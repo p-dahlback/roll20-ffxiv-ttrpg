@@ -71,7 +71,7 @@ const EffectData = function() {
         dot: { matches: ["dot"], type: "dot(x)", maskedType: "dot(x)", statusType: "Enfeeblement", marker: "dot", name: "DOT (X)", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         elemental_veil: { matches: ["eveil", "eveil1", "eveili", "eveil 1", "eveil i", "elemental veil", "elementail veil 1", "elemental veil i"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of one type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type when purchasing this augmentation." },
         elemental_veil_ii: { matches: ["eveil2", "eveilii", "eveil 2", "eveil ii", "elemental veil 2", "elemental veil ii"], type: "special", maskedType: "augment", specialType: "Elemental Veil", statusType: "Enhancement", name: "Elemental Veil II", expiry: "end", duplicate: "block", description: "Reduces the damage taken from abilities of three type chosen from the following list by 1: fire-aspected, ice-aspected, wind-aspected, earth-aspected, lightning-aspected, water-aspected. Choose the type(s) when purchasing this augmentation." },
-        emerald: { matches: ["emerald", "em"], type: "special", maskedType: "gem", specialType: "Emerald", name: "Emerald", marker: "emerald", statusType: "Enhancement", expiry: "start", duplicate: "replace",description: "Your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1." },
+        emerald: { matches: ["emerald", "em"], type: "special", maskedType: "gem", specialType: "Emerald", name: "Emerald", marker: "emerald", statusType: "Enhancement", expiry: "sourceStart", duplicate: "replace",description: "Your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1." },
         enmity: { matches: ["enmity"], type: "enmity(x)", maskedType: "enmity(x)", statusType: "Enfeeblement", marker: "enmity", name: "Enmity (X)", expiry: "turn", duplicate: "replace", description: "For any ability this character makes that does not target the source of the Enmity effect, a penalty of the given value is applied to the ability roll." },
         feint: { matches: ["feint"], type: "special", maskedType: "ddown", statusType: "Enfeeblement", specialType: "Feint", marker: "feint", name: "Feint", expiry: "turn", description: "Reduces the damage dealt by your abilities." },
         fight_or_flight: { matches: ["fflight", "fight or flight"], type: "special", maskedType: "advantage", specialType: "Fight or Flight", statusType: "Enhancement", name: "Fight or Flight", expiry: "turn", duplicate: "block", description: "Grants one advantage die on your next ability check this turn." },
@@ -93,7 +93,7 @@ const EffectData = function() {
         mana_conduit: { matches: ["mconduit", "mana conduit"], type: "special", maskedType: "augment", specialType: "Mana Conduit", statusType: "Enhancement", name: "Mana Conduit", expiry: "end", duplicate: "block", description: "This character may spend 5 MP immediately before making an ability check to increase its total by 1." },
         masterwork_ornamentation: { matches: ["mwork", "masterwork", "ornament", "ornamentation", "masterwork ornamentation"], type: "special", maskedType: "augment", specialType: "Masterwork Ornamentation", statusType: "Enhancement", name: "Masterwork Ornamentation", expiry: "end", duplicate: "block", description: "Grants one advantage die on checks involving speech. This effect cannot be used if the other character is hostile or is unable to see this character." },
         mug: { matches: ["mug", "mugging"], type: "special", maskedType: "matched", matchingType: "mugged", specialType: "Mug", name: "Mug", statusType: "Enhancement", expiry: "start", duplicate: "block", description: "Increases the damage the target takes from abilities by 1." },
-        mugged: { matches: ["mug", "mugging"], type: "special", specialType: "Mugged", name: "Mugged", marker: "mugged", statusType: "Enfeeblement", expiry: "encounter", description: "Increases the damage you take from abilities by 1 until the character who inflicted this status starts their next turn." },
+        mugged: { matches: ["mugged"], type: "special", specialType: "Mugged", name: "Mugged", marker: "mugged", statusType: "Enfeeblement", expiry: "sourceStart", description: "Increases the damage you take from abilities by 1 until the character who inflicted this status starts their next turn." },
         ninjutsu_cooldown: { matches: ["ninjutsu cooldown", "ncooldown", "ninjutsu"], type: "special", specialType: "Ninjutsu Cooldown", name: "Ninjutsu Cooldown", statusType: "Enhancement", expiry: "turn2", duplicate: "replace", description: "You cannot use Ninjutsu abilities. Ninjutsu Cooldown cannot be removed by effects that remove enfeeblements." },
         opo_opo_form: { matches: ["opo-opo form", "opo", "opo form", "opo opo form", "oform", "monk1", "m1"], type: "special", maskedType: "ready(x)", specialType: "Opo-Opo Form", statusType: "Enhancement", name: "Opo-Opo Form", expiry: "turn2", duplicate: "replace", description: "Enhances Bootshine and Dragon Kick." },
         overheated: { matches: ["overheated", "overheat", "heat"], type: "special", specialType: "Overheated", name: "Overheated", statusType: "Enhancement", expiry: "start", duplicate: "block", description: "While under the effect of Overheated, use the lower of the target's Defense or Magic Defense as the CR for your ability checks." },
@@ -113,7 +113,7 @@ const EffectData = function() {
         restore: { matches: ["restore"], type: "restore(x)", maskedType: "restore(x)", statusType: "Enhancement", name: "Restore uses of Y by (X)", expiry: "ephemeral" },
         restore_magic: { matches: ["restorem", "restore magic"], type: "special", specialType: "Restore Magic", statusType: "Enhancement", name: "Restore Magic", expiry: "ephemeral" },
         roll: { matches: ["roll", "roll up"], type: "roll(x)", maskedType: "roll(x)", statusType: "Enhancement", name: "Increment Ability Roll (X)", expiry: "use", description: "Allows the option to increment the value of an ability roll for purposes of achieving a Direct Hit or a Critical." },
-        ruby: { matches: ["ruby"], type: "special", maskedType: "gem", specialType: "Ruby", name: "Ruby", statusType: "Enhancement", expiry: "start", duplicate: "replace", description: "Your gem abilities become fire-aspected and deal an additional 1d6 damage. When your pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn." },
+        ruby: { matches: ["ruby"], type: "special", maskedType: "gem", specialType: "Ruby", name: "Ruby", statusType: "Enhancement", expiry: "sourceStart", duplicate: "replace", description: "Your gem abilities become fire-aspected and deal an additional 1d6 damage. When your pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn." },
         silence: { matches: ["silence"], type: "silence", maskedType: "silence", statusType: "Enfeeblement", marker: "silence", name: "Silence", expiry: "turn", curable: true, duplicate: "block", description: "You cannot use invoked abilities." },
         sleep: { matches: ["sleep"], type: "sleep", maskedType: "sleep", statusType: "Enfeeblement", marker: "sleep", name: "Sleep", expiry: "damage", curable: true, duplicate: "block", description: "You incur a -3 penalty on all checks. Sleep is removed when you take damage.\n\nCharacters may use a Primary action to wake a Sleeping character in an adjacent square." },
         slow: { matches: ["slow"], type: "slow", maskedType: "slow", statusType: "Enfeeblement", marker: "slow", name: "Slow", expiry: "encounter", curable: true, duplicate: "block", description: "Your Speed is halved (rounded up) and cannot be affected by effects which would add to your Speed.\n\nYou incur a -2 penalty on all checks." },
@@ -125,7 +125,7 @@ const EffectData = function() {
         thrill_of_battle: { matches: ["thrill", "tbattle", "thrill of battle"], type: "special", specialType: "Thrill of Battle", statusType: "Enhancement", name: "Thrill of Battle", expiry: "ephemeral", duplicate: "allow" },
         thunder: { matches: ["thunder"], type: "special", maskedType: "dot(x)", specialType: "Thunder", statusType: "Enfeeblement", marker: "thunder", name: "Thunder", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         thunderhead_ready: { matches: ["tready", "thunderhead", "thunderhead ready"], type: "special", maskedType: "ready(x)", specialType: "Thunderhead Ready", statusType: "Enhancement", name: "Thunderhead Ready", expiry: "use", duplicate: "block", description: "Enables one use of a Lightning-aspected ability, such as Thunder or Thunder II." },
-        topaz: { matches: ["topaz"], type: "special", maskedType: "gem", specialType: "Topaz", name: "Topaz", statusType: "Enhancement", expiry: "start", duplicate: "replace", description: "Your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities." },
+        topaz: { matches: ["topaz"], type: "special", maskedType: "gem", specialType: "Topaz", name: "Topaz", statusType: "Enhancement", expiry: "sourceStart", duplicate: "replace", description: "Your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities." },
         umbral_ice: { matches: ["uice", "umbral ice"], type: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
         venomous_bite: { matches: ["venom", "vbite", "wbite", "windbite", "venomous bite"], type: "special", specialType: "Venomous Bite", maskedType:"dot(x)", marker: "venomous-bite", statusType: "enfeeblement", name: "Venomous Bite", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         warding_talisman: { matches: ["ward", "talisman", "wtalisman", "warding talisman"], type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "permanent", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
@@ -139,6 +139,7 @@ const EffectData = function() {
         stepstart: "Start of the [Adventurer Step]",
         start: "Start of your turn",
         start2: "Start of your turn next round",
+        sourceStart: "Start of the originator's turn",
         turn: "End of your turn",
         turn2: "End of your next turn",
         step: "End of the [Adventurer Step]",
@@ -400,6 +401,7 @@ const ModEngine = function(logger, character) {
         logger.i("Character must be specified for mods");
     }
 
+    //#region Interface
     this.set = function(attributes) {
         for (let attribute of Object.entries(attributes)) {
             let name = attribute[0];
@@ -448,42 +450,15 @@ const ModEngine = function(logger, character) {
     };
 
     this.getAttrsAndEffects = function(attributes, completion) {
-        let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
-        let filteredAttributes = allAttributes.reduce(
-            (accumulator, currentValue) => {
-                let name = currentValue.get("name");
-                let match = currentValue.get("name").match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
-                if (match) {
-                    let id = match[1];
-                    let effectAttributeName = match[2];
-                    let value = currentValue.get("current");
-                    let max = currentValue.get("max");
-                    if (!accumulator.effects[id]) {
-                        accumulator.effects[id] = {
-                            id: id,
-                            fullId: `repeating_effects_${id}`,
-                            _vars: []
-                        };
-                    }
-                    accumulator.effects[id][effectAttributeName] = value;
-                    if (max) {
-                        accumulator.effects[id][`${effectAttributeName}_max`] = max;
-                    }
-                    accumulator.effects[id]._vars.push(currentValue);
-                } else if (attributes.includes(name)) {
-                    let value = currentValue.get("current");
-                    let max = currentValue.get("max");
-                    accumulator.values[name] = value;
-                    if (max) {
-                        accumulator.values[`${name}_max`] = max;
-                    }
-                }
-                return accumulator;
-            },
-            { effects: {}, values: {} }
-        );
+        let filteredAttributes = this.getFilteredAttributesAndEffects(attributes);
         let effects = Object.values(filteredAttributes.effects);
         completion(filteredAttributes.values, effectUtilities.classify(effects));
+    };
+
+    this.getEffects = function(completion) {
+        this.getAttrsAndEffects([], (_, effects) => {
+            completion(effects);
+        });
     };
 
     this.getSectionValues = function(sections, attributes, completion) {
@@ -533,6 +508,16 @@ const ModEngine = function(logger, character) {
         }
     };
 
+    this.removeEffectById = function(id) {
+        this.getEffect(id, effect => {
+            if (!effect) {
+                this.logi("Couldn't find effect to remove");
+                return;
+            }
+            this.remove(effect);
+        });
+    };
+
     this.generateId = function() { 
         return generateUUID().replace(/_/g, "Z"); 
     };
@@ -544,6 +529,64 @@ const ModEngine = function(logger, character) {
     this.logd = function(value) {
         this.logger.d(value);
     };
+    //#endregion
+
+    //#region Helpers
+    this.getEffect = function(id, completion) {
+        let filteredAttributes = this.getFilteredAttributesAndEffects([], [id]);
+        let effects = Object.values(filteredAttributes.effects);
+        if (!effects || effects.length == 0) {
+            completion(null);
+            return;
+        }
+        if (effects.length > 1) {
+            this.logi("Unexpectedly found more than one effect");
+        }
+        completion(effects[0]);
+    };
+
+    this.getFilteredAttributesAndEffects = function(attributeNames, effectIds = []) {
+        let allAttributes = findObjs({ type: "attribute", characterid: this.character.id });
+        return allAttributes.reduce(
+            (accumulator, currentValue) => {
+                let name = currentValue.get("name");
+                let match = currentValue.get("name").match(/^repeating_effects_([-\w]+)_([\w_]+)$/);
+                if (match) {
+                    let id = match[1];
+                    if (effectIds.length > 0 && !effectIds.includes(id)) {
+                        // Skipping effect
+                        return accumulator;
+                    }
+
+                    let effectAttributeName = match[2];
+                    let value = currentValue.get("current");
+                    let max = currentValue.get("max");
+                    if (!accumulator.effects[id]) {
+                        accumulator.effects[id] = {
+                            id: id,
+                            fullId: `repeating_effects_${id}`,
+                            _vars: []
+                        };
+                    }
+                    accumulator.effects[id][effectAttributeName] = value;
+                    if (max) {
+                        accumulator.effects[id][`${effectAttributeName}_max`] = max;
+                    }
+                    accumulator.effects[id]._vars.push(currentValue);
+                } else if (attributeNames.includes(name)) {
+                    let value = currentValue.get("current");
+                    let max = currentValue.get("max");
+                    accumulator.values[name] = value;
+                    if (max) {
+                        accumulator.values[`${name}_max`] = max;
+                    }
+                }
+                return accumulator;
+            },
+            { effects: {}, values: {} }
+        );
+    };
+    //#endregion
 };
 
 const engine = null;
@@ -759,6 +802,7 @@ const TokenEngine = function(logger, token, character, cache) {
     }
     this.effectCache = convertedCache.get(token);
 
+    //#region Interface
     this.set = function(attributes) {
         for (let attribute of Object.entries(attributes)) {
             let name = attribute[0];
@@ -815,10 +859,38 @@ const TokenEngine = function(logger, token, character, cache) {
         });
     };
 
+    this.getEffects = function(completion) {
+        this.getAttrsAndEffects([], (_, effects) => {
+            completion(effects);
+        });
+    };
+
     this.getSectionValues = function(sections, attributes, completion) {
         this.modengine.getSectionValues(sections, attributes, completion);
     };
 
+    this.remove = function(object) {
+        this.effectCache.remove(object.id);
+    };
+
+    this.removeEffectById = function(id) {
+        this.effectCache.remove(id);
+    };
+
+    this.generateId = function() {
+        return this.modengine.generateId();
+    };
+
+    this.logi = function(value) {
+        this.logger.i(value);
+    };
+
+    this.logd = function(value) {
+        this.logger.d(value);
+    };
+    //#endregion
+
+    //#region Helpers
     this.mapAttribute = function(name) {
         switch (name) {
             case "hitPoints":
@@ -868,22 +940,7 @@ const TokenEngine = function(logger, token, character, cache) {
             { tokenAttributes: [], characterAttributes: [], effects: {} }
         );
     };
-
-    this.remove = function(object) {
-        this.effectCache.remove(object.id);
-    };
-
-    this.generateId = function() {
-        return this.modengine.generateId();
-    };
-
-    this.logi = function(value) {
-        this.logger.i(value);
-    };
-
-    this.logd = function(value) {
-        this.logger.d(value);
-    };
+    //#endregion
 };
 
 this.export.TokenEngine = TokenEngine;
@@ -966,6 +1023,7 @@ const AddEffects = function(customEngine, customRemove) {
         var summaries = [];
 
         this.engine().logd("Adding effects");
+        var effectIds = [];
         for (let effect of effects) {
             if (!effect || !effect.adjustedName) {
                 continue;
@@ -988,6 +1046,7 @@ const AddEffects = function(customEngine, customRemove) {
             }
             let duplicatesResult = this.resolveDuplicates(state, adjustedEffect);
             if (!duplicatesResult.result) {
+                this.engine().logd("Skipping effect due to duplicate");
                 continue;
             }
             summaries = summaries.concat(duplicatesResult.summaries);
@@ -1039,6 +1098,7 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_repeatingExpandItem`] = "on";
             attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
+            effectIds.push(initValues.id);
 
             if (duplicatesResult.summaries.length === 0) {
                 summaries.push(`Activated ${data.name.replace("(X)", initValues.value)}`);
@@ -1047,7 +1107,10 @@ const AddEffects = function(customEngine, customRemove) {
         if (Object.keys(attributes).length > 0) {
             this.engine().set(attributes);
         }
-        return summaries.join(", ");
+        return {
+            addedIds: effectIds,
+            summary: summaries.join(", ")
+        };
     };
 
     this.resolveAttributes = function(id, effectName, value) {
@@ -1277,7 +1340,7 @@ const AddEffects = function(customEngine, customRemove) {
         this.resolveAbilities(effect.adjustedName);
         this.resolveAttributes(id, effect.adjustedName, value);
         switch (effect.adjustedName) {
-            case "astral_fire":
+            case "astral_fire": {
                 // Clear MP recovery
                 attributes.mpRecoveryBlock = "on";
 
@@ -1286,8 +1349,10 @@ const AddEffects = function(customEngine, customRemove) {
                     summaries.push("Removed Umbral Ice");
                     this.engine().remove(state.existingEffects.umbralIce);
                 }
-                summaries.push(this.addBySpecificationString(state, ["Thunderhead Ready"]));
+                let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
+                summaries.push(result.summary);
                 break;
+            }
             case "barrier": {
                 let barrierValue = Math.max(parseInt(state.barrierPoints), parseInt(value));
                 this.engine().set({
@@ -1438,7 +1503,8 @@ const AddEffects = function(customEngine, customRemove) {
                     data: data
                 };
                 turnBasedAdvantage.icon = effectData.icon(turnBasedAdvantage);
-                summaries.push(this.add(state, [turnBasedAdvantage]));
+                let result = this.add(state, [turnBasedAdvantage]);
+                summaries.push(result);
                 break;
             }
             case "lucid_dreaming":
@@ -1447,8 +1513,9 @@ const AddEffects = function(customEngine, customRemove) {
             case "raise": {
                 // Add/upgrade weak status and add transcendent
                 let weakness = state.existingEffects.isWeak ? "brink" : "weak";
-                summaries.push(this.addBySpecificationString(state, ["transcendent"]));
-                summaries.push(this.addBySpecificationString(state, [weakness]));
+                let transcendentResult = this.addBySpecificationString(state, ["transcendent"]);
+                let weaknessResult = this.addBySpecificationString(state, [weakness]);
+                summaries.push(...[transcendentResult.summary, weaknessResult.summary]);
                 break;
             }
             case "restore": {
@@ -1523,7 +1590,7 @@ const AddEffects = function(customEngine, customRemove) {
                 }
                 break;
             }
-            case "umbral_ice":
+            case "umbral_ice": {
                 if (state.existingEffects.astralFire) {
                     summaries.push("Removed Astral Fire");
                     this.engine().remove(state.existingEffects.astralFire);
@@ -1531,8 +1598,10 @@ const AddEffects = function(customEngine, customRemove) {
                     // Reset MP recovery
                     attributes.mpRecoveryBlock = "off";
                 }
-                summaries.push(this.addBySpecificationString(state, ["Thunderhead Ready"]));
+                let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
+                summaries.push(result.summary);
                 break;
+            }
             default:
                 break;
         }
@@ -1651,6 +1720,10 @@ const RemoveEffects = function(customEngine) {
         this.engine().remove(effect);
         this.resetSpecialEffects(adjustedName);
         this.resetAttributeChanges(adjustedName, effect.attribute, effect.attributeValue);
+    };
+
+    this.removeById = function(id) {
+        this.engine().removeEffectById(id);
     };
 
     this.removeAll = function(names, skipId) {
@@ -1870,9 +1943,10 @@ const EffectResolverState = function(hitPoints, hitPoints_max, barrierPoints, ma
     };
 };
 
-const EffectResolver = function(engine, removeEffects) {
+const EffectResolver = function(engine, removeEffects, engineFactory) {
     this.engine = engine;
     this.removeEffects = removeEffects;
+    this.engineFactory = engineFactory;
 
     this.resolve = function(expiries, shouldUpdateExpiries, completion) {
         let attributes = ["hitPoints", "hitPoints_max", "barrierPoints", "magicPoints"];
@@ -1910,15 +1984,52 @@ const EffectResolver = function(engine, removeEffects) {
     };
     
     this.removeIfApplicable = function(state, effect) {
-        if (state.expiries.includes(effect.expiry)) {
-            this.engine.logd("Slating effect for removal: " + effect.adjustedName);
-            this.removeEffects.remove(effect);
-            return `Expired <b>${effect.data.name}</b>`;
+        if (!state.expiries.includes(effect.expiry)) {
+            return "";
         }
-        return "";
+        this.engine.logd("Slating effect for removal: " + effect.adjustedName);
+        var summary = `Expired <b>${effect.data.name}</b>`;
+        if (effect.data.maskedType === "gem" && effect.adjustedName !== "carbuncle") {
+            let addEffects = new AddEffects(this.engine, this.removeEffects);
+            let addState = state.effectState();
+            addEffects.addBySpecificationString(addState, ["carbuncle"]);
+            summary += `, activated <b>Carbuncle</b>`;
+        }
+        this.removeEffects.remove(effect);
+        summary += this.removeLinkedEffectIfNeeded(effect);
+        return summary;
+    };
+
+    this.removeLinkedEffectIfNeeded = function(effect) {
+        if (!effect.linkedId || !effect.linkedType || !effect.linkedEffectId || !effect.linkedName) {
+            return "";
+        }
+        this.engine.logd("Removing linked effect on character/token " + effect.linkedType);
+        let targetCharacter;
+        let targetToken;
+        let name;
+        if (effect.linkedType === "unique") {
+            targetCharacter = getObj("character", effect.linkedId);
+            name = targetCharacter.get("name");
+            targetToken = null;
+        } else {
+            targetToken = getObj("graphic", effect.linkedId);
+            name = targetToken.get("name");
+            targetCharacter = getObj("character", targetToken.get("represents"));
+        }
+        if (!targetCharacter) {
+            this.engine.logi("Couldn't find character for id " + effect.linkedId);
+            return "";
+        }
+
+        let engine = this.engineFactory(effect.linkedType, targetToken, targetCharacter);
+        let removeEffects = new RemoveEffects(engine);
+        removeEffects.removeById(effect.linkedEffectId);
+        return `, expired linked effect <b>${effect.linkedName}</b> on <b>${name}</b>`;
     };
 
     this.updateIfApplicable = function(effect) {
+        var attributes = {};
         let newExpiry;
         switch (effect.expiry) {
             case "start2":
@@ -1927,20 +2038,20 @@ const EffectResolver = function(engine, removeEffects) {
             case "turn2":
                 newExpiry = "turn";
                 break;
+            case "refresh":
+                if (effect.value == "0") {
+                    // Refresh the MP gain effect when Carbuncle is summoned
+                    attributes[`${effect.fullId}_value`] = "1";
+                    this.engine.set(attributes);
+                    return "Carbuncle is able to recover your MP again";
+                }
+                return "";
             default:
                 return "";
         }
-        var attributes = {};
         attributes[`${effect.fullId}_expiry`] = newExpiry;
-
-        let summary = "";
-        if (effect.specialType === "Carbuncle" && effect.value === "0") {
-            // Refresh the MP gain effect when Carbuncle is summoned
-            attributes[`${effect.fullId}_value`] = "1";
-            summary = "Carbuncle is able to recover your MP again";
-        }
         this.engine.set(attributes);
-        return summary;
+        return "";
     };
     
     this.executeEffect = function(state, effect) {
@@ -2238,15 +2349,16 @@ const FFXIVTurnOrder = (() => {
     };
 
     const effectResolver = (token, character, effectCache) => {
-        let engine;
         let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
-        if (sheetType === "unique") {
-            engine = new imports.ModEngine(logger, character);
-        } else {
-            engine = new imports.TokenEngine(logger, token, character, effectCache);
-        }
+        let engineFactory = function(sheetType, token, character) {
+            if (sheetType === "unique") {
+                return new imports.ModEngine(logger, character);
+            }
+            return new imports.TokenEngine(logger, token, character, effectCache);
+        };
+        let engine = engineFactory(sheetType, token, character);
         let removeEffects = new imports.RemoveEffects(engine);
-        return new imports.EffectResolver(engine, removeEffects);
+        return new imports.EffectResolver(engine, removeEffects, engineFactory);
     };
 
     const manageEffectsOnTurnChange = (turn, expiries, turnChange, shouldUpdateExpiries) => {

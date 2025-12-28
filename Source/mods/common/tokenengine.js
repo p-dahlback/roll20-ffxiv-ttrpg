@@ -20,6 +20,7 @@ const TokenEngine = function(logger, token, character, cache) {
     }
     this.effectCache = convertedCache.get(token);
 
+    //#region Interface
     this.set = function(attributes) {
         for (let attribute of Object.entries(attributes)) {
             let name = attribute[0];
@@ -76,10 +77,38 @@ const TokenEngine = function(logger, token, character, cache) {
         });
     };
 
+    this.getEffects = function(completion) {
+        this.getAttrsAndEffects([], (_, effects) => {
+            completion(effects);
+        });
+    };
+
     this.getSectionValues = function(sections, attributes, completion) {
         this.modengine.getSectionValues(sections, attributes, completion);
     };
 
+    this.remove = function(object) {
+        this.effectCache.remove(object.id);
+    };
+
+    this.removeEffectById = function(id) {
+        this.effectCache.remove(id);
+    };
+
+    this.generateId = function() {
+        return this.modengine.generateId();
+    };
+
+    this.logi = function(value) {
+        this.logger.i(value);
+    };
+
+    this.logd = function(value) {
+        this.logger.d(value);
+    };
+    //#endregion
+
+    //#region Helpers
     this.mapAttribute = function(name) {
         switch (name) {
             case "hitPoints":
@@ -129,22 +158,7 @@ const TokenEngine = function(logger, token, character, cache) {
             { tokenAttributes: [], characterAttributes: [], effects: {} }
         );
     };
-
-    this.remove = function(object) {
-        this.effectCache.remove(object.id);
-    };
-
-    this.generateId = function() {
-        return this.modengine.generateId();
-    };
-
-    this.logi = function(value) {
-        this.logger.i(value);
-    };
-
-    this.logd = function(value) {
-        this.logger.d(value);
-    };
+    //#endregion
 };
 
 this.export.TokenEngine = TokenEngine;

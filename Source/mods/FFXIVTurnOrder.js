@@ -76,15 +76,16 @@ const FFXIVTurnOrder = (() => {
     };
 
     const effectResolver = (token, character, effectCache) => {
-        let engine;
         let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
-        if (sheetType === "unique") {
-            engine = new imports.ModEngine(logger, character);
-        } else {
-            engine = new imports.TokenEngine(logger, token, character, effectCache);
-        }
+        let engineFactory = function(sheetType, token, character) {
+            if (sheetType === "unique") {
+                return new imports.ModEngine(logger, character);
+            }
+            return new imports.TokenEngine(logger, token, character, effectCache);
+        };
+        let engine = engineFactory(sheetType, token, character);
         let removeEffects = new imports.RemoveEffects(engine);
-        return new imports.EffectResolver(engine, removeEffects);
+        return new imports.EffectResolver(engine, removeEffects, engineFactory);
     };
 
     const manageEffectsOnTurnChange = (turn, expiries, turnChange, shouldUpdateExpiries) => {

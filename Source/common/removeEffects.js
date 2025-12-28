@@ -20,6 +20,10 @@ const RemoveEffects = function(customEngine) {
         this.resetAttributeChanges(adjustedName, effect.attribute, effect.attributeValue);
     };
 
+    this.removeById = function(id) {
+        this.engine().removeEffectById(id);
+    };
+
     this.removeAll = function(names, skipId) {
         this.engine().getEffects(effects => {
             let matches = effects.effects.filter(effect => {

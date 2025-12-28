@@ -8,6 +8,7 @@ const effectUtilities = {}; const workerName = "";
 const WorkerEngine = function(logger) {
     this.logger = logger;
 
+    //#region Interface
     this.set = function(attributes) {
         setAttrs(attributes);
     };
@@ -18,19 +19,7 @@ const WorkerEngine = function(logger) {
 
     this.getAttrsAndEffects = function(bonusAttributes, completion) {
         getSectionIDs("repeating_effects", ids => {
-            const attributes = ids.flatMap((element) => [
-                `repeating_effects_${element}_type`,
-                `repeating_effects_${element}_specialType`,
-                `repeating_effects_${element}_statusType`,
-                `repeating_effects_${element}_value`,
-                `repeating_effects_${element}_expiry`,
-                `repeating_effects_${element}_source`,
-                `repeating_effects_${element}_curable`,
-                `repeating_effects_${element}_description`,
-                `repeating_effects_${element}_attribute`,
-                `repeating_effects_${element}_attributeValue`,
-                `repeating_effects_${element}_conditionalValue`
-            ]);
+            const attributes = ids.flatMap((element) => this.effectAttributes(element));
             getAttrs(attributes.concat(bonusAttributes), values => {
                 var sortedValues = {};
                 const effectKeys = Object.keys(values).filter((key) => key.includes("repeating_effects"));
@@ -91,6 +80,10 @@ const WorkerEngine = function(logger) {
         removeRepeatingRow(object.fullId);
     };
 
+    this.removeEffectById = function(id) {
+        removeRepeatingRow(`repeating_effects_${id}`);
+    };
+
     this.generateId = function() {
         return generateRowID();
     };
@@ -122,6 +115,28 @@ const WorkerEngine = function(logger) {
 
         getSectionIDs(sections[0], recursionBlock);
     };
+    //#endregion
+
+    //#region Helpers
+    this.effectAttributes = function(id) {
+        return [
+            `repeating_effects_${id}_type`,
+            `repeating_effects_${id}_specialType`,
+            `repeating_effects_${id}_statusType`,
+            `repeating_effects_${id}_value`,
+            `repeating_effects_${id}_expiry`,
+            `repeating_effects_${id}_source`,
+            `repeating_effects_${id}_curable`,
+            `repeating_effects_${id}_description`,
+            `repeating_effects_${id}_attribute`,
+            `repeating_effects_${id}_attributeValue`,
+            `repeating_effects_${id}_conditionalValue`,
+            `repeating_effects_${id}_linkedId`,
+            `repeating_effects_${id}_linkedType`,
+            `repeating_effects_${id}_linkedEffectId`
+        ];
+    };
+    ///#endregion
 };
 
 const engine = new WorkerEngine(new Logger(workerName, true));

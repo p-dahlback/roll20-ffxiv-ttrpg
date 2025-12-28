@@ -16,6 +16,7 @@
 /*build:import ../common/addEffects.js*/
 /*build:import ../common/removeEffects.js*/
 /*build:import addeffect/addEffectParser.js*/
+/*build:import addeffect/addEffectResolver.js*/
 const FFXIVAddEffectImports = {};
 /*build:end*/
 
@@ -80,47 +81,6 @@ const FFXIVAddEffect = (() => {
         }
     };
 
-    const addEffects = (effects, characters, effectCache) => {
-        var summaries = [];
-
-        logger.d(`Adding ${effects.length} effects to ${characters.length} character(s)`);
-        for (let object of characters) {
-            for (let effect of effects) {
-                let character = object.character;
-                let token = object.token;
-                let sheetType = imports.unpackAttribute(character, "sheet_type").get("current");
-                let engine;
-                if (sheetType === "unique") {
-                    logger.d(`Using character engine for ${sheetType} token`);
-                    engine = new imports.ModEngine(logger, character);
-                } else if (token) {
-                    logger.d(`Using token engine for ${sheetType} token`);
-                    engine = new imports.TokenEngine(logger, token, character, effectCache);
-                } else {
-                    logger.i(`Will not add effect; character ${character.get("name")} isn't unique. Generic characters only support adding to selected token.`);
-                }
-                let removalHandler = new imports.RemoveEffects(engine);
-                let addHandler = new imports.AddEffects(engine, removalHandler);
-                engine.getAttrsAndEffects(["hitPoints", "barrierPoints"], (values, effects) => {
-                    let state = new imports.EffectState(
-                        values.hitPoints, 
-                        values.hitPoints_max, 
-                        values.barrierPoints, 
-                        null, 
-                        effects
-                    );
-                    let summary = addHandler.add(state, [effect]);
-                    summaries.push(`${summary} on <b>${character.get("name")}</b>`);
-                });
-            }
-        }
-        let summary = summaries.join("</li><li>");
-        if (summary) {
-            summary = `<ul><li>${summary}</li></ul>`;
-        }
-        return summary;
-    };
-
     const outputEvent = (type, who, summary, playerid) => {
         logger.d("Outputting to chat");
         let prefix;
@@ -151,7 +111,6 @@ const FFXIVAddEffect = (() => {
     };
 
     const help = () => {
-
         let helpContent = `<h4>${scriptName} !eos --help</h4>` +
             `<h5>Arguments</h5>` +
             `<li><code>--{effects}</code> - Required: The specification of the effect(s), a comma separated list of effect names and values. <b>Examples:</b> <code>dot(3)</code>, <code>dot(3),stun</code></li>` +
@@ -319,7 +278,8 @@ const FFXIVAddEffect = (() => {
 
         let characters = targetResult.result;
         let effectCache = new imports.EffectCache(state["FFXIVCache"].effects);
-        let summary = addEffects(effects, characters, effectCache);
+        let resolver = new imports.AddEffectResolver(logger);
+        let summary = resolver.add(effects, characters, effectCache);
         state["FFXIVCache"].effects = effectCache;
         outputEvent("add", who, summary, msg.playerid);
     };

@@ -2,30 +2,10 @@
 /*eslint no-unused-vars: "error"*/
 /*exported abilityRolls*/
 const engine = {};
-const effectData = {}; const effectUtilities = {}; const addEffects = {}; const removeEffects = {}; const AbilityId = {};
-const hitModifiers = {}; const damageModifiers = {}; const rollTemplates = {}; const performAbility = {}; const abilityCombos = {};
-const EffectState = {};
+const addEffects = {}; const removeEffects = {}; const targetEffectResolver = {}; const abilityCombos = {};
+const hitModifiers = {}; const damageModifiers = {}; const rollTemplates = {}; const performAbility = {};
+const EffectState = {}; const AbilityId = {};
 /*build:end*/
-
-const TargetEffects = function(source) {
-    let match  = source.match(/^(?:([-'\s\w]+):)?((?:[-'\s\w()]+,)*)([-'\s\w()]+)$/);
-    if (match && match.length > 1) {
-        this.name = match[1];
-    } else {
-        this.name = null;
-        this.effects = [];
-        return;
-    }
-
-    this.effects = [];
-    if (match.length > 2 && match[2]) {
-        let commaSeparatedEffects = match[2].slice(0, -1);
-        this.effects = this.effects.concat(commaSeparatedEffects.split(",").map(value => value.trim()));
-    }
-    if (match.length > 3 && match[3]) {
-        this.effects = this.effects.concat(match[3].trim());
-    }
-};
 
 const DamageRoll = function({
     title, type, damageType, baseRoll, directHitRoll="", hitRoll="", conditionalValue="", condition="", combos="", cost=0, resource="", 
@@ -223,6 +203,7 @@ const AbilityRolls = function() {
             var attributes = {};
             attributes[`repeating_${section}_${rowId}_currentRoll`] = "";
             attributes[`repeating_${section}_${rowId}_currentMonkForm`] = effects.monkForm ? effects.monkForm.specialType : "";
+            attributes[`addedEffectId`] = "";
             setAttrs(attributes);
 
             let whisper = values.whisper;
@@ -315,16 +296,7 @@ const AbilityRolls = function() {
             engine.logd("No reason to roll damage");
             return;
         }
-
-        var targetEffectTitle = "";
-        let targetEffectButton = "";
-        if (modifiedRoll.targetEffects) {
-            let calculatedEffects = new TargetEffects(modifiedRoll.targetEffects);
-            targetEffectButton = this.buttonForTargetEffects(calculatedEffects, values.character_name);
-            if (targetEffectButton) {
-                targetEffectTitle = "Effect";
-            }
-        }
+        let targetEffects = targetEffectResolver.getButton(modifiedRoll.targetEffects, values.character_name);
 
         // Roll damage
         let rollTemplate = `${modifiedRoll.whisperPrefix}&{template:damage} {{title=${modifiedRoll.title}}} ` + 
@@ -332,7 +304,7 @@ const AbilityRolls = function() {
             `{{directHitTitle=${modifiedRoll.directHitTitle()}}} {{directHit=${modifiedRoll.directHitDice()}}} ` +
             `{{totalTitle=${modifiedRoll.totalTitle()}}} {{total=[[0]]}}` +
             `{{comboTitle=${comboTitle}}} {{button=${comboButtons}}} {{cost=${resourceCost}}} {{proc=[[0]]}} ` +
-            `{{targetEffectTitle=${targetEffectTitle}}} {{targetEffects=${targetEffectButton}}}`;
+            `{{targetEffectTitle=${targetEffects.title}}} {{targetEffects=${targetEffects.button}}}`;
         engine.logd(rollTemplate);
         startRoll(rollTemplate, results => {
             const damageRoll = results.results.damage ?? { result: 0, dice: [], expression: "" };
@@ -352,12 +324,19 @@ const AbilityRolls = function() {
                 }, 
                 effects
             );
-            let effectSummary = addEffects.addBySpecificationString(state, modifiedRoll.selfEffects.split(","));
-            let fullSummary = modifierSummaries.concat([computedResults.summary, consumedEffectSummary, effectSummary]).filter(element => element).join(", ");
+            let effectResult = addEffects.addBySpecificationString(state, modifiedRoll.selfEffects.split(","));
+            let allSummaries = modifierSummaries.concat([computedResults.summary, consumedEffectSummary, effectResult.summary]);
+            let fullSummary = allSummaries.filter(element => element).join(", ");
 
             if (abilityId) {
-                var attributes = {};
+                let attributes = {};
                 attributes[`repeating_${abilityId.section}_${abilityId.rowId}_currentCriticalMultiplier`] = 1;
+                setAttrs(attributes);
+            }
+            if (targetEffects.hasLink && effectResult.addedIds.length > 0) {
+                engine.logd("Preparing to link target effect");
+                let attributes = {};
+                attributes[`addedEffectId`] = effectResult.addedIds[0];
                 setAttrs(attributes);
             }
 
@@ -445,39 +424,6 @@ const AbilityRolls = function() {
                 });
             }
         });
-    };
-
-    this.buttonForTargetEffects = function(effects, characterName) {
-        if (effects.effects.length === 0) {
-            return null;
-        }
-        var effectDefinitions = [];
-
-        engine.logd("Preparing target effects: " + JSON.stringify(effects));
-        let initialName = "";
-        for (let effect of effects.effects) {
-            let adjustedEffect = effectUtilities.searchableName(effect.trim());
-            let data = effectData.effects[adjustedEffect];
-            if (!data) {
-                engine.logi("Unhandled effect " + adjustedEffect);
-                continue;
-            }
-
-            var value = "";
-            let match = effect.match(/\(([-|\s\w]+)\)/);
-            if (match && match.length >= 2) {
-                value = match[1];
-            }
-
-            if (!initialName) {
-                initialName = data.name.replace("(X)", `(${value})`);
-            }
-            let valueDefinition = value ? `[${value}]` : "";
-            let effectName = (data.specialType || data.type).replace(/\([Xx]{1}\)/, "");
-            let effectDefinition = `${effectName}${valueDefinition}`;
-            effectDefinitions.push(effectDefinition);
-        }
-        return `[${effects.name || initialName}](!ffe --${effectDefinitions.join(",")} --source ${characterName} --edit ${0})`;
     };
 
     this.stringWithTitle = function(title, value) {
