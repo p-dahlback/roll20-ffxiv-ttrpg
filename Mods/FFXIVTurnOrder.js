@@ -138,8 +138,7 @@ const EffectData = function() {
         encounterstart: "Start of an encounter",
         stepstart: "Start of the [Adventurer Step]",
         start: "Start of your turn",
-        start2: "Start of your turn next round",
-        sourceStart: "Start of the originator's turn",
+        sourceStart: "Start of the source/target's turn",
         turn: "End of your turn",
         turn2: "End of your next turn",
         step: "End of the [Adventurer Step]",
@@ -2078,9 +2077,6 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
         var attributes = {};
         let newExpiry;
         switch (effect.expiry) {
-            case "start2":
-                newExpiry = "start";
-                break;
             case "turn2":
                 newExpiry = "turn";
                 break;

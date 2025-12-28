@@ -122,9 +122,6 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
         var attributes = {};
         let newExpiry;
         switch (effect.expiry) {
-            case "start2":
-                newExpiry = "start";
-                break;
             case "turn2":
                 newExpiry = "turn";
                 break;
