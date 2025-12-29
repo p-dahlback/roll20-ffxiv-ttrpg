@@ -25,7 +25,9 @@ const DamageModifiers = function() {
         }
 
         if (damageRoll.conditionalValue) {
-            let conditionalResult = this.applyConditionalEffects(damageRoll.conditionalValue, effects);
+            let conditionalResult = this.applyConditionalEffects(modifiedRoll, effects);
+            modifiedRoll = conditionalResult.roll;
+            summaries.push(conditionalResult.summary);
             adds.push(...conditionalResult.adds);
         }
 
@@ -207,23 +209,57 @@ const DamageModifiers = function() {
         }
     };
 
-    this.applyConditionalEffects = function(conditionalValue, effects) {
-        let match = conditionalValue.match(/^([\w' -]+)\(([\w: '-|]+)\)$/);
-        if (match.length < 3 || !match[0] || !match[1]) {
-            engine.logd("Malformed condition " +  conditionalValue);
-            return {
-                adds: []
-            };
-        }
-        let effectName = match[0];
-        if (!effects.effects.find(effect => effect.data.name === effectName)) {
-            engine.logd("Skipping conditional, the prerequisite effect is not in play");
-            return {
-                adds: []
-            };
+    this.applyConditionalEffects = function(damageRoll, effects) {
+        let conditions = damageRoll.conditionalValue.split(",");
+        for (let condition of conditions) {
+            let match = condition.match(/^([\w' -]+)\(([\w: '-|]+)\)$/);
+            if (match.length < 3 || !match[1] || !match[2]) {
+                engine.logd("Malformed condition " +  condition);
+                continue;
+            }
+            let effectName = match[1];
+            if (effectName !== "Default" && !effects.effects.find(effect => effect.data.name === effectName)) {
+                engine.logd("Skipping conditional, the prerequisite effect is not in play");
+                continue;
+            }
+
+            // Condition matches; return value
+            return this.parseConditional(damageRoll, effectName, match[2]);
         }
         return {
-            adds: [`${match[1]}[${effectName}]`]
+            roll: damageRoll,
+            summary: "",
+            adds: []
+        };
+    };
+
+    this.parseConditional = function(damageRoll, effectName, attributeSpecification) {
+        let attributes = attributeSpecification.split("|");
+        let summary = "";
+        var adds = [];
+        for (let attribute of attributes) {
+            let attributeParts = attribute.split(":");
+            let key = attributeParts[0];
+            let value = attributeParts[1];
+            switch (key) {
+                case "description":
+                    summary = value;
+                    break;
+                case "roll":
+                    if (effectName !== "Default") {
+                        adds.push(`${value}[${effectName}]`);
+                        summary = `${effectName} proc`;
+                    } else {
+                        adds.push(`${value}`);
+                    }
+                    break;
+            }
+        }
+
+        return {
+            roll: damageRoll,
+            summary: summary,
+            adds: adds
         };
     };
 
