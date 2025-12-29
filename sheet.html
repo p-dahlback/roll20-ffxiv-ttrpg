@@ -21,7 +21,7 @@
         <div class="char-size content vertical tight overrideBlocked">
             <span class="header small bold">Size</span>
             <select name="attr_size">
-                <option value="normal">Normal</option>
+                <option value="medium">Medium</option>
                 <option value="large">Large</option>
                 <option value="small">Small</option>
             </select>
@@ -4733,51 +4733,106 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file tabs
+// Build (version 1.0.0), generated file items
 
-const tabsImports = new (function() {
+const itemsImports = new (function() {
     this.export = {};
 
-const workerName = "tabs"
+const workerName = "items"
 
 
 })();
 
-// Build: Source/workers/tabs.js
+// Build: Source/workers/items.js
 
 
-// Tabs
 
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
         setAttrs({
-            sheetTab: button
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
         });
     });
 });
 
-// Initial setup
-on("sheet:opened", () => {
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
     getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
     ], values => {
+        // Assign selected minion
         setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
         });
     });
 });
@@ -4786,48 +4841,120 @@ on("sheet:opened", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
+// Build (version 1.0.0), generated file attributes
 
-const overrideImports = new (function() {
+const attributesImports = new (function() {
     this.export = {};
 
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
+const workerName = "attributes"
 
 
 })();
 
-// Build: Source/workers/override.js
+// Build: Source/workers/attributes.js
 
 
+// Advantage management
 
-const imports = overrideImports.export;
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
 
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
             });
         }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
     });
 });
 
@@ -9184,6 +9311,77 @@ const sheets = {
                     { title: "Whispering Dawn", type: "Primary, Magic, Pet", cost: 0, uses: 1, uses_max: 1, target: "All allies within range", range: "A 5x5 area centered on this pet", baseEffect: "Grants Revivify(2) to all targets.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Regen(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/whispering-dawn.png" }
                 ]
             }
+        },
+
+        // Companions
+        defender: {
+            job: "DEFENDER",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DEFENDER.png",
+            role: "Chocobo Companion / Defender",
+            level: 30,
+            resources: {
+                hitPoints: 40, hitPoints_max: 40, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
+            },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 14, magicDefense: 14, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            traits: [
+            ],
+            abilities: {
+                primary: [
+                    { title: "Choco Strike", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Deals 2 damage and inflicts Enmity on all targets.", hitType: "None", damageType: "Damage", baseValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
+                    { title: "Choco Drop", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "2 characters", range: "1 square", baseEffect: "Deals 5 damage and inflicts Enmity on all targets.", hitType: "None", damageType: "Damage", baseValue: "5", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" }
+                ]
+            }
+        },
+        healer: {
+            job: "HEALER",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/HEALER.png",
+            role: "Chocobo Companion / Healer",
+            level: 30,
+            resources: {
+                hitPoints: 25, hitPoints_max: 25, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
+            },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            traits: [
+            ],
+            abilities: {
+                primary: [
+                    { title: "Choco Cure + Choco Esuna", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Restores 12 HP and removes a single enfeeblement from the target. The target may choose which enfeeblement to remove.", hitType: "None", damageType: "Healing", baseValue: "12", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
+                    { title: "Choco Medica", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, target: "All allies within range", range: "A 5x5 area centered on this character", baseEffect: "Restores 7 HP to all targets.", hitType: "None", damageType: "Healing", baseValue: "7", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" }
+                ]
+            }
+        },
+        attacker: {
+            job: "ATTACKER",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/ATTACKER.png",
+            role: "Chocobo Companion / Attacker",
+            level: 30,
+            resources: {
+                hitPoints: 30, hitPoints_max: 30, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
+            },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            traits: [
+            ],
+            abilities: {
+                primary: [
+                    { title: "Choco Slash", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Deals 15 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "15", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
+                    { title: "Choco Blast", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Deals 7 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "7", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" }
+                ]
+            }
         }
     }
 };
@@ -9465,120 +9663,52 @@ on("clicked:end", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file attributes
+// Build (version 1.0.0), generated file tabs
 
-const attributesImports = new (function() {
+const tabsImports = new (function() {
     this.export = {};
 
-const workerName = "attributes"
+const workerName = "tabs"
 
 
 })();
 
-// Build: Source/workers/attributes.js
+// Build: Source/workers/tabs.js
 
 
-// Advantage management
+// Tabs
 
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
         setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
-        setAttrs({
-            barrierPoints_max: values.barrierPoints
+            sheetTab: button
         });
     });
 });
 
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
     });
 });
 
@@ -9586,107 +9716,48 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
+// Build (version 1.0.0), generated file override
 
-const itemsImports = new (function() {
+const overrideImports = new (function() {
     this.export = {};
 
-const workerName = "items"
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
 
 
 })();
 
-// Build: Source/workers/items.js
+// Build: Source/workers/override.js
 
 
 
-// Items
+const imports = overrideImports.export;
 
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
         }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
     });
 });
 

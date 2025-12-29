@@ -643,6 +643,77 @@ const sheets = {
                     { title: "Whispering Dawn", type: "Primary, Magic, Pet", cost: 0, uses: 1, uses_max: 1, target: "All allies within range", range: "A 5x5 area centered on this pet", baseEffect: "Grants Revivify(2) to all targets.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Regen(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/whispering-dawn.png" }
                 ]
             }
+        },
+
+        // Companions
+        defender: {
+            job: "DEFENDER",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DEFENDER.png",
+            role: "Chocobo Companion / Defender",
+            level: 30,
+            resources: {
+                hitPoints: 40, hitPoints_max: 40, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
+            },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 14, magicDefense: 14, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            traits: [
+            ],
+            abilities: {
+                primary: [
+                    { title: "Choco Strike", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Deals 2 damage and inflicts Enmity on all targets.", hitType: "None", damageType: "Damage", baseValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
+                    { title: "Choco Drop", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "2 characters", range: "1 square", baseEffect: "Deals 5 damage and inflicts Enmity on all targets.", hitType: "None", damageType: "Damage", baseValue: "5", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" }
+                ]
+            }
+        },
+        healer: {
+            job: "HEALER",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/HEALER.png",
+            role: "Chocobo Companion / Healer",
+            level: 30,
+            resources: {
+                hitPoints: 25, hitPoints_max: 25, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
+            },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            traits: [
+            ],
+            abilities: {
+                primary: [
+                    { title: "Choco Cure + Choco Esuna", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Restores 12 HP and removes a single enfeeblement from the target. The target may choose which enfeeblement to remove.", hitType: "None", damageType: "Healing", baseValue: "12", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
+                    { title: "Choco Medica", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, target: "All allies within range", range: "A 5x5 area centered on this character", baseEffect: "Restores 7 HP to all targets.", hitType: "None", damageType: "Healing", baseValue: "7", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" }
+                ]
+            }
+        },
+        attacker: {
+            job: "ATTACKER",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/ATTACKER.png",
+            role: "Chocobo Companion / Attacker",
+            level: 30,
+            resources: {
+                hitPoints: 30, hitPoints_max: 30, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
+            },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            traits: [
+            ],
+            abilities: {
+                primary: [
+                    { title: "Choco Slash", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Deals 15 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "15", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
+                    { title: "Choco Blast", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Deals 7 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "7", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" }
+                ]
+            }
         }
     }
 };
