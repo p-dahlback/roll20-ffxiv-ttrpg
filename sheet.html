@@ -4507,6 +4507,8 @@
                 <option value="BLU">Blue Mage</option>
                 -->
                 <hr />
+                <option value="CARBUNCLE">Carbuncle (SMN)</option>
+                <option value="EOS">Eos (SCH)</option>
                 <option value="NPC">NPC (initial setup only)</option>
             </select>
         </div>
@@ -4728,59 +4730,6 @@
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
-
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file override
 
 const overrideImports = new (function() {
@@ -4938,139 +4887,52 @@ on("clicked:repeating_minions:select", eventInfo => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file toggles
+// Build (version 1.0.0), generated file tabs
 
-const togglesImports = new (function() {
+const tabsImports = new (function() {
     this.export = {};
 
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
+const workerName = "tabs"
 
 
 })();
 
-// Build: Source/workers/toggles.js
+// Build: Source/workers/tabs.js
 
 
+// Tabs
 
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
     });
 });
 
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
     });
 });
 
@@ -9253,6 +9115,61 @@ const sheets = {
                     { title: "Pulse of Life", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", condition: "Limit Breaks have been made available for this encounter.", target: "All allied adventurers within range", range: "The entire encounter map*", baseEffect: "Removes all enfeeblements from all targets and fully restores their HP and MP. Pulse of Life can remove Knocked Out, Weakness and Brink of Death. *This ability also targets characters outside the encounter map. When doing so, move these targets to an empty square within 5 squares of this character after resolving the ability's effects.", hitType: "None", damageType: "Effect", effectTarget: "Pulse of Life:Clear Enfeeblements,Heal(999),Restore Magic(99)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
                 ]
             }
+        },
+
+        // Pets
+        carbuncle: {
+            job: "CARBUNCLE",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/CARBUNCLE.png",
+            role: "Pet / Carbuncle",
+            level: 30,
+            resources: {
+                hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
+            attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
+            traits: [
+                { title: "Carbuncle", effect: "While this pet is summoned, you recover 1 MP when your MP falls to 0. This effect can only be used once per turn."},
+                { title: "Ruby Carbuncle", effect: "While this pet is summoned, your gem abilities become fire-aspected and deal an additional 1d6 damage. When this pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn."},
+                { title: "Topaz Carbuncle", effect: "While this pet is summoned, your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities."},
+                { title: "Emerald Carbuncle", effect: "While this pet is summoned, your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1."}
+            ],
+            abilities: {
+                primary: [
+                    { title: "Radiant Aegis", type: "Primary, Magic, Pet", cost: 0, uses: 0, uses_max: 0, condition: "Carbuncle is summoned", target: "Single", range: "10 squares", baseEffect: "Grants a barrier of 1 HP to the target.", hitType: "None", damageType: "Effect", effectTarget: "Barrier(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/radiant-aegis.png" },
+                    { title: "Glittering Ruby", type: "Primary, Magic, Pet, Fire-Aspected", cost: 0, uses: 0, uses_max: 0, condition: "Ruby Carbuncle is summoned", target: "Single", range: "1 square", baseEffect: "Deals 3 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "3", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/glittering-ruby.png" },
+                    { title: "Glittering Topaz", type: "Primary, Magic, Pet, Earth-Aspected", cost: 0, uses: 0, uses_max: 0, condition: "Topaz Carbuncle is summoned", target: "All enemies within range", range: "A 5x5 area centered on this pet", baseEffect: "Deals 2 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/glittering-topaz.png" },
+                    { title: "Glittering Emerald", type: "Primary, Magic, Pet, Wind-Aspected", cost: 0, uses: 0, uses_max: 0, condition: "Emerald Carbuncle is summoned", target: "All enemies within range", range: "a 5x5 area within 10 squares of this pet", baseEffect: "Inflicts a DOT(2) on all targets.", hitType: "None", damageType: "Effect", effectTarget: "DOT(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/glittering-emerald.png" }
+                ]
+            }
+        },
+        eos: {
+            job: "EOS",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/EOS.png",
+            role: "Pet / Eos",
+            level: 30,
+            resources: {
+                hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
+            attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
+            traits: [
+                { title: "Flying", effect: "This pet can fly and can move across gaps and obstacles." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Embrace", type: "Primary, Magic, Pet", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/embrace.png" },
+                    { title: "Whispering Dawn", type: "Primary, Magic, Pet", cost: 0, uses: 1, uses_max: 1, target: "All allies within range", range: "A 5x5 area centered on this pet", baseEffect: "Grants Revivify(2) to all targets.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Regen(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/whispering-dawn.png" }
+                ]
+            }
         }
     }
 };
@@ -9648,6 +9565,146 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
             newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
     });
 });
 

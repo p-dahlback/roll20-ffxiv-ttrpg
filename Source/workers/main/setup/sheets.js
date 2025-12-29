@@ -627,10 +627,10 @@ const sheets = {
             },
             attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
             traits: [
-                { title: "Carbuncle", effects: "While this pet is summoned, you recover 1 MP when your MP falls to 0. This effect can only be used once per turn."},
-                { title: "Ruby Carbuncle", effects: "While this pet is summoned, your gem abilities become fire-aspected and deal an additional 1d6 damage. When this pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn."},
-                { title: "Topaz Carbuncle", effects: "While this pet is summoned, your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities."},
-                { title: "Emerald Carbuncle", effects: "While this pet is summoned, your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1."}
+                { title: "Carbuncle", effect: "While this pet is summoned, you recover 1 MP when your MP falls to 0. This effect can only be used once per turn."},
+                { title: "Ruby Carbuncle", effect: "While this pet is summoned, your gem abilities become fire-aspected and deal an additional 1d6 damage. When this pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn."},
+                { title: "Topaz Carbuncle", effect: "While this pet is summoned, your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities."},
+                { title: "Emerald Carbuncle", effect: "While this pet is summoned, your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1."}
             ],
             abilities: {
                 primary: [
@@ -656,7 +656,7 @@ const sheets = {
             },
             attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
             traits: [
-                { title: "Flying", effects: "This pet can fly and can move across gaps and obstacles." }
+                { title: "Flying", effect: "This pet can fly and can move across gaps and obstacles." }
             ],
             abilities: {
                 primary: [
