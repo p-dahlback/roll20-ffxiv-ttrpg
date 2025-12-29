@@ -1,5 +1,6 @@
 FUNCTIONAL
 * Add auto-generated sheets for pets (SCH, SMN)
+* Auto-refresh Carbuncle MP regen effect on off-turn (Swiftcast)
 
 FIX
 * (test consume + restore + removing augment ability)

@@ -158,8 +158,10 @@ const WorkerEngine = function(logger) {
             `repeating_effects_${id}_attributeValue`,
             `repeating_effects_${id}_conditionalValue`,
             `repeating_effects_${id}_linkedId`,
+            `repeating_effects_${id}_linkedName`,
             `repeating_effects_${id}_linkedType`,
-            `repeating_effects_${id}_linkedEffectId`
+            `repeating_effects_${id}_linkedEffectId`,
+            `repeating_effects_${id}_linkedEffectName`
         ];
     };
     ///#endregion

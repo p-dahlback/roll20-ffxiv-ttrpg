@@ -20,7 +20,8 @@ const ManualEffectValueChange = function() {
             `repeating_effects_${rowId}_attribute`,
             `repeating_effects_${rowId}_attributeValue`,
             `repeating_effects_${rowId}_curable`,
-            `repeating_effects_${rowId}_expiry`
+            `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_linkedName`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
@@ -28,11 +29,12 @@ const ManualEffectValueChange = function() {
             let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
             let curable = values[`repeating_effects_${rowId}_curable`];
             let expiry = values[`repeating_effects_${rowId}_expiry`];
+            let linkedName = values[`repeating_effects_${rowId}_linkedName`];
             let adjustedName = effectUtilities.searchableName(specialType || type);
             let data = effectData.effects[adjustedName];
 
             var attributes = {};
-            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable);
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable, linkedName);
             setAttrs(attributes);
 
             if (adjustedName === "attribute" || adjustedName === "defenders_boon") {

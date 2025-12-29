@@ -172,7 +172,7 @@ const EffectData = function() {
         return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
     };
 
-    this.hoverDescription = function (name, value, expiry, curable) {
+    this.hoverDescription = function (name, value, expiry, curable, linkedName) {
         var descriptions = [];
         if (value) {
             descriptions.push(`${name.replace("(X)", `(${value.toUpperCase()})`)}`);
@@ -181,6 +181,9 @@ const EffectData = function() {
         }
         if (expiry === "refresh") {
             descriptions.push("refreshes each turn");
+        } else if(expiry === "sourceStart" && linkedName) {
+            let possessiveForm = linkedName.endsWith("s") ? "'" : "'s";
+            descriptions.push(`expires Start of ${linkedName}${possessiveForm} turn`);
         } else {
             descriptions.push(`expires ${this.expiries[expiry]}`);
         }

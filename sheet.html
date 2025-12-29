@@ -4728,6 +4728,356 @@
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file tabs
+
+const tabsImports = new (function() {
+    this.export = {};
+
+const workerName = "tabs"
+
+
+})();
+
+// Build: Source/workers/tabs.js
+
+
+// Tabs
+
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
+    });
+});
+
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file main
 
 const mainImports = new (function() {
@@ -4775,7 +5125,8 @@ const ManualEffectTypeChange = function() {
             `repeating_effects_${rowId}_expiry`,
             `repeating_effects_${rowId}_description`,
             `repeating_effects_${rowId}_attribute`,
-            `repeating_effects_${rowId}_attributeValue`
+            `repeating_effects_${rowId}_attributeValue`,
+            `repeating_effects_${rowId}_linkedName`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
@@ -4872,9 +5223,10 @@ const ManualEffectTypeChange = function() {
         if (data) {
             const iconUrl = effectData.icon(data);
             let expiry = data.expiry || values[`repeating_effects_${rowId}_expiry`];
+            let linkedName = values[`repeating_effects_${rowId}_linkedName`];
 
             attributes[`repeating_effects_${rowId}_icon`] = iconUrl;
-            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, data.curable ? "on" : "off");
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, data.curable ? "on" : "off", linkedName);
             attributes[`repeating_effects_${rowId}_statusType`] = data.statusType;
             attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`];
             attributes[`repeating_effects_${rowId}_expiry`] = expiry;
@@ -4956,7 +5308,8 @@ const ManualEffectValueChange = function() {
             `repeating_effects_${rowId}_attribute`,
             `repeating_effects_${rowId}_attributeValue`,
             `repeating_effects_${rowId}_curable`,
-            `repeating_effects_${rowId}_expiry`
+            `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_linkedName`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
@@ -4964,11 +5317,12 @@ const ManualEffectValueChange = function() {
             let attributeValue = values[`repeating_effects_${rowId}_attributeValue`];
             let curable = values[`repeating_effects_${rowId}_curable`];
             let expiry = values[`repeating_effects_${rowId}_expiry`];
+            let linkedName = values[`repeating_effects_${rowId}_linkedName`];
             let adjustedName = effectUtilities.searchableName(specialType || type);
             let data = effectData.effects[adjustedName];
 
             var attributes = {};
-            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable);
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable, linkedName);
             setAttrs(attributes);
 
             if (adjustedName === "attribute" || adjustedName === "defenders_boon") {
@@ -5006,17 +5360,19 @@ const ManualEffectCurableChange = function() {
             `repeating_effects_${rowId}_type`,
             `repeating_effects_${rowId}_specialType`,
             `repeating_effects_${rowId}_value`,
-            `repeating_effects_${rowId}_expiry`
+            `repeating_effects_${rowId}_expiry`,
+            `repeating_effects_${rowId}_linkedName`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
             let value = values[`repeating_effects_${rowId}_value`];
             let expiry = values[`repeating_effects_${rowId}_expiry`];
+            let linkedName = values[`repeating_effects_${rowId}_linkedName`];
             let adjustedName = effectUtilities.searchableName(specialType || type);
             let data = effectData.effects[adjustedName];
 
             var attributes = {};
-            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable);
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, curable, linkedName);
             setAttrs(attributes);
         });
     };
@@ -5352,7 +5708,9 @@ const DamageModifiers = function() {
         }
 
         if (damageRoll.conditionalValue) {
-            let conditionalResult = this.applyConditionalEffects(damageRoll.conditionalValue, effects);
+            let conditionalResult = this.applyConditionalEffects(modifiedRoll, effects);
+            modifiedRoll = conditionalResult.roll;
+            summaries.push(conditionalResult.summary);
             adds.push(...conditionalResult.adds);
         }
 
@@ -5534,23 +5892,57 @@ const DamageModifiers = function() {
         }
     };
 
-    this.applyConditionalEffects = function(conditionalValue, effects) {
-        let match = conditionalValue.match(/^([\w' -]+)\(([\w: '-|]+)\)$/);
-        if (match.length < 3 || !match[0] || !match[1]) {
-            engine.logd("Malformed condition " +  conditionalValue);
-            return {
-                adds: []
-            };
-        }
-        let effectName = match[0];
-        if (!effects.effects.find(effect => effect.data.name === effectName)) {
-            engine.logd("Skipping conditional, the prerequisite effect is not in play");
-            return {
-                adds: []
-            };
+    this.applyConditionalEffects = function(damageRoll, effects) {
+        let conditions = damageRoll.conditionalValue.split(",");
+        for (let condition of conditions) {
+            let match = condition.match(/^([\w' -]+)\(([\w: '-|]+)\)$/);
+            if (match.length < 3 || !match[1] || !match[2]) {
+                engine.logd("Malformed condition " +  condition);
+                continue;
+            }
+            let effectName = match[1];
+            if (effectName !== "Default" && !effects.effects.find(effect => effect.data.name === effectName)) {
+                engine.logd("Skipping conditional, the prerequisite effect is not in play");
+                continue;
+            }
+
+            // Condition matches; return value
+            return this.parseConditional(damageRoll, effectName, match[2]);
         }
         return {
-            adds: [`${match[1]}[${effectName}]`]
+            roll: damageRoll,
+            summary: "",
+            adds: []
+        };
+    };
+
+    this.parseConditional = function(damageRoll, effectName, attributeSpecification) {
+        let attributes = attributeSpecification.split("|");
+        let summary = "";
+        var adds = [];
+        for (let attribute of attributes) {
+            let attributeParts = attribute.split(":");
+            let key = attributeParts[0];
+            let value = attributeParts[1];
+            switch (key) {
+                case "description":
+                    summary = value;
+                    break;
+                case "roll":
+                    if (effectName !== "Default") {
+                        adds.push(`${value}[${effectName}]`);
+                        summary = `${effectName} proc`;
+                    } else {
+                        adds.push(`${value}`);
+                    }
+                    break;
+            }
+        }
+
+        return {
+            roll: damageRoll,
+            summary: summary,
+            adds: adds
         };
     };
 
@@ -6620,7 +7012,7 @@ const EffectData = function() {
         return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
     };
 
-    this.hoverDescription = function (name, value, expiry, curable) {
+    this.hoverDescription = function (name, value, expiry, curable, linkedName) {
         var descriptions = [];
         if (value) {
             descriptions.push(`${name.replace("(X)", `(${value.toUpperCase()})`)}`);
@@ -6629,6 +7021,9 @@ const EffectData = function() {
         }
         if (expiry === "refresh") {
             descriptions.push("refreshes each turn");
+        } else if(expiry === "sourceStart" && linkedName) {
+            let possessiveForm = linkedName.endsWith("s") ? "'" : "'s";
+            descriptions.push(`expires Start of ${linkedName}${possessiveForm} turn`);
         } else {
             descriptions.push(`expires ${this.expiries[expiry]}`);
         }
@@ -6800,8 +7195,10 @@ const WorkerEngine = function(logger) {
             `repeating_effects_${id}_attributeValue`,
             `repeating_effects_${id}_conditionalValue`,
             `repeating_effects_${id}_linkedId`,
+            `repeating_effects_${id}_linkedName`,
             `repeating_effects_${id}_linkedType`,
-            `repeating_effects_${id}_linkedEffectId`
+            `repeating_effects_${id}_linkedEffectId`,
+            `repeating_effects_${id}_linkedEffectName`
         ];
     };
     ///#endregion
@@ -6937,7 +7334,13 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_editable`] = "off";
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_repeatingExpandItem`] = "on";
-            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
+            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(
+                data.name, 
+                initValues.value, 
+                initValues.expiry, 
+                initValues.curable,
+                adjustedEffect.linkedName
+            );
             effectIds.push(initValues.id);
 
             if (duplicatesResult.summaries.length === 0) {
@@ -8746,8 +9149,8 @@ const sheets = {
             ],
             abilities: {
                 primary: [
-                    { title: "Ruin II", type: "Primary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to the target. If this ability is used while under the effect of Aethercharge, deals an additional 1d6 damage.", directHit: "Deals an additional 2d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", conditionalValue: "Aethercharge(1d6)", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/ruin-ii.png" },
-                    { title: "Outburst", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to all targets. If this ability is used while under the effect of Aethercharge, deals an additional 1d6 damage.", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", conditionalValue: "Aethercharge(1d6)", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/outburst.png" },
+                    { title: "Ruin II", type: "Primary, Magic, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to the target. If this ability is used while under the effect of Aethercharge, deals an additional 1d6 damage.", directHit: "Deals an additional 2d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", conditionalValue: "Aethercharge(roll:1d6)", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/ruin-ii.png" },
+                    { title: "Outburst", type: "Primary, Magic, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to all targets. If this ability is used while under the effect of Aethercharge, deals an additional 1d6 damage.", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", conditionalValue: "Aethercharge(roll:1d6)", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/outburst.png" },
                     { title: "Resurrection", type: "Primary, Magic, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", target: "1 Knocked Out character", range: "5 squares*", check: "Special (d20, Critical)", baseEffect: "Removes Knocked Out from the target, then restores 1d6 + 2 HP, grants Transcendent, and afflicts them with Weakness. *This ability can also target a character outside the encounter map. When doing so, move the target to an empty square within range after resolving the ability's effects.", hitType: "Critical", damageType: "Healing", hitDie: "1d20cs20", baseValue: "1d6 + 2", effectTarget: "Raise", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SCH/resurrection.png" },
                     { title: "Gemshine", type: "Primary, Magic, Gem, Invoked", cost: 2, uses: 0, uses_max: 0, resource: "MP", condition: "This ability has additional effects determined by your pet.", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 4 damage to the target.", directHit: "Deals an additional 2d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "4", dhValue: "2d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/gemshine.png" },
                     { title: "Precious Brilliance", type: "Primary, Magic, Gem, Invoked", cost: 3, uses: 0, uses_max: 0, resource: "MP", condition: "This ability has additional effects determined by your pet", target: "All enemies within range", range: "A 5x5 area within 10 squares of this character", check: "INT (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 3 damage to all targets.", directHit: "Deals an additional 1d6 damage.", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "3", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/precious-brilliance.png" },
@@ -8768,7 +9171,7 @@ const sheets = {
                     { title: "Fester", type: "Instant, Magic", cost: 1, resource: "Aetherflow", uses: 0, uses_max: 0, trigger: "When any character ends their turn", target: "Single", range: "10 squares", baseEffect: "Deals 5 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "5", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/fester.png" }
                 ],
                 limit: [
-                    { title: "Teraflare", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", condition: "Limit Breaks have been made available for this encounter.", target: "All enemies within range", range: "The entire encounter map*", baseEffect: "Deals 3d6 damage to all targets. This ability has additional effects determined by your pet.\n-Ruby: Deals an additional 1d6 damage.\n-Topaz: Reduces the damage all allies take from abilities by 3 until the end of this turn.\n-Emerald: All allies may move up to 1 square.\n-Other: Deals an additional 2 damage.", hitType: "None", damageType: "Damage", baseValue: "3d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
+                    { title: "Teraflare", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", condition: "Limit Breaks have been made available for this encounter.", target: "All enemies within range", range: "The entire encounter map", baseEffect: "Deals 3d6 damage to all targets. This ability has additional effects determined by your pet.\n\n - Ruby: Deals an additional 1d6 damage.\n\n - Topaz: Reduces the damage all allies take from abilities by 3 until the end of this turn.\n\n - Emerald: All allies may move up to 1 square.\n\n - Other: Deals an additional 2 damage.", hitType: "None", damageType: "Damage", baseValue: "3d6", conditionalValue: "Ruby(roll:1d6),Topaz(description:Reduces the damage all allies take by 3 until the end of this turn.),Emerald(description:All allies may move up to 1 square.),Default(roll:2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
                 ]
             }
         },
@@ -9131,55 +9534,6 @@ on("clicked:end", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file attributes
 
 const attributesImports = new (function() {
@@ -9294,307 +9648,6 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
             newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
-
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file items
-
-const itemsImports = new (function() {
-    this.export = {};
-
-const workerName = "items"
-
-
-})();
-
-// Build: Source/workers/items.js
-
-
-
-// Items
-
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
-        }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
     });
 });
 

@@ -41,7 +41,8 @@ const ManualEffectTypeChange = function() {
             `repeating_effects_${rowId}_expiry`,
             `repeating_effects_${rowId}_description`,
             `repeating_effects_${rowId}_attribute`,
-            `repeating_effects_${rowId}_attributeValue`
+            `repeating_effects_${rowId}_attributeValue`,
+            `repeating_effects_${rowId}_linkedName`
         ], values => {
             let type = values[`repeating_effects_${rowId}_type`];
             let specialType = values[`repeating_effects_${rowId}_specialType`];
@@ -138,9 +139,10 @@ const ManualEffectTypeChange = function() {
         if (data) {
             const iconUrl = effectData.icon(data);
             let expiry = data.expiry || values[`repeating_effects_${rowId}_expiry`];
+            let linkedName = values[`repeating_effects_${rowId}_linkedName`];
 
             attributes[`repeating_effects_${rowId}_icon`] = iconUrl;
-            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, data.curable ? "on" : "off");
+            attributes[`repeating_effects_${rowId}_name`] = effectData.hoverDescription(data.name, value, expiry, data.curable ? "on" : "off", linkedName);
             attributes[`repeating_effects_${rowId}_statusType`] = data.statusType;
             attributes[`repeating_effects_${rowId}_description`] = data.description || values[`repeating_effects_${rowId}_description`];
             attributes[`repeating_effects_${rowId}_expiry`] = expiry;

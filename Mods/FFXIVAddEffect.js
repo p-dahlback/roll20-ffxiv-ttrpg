@@ -206,7 +206,7 @@ const EffectData = function() {
         return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
     };
 
-    this.hoverDescription = function (name, value, expiry, curable) {
+    this.hoverDescription = function (name, value, expiry, curable, linkedName) {
         var descriptions = [];
         if (value) {
             descriptions.push(`${name.replace("(X)", `(${value.toUpperCase()})`)}`);
@@ -215,6 +215,9 @@ const EffectData = function() {
         }
         if (expiry === "refresh") {
             descriptions.push("refreshes each turn");
+        } else if(expiry === "sourceStart" && linkedName) {
+            let possessiveForm = linkedName.endsWith("s") ? "'" : "'s";
+            descriptions.push(`expires Start of ${linkedName}${possessiveForm} turn`);
         } else {
             descriptions.push(`expires ${this.expiries[expiry]}`);
         }
@@ -1116,7 +1119,13 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_editable`] = "off";
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_repeatingExpandItem`] = "on";
-            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
+            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(
+                data.name, 
+                initValues.value, 
+                initValues.expiry, 
+                initValues.curable,
+                adjustedEffect.linkedName
+            );
             effectIds.push(initValues.id);
 
             if (duplicatesResult.summaries.length === 0) {
@@ -2048,12 +2057,15 @@ const AddEffectResolver = function(logger) {
                 let character = object.character;
                 let token = object.token;
                 let sheetType = unpackAttribute(character, "sheet_type").get("current");
+                let name;
                 let engine;
                 if (sheetType === "unique") {
                     this.logger.d(`Using character engine for ${sheetType} token`);
+                    name = character.get("name");
                     engine = new ModEngine(this.logger, character);
                 } else if (token) {
                     this.logger.d(`Using token engine for ${sheetType} token`);
+                    name = token.get("name");
                     engine = new TokenEngine(this.logger, token, character, effectCache);
                 } else {
                     this.logger.i(`Will not add effect; character ${character.get("name")} isn't unique. Generic characters only support adding to selected token.`);
@@ -2073,7 +2085,14 @@ const AddEffectResolver = function(logger) {
                     if (result.addedIds && result.addedIds.length > 0) {
                         effect.id = result.addedIds[0];
                         effect.fullId = `repeating_effects_${effect.id}`;
-                        this.linkWithSourceEffectIfNeeded(character, engine, sheetType, effect);
+                        let targetDefinition = {
+                            token: token,
+                            character: character,
+                            name: name,
+                            sheetType: sheetType,
+                            engine: engine
+                        };
+                        this.linkWithSourceEffectIfNeeded(targetDefinition, effect);
                         summaries.push(`${result.summary} on <b>${character.get("name")}</b>`);
                     } else {
                         engine.logi("Failed to add effect " + JSON.stringify(effect));
@@ -2088,10 +2107,11 @@ const AddEffectResolver = function(logger) {
         return summary;
     };
 
-    this.linkWithSourceEffectIfNeeded = function(character, engine, sheetType, effect) {
+    this.linkWithSourceEffectIfNeeded = function(targetDefinition, effect) {
         if (!effect.source || effect.source === "Self") {
             return;
         }
+        let engine = targetDefinition.engine;
         if (!effect.fullId) {
             engine.logi("Missing effect id!");
             return;
@@ -2120,16 +2140,24 @@ const AddEffectResolver = function(logger) {
         }
         attributes[`${effect.fullId}_linkedEffectId`] = sourceEffectId;
         attributes[`${effect.fullId}_linkedType`] = unpackAttribute(sourceCharacter, "sheet_type").get("current");
+        attributes[`${effect.fullId}_linkedName`] = sourceCharacter.get("name");
         let sourceData = this.sourceEffectData(sourceEffectId, sourceCharacter);
         if (sourceData) {
-            attributes[`${effect.fullId}_linkedName`] = sourceData.name;
+            attributes[`${effect.fullId}_linkedEffectName`] = sourceData.name;
         } else {
-            attributes[`${effect.fullId}_linkedName`] = effect.data.name;
+            attributes[`${effect.fullId}_linkedEffectName`] = effect.data.name;
         }
+        attributes[`${effect.fullId}_name`] = effectData.hoverDescription(
+            effect.data.name, 
+            effect.value, 
+            effect.expiry ?? effect.data.expiry, 
+            effect.curable,
+            sourceCharacter.get("name")
+        );
 
         engine.set(attributes);
 
-        this.linkSourceToTargetCharacter(character, sourceCharacter, sourceEffectId, sheetType, effect);
+        this.linkSourceToTargetCharacter(targetDefinition, sourceCharacter, sourceEffectId, effect);
     };
 
     this.sourceEffectData = function(sourceEffectId, sourceCharacter) {
@@ -2142,17 +2170,36 @@ const AddEffectResolver = function(logger) {
         return effectData.effects[adjustedName];
     };
 
-    this.linkSourceToTargetCharacter = function(character, sourceCharacter, sourceEffectId, sheetType, effect) {
+    this.linkSourceToTargetCharacter = function(targetDefinition, sourceCharacter, sourceEffectId, effect) {
         this.logger.d("Linking source character back to effect");
         let linkedId = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedId`);
         let linkedEffectId = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedEffectId`);
-        let linkedType = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedType`);
         let linkedName = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedName`);
+        let linkedType = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedType`);
+        let linkedEffectName = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_linkedEffectName`);
 
-        setAttribute(linkedId, "current", character.get("id"));
+        let type = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_type`).get("current");
+        let specialType = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_specialType`).get("current");
+        let expiry = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_expiry`).get("current");
+        let value = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_value`).get("current");
+        let curable = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_curable`).get("current");
+        let hoverName = unpackAttribute(sourceCharacter, `repeating_effects_${sourceEffectId}_name`);
+
+        if (targetDefinition.sheetType === "unique") {
+            setAttribute(linkedId, "current", targetDefinition.character.get("id"));
+        } else {
+            setAttribute(linkedId, "current", targetDefinition.token.get("id"));
+        }
         setAttribute(linkedEffectId, "current", effect.id);
-        setAttribute(linkedType, "current", sheetType);
-        setAttribute(linkedName, "current", effect.data.name);
+        setAttribute(linkedName, "current", targetDefinition.name);
+        setAttribute(linkedType, "current", targetDefinition.sheetType);
+        setAttribute(linkedEffectName, "current", effect.data.name);
+
+        let adjustedName = effectUtilities.searchableName(specialType || type);
+        let data = effectData.effects[adjustedName];
+        if (data) {
+            setAttribute(hoverName, "current", effectData.hoverDescription(data.name, value, expiry, curable, targetDefinition.name));
+        }
     };
 };
 

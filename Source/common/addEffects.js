@@ -111,7 +111,13 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_editable`] = "off";
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_repeatingExpandItem`] = "on";
-            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
+            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(
+                data.name, 
+                initValues.value, 
+                initValues.expiry, 
+                initValues.curable,
+                adjustedEffect.linkedName
+            );
             effectIds.push(initValues.id);
 
             if (duplicatesResult.summaries.length === 0) {

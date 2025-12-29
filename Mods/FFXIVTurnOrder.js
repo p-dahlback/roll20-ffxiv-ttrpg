@@ -206,7 +206,7 @@ const EffectData = function() {
         return `https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Effects/${imageName}.png`;
     };
 
-    this.hoverDescription = function (name, value, expiry, curable) {
+    this.hoverDescription = function (name, value, expiry, curable, linkedName) {
         var descriptions = [];
         if (value) {
             descriptions.push(`${name.replace("(X)", `(${value.toUpperCase()})`)}`);
@@ -215,6 +215,9 @@ const EffectData = function() {
         }
         if (expiry === "refresh") {
             descriptions.push("refreshes each turn");
+        } else if(expiry === "sourceStart" && linkedName) {
+            let possessiveForm = linkedName.endsWith("s") ? "'" : "'s";
+            descriptions.push(`expires Start of ${linkedName}${possessiveForm} turn`);
         } else {
             descriptions.push(`expires ${this.expiries[expiry]}`);
         }
@@ -1116,7 +1119,13 @@ const AddEffects = function(customEngine, customRemove) {
             attributes[`repeating_effects_${initValues.id}_editable`] = "off";
             attributes[`repeating_effects_${initValues.id}_origin`] = "automatic";
             attributes[`repeating_effects_${initValues.id}_repeatingExpandItem`] = "on";
-            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(data.name, initValues.value, initValues.expiry, initValues.curable);
+            attributes[`repeating_effects_${initValues.id}_name`] = effectData.hoverDescription(
+                data.name, 
+                initValues.value, 
+                initValues.expiry, 
+                initValues.curable,
+                adjustedEffect.linkedName
+            );
             effectIds.push(initValues.id);
 
             if (duplicatesResult.summaries.length === 0) {
@@ -2032,7 +2041,7 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
     };
 
     this.removeLinkedEffectIfNeeded = function(effect) {
-        if (!effect.linkedId || !effect.linkedType || !effect.linkedEffectId || !effect.linkedName) {
+        if (!effect.linkedId || !effect.linkedType || !effect.linkedEffectId || !effect.linkedName || !effect.linkedEffectName) {
             return "";
         }
         this.engine.logd("Removing linked effect on character/token");
@@ -2064,7 +2073,7 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
                 this.addBaseCarbuncleEffect(null, engine, removeEffects);
             }
         });
-        return `, expired linked effect <b>${effect.linkedName}</b> on <b>${name}</b>`;
+        return `, expired linked effect <b>${effect.linkedEffectName}</b> on <b>${name}</b>`;
     };
 
     this.addBaseCarbuncleEffect = function(state, engine, removeEffects) {

@@ -77,7 +77,7 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
     };
 
     this.removeLinkedEffectIfNeeded = function(effect) {
-        if (!effect.linkedId || !effect.linkedType || !effect.linkedEffectId || !effect.linkedName) {
+        if (!effect.linkedId || !effect.linkedType || !effect.linkedEffectId || !effect.linkedName || !effect.linkedEffectName) {
             return "";
         }
         this.engine.logd("Removing linked effect on character/token");
@@ -109,7 +109,7 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
                 this.addBaseCarbuncleEffect(null, engine, removeEffects);
             }
         });
-        return `, expired linked effect <b>${effect.linkedName}</b> on <b>${name}</b>`;
+        return `, expired linked effect <b>${effect.linkedEffectName}</b> on <b>${name}</b>`;
     };
 
     this.addBaseCarbuncleEffect = function(state, engine, removeEffects) {
