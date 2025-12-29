@@ -1966,13 +1966,19 @@ div[data-groupname=repeating_technique3].repcontrol,
 
 .top-abilities,
 .sub-abilities,
-.conditional-abilities {
+.secondary-abilities,
+.instant-abilities,
+.conditional-abilities,
+.limit {
   display: none;
 }
 
 .job-type[value="BRD"] ~ .top-abilities,
 .job-type[value="NIN"] ~ .sub-abilities,
-.techniqueSwitch[value="true"] ~ .conditional-abilities {
+.secondarySwitch[value="true"] ~ .secondary-abilities,
+.instantSwitch[value="true"] ~ .instant-abilities,
+.techniqueSwitch[value="true"] ~ .conditional-abilities,
+.limitSwitch[value="true"] ~ .limit {
   display: block;
 }
 

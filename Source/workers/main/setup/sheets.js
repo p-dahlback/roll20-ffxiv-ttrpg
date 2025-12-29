@@ -4,29 +4,6 @@
 /*build:end*/
 
 const sheets = {
-    template: {
-        job: "",
-        jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/X.png",
-        role: "X / Y",
-        level: 30,
-        resources: { 
-            hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
-            resource: "", resourceValue: 0, resourceValue_max: 0, 
-            resource2: "none", resource2Value: 0, resource2Value_max: 0, 
-            resource3: "none", resource3Value: 0, resource3Value_max: 0, 
-            range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-            resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
-        },
-        attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
-        traits: [
-            { title: "", effect: "" }
-        ],
-        abilities: {
-            primary: [
-                { title: "", type: "", cost: 0, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "INT (d20 + 5)", cr: "Target's X", baseEffect: "", directHit: "", stat: "INT", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "", dhValue: "", effectSelf: "", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/BLM/blizzard.png" }
-            ]
-        }
-    },
     npc: {
         job: "NPC",
         jobIcon: "",
@@ -39,11 +16,13 @@ const sheets = {
             resource2: "none", resource2Value: 0, resource2Value_max: 0, 
             resource3: "none", resource3Value: 0, resource3Value_max: 0, 
             range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-            resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+            resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
         },
         attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 0 }
     },
 
+    // Jobs
+    
     level30: {
         ast: {
             job: "AST",
@@ -56,7 +35,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 2, dex: 2, vit: 2, int: 2, mnd: 4, defense: 12, magicDefense: 13, vigilance: 14, speed: 5 },
             traits: [
@@ -99,7 +78,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 0, dex: 2, vit: 1, int: 5, mnd: 4, defense: 11, magicDefense: 15, vigilance: 14, speed: 5 },
             traits: [
@@ -145,7 +124,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 1, dex: 4, vit: 2, int: 3, mnd: 2, defense: 13, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
@@ -192,7 +171,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 5, dex: 3, vit: 2, int: 1, mnd: 1, defense: 14, magicDefense: 11, vigilance: 11, speed: 5 },
             traits: [
@@ -235,7 +214,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 4, dex: 0, vit: 4, int: 0, mnd: 4, defense: 15, magicDefense: 14, vigilance: 14, speed: 5 },
             traits: [
@@ -275,7 +254,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 3, dex: 4, vit: 2, int: 2, mnd: 1, defense: 14, magicDefense: 12, vigilance: 11, speed: 5 },
             traits: [
@@ -317,7 +296,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 1, range3: 0, range3_max: 2, 
-                resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 4, dex: 3, vit: 2, int: 1, mnd: 2, defense: 14, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
@@ -363,7 +342,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0,
                 resource3: "none", resource3Value: 0, resource3Value_max: 0,
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false" 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 1, dex: 5, vit: 2, int: 1, mnd: 3, defense: 13, magicDefense: 12, vigilance: 13, speed: 5 },
             traits: [
@@ -411,7 +390,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 4, dex: 0, vit: 5, int: 1, mnd: 2, defense: 16, magicDefense: 13, vigilance: 12, speed: 5 },
             traits: [
@@ -453,7 +432,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 0, dex: 1, vit: 2, int: 4, mnd: 5, defense: 12, magicDefense: 15, vigilance: 15, speed: 5 },
             traits: [
@@ -493,7 +472,7 @@ const sheets = {
                 resource2: "Arcanum", resource2Value: 0, resource2Value_max: 1,
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "full", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 1, dex: 3, vit: 1, int: 5, mnd: 2, defense: 13, magicDefense: 15, vigilance: 12, speed: 5 },
             traits: [
@@ -542,7 +521,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 4, dex: 2, vit: 5, int: 0, mnd: 1, defense: 15, magicDefense: 12, vigilance: 11, speed: 5 },
             traits: [
@@ -582,7 +561,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 1, dex: 1, vit: 2, int: 3, mnd: 5, defense: 11, magicDefense: 14, vigilance: 15, speed: 5 },
             traits: [
@@ -623,7 +602,7 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
             traits: [
@@ -652,11 +631,11 @@ const sheets = {
                 resource2: "none", resource2Value: 0, resource2Value_max: 0, 
                 resource3: "none", resource3Value: 0, resource3Value_max: 0, 
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
-                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
             traits: [
-                { title: "Flying", effect: "This pet can fly and can move across gaps and obstacles." }
+                { title: "Flying", effects: "This pet can fly and can move across gaps and obstacles." }
             ],
             abilities: {
                 primary: [
