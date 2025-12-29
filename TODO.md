@@ -1,5 +1,6 @@
 FUNCTIONAL
 * Add auto-generated sheets for pets (SCH, SMN)
+* Handle SMN speed increase on Emerald status
 * Auto-refresh Carbuncle MP regen effect on off-turn (Swiftcast)
 
 FIX

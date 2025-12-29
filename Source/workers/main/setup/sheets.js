@@ -609,6 +609,61 @@ const sheets = {
                     { title: "Pulse of Life", type: "Limit Break", cost: 0, uses: 1, uses_max: 1, trigger: "Any time", condition: "Limit Breaks have been made available for this encounter.", target: "All allied adventurers within range", range: "The entire encounter map*", baseEffect: "Removes all enfeeblements from all targets and fully restores their HP and MP. Pulse of Life can remove Knocked Out, Weakness and Brink of Death. *This ability also targets characters outside the encounter map. When doing so, move these targets to an empty square within 5 squares of this character after resolving the ability's effects.", hitType: "None", damageType: "Effect", effectTarget: "Pulse of Life:Clear Enfeeblements,Heal(999),Restore Magic(99)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/General/limit-break.png" }
                 ]
             }
+        },
+
+        // Pets
+        carbuncle: {
+            job: "CARBUNCLE",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/CARBUNCLE.png",
+            role: "Pet / Carbuncle",
+            level: 30,
+            resources: {
+                hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
+            attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
+            traits: [
+                { title: "Carbuncle", effects: "While this pet is summoned, you recover 1 MP when your MP falls to 0. This effect can only be used once per turn."},
+                { title: "Ruby Carbuncle", effects: "While this pet is summoned, your gem abilities become fire-aspected and deal an additional 1d6 damage. When this pet enters a square occupied by an enemy, that enemy takes 1 damage. An enemy can only suffer damage from this effect once per turn."},
+                { title: "Topaz Carbuncle", effects: "While this pet is summoned, your gem abilities become earth-aspected and deal an additional 2 damage. You take 1 less damage from abilities."},
+                { title: "Emerald Carbuncle", effects: "While this pet is summoned, your gem abilities become wind-aspected and may target two additional characters within 10 squares of you. Your speed increases by 1."}
+            ],
+            abilities: {
+                primary: [
+                    { title: "Radiant Aegis", type: "Primary, Magic, Pet", cost: 0, uses: 0, uses_max: 0, condition: "Carbuncle is summoned", target: "Single", range: "10 squares", baseEffect: "Grants a barrier of 1 HP to the target.", hitType: "None", damageType: "Effect", effectTarget: "Barrier(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/radiant-aegis.png" },
+                    { title: "Glittering Ruby", type: "Primary, Magic, Pet, Fire-Aspected", cost: 0, uses: 0, uses_max: 0, condition: "Ruby Carbuncle is summoned", target: "Single", range: "1 square", baseEffect: "Deals 3 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "3", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/glittering-ruby.png" },
+                    { title: "Glittering Topaz", type: "Primary, Magic, Pet, Earth-Aspected", cost: 0, uses: 0, uses_max: 0, condition: "Topaz Carbuncle is summoned", target: "All enemies within range", range: "A 5x5 area centered on this pet", baseEffect: "Deals 2 damage to all targets.", hitType: "None", damageType: "Damage", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/glittering-topaz.png" },
+                    { title: "Glittering Emerald", type: "Primary, Magic, Pet, Wind-Aspected", cost: 0, uses: 0, uses_max: 0, condition: "Emerald Carbuncle is summoned", target: "All enemies within range", range: "a 5x5 area within 10 squares of this pet", baseEffect: "Inflicts a DOT(2) on all targets.", hitType: "None", damageType: "Effect", effectTarget: "DOT(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/glittering-emerald.png" }
+                ]
+            }
+        },
+        eos: {
+            job: "EOS",
+            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/EOS.png",
+            role: "Pet / Eos",
+            level: 30,
+            resources: {
+                hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
+                resource: "", resourceValue: 0, resourceValue_max: 0, 
+                resource2: "none", resource2Value: 0, resource2Value_max: 0, 
+                resource3: "none", resource3Value: 0, resource3Value_max: 0, 
+                range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
+                resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasTechniques: "false"
+            },
+            attributes: { str: 0, dex: 0, vit: 0, int: 0, mnd: 0, defense: 0, magicDefense: 0, vigilance: 0, speed: 5 },
+            traits: [
+                { title: "Flying", effects: "This pet can fly and can move across gaps and obstacles." }
+            ],
+            abilities: {
+                primary: [
+                    { title: "Embrace", type: "Primary, Magic, Pet", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Restores 2 HP to the target.", hitType: "None", damageType: "Healing", baseValue: "2", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/embrace.png" },
+                    { title: "Whispering Dawn", type: "Primary, Magic, Pet", cost: 0, uses: 1, uses_max: 1, target: "All allies within range", range: "A 5x5 area centered on this pet", baseEffect: "Grants Revivify(2) to all targets.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Regen(2)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/PET/whispering-dawn.png" }
+                ]
+            }
         }
     }
 };
