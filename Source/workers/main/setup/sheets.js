@@ -659,7 +659,7 @@ const sheets = {
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
-            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 14, magicDefense: 14, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 14, magicDefense: 14, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
             traits: [
             ],
             abilities: {
@@ -682,7 +682,7 @@ const sheets = {
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
-            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
             traits: [
             ],
             abilities: {
@@ -705,7 +705,7 @@ const sheets = {
                 range1: 0, range1_max: 0, range2: 0, range2_max: 0, range3: 0, range3_max: 0, 
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
-            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, race: "Cloudkin, Chocobo", size: "medium" },
+            attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
             traits: [
             ],
             abilities: {
