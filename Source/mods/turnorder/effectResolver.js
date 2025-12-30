@@ -45,8 +45,9 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
                     summaries.push(executeResult.summary);
                 }
                 state = executeResult.state;
+                summaries.push(this.refreshValueIfApplicable(effect));
                 if (shouldUpdateExpiries) {
-                    summaries.push(this.updateIfApplicable(effect));
+                    summaries.push(this.updateExpiryIfApplicable(effect));
                 }
                 summaries.push(this.removeIfApplicable(state, effect));
             }
@@ -118,26 +119,23 @@ const EffectResolver = function(engine, removeEffects, engineFactory) {
         return `, activated <b>Carbuncle</b>`;
     };
 
-    this.updateIfApplicable = function(effect) {
-        var attributes = {};
-        let newExpiry;
-        switch (effect.expiry) {
-            case "turn2":
-                newExpiry = "turn";
-                break;
-            case "refresh":
-                if (effect.value == "0") {
-                    // Refresh the MP gain effect when Carbuncle is summoned
-                    attributes[`${effect.fullId}_value`] = "1";
-                    this.engine.set(attributes);
-                    return "Carbuncle is able to recover your MP again";
-                }
-                return "";
-            default:
-                return "";
+    this.refreshValueIfApplicable = function(effect) {
+        if (effect.expiry === "refresh" && effect.value == "0") {
+            // Refresh the MP gain effect when Carbuncle is summoned
+            var attributes = {};
+            attributes[`${effect.fullId}_value`] = "1";
+            this.engine.set(attributes);
+            return "Carbuncle is able to recover your MP again";
         }
-        attributes[`${effect.fullId}_expiry`] = newExpiry;
-        this.engine.set(attributes);
+        return "";
+    };
+
+    this.updateExpiryIfApplicable = function(effect) {
+        if (effect.expiry === "turn2") {
+            var attributes = {};
+            attributes[`${effect.fullId}_expiry`] = "turn";
+            this.engine.set(attributes);
+        }
         return "";
     };
     

@@ -7091,14 +7091,14 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().get([`${attributeName}`, `${attributeName}Effective`, `${attributeName}Override`, `${attributeName}Unblocked`], values => {
                     var attributes = {};
                     let baseAttributeName;
-                    let isBlocked = unpackNaN(values[`${attributeName}Override`], 0) > 0;
+                    let isBlocked = unpackNaN(values[`${attributeName}Override`]) > 0;
                     if (isBlocked) {
                         baseAttributeName = `${attributeName}Unblocked`;
                     } else {
                         baseAttributeName = `${attributeName}Effective`;
                     }
 
-                    let currentValue = unpackNaN(values[`${baseAttributeName}`], 0);
+                    let currentValue = unpackNaN(values[`${baseAttributeName}`]);
                     let rawValue = unpackNaN(values[attributeName]);
                     let newValue = currentValue + attributeValue;
                     this.engine().logd(`${attributeName}: ${newValue}, unblocked: ${values[`${attributeName}Unblocked`]}`);
@@ -7118,8 +7118,8 @@ const AddEffects = function(customEngine, customRemove) {
             case "bound": {
                 this.engine().logd("Resolving attributes for bound");
                 this.engine().get(["size", "speed", "speedEffective", "speedOverride", "speedUnblocked"], values => {
-                    let speed = unpackNaN(values.speedEffective, 0);
-                    let unblocked = unpackNaN(values.speedUnblocked ?? values.speed, 0);
+                    let speed = unpackNaN(values.speedEffective);
+                    let unblocked = unpackNaN(values.speedUnblocked ?? values.speed);
                     let newValue;
                     let diff;
                     if (values.size === "large") {
@@ -7133,7 +7133,7 @@ const AddEffects = function(customEngine, customRemove) {
                     }
 
                     var attributes = {};
-                    if (unpackNaN(values.speedOverride, 0) > 0) {
+                    if (unpackNaN(values.speedOverride) > 0) {
                         attributes.speedUnblocked = unblocked;
                     }
                     this.engine().logd(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
@@ -7156,8 +7156,8 @@ const AddEffects = function(customEngine, customRemove) {
                     attributeValue = 1;
                 }
                 this.engine().get(["defense", "magicDefense"], values => {
-                    let defense = unpackNaN(values.defense, 0);
-                    let magicDefense = unpackNaN(values.magicDefense, 0);
+                    let defense = unpackNaN(values.defense);
+                    let magicDefense = unpackNaN(values.magicDefense);
                     let attributeName;
                     let newValue;
                     let rawValue;
@@ -7185,15 +7185,43 @@ const AddEffects = function(customEngine, customRemove) {
                 });
                 break;
             }
+            case "emerald": {
+                let intValue = unpackNaN(value);
+                if (intValue < 1) {
+                    return;
+                }
+                this.engine().logd("Resolving attributes for emerald");
+                this.engine().get(["speed", "speedEffective", "speedOverride", "speedUnblocked"], values => {
+                    let speed = unpackNaN(values.speedEffective);
+                    let unblocked = unpackNaN(values.speedUnblocked ?? values.speed);
+                    let newValue = speed + intValue;
+                    unblocked = unblocked + intValue;
+                    let diff = intValue;
+
+                    var attributes = {};
+                    if (unpackNaN(values.speedOverride) > 0) {
+                        attributes.speedUnblocked = unblocked;
+                    }
+                    this.engine().logd(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
+                    let rawValue = unpackNaN(values.speed);
+                    let bottomValue = Math.min(rawValue, 0);
+                    attributes.speedEffective = newValue;
+                    attributes.speedDisplay = Math.max(newValue, bottomValue);
+                    attributes[`repeating_effects_${id}_attribute`] = "speed";
+                    attributes[`repeating_effects_${id}_attributeValue`] = diff;
+                    this.engine().set(attributes);
+                });
+                break;
+            }
             case "slow":
             case "heavy": {
                 this.engine().logd(`Resolving attributes for ${effectName}`);
                 this.engine().get(["speed", "speedEffective", "speedOverride", "speedOverrideSources", "speedUnblocked"], values => {
-                    let speed = unpackNaN(values.speed, 0);
+                    let speed = unpackNaN(values.speed);
                     let newValue = Math.floor(speed / 2) + speed % 2;
                     let diff = speed - newValue;
                     var attributes = {};
-                    if (unpackNaN(values.speedOverride, 0) > 0) {
+                    if (unpackNaN(values.speedOverride) > 0) {
                         log(`Speed was already blocked when activating ${effectName}`);
                         attributes.speedOverrideSources = unpackNaN(values.speedOverrideSources, 1) + 1;
                     } else {
@@ -7260,7 +7288,7 @@ const AddEffects = function(customEngine, customRemove) {
             for (let replacable of state.existingEffects.effects) {
                 if (replacable.type == effect.data.type && replacable.specialType == effect.data.specialType) {
                     summaries.push(`Reactivated ${effect.data.specialType ?? effect.data.type}`);
-                    this.engine().remove(replacable);
+                    this.removeEffects().remove(replacable);
                 }
             }
         } else if (effect.data.duplicate == "bigger") {
@@ -7275,7 +7303,7 @@ const AddEffects = function(customEngine, customRemove) {
                     hadDuplicate = true;
                     if (effect.value > replacable.value) {
                         summaries.push(`Reactivated ${effect.data.specialType ?? effect.data.type}`);
-                        this.engine().remove(replacable);
+                        this.removeEffects().remove(replacable);
                         didReplace = true;
                     }
                 }
@@ -7313,7 +7341,7 @@ const AddEffects = function(customEngine, customRemove) {
                 // Remove Umbral Ice
                 if (state.existingEffects.umbralIce) {
                     summaries.push("Removed Umbral Ice");
-                    this.engine().remove(state.existingEffects.umbralIce);
+                    this.removeEffects().remove(state.existingEffects.umbralIce);
                 }
                 let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
                 summaries.push(result.summary);
@@ -7345,7 +7373,7 @@ const AddEffects = function(customEngine, customRemove) {
                 if (state.existingEffects.monkForm && state.existingEffects.monkForm.adjustedName !== effect.adjustedName) {
                     this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
                     summaries.push(`Removed ${state.existingEffects.monkForm.data.name}`);
-                    this.engine().remove(state.existingEffects.monkForm);
+                    this.removeEffects().remove(state.existingEffects.monkForm);
                 }
                 break;
             }
@@ -7422,7 +7450,7 @@ const AddEffects = function(customEngine, customRemove) {
                 if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
                     this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
                     summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
-                    this.engine().remove(state.existingEffects.gemEffect);
+                    this.removeEffects().remove(state.existingEffects.gemEffect);
                 }
                 break;
             }
@@ -7559,7 +7587,7 @@ const AddEffects = function(customEngine, customRemove) {
             case "umbral_ice": {
                 if (state.existingEffects.astralFire) {
                     summaries.push("Removed Astral Fire");
-                    this.engine().remove(state.existingEffects.astralFire);
+                    this.removeEffects().remove(state.existingEffects.astralFire);
 
                     // Reset MP recovery
                     attributes.mpRecoveryBlock = "off";
@@ -7907,7 +7935,7 @@ const AbilityCombos = function() {
     this.parseCombo = function(combo) {
         let choices = combo.split(",");
         return choices.map(choice => {
-            let matches = choice.match(/([\w ':-]+)(\([\w |':-]*\))?/);
+            let matches = choice.match(/^\s*([\w ':-]+)(?:\(([\w |()':-]*)\))?\s*$/);
             if (!matches || !matches[1]) {
                 engine.logd("Unable to parse combo " + choice);
                 return null;
@@ -7924,11 +7952,11 @@ const AbilityCombos = function() {
             isCustom: false
         };
         if (parameters) {
-            engine.logd("Parsing combo parameters");
+            engine.logd("Parsing combo parameters " + parameters);
             specification.isCustom = true;
             let parameterList = parameters.split("|");
             for (let parameter of parameterList) {
-                let matches = parameter.match(/([\w-]+):\s*([\w-]+)\s*([\w-]+)?/);
+                let matches = parameter.match(/^([\w-]+):\s*([\w()-]+)\s*([\w-]+)?$/);
                 let key = matches[1];
                 let value = matches[2];
                 let resource = matches[3];
@@ -8854,7 +8882,7 @@ const sheets = {
                 ],
                 instant: [
                     { title: "Summon Carbuncle", type: "Trait, Free Action", cost: 0, uses: 0, uses_max: 0, trigger: "At the start of an encounter or phase, or after recovering from being Knocked Out", condition: "Pet is not summoned", baseEffect: "Summons Carbuncle to a square occupied by this character.", hitType: "None", damageType: "Effect", effectSelf: "Carbuncle(1)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/summon-carbuncle.png" },
-                    { title: "Summon Gem", type: "Instant", cost: 1, resource: "Arcanum", uses: 0, uses_max: 0, trigger: "When your pet begins its turn", baseEffect: "Transforms your pet into Ruby Carbuncle, Topaz Carbuncle or Emerald Carbuncle until the start of your pet's next turn.", hitType: "None", damageType: "Effect", combo: "Ruby(damageType:Effect|selfEffects:Ruby|targetEffects:Ruby), Topaz(damageType:Effect|selfEffects:Topaz|targetEffects:Topaz), Emerald(damageType:Effect|selfEffects:Emerald|targetEffects:Emerald)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/summon-gem.png" },
+                    { title: "Summon Gem", type: "Instant", cost: 1, resource: "Arcanum", uses: 0, uses_max: 0, trigger: "When your pet begins its turn", baseEffect: "Transforms your pet into Ruby Carbuncle, Topaz Carbuncle or Emerald Carbuncle until the start of your pet's next turn.", hitType: "None", damageType: "Effect", combo: "Ruby(damageType:Effect|selfEffects:Ruby|targetEffects:Ruby), Topaz(damageType:Effect|selfEffects:Topaz|targetEffects:Topaz), Emerald(damageType:Effect|selfEffects:Emerald(1)|targetEffects:Emerald(0))", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/summon-gem.png" },
                     { title: "Energy Drain", type: "Instant, Magic", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", target: "Single", range: "10 squares", baseEffect: "Deals 3 damage to the target and grants 2 stacks of Aetherflow.", limitation: "Once per phase", hitType: "None", damageType: "Damage", baseValue: "3", restore: "2 Aetherflow", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/SMN/energy-drain.png" },
                     { title: "Swiftcast", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "When any character ends their turn", baseEffect: "Immediately use one of your magic abilities.", limitation: "Once per phase", hitType: "None", damageType: "Effect", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/swiftcast.png" },
                     { title: "Addle", type: "Instant", cost: 0, uses: 1, uses_max: 1, trigger: "Immediately before an ability used by an enemy is resolved", target: "The enemy that triggered this ability", range: "5 squares", baseEffect: "Reduces the damage dealt by the target's abilities by 2 until the end of this turn.", limitation: "Once per phase", hitType: "None", damageType: "Effect", effectTarget: "Addle", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/Caster/addle.png" },
@@ -9350,55 +9378,6 @@ on("clicked:end", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
 // Build (version 1.0.0), generated file toggles
 
 const togglesImports = new (function() {
@@ -9539,107 +9518,48 @@ on("clicked:collapseAllAbilities", () => {
 
 <script type="text/worker">
 
-// Build (version 1.0.0), generated file items
+// Build (version 1.0.0), generated file override
 
-const itemsImports = new (function() {
+const overrideImports = new (function() {
     this.export = {};
 
-const workerName = "items"
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
 
 
 })();
 
-// Build: Source/workers/items.js
+// Build: Source/workers/override.js
 
 
 
-// Items
+const imports = overrideImports.export;
 
-function shareItemToChat(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    getAttrs([
-        `repeating_${section}_${rowId}_title`,
-        `repeating_${section}_${rowId}_effect`
-    ], values => {
-        const title = values[`repeating_${section}_${rowId}_title`];
-        const effect = values[`repeating_${section}_${rowId}_effect`];
-
-        var type;
-        switch (section) {
-            case "items":
-                type = "Item";
-                break;
-            case "titles":
-                type = "Title";
-                break;
-            case "minions":
-                type = "Minion";
-                break;
-            case "traits":
-                type = "Trait";
-                break;
-            default:
-                log("Unrecognized item type " + section);
-                return;
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
         }
-
-        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
-            finishRoll(results.rollId);
-        });
-    });
-}
-
-// Remove items with zero content
-on("change:repeating_items:count", eventInfo => {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        log("Cannot manage items with NaN count");
-        return;
-    }
-    if (newValue <= 0) {
-        log("Removing consumed item");
-        removeRepeatingRow(`repeating_${section}_${rowId}`);
-    }
-});
-
-on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
-    shareItemToChat(eventInfo);
-});
-
-on("clicked:repeating_titles:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_titles_${rowid}_title`, 
-        `repeating_titles_${rowid}_effect`
-    ], values => {
-        // Assign selected title
-        setAttrs({
-            selectedTitleId: rowid,
-            selectedTitle: values[`repeating_titles_${rowid}_title`],
-            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
-        });
-    });
-});
-
-// Minion selection
-on("clicked:repeating_minions:select", eventInfo => {
-    const rowid = eventInfo.sourceAttribute.split("_")[2];
-    getAttrs([
-        `repeating_minions_${rowid}_title`, 
-        `repeating_minions_${rowid}_effect`
-    ], values => {
-        // Assign selected minion
-        setAttrs({
-            selectedMinionId: rowid,
-            selectedMinion: values[`repeating_minions_${rowid}_title`],
-            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
-        });
     });
 });
 
@@ -9761,6 +9681,114 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
             newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file items
+
+const itemsImports = new (function() {
+    this.export = {};
+
+const workerName = "items"
+
+
+})();
+
+// Build: Source/workers/items.js
+
+
+
+// Items
+
+function shareItemToChat(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    getAttrs([
+        `repeating_${section}_${rowId}_title`,
+        `repeating_${section}_${rowId}_effect`
+    ], values => {
+        const title = values[`repeating_${section}_${rowId}_title`];
+        const effect = values[`repeating_${section}_${rowId}_effect`];
+
+        var type;
+        switch (section) {
+            case "items":
+                type = "Item";
+                break;
+            case "titles":
+                type = "Title";
+                break;
+            case "minions":
+                type = "Minion";
+                break;
+            case "traits":
+                type = "Trait";
+                break;
+            default:
+                log("Unrecognized item type " + section);
+                return;
+        }
+
+        startRoll(`&{template:item} {{title=${title}}} {{type=${type}}} {{effect=${effect}}}`, results => {
+            finishRoll(results.rollId);
+        });
+    });
+}
+
+// Remove items with zero content
+on("change:repeating_items:count", eventInfo => {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        log("Cannot manage items with NaN count");
+        return;
+    }
+    if (newValue <= 0) {
+        log("Removing consumed item");
+        removeRepeatingRow(`repeating_${section}_${rowId}`);
+    }
+});
+
+on("clicked:repeating_titles:share clicked:repeating_minions:share clicked:repeating_items:share clicked:repeating_traits:share", eventInfo => {
+    shareItemToChat(eventInfo);
+});
+
+on("clicked:repeating_titles:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_titles_${rowid}_title`, 
+        `repeating_titles_${rowid}_effect`
+    ], values => {
+        // Assign selected title
+        setAttrs({
+            selectedTitleId: rowid,
+            selectedTitle: values[`repeating_titles_${rowid}_title`],
+            selectedTitleEffect: values[`repeating_titles_${rowid}_effect`]
+        });
+    });
+});
+
+// Minion selection
+on("clicked:repeating_minions:select", eventInfo => {
+    const rowid = eventInfo.sourceAttribute.split("_")[2];
+    getAttrs([
+        `repeating_minions_${rowid}_title`, 
+        `repeating_minions_${rowid}_effect`
+    ], values => {
+        // Assign selected minion
+        setAttrs({
+            selectedMinionId: rowid,
+            selectedMinion: values[`repeating_minions_${rowid}_title`],
+            selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
     });
 });
 

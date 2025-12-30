@@ -1165,14 +1165,14 @@ const AddEffects = function(customEngine, customRemove) {
                 this.engine().get([`${attributeName}`, `${attributeName}Effective`, `${attributeName}Override`, `${attributeName}Unblocked`], values => {
                     var attributes = {};
                     let baseAttributeName;
-                    let isBlocked = unpackNaN(values[`${attributeName}Override`], 0) > 0;
+                    let isBlocked = unpackNaN(values[`${attributeName}Override`]) > 0;
                     if (isBlocked) {
                         baseAttributeName = `${attributeName}Unblocked`;
                     } else {
                         baseAttributeName = `${attributeName}Effective`;
                     }
 
-                    let currentValue = unpackNaN(values[`${baseAttributeName}`], 0);
+                    let currentValue = unpackNaN(values[`${baseAttributeName}`]);
                     let rawValue = unpackNaN(values[attributeName]);
                     let newValue = currentValue + attributeValue;
                     this.engine().logd(`${attributeName}: ${newValue}, unblocked: ${values[`${attributeName}Unblocked`]}`);
@@ -1192,8 +1192,8 @@ const AddEffects = function(customEngine, customRemove) {
             case "bound": {
                 this.engine().logd("Resolving attributes for bound");
                 this.engine().get(["size", "speed", "speedEffective", "speedOverride", "speedUnblocked"], values => {
-                    let speed = unpackNaN(values.speedEffective, 0);
-                    let unblocked = unpackNaN(values.speedUnblocked ?? values.speed, 0);
+                    let speed = unpackNaN(values.speedEffective);
+                    let unblocked = unpackNaN(values.speedUnblocked ?? values.speed);
                     let newValue;
                     let diff;
                     if (values.size === "large") {
@@ -1207,7 +1207,7 @@ const AddEffects = function(customEngine, customRemove) {
                     }
 
                     var attributes = {};
-                    if (unpackNaN(values.speedOverride, 0) > 0) {
+                    if (unpackNaN(values.speedOverride) > 0) {
                         attributes.speedUnblocked = unblocked;
                     }
                     this.engine().logd(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
@@ -1230,8 +1230,8 @@ const AddEffects = function(customEngine, customRemove) {
                     attributeValue = 1;
                 }
                 this.engine().get(["defense", "magicDefense"], values => {
-                    let defense = unpackNaN(values.defense, 0);
-                    let magicDefense = unpackNaN(values.magicDefense, 0);
+                    let defense = unpackNaN(values.defense);
+                    let magicDefense = unpackNaN(values.magicDefense);
                     let attributeName;
                     let newValue;
                     let rawValue;
@@ -1259,15 +1259,43 @@ const AddEffects = function(customEngine, customRemove) {
                 });
                 break;
             }
+            case "emerald": {
+                let intValue = unpackNaN(value);
+                if (intValue < 1) {
+                    return;
+                }
+                this.engine().logd("Resolving attributes for emerald");
+                this.engine().get(["speed", "speedEffective", "speedOverride", "speedUnblocked"], values => {
+                    let speed = unpackNaN(values.speedEffective);
+                    let unblocked = unpackNaN(values.speedUnblocked ?? values.speed);
+                    let newValue = speed + intValue;
+                    unblocked = unblocked + intValue;
+                    let diff = intValue;
+
+                    var attributes = {};
+                    if (unpackNaN(values.speedOverride) > 0) {
+                        attributes.speedUnblocked = unblocked;
+                    }
+                    this.engine().logd(`speed: ${newValue}, unblocked: ${attributes.speedUnblocked}`);
+                    let rawValue = unpackNaN(values.speed);
+                    let bottomValue = Math.min(rawValue, 0);
+                    attributes.speedEffective = newValue;
+                    attributes.speedDisplay = Math.max(newValue, bottomValue);
+                    attributes[`repeating_effects_${id}_attribute`] = "speed";
+                    attributes[`repeating_effects_${id}_attributeValue`] = diff;
+                    this.engine().set(attributes);
+                });
+                break;
+            }
             case "slow":
             case "heavy": {
                 this.engine().logd(`Resolving attributes for ${effectName}`);
                 this.engine().get(["speed", "speedEffective", "speedOverride", "speedOverrideSources", "speedUnblocked"], values => {
-                    let speed = unpackNaN(values.speed, 0);
+                    let speed = unpackNaN(values.speed);
                     let newValue = Math.floor(speed / 2) + speed % 2;
                     let diff = speed - newValue;
                     var attributes = {};
-                    if (unpackNaN(values.speedOverride, 0) > 0) {
+                    if (unpackNaN(values.speedOverride) > 0) {
                         log(`Speed was already blocked when activating ${effectName}`);
                         attributes.speedOverrideSources = unpackNaN(values.speedOverrideSources, 1) + 1;
                     } else {
@@ -1334,7 +1362,7 @@ const AddEffects = function(customEngine, customRemove) {
             for (let replacable of state.existingEffects.effects) {
                 if (replacable.type == effect.data.type && replacable.specialType == effect.data.specialType) {
                     summaries.push(`Reactivated ${effect.data.specialType ?? effect.data.type}`);
-                    this.engine().remove(replacable);
+                    this.removeEffects().remove(replacable);
                 }
             }
         } else if (effect.data.duplicate == "bigger") {
@@ -1349,7 +1377,7 @@ const AddEffects = function(customEngine, customRemove) {
                     hadDuplicate = true;
                     if (effect.value > replacable.value) {
                         summaries.push(`Reactivated ${effect.data.specialType ?? effect.data.type}`);
-                        this.engine().remove(replacable);
+                        this.removeEffects().remove(replacable);
                         didReplace = true;
                     }
                 }
@@ -1387,7 +1415,7 @@ const AddEffects = function(customEngine, customRemove) {
                 // Remove Umbral Ice
                 if (state.existingEffects.umbralIce) {
                     summaries.push("Removed Umbral Ice");
-                    this.engine().remove(state.existingEffects.umbralIce);
+                    this.removeEffects().remove(state.existingEffects.umbralIce);
                 }
                 let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
                 summaries.push(result.summary);
@@ -1419,7 +1447,7 @@ const AddEffects = function(customEngine, customRemove) {
                 if (state.existingEffects.monkForm && state.existingEffects.monkForm.adjustedName !== effect.adjustedName) {
                     this.engine().logd("Monk Form to replace: " + JSON.stringify(state.existingEffects.monkForm));
                     summaries.push(`Removed ${state.existingEffects.monkForm.data.name}`);
-                    this.engine().remove(state.existingEffects.monkForm);
+                    this.removeEffects().remove(state.existingEffects.monkForm);
                 }
                 break;
             }
@@ -1496,7 +1524,7 @@ const AddEffects = function(customEngine, customRemove) {
                 if (state.existingEffects.gemEffect && state.existingEffects.gemEffect.adjustedName !== effect.adjustedName) {
                     this.engine().logd("Gem to replace: " + JSON.stringify(state.existingEffects.gemEffect));
                     summaries.push(`Removed ${state.existingEffects.gemEffect.data.name}`);
-                    this.engine().remove(state.existingEffects.gemEffect);
+                    this.removeEffects().remove(state.existingEffects.gemEffect);
                 }
                 break;
             }
@@ -1633,7 +1661,7 @@ const AddEffects = function(customEngine, customRemove) {
             case "umbral_ice": {
                 if (state.existingEffects.astralFire) {
                     summaries.push("Removed Astral Fire");
-                    this.engine().remove(state.existingEffects.astralFire);
+                    this.removeEffects().remove(state.existingEffects.astralFire);
 
                     // Reset MP recovery
                     attributes.mpRecoveryBlock = "off";
