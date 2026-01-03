@@ -1,7 +1,3 @@
-FUNCTIONAL
-* Handle SMN speed increase on Emerald status
-* Auto-refresh Carbuncle MP regen effect on off-turn (Swiftcast)
-
 FIX
 * (test consume + restore + removing augment ability)
 

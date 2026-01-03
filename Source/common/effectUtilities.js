@@ -78,7 +78,7 @@ const EffectUtilities = function() {
                 case "gem":
                     result.gemEffect = effect;
                     break;
-                case "ready":
+                case "ready(x)":
                     result.readyEffects.push(effect);
                     break;
                 case "silence":

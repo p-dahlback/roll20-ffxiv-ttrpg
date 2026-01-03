@@ -311,7 +311,7 @@ const EffectUtilities = function() {
                 case "gem":
                     result.gemEffect = effect;
                     break;
-                case "ready":
+                case "ready(x)":
                     result.readyEffects.push(effect);
                     break;
                 case "silence":
@@ -1825,7 +1825,7 @@ const RemoveEffects = function(customEngine) {
 
         // Consume any X ready effects that enable this ability
         for (let effect of effects.readyEffects) {
-            if (this.shouldConsumeReadyEffect(effect)) {
+            if (this.shouldConsumeReadyEffect(damageRoll, effect)) {
                 summaries.push(this.consumeEffect(effect));
             }
         }
@@ -1849,7 +1849,7 @@ const RemoveEffects = function(customEngine) {
     };
 
     this.shouldConsumeReadyEffect = function(damageRoll, effect) {
-        let isReadyType = effect.type === "ready(x)" || effect.maskedType === "ready(x)";
+        let isReadyType = effect.type === "ready(x)" || effect.data.maskedType === "ready(x)";
         if (!isReadyType) {
             return false;
         }
@@ -1857,6 +1857,7 @@ const RemoveEffects = function(customEngine) {
         let normalizedName = damageRoll.title.toLowerCase();
         let normalizedCondition = damageRoll.condition.toLowerCase();
         let value = (effect.value ?? "").toLowerCase();
+        
         return specialType.includes(normalizedName) ||
                normalizedCondition.includes(specialType) ||
                (isReadyType && value === normalizedName) ||
