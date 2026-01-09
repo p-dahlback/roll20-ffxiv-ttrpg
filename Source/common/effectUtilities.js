@@ -1,6 +1,6 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
-const effectData = {};
+const engine = {}; const effectData = {};
 /*build:end*/
 
 const EffectUtilities = function() {
@@ -31,10 +31,11 @@ const EffectUtilities = function() {
     
     this.classify = function(effects) {
         var result = {
-            effects: [],
             abilityAdvantages: [],
+            criticalThreshold: 20,
             damageRerolls: [],
             dpsChanges: [],
+            effects: [],
             expireOnHitRoll: [],
             expireOnPrimaryUse: [],
             expireOnSecondaryUse: [],
@@ -65,7 +66,11 @@ const EffectUtilities = function() {
                     break;
                 case "critical(x)":
                     if (effect.value) {
-                        result.criticalThreshold -= parseInt(effect.value);
+                        let addedValue = parseInt(effect.value);
+                        if (isNaN(addedValue)) {
+                            engine.logd(`Invalid value for critical ${effect.value}`);
+                        }
+                        result.criticalThreshold -= addedValue;
                     }
                     break;
                 case "ddown(x)":
