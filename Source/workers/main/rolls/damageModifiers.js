@@ -1,7 +1,7 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported rollModifiers*/
-const engine = {};
+const engine = {}; const effectUtilities = {};
 /*build:end*/
 
 const DamageModifiers = function() {
@@ -13,7 +13,7 @@ const DamageModifiers = function() {
         var summaries = effects.notifyProcs;
         summaries.push(...this.getHitModifierSummaries(damageRoll, effects));
 
-        if (effects.astralFire && damageRoll.type.includes("Fire-aspect")) {
+        if (effects.astralFire && effectUtilities.isEffectOfType(damageRoll, "fire-aspect")) {
             let addedDamage = characterLevel >= 50 ? "2d6" : "1d6";
             adds.push(`${addedDamage}[Astral Fire]`);
             summaries.push("Astral Fire proc");
