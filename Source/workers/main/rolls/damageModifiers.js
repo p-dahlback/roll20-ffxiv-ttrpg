@@ -7,33 +7,33 @@ const engine = {}; const effectUtilities = {};
 const DamageModifiers = function() {
 
     this.applyEffectModifiersToRolls = function(damageRoll, characterLevel, effects) {
-        var modifiedRoll = this.applyCriticalMultiplierIfNeeded(damageRoll, effects);
+        var modifiedRoll = damageRoll;
         var adds = [];
         var negatives = [];
         var summaries = effects.notifyProcs;
-        summaries.push(...this.getHitModifierSummaries(damageRoll, effects));
+        summaries.push(...this.getHitModifierSummaries(modifiedRoll, effects));
 
-        if (effects.astralFire && effectUtilities.isEffectOfType(damageRoll, "fire-aspect")) {
+        if (effects.astralFire && effectUtilities.isEffectOfType(modifiedRoll, "fire-aspect")) {
             let addedDamage = characterLevel >= 50 ? "2d6" : "1d6";
             adds.push(`${addedDamage}[Astral Fire]`);
             summaries.push("Astral Fire proc");
-        } else if (effects.gemEffect && damageRoll.type.includes("Gem")) {
-            let result = this.applyGemEffect(damageRoll, effects.gemEffect);
+        } else if (effects.gemEffect && modifiedRoll.type.includes("Gem")) {
+            let result = this.applyGemEffect(modifiedRoll, effects.gemEffect);
             modifiedRoll = result.roll;
             adds.push(...result.adds);
             summaries.push(result.summary);
         }
 
-        if (damageRoll.conditionalValue) {
+        if (modifiedRoll.conditionalValue) {
             let conditionalResult = this.applyConditionalEffects(modifiedRoll, effects);
             modifiedRoll = conditionalResult.roll;
             summaries.push(conditionalResult.summary);
             adds.push(...conditionalResult.adds);
         }
 
-        if (effects.dpsChanges && damageRoll.damageType === "Damage") {
+        if (effects.dpsChanges && modifiedRoll.damageType === "Damage") {
             for (let effect of effects.dpsChanges) {
-                if (effect.data.name == "Raging Strikes" && !damageRoll.type.includes("Primary")) {
+                if (effect.data.name == "Raging Strikes" && !modifiedRoll.type.includes("Primary")) {
                     // This effect only applies to primary abilities
                     continue;
                 }
@@ -65,16 +65,14 @@ const DamageModifiers = function() {
                 directHitRoll = `${directHitRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
                 modifiedRoll.directHitRoll = directHitRoll;
             }
-            return {
-                damageRoll: modifiedRoll,
-                summaries: summaries
-            };
-        } else {
-            return {
-                damageRoll: modifiedRoll,
-                summaries: summaries
-            };
         }
+
+        // Apply critical after everything else so it affects any added dice.
+        modifiedRoll = this.applyCriticalMultiplierIfNeeded(modifiedRoll, effects);
+        return {
+            damageRoll: modifiedRoll,
+            summaries: summaries
+        };
     };
 
     this.applyEffectModifiersAfterRolls = function(effects, damageType, damageRolls) {
@@ -175,10 +173,8 @@ const DamageModifiers = function() {
         }
         let baseRoll = damageRoll.baseRoll;
         var modifiedRoll = damageRoll;
-        if (criticalMultiplier > 1) {
-            if (baseRoll && baseRoll.includes("d")) {
-                modifiedRoll.baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);;
-            }
+        if (criticalMultiplier > 1 && baseRoll) {
+            modifiedRoll.baseRoll = this.applyCriticalToRoll(baseRoll, criticalMultiplier);
         }
 
         // Monk's Opo-Opo Form forces crits in two particular circumstances:
@@ -198,15 +194,26 @@ const DamageModifiers = function() {
             }
         }
 
-        if (criticalMultiplier > 1) {
-            let directHitRoll = modifiedRoll.directHitRoll;
-            if (directHitRoll && directHitRoll.includes("d")) {
-                modifiedRoll.directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
-            }
-            return modifiedRoll;
-        } else {
-            return damageRoll;
+        if (criticalMultiplier > 1 && modifiedRoll.directHitRoll) {
+            modifiedRoll.directHitRoll = this.applyCriticalToRoll(modifiedRoll.directHitRoll, criticalMultiplier);
         }
+        return modifiedRoll;
+    };
+
+    this.applyCriticalToRoll = function(roll, criticalMultiplier) {
+        let stringRoll = `${roll}`;
+        let matches = [...stringRoll.matchAll(/([\d]+)(d[\d]+(?:\[[\w\s]+\])?)/g)];
+        var adjustedString = "";
+        let startIndex = 0;
+        if (matches.length == 0) {
+            return stringRoll;
+        }
+        for (let match of matches) {
+            adjustedString += stringRoll.substring(startIndex, match.index) + `[[${criticalMultiplier}[crit multiplier] * ${match[1]}]]${match[2]}`;
+            startIndex = match.index + match[0].length;
+        }
+        adjustedString += stringRoll.substring(startIndex);
+        return adjustedString;
     };
 
     this.applyConditionalEffects = function(damageRoll, effects) {
