@@ -224,6 +224,9 @@ const PerformAbility = function() {
     };
 
     this.restoreViaCarbuncleIfNeeded = function(state, effects) {
+        if (!effects.gemEffect) {
+            return "";
+        }
         if (!state.didSpendAllMp || state.magicPoints === state.magicPoints_max) {
             return "";
         }
