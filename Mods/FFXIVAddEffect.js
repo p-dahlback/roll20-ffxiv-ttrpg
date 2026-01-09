@@ -264,10 +264,11 @@ const EffectUtilities = function() {
     
     this.classify = function(effects) {
         var result = {
-            effects: [],
             abilityAdvantages: [],
+            criticalThreshold: 20,
             damageRerolls: [],
             dpsChanges: [],
+            effects: [],
             expireOnHitRoll: [],
             expireOnPrimaryUse: [],
             expireOnSecondaryUse: [],
@@ -298,7 +299,11 @@ const EffectUtilities = function() {
                     break;
                 case "critical(x)":
                     if (effect.value) {
-                        result.criticalThreshold -= parseInt(effect.value);
+                        let addedValue = parseInt(effect.value);
+                        if (isNaN(addedValue)) {
+                            engine.logd(`Invalid value for critical ${effect.value}`);
+                        }
+                        result.criticalThreshold -= addedValue;
                     }
                     break;
                 case "ddown(x)":
@@ -1362,7 +1367,7 @@ const AddEffects = function(customEngine, customRemove) {
             for (let replacable of state.existingEffects.effects) {
                 if (replacable.type == effect.data.type && replacable.specialType == effect.data.specialType) {
                     summaries.push(`Reactivated ${effect.data.specialType ?? effect.data.type}`);
-                    this.removeEffects().remove(replacable);
+                    this.engine().remove(replacable);
                 }
             }
         } else if (effect.data.duplicate == "bigger") {
@@ -1416,6 +1421,9 @@ const AddEffects = function(customEngine, customRemove) {
                 if (state.existingEffects.umbralIce) {
                     summaries.push("Removed Umbral Ice");
                     this.removeEffects().remove(state.existingEffects.umbralIce);
+                } else if (state.existingEffects.astralFire) {
+                    // Skip Thunderhead if we already had astral fire on
+                    break;
                 }
                 let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
                 summaries.push(result.summary);
@@ -1861,7 +1869,7 @@ const RemoveEffects = function(customEngine) {
         return specialType.includes(normalizedName) ||
                normalizedCondition.includes(specialType) ||
                (isReadyType && value === normalizedName) ||
-               (isReadyType && normalizedCondition.includes(value));
+               (isReadyType && value && normalizedCondition.includes(value));
     };
 
     this.resetSpecialEffects = function(name) {

@@ -4736,6 +4736,195 @@
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file tabs
 
 const tabsImports = new (function() {
@@ -4782,6 +4971,127 @@ on("sheet:opened", () => {
             resource: values.resource ?? "",
             resource2: values.resource2 ?? "none"
         });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file attributes
+
+const attributesImports = new (function() {
+    this.export = {};
+
+const workerName = "attributes"
+
+
+})();
+
+// Build: Source/workers/attributes.js
+
+
+// Advantage management
+
+function addAdvantage(change) {
+    getAttrs(["advantage"], values => {
+        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
+        let numberOfAdvantageDice = Math.abs(advantage);
+        let numberOfDice = 1 + numberOfAdvantageDice;
+        let keepMarker;
+        if (advantage == 0) {
+            keepMarker = "";
+        } else if (advantage > 0) {
+            keepMarker = "kh1";
+        } else {
+            keepMarker = "kl1";
+        }
+        setAttrs({
+            advantage: advantage,
+            d20: numberOfDice + "d20" + keepMarker
+        });
+    });
+}
+
+on("clicked:increaseAdvantage", () => {
+    addAdvantage(1);
+});
+
+on("clicked:decreaseAdvantage", () => {
+    addAdvantage(-1);
+});
+
+on("clicked:clearAdvantage", () => {
+    setAttrs({
+        advantage: 0,
+        d20: "1d20"
+    });
+});
+
+// HP Max
+on("change:hitPoints", () => {
+    getAttrs(["hitPoints", "hitPoints_max"], values => {
+        if (values.hitPoints > values.hitPoints_max) {
+            setAttrs({
+                hitPoints: values.hitPoints_max
+            });
+        }
+    });
+});
+
+// Barrier Max
+on("change:barrierPoints", (eventInfo) => {
+    log("Set barrier " + JSON.stringify(eventInfo));
+    getAttrs(["barrierPoints"], values => {
+        setAttrs({
+            barrierPoints_max: values.barrierPoints
+        });
+    });
+});
+
+// Resource Max
+on("change:resourceValue", () => {
+    getAttrs(["resourceValue", "resourceValue_max"], values => {
+        if (values.resourceValue > values.resourceValue_max) {
+            log("Reset resource");
+            setAttrs({
+                resourceValue: values.resourceValue_max
+            });
+        }
+    });
+});
+
+// Effective attributes
+on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
+    if (eventInfo.sourceType === "sheetworker") {
+        return;
+    }
+
+    log("Attribute changed: " + JSON.stringify(eventInfo));
+    let attribute = eventInfo.sourceAttribute;
+    let previousValue = parseInt(eventInfo.previousValue);
+    if (isNaN(previousValue)) {
+        previousValue = 0;
+    }
+    let newValue = parseInt(eventInfo.newValue);
+    if (isNaN(newValue)) {
+        newValue = 0;
+    }
+    let diff = newValue - previousValue;
+    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
+        let existingValue = parseInt(values[`${attribute}Effective`]);
+        var newAttributes = {};
+        let rawValue = values[attribute];
+        let bottomValue = Math.min(rawValue, 0);
+        if (isNaN(existingValue)) {
+            newAttributes[`${attribute}Effective`] = newValue;
+            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
+        } else {
+            let effectiveValue = existingValue + diff;
+            newAttributes[`${attribute}Effective`] = effectiveValue;
+            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
+        }
+        setAttrs(newAttributes);
     });
 });
 
@@ -5509,33 +5819,33 @@ this.export.effectInfo = effectInfo;
 const DamageModifiers = function() {
 
     this.applyEffectModifiersToRolls = function(damageRoll, characterLevel, effects) {
-        var modifiedRoll = this.applyCriticalMultiplierIfNeeded(damageRoll, effects);
+        var modifiedRoll = damageRoll;
         var adds = [];
         var negatives = [];
         var summaries = effects.notifyProcs;
-        summaries.push(...this.getHitModifierSummaries(damageRoll, effects));
+        summaries.push(...this.getHitModifierSummaries(modifiedRoll, effects));
 
-        if (effects.astralFire && damageRoll.type.includes("Fire-aspect")) {
+        if (effects.astralFire && effectUtilities.isEffectOfType(modifiedRoll, "fire-aspect")) {
             let addedDamage = characterLevel >= 50 ? "2d6" : "1d6";
             adds.push(`${addedDamage}[Astral Fire]`);
             summaries.push("Astral Fire proc");
-        } else if (effects.gemEffect && damageRoll.type.includes("Gem")) {
-            let result = this.applyGemEffect(damageRoll, effects.gemEffect);
+        } else if (effects.gemEffect && modifiedRoll.type.includes("Gem")) {
+            let result = this.applyGemEffect(modifiedRoll, effects.gemEffect);
             modifiedRoll = result.roll;
             adds.push(...result.adds);
             summaries.push(result.summary);
         }
 
-        if (damageRoll.conditionalValue) {
+        if (modifiedRoll.conditionalValue) {
             let conditionalResult = this.applyConditionalEffects(modifiedRoll, effects);
             modifiedRoll = conditionalResult.roll;
             summaries.push(conditionalResult.summary);
             adds.push(...conditionalResult.adds);
         }
 
-        if (effects.dpsChanges && damageRoll.damageType === "Damage") {
+        if (effects.dpsChanges && modifiedRoll.damageType === "Damage") {
             for (let effect of effects.dpsChanges) {
-                if (effect.data.name == "Raging Strikes" && !damageRoll.type.includes("Primary")) {
+                if (effect.data.name == "Raging Strikes" && !modifiedRoll.type.includes("Primary")) {
                     // This effect only applies to primary abilities
                     continue;
                 }
@@ -5567,16 +5877,14 @@ const DamageModifiers = function() {
                 directHitRoll = `${directHitRoll}${adds.join(" + ")}${negatives.join(" - ")}`;
                 modifiedRoll.directHitRoll = directHitRoll;
             }
-            return {
-                damageRoll: modifiedRoll,
-                summaries: summaries
-            };
-        } else {
-            return {
-                damageRoll: modifiedRoll,
-                summaries: summaries
-            };
         }
+
+        // Apply critical after everything else so it affects any added dice.
+        modifiedRoll = this.applyCriticalMultiplierIfNeeded(modifiedRoll, effects);
+        return {
+            damageRoll: modifiedRoll,
+            summaries: summaries
+        };
     };
 
     this.applyEffectModifiersAfterRolls = function(effects, damageType, damageRolls) {
@@ -5677,10 +5985,8 @@ const DamageModifiers = function() {
         }
         let baseRoll = damageRoll.baseRoll;
         var modifiedRoll = damageRoll;
-        if (criticalMultiplier > 1) {
-            if (baseRoll && baseRoll.includes("d")) {
-                modifiedRoll.baseRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + baseRoll[0] + "]]" + baseRoll.substring(1);;
-            }
+        if (criticalMultiplier > 1 && baseRoll) {
+            modifiedRoll.baseRoll = this.applyCriticalToRoll(baseRoll, criticalMultiplier);
         }
 
         // Monk's Opo-Opo Form forces crits in two particular circumstances:
@@ -5700,15 +6006,26 @@ const DamageModifiers = function() {
             }
         }
 
-        if (criticalMultiplier > 1) {
-            let directHitRoll = modifiedRoll.directHitRoll;
-            if (directHitRoll && directHitRoll.includes("d")) {
-                modifiedRoll.directHitRoll = "[[" + criticalMultiplier + "[crit multiplier] * " + directHitRoll[0] + "]]" + directHitRoll.substring(1);
-            }
-            return modifiedRoll;
-        } else {
-            return damageRoll;
+        if (criticalMultiplier > 1 && modifiedRoll.directHitRoll) {
+            modifiedRoll.directHitRoll = this.applyCriticalToRoll(modifiedRoll.directHitRoll, criticalMultiplier);
         }
+        return modifiedRoll;
+    };
+
+    this.applyCriticalToRoll = function(roll, criticalMultiplier) {
+        let stringRoll = `${roll}`;
+        let matches = [...stringRoll.matchAll(/([\d]+)(d[\d]+(?:\[[\w\s]+\])?)/g)];
+        var adjustedString = "";
+        let startIndex = 0;
+        if (matches.length == 0) {
+            return stringRoll;
+        }
+        for (let match of matches) {
+            adjustedString += stringRoll.substring(startIndex, match.index) + `[[${criticalMultiplier}[crit multiplier] * ${match[1]}]]${match[2]}`;
+            startIndex = match.index + match[0].length;
+        }
+        adjustedString += stringRoll.substring(startIndex);
+        return adjustedString;
     };
 
     this.applyConditionalEffects = function(damageRoll, effects) {
@@ -6552,10 +6869,11 @@ const EffectUtilities = function() {
     
     this.classify = function(effects) {
         var result = {
-            effects: [],
             abilityAdvantages: [],
+            criticalThreshold: 20,
             damageRerolls: [],
             dpsChanges: [],
+            effects: [],
             expireOnHitRoll: [],
             expireOnPrimaryUse: [],
             expireOnSecondaryUse: [],
@@ -6586,7 +6904,11 @@ const EffectUtilities = function() {
                     break;
                 case "critical(x)":
                     if (effect.value) {
-                        result.criticalThreshold -= parseInt(effect.value);
+                        let addedValue = parseInt(effect.value);
+                        if (isNaN(addedValue)) {
+                            engine.logd(`Invalid value for critical ${effect.value}`);
+                        }
+                        result.criticalThreshold -= addedValue;
                     }
                     break;
                 case "ddown(x)":
@@ -7396,7 +7718,7 @@ const AddEffects = function(customEngine, customRemove) {
             for (let replacable of state.existingEffects.effects) {
                 if (replacable.type == effect.data.type && replacable.specialType == effect.data.specialType) {
                     summaries.push(`Reactivated ${effect.data.specialType ?? effect.data.type}`);
-                    this.removeEffects().remove(replacable);
+                    this.engine().remove(replacable);
                 }
             }
         } else if (effect.data.duplicate == "bigger") {
@@ -7450,6 +7772,9 @@ const AddEffects = function(customEngine, customRemove) {
                 if (state.existingEffects.umbralIce) {
                     summaries.push("Removed Umbral Ice");
                     this.removeEffects().remove(state.existingEffects.umbralIce);
+                } else if (state.existingEffects.astralFire) {
+                    // Skip Thunderhead if we already had astral fire on
+                    break;
                 }
                 let result = this.addBySpecificationString(state, ["Thunderhead Ready"]);
                 summaries.push(result.summary);
@@ -7895,7 +8220,7 @@ const RemoveEffects = function(customEngine) {
         return specialType.includes(normalizedName) ||
                normalizedCondition.includes(specialType) ||
                (isReadyType && value === normalizedName) ||
-               (isReadyType && normalizedCondition.includes(value));
+               (isReadyType && value && normalizedCondition.includes(value));
     };
 
     this.resetSpecialEffects = function(name) {
@@ -8336,6 +8661,9 @@ const PerformAbility = function() {
     };
 
     this.restoreViaCarbuncleIfNeeded = function(state, effects) {
+        if (!effects.gemEffect) {
+            return "";
+        }
         if (!state.didSpendAllMp || state.magicPoints === state.magicPoints_max) {
             return "";
         }
@@ -9481,316 +9809,6 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file attributes
-
-const attributesImports = new (function() {
-    this.export = {};
-
-const workerName = "attributes"
-
-
-})();
-
-// Build: Source/workers/attributes.js
-
-
-// Advantage management
-
-function addAdvantage(change) {
-    getAttrs(["advantage"], values => {
-        const advantage = Math.min(Math.max(values.advantage + change, -3), 3);
-        let numberOfAdvantageDice = Math.abs(advantage);
-        let numberOfDice = 1 + numberOfAdvantageDice;
-        let keepMarker;
-        if (advantage == 0) {
-            keepMarker = "";
-        } else if (advantage > 0) {
-            keepMarker = "kh1";
-        } else {
-            keepMarker = "kl1";
-        }
-        setAttrs({
-            advantage: advantage,
-            d20: numberOfDice + "d20" + keepMarker
-        });
-    });
-}
-
-on("clicked:increaseAdvantage", () => {
-    addAdvantage(1);
-});
-
-on("clicked:decreaseAdvantage", () => {
-    addAdvantage(-1);
-});
-
-on("clicked:clearAdvantage", () => {
-    setAttrs({
-        advantage: 0,
-        d20: "1d20"
-    });
-});
-
-// HP Max
-on("change:hitPoints", () => {
-    getAttrs(["hitPoints", "hitPoints_max"], values => {
-        if (values.hitPoints > values.hitPoints_max) {
-            setAttrs({
-                hitPoints: values.hitPoints_max
-            });
-        }
-    });
-});
-
-// Barrier Max
-on("change:barrierPoints", (eventInfo) => {
-    log("Set barrier " + JSON.stringify(eventInfo));
-    getAttrs(["barrierPoints"], values => {
-        setAttrs({
-            barrierPoints_max: values.barrierPoints
-        });
-    });
-});
-
-// Resource Max
-on("change:resourceValue", () => {
-    getAttrs(["resourceValue", "resourceValue_max"], values => {
-        if (values.resourceValue > values.resourceValue_max) {
-            log("Reset resource");
-            setAttrs({
-                resourceValue: values.resourceValue_max
-            });
-        }
-    });
-});
-
-// Effective attributes
-on("change:str change:dex change:vit change:int change:mnd change:defense change:magicDefense change:vigilance change:speed", (eventInfo) => {
-    if (eventInfo.sourceType === "sheetworker") {
-        return;
-    }
-
-    log("Attribute changed: " + JSON.stringify(eventInfo));
-    let attribute = eventInfo.sourceAttribute;
-    let previousValue = parseInt(eventInfo.previousValue);
-    if (isNaN(previousValue)) {
-        previousValue = 0;
-    }
-    let newValue = parseInt(eventInfo.newValue);
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    let diff = newValue - previousValue;
-    getAttrs([`${attribute}`, `${attribute}Effective`], values => {
-        let existingValue = parseInt(values[`${attribute}Effective`]);
-        var newAttributes = {};
-        let rawValue = values[attribute];
-        let bottomValue = Math.min(rawValue, 0);
-        if (isNaN(existingValue)) {
-            newAttributes[`${attribute}Effective`] = newValue;
-            newAttributes[`${attribute}Display`] = Math.max(newValue, bottomValue);
-        } else {
-            let effectiveValue = existingValue + diff;
-            newAttributes[`${attribute}Effective`] = effectiveValue;
-            newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
-        }
-        setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
 });
 
 </script>
