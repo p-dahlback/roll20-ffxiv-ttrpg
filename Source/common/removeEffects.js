@@ -88,7 +88,7 @@ const RemoveEffects = function(customEngine) {
         return specialType.includes(normalizedName) ||
                normalizedCondition.includes(specialType) ||
                (isReadyType && value === normalizedName) ||
-               (isReadyType && normalizedCondition.includes(value));
+               (isReadyType && value && normalizedCondition.includes(value));
     };
 
     this.resetSpecialEffects = function(name) {
