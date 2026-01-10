@@ -41,6 +41,7 @@ const RemoveEffects = function(customEngine) {
 
     this.consumeOnAbility = function(damageRoll, effects) {
         var summaries = [];
+        summaries.push(...this.consumeEffectsInList(effects.expireOnAbility));
         if (damageRoll.hitRoll) {
             summaries.push(...this.consumeEffectsInList(effects.expireOnHitRoll));
         }

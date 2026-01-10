@@ -36,6 +36,7 @@ const EffectUtilities = function() {
             damageRerolls: [],
             dpsChanges: [],
             effects: [],
+            expireOnAbility: [],
             expireOnHitRoll: [],
             expireOnPrimaryUse: [],
             expireOnSecondaryUse: [],
@@ -91,6 +92,9 @@ const EffectUtilities = function() {
                     break;
                 case "stun":
                     result.isStunned = true;
+                    break;
+                case "transcendent":
+                    result.expireOnAbility.push(effect);
                     break;
                 case "weak":
                     result.isWeak = true;
