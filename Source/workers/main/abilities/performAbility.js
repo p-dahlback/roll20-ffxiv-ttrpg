@@ -14,6 +14,7 @@ const AbilityId = function(section, rowId) {
 const PerformAbility = function() {
 
     this.resolveResources = function(damageRoll, abilityId, values, effects) {
+        engine.logd("Resolving resources");
         const abilityPath = abilityId ? `repeating_${abilityId.section}_${abilityId.rowId}` : "";
         const uses = abilityId ? values[`${abilityPath}_uses`] : 0;
         const usesMax = abilityId ? values[`${abilityPath}_uses_max`] : 0;
@@ -36,6 +37,7 @@ const PerformAbility = function() {
         // Spend cost
         let costResult = this.spendCostIfNeeded(damageRoll, state);
         if (!costResult.success) {
+            engine.logd("Failed to spend cost");
             return costResult.summary;
         }
         state = costResult.state;
@@ -43,6 +45,7 @@ const PerformAbility = function() {
         // Spend uses
         let usesResult = this.spendUsesIfNeeded(damageRoll, state);
         if (!usesResult.success) {
+            engine.logd("Failed to spend uses");
             return usesResult.summary;
         }
         state = usesResult.state;
@@ -67,7 +70,6 @@ const PerformAbility = function() {
 
         // Handle Summoner's auto-restore
         summaries.push(this.restoreViaCarbuncleIfNeeded(state, effects));
-
         return summaries.filter(element => element).join("\n");
     };
 
@@ -126,9 +128,9 @@ const PerformAbility = function() {
             // Refund the cost if necessary
             let restoreResult = this.restore(damageRoll.cost, damageRoll.resource, modifiedState);
             modifiedState = restoreResult.state;
-        }         
+        }      
         return {
-            success: false,
+            success: result.success,
             state: modifiedState,
             summary: result.summary
         };

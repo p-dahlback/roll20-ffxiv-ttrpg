@@ -345,7 +345,7 @@ const AddEffects = function(customEngine, customRemove) {
         }
 
         if (effect.data.duplicate === "block" && state.existingEffectTypes.includes(effect.adjustedName)) {
-            this.engine().logd("Effect " + effect.name + " already exists, skipping");
+            this.engine().logd("Effect " + effect.data.name + " already exists, skipping");
             return { result: false, summaries: [] };
         }
 
