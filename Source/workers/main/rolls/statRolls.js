@@ -1,7 +1,7 @@
 /*build:remove*/
 /*eslint no-unused-vars: "error"*/
 /*exported statRoll*/
-const engine = {}; const rollModifiers = {};
+const engine = {}; const hitModifiers = {};
 /*build:end*/
 
 const StatRoll = function() {
@@ -11,7 +11,7 @@ const StatRoll = function() {
             "d20", "whisper"
         ], (values, effects) => {
             var roll = `${values.d20} + @{${stat}}`;
-            roll = rollModifiers.addEffectsToHitRoll(effects, roll, "stat");
+            roll = hitModifiers.applyEffectModifiers(effects, roll, "stat");
 
             let rollTemplate = `${values["whisper"]}&{template:roll} {{title=${statName}}} {{roll=[[${roll}]]}}`;
             engine.logd(`Rolling stat ${rollTemplate}`);
