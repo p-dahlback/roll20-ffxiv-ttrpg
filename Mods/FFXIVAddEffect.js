@@ -129,7 +129,8 @@ const EffectData = function() {
         umbral_ice: { matches: ["uice", "umbral ice"], type: "special", specialType: "Umbral Ice", statusType: "Enhancement", name: "Umbral Ice", expiry: "turn2", duplicate: "replace", description: "While under the effect of Umbral Ice, your ice-aspected abilities restore 5 MP each time they deal damage.\n\nUmbral Ice is removed when you are granted Astral Fire or, if the effect is not renewed, at the end of your next turn." },
         venomous_bite: { matches: ["venom", "vbite", "wbite", "windbite", "venomous bite"], type: "special", specialType: "Venomous Bite", maskedType:"dot(x)", marker: "venomous-bite", statusType: "enfeeblement", name: "Venomous Bite", expiry: "phase", curable: true, duplicate: "bigger", description: "Damages the character by a given amount at the end of the [Adventurer Step]." },
         warding_talisman: { matches: ["ward", "talisman", "wtalisman", "warding talisman"], type: "special", maskedType: "item", augmentType: "ability", ability: "protective_ward", specialType: "Warding Talisman", statusType: "Enhancement", name: "Warding Talisman", expiry: "permanent", duplicate: "allow", description: "When this item is obtained, the GM chooses a specific enemy or character classification. So long as the owner possesses this item, grants the Protective Ward ability. This ability can only be used once, after which the talisman loses its power and has no further effect." },
-        weak: { matches: ["weak", "weakness"], type: "weak", maskedType: "weak", name: "Weak", statusType: "Enfeeblement", marker: "weak", expiry: "rest", duplicate: "block", description: "A Weakened character incurs a -2 penalty on all checks. If you are afflicted with Weakness from another effect, you are instead afflicted with Brink of Death.\n\nWeakness can only be removed by completing a rest or by effects that specifically remove it." }
+        weak: { matches: ["weak", "weakness"], type: "weak", maskedType: "weak", name: "Weak", statusType: "Enfeeblement", marker: "weak", expiry: "rest", duplicate: "block", description: "A Weakened character incurs a -2 penalty on all checks. If you are afflicted with Weakness from another effect, you are instead afflicted with Brink of Death.\n\nWeakness can only be removed by completing a rest or by effects that specifically remove it." },
+        well_fed: { matches: ["food", "fed", "well fed"], type: "well_fed", maskedType: "well_fed", name: "Well Fed", statusType: "Enhancement", expiry: "encounter", duplicate: "replace", description: "" }
     };
 
     this.matches = Object.values(this.effects);
@@ -2023,6 +2024,7 @@ const AddEffectParser = function(msg) {
                 typeName: "",
                 specialType: "",
                 value: "",
+                description: "",
                 source: "Self",
                 abilities: undefined,
                 editable: "1",
@@ -2054,6 +2056,14 @@ const AddEffectParser = function(msg) {
                 };
             }
             effect.data = data;
+
+            // If it's a description-less effect, 
+            // allow editing so the description can be manually changed
+            if (data.description) {
+                effect.editable = "0";
+            } else {
+                effect.editable = "1";
+            }
 
             if (data.specialType) {
                 effect.specialType = data.specialType;

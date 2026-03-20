@@ -17,6 +17,7 @@ const AddEffectParser = function(msg) {
                 typeName: "",
                 specialType: "",
                 value: "",
+                description: "",
                 source: "Self",
                 abilities: undefined,
                 editable: "1",
@@ -48,6 +49,14 @@ const AddEffectParser = function(msg) {
                 };
             }
             effect.data = data;
+
+            // If it's a description-less effect, 
+            // allow editing so the description can be manually changed
+            if (data.description) {
+                effect.editable = "0";
+            } else {
+                effect.editable = "1";
+            }
 
             if (data.specialType) {
                 effect.specialType = data.specialType;
