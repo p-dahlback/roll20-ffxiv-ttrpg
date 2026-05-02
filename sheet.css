@@ -1889,6 +1889,7 @@ textarea {
 /* Flag visibility */
 
 .overrideContent,
+.overrideContentGrid,
 .turnOrderContent,
 .whisperContent,
 .flagTitle {
@@ -1899,6 +1900,12 @@ textarea {
 .overrideSwitch:not([value="auto"]) ~ .flagTitle {
   display: inline-block;
   background-color: var(--sheet-override-field-color);
+}
+
+.overrideSwitch:not([value="auto"]) ~ .overrideContentGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
 .turnOrderSwitch[value="roll"] ~ .turnOrderContent,
@@ -2073,14 +2080,9 @@ div[data-groupname=repeating_technique3].repcontrol,
 
 /* OVERRIDE */
 
-.char-settings > .grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
 .override {
-  margin-top: 32px;
+  margin-top: 16px;
+  margin-bottom: 32px;
   padding: 4px 8px 8px 8px;
   background-color: var(--sheet-damage-background-color);
   column-span: 2;

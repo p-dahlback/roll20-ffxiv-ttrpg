@@ -1,7 +1,14 @@
 <div class="char-settings" spellcheck="false">
     <input type="hidden" class="overrideSwitch" name="attr_override" />
 
-    <div class="grid">
+    <div class="override fancy lowkey">
+        <h3>Manual Override</h3>
+        <p class="medium" style="margin-top: 8px;">Enables manual input for things the player would normally not mess with, things used mostly during initial sheet creation.</p>
+        <p class="medium">Mess with at your own risk!</p>
+        <input type="text" class="large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" value="" />
+    </div>
+
+    <div class="overrideContentGrid">
         <div class="entry fancy lowkey">
             <h3>Character type</h3>
             <p class="medium" style="margin-top: 8px;">Determines if calculations use the selected token or the character sheet.</p>
@@ -73,6 +80,8 @@
                 <option value="ATTACKER">Attacker (Chocobo)</option>
                 <option value="NPC">NPC (initial setup only)</option>
             </select>
+
+            <button type="action" name="act_applyJob">Apply</button>
         </div>
 
 
@@ -86,13 +95,6 @@
                 <option value="roll">Roll d20 + value</option>
             </select>
         </div>
-    </div>
-
-    <div class="override fancy lowkey">
-        <h3>Manual Override</h3>
-        <p class="medium" style="margin-top: 8px;">Enables manual input for things the player would normally not mess with, things used mostly during initial sheet creation.</p>
-        <p class="medium">Mess with at your own risk!</p>
-        <input type="text" class="large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" value="" />
     </div>
 
     <div class="override overrideContent fancy lowkey">

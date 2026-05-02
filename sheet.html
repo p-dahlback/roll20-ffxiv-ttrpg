@@ -4446,7 +4446,14 @@
 <div class="char-settings" spellcheck="false">
     <input type="hidden" class="overrideSwitch" name="attr_override" />
 
-    <div class="grid">
+    <div class="override fancy lowkey">
+        <h3>Manual Override</h3>
+        <p class="medium" style="margin-top: 8px;">Enables manual input for things the player would normally not mess with, things used mostly during initial sheet creation.</p>
+        <p class="medium">Mess with at your own risk!</p>
+        <input type="text" class="large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" value="" />
+    </div>
+
+    <div class="overrideContentGrid">
         <div class="entry fancy lowkey">
             <h3>Character type</h3>
             <p class="medium" style="margin-top: 8px;">Determines if calculations use the selected token or the character sheet.</p>
@@ -4518,6 +4525,8 @@
                 <option value="ATTACKER">Attacker (Chocobo)</option>
                 <option value="NPC">NPC (initial setup only)</option>
             </select>
+
+            <button type="action" name="act_applyJob">Apply</button>
         </div>
 
 
@@ -4531,13 +4540,6 @@
                 <option value="roll">Roll d20 + value</option>
             </select>
         </div>
-    </div>
-
-    <div class="override fancy lowkey">
-        <h3>Manual Override</h3>
-        <p class="medium" style="margin-top: 8px;">Enables manual input for things the player would normally not mess with, things used mostly during initial sheet creation.</p>
-        <p class="medium">Mess with at your own risk!</p>
-        <input type="text" class="large" name="attr_override" placeholder="Enter 'auto' to disable manual editing" value="" />
     </div>
 
     <div class="override overrideContent fancy lowkey">
@@ -4737,6 +4739,195 @@
 
 <script type="text/worker">
 
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file override
+
+const overrideImports = new (function() {
+    this.export = {};
+
+const workerName = "override"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/override.js
+
+
+
+const imports = overrideImports.export;
+
+// Assign override state
+on('change:override', () => {
+    getAttrs(['override'], values => {
+        log("Changed override to " + values.override);
+        for (let section of imports.abilitySections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                const output = {};
+                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
+                setAttrs(output);
+            });
+        }
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
 // Build (version 1.0.0), generated file items
 
 const itemsImports = new (function() {
@@ -4837,6 +5028,59 @@ on("clicked:repeating_minions:select", eventInfo => {
             selectedMinionId: rowid,
             selectedMinion: values[`repeating_minions_${rowid}_title`],
             selectedMinionEffect: values[`repeating_minions_${rowid}_effect`]
+        });
+    });
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file tabs
+
+const tabsImports = new (function() {
+    this.export = {};
+
+const workerName = "tabs"
+
+
+})();
+
+// Build: Source/workers/tabs.js
+
+
+// Tabs
+
+const buttonlist = ["character", "items", "abilities", "settings"];
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, () => {
+        setAttrs({
+            sheetTab: button
+        });
+    });
+});
+
+// Initial setup
+on("sheet:opened", () => {
+    getAttrs([
+        "d20",
+        "advantage",
+        "mpRecovery",
+        "mpRecoveryBlock",
+        "resourceRecovery",
+        "resource2Recovery",
+        "resource",
+        "resource2"
+    ], values => {
+        setAttrs({
+            d20: values.d20 ?? "1d20",
+            advantage: values.advantage ?? 0,
+            mpRecovery: values.mpRecovery ?? 2,
+            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
+            resourceRecovery: values.resourceRecovery ?? 0,
+            resource2Recovery: values.resource2Recovery ?? 0,
+            resource: values.resource ?? "",
+            resource2: values.resource2 ?? "none"
         });
     });
 });
@@ -9316,7 +9560,7 @@ this.export.sheetSetup = sheetSetup;
 // Automatic sheet assignment
 const imports = mainImports.export;
 
-on("change:job", () => {
+on("clicked:applyJob", () => {
     getAttrs(["level", "job"], values => {
         let job = values.job.toLowerCase();
         let sheet = imports.sheets[job];
@@ -9575,248 +9819,6 @@ on("change:str change:dex change:vit change:int change:mnd change:defense change
             newAttributes[`${attribute}Display`] = Math.max(effectiveValue, bottomValue);
         }
         setAttrs(newAttributes);
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file override
-
-const overrideImports = new (function() {
-    this.export = {};
-
-const workerName = "override"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/override.js
-
-
-
-const imports = overrideImports.export;
-
-// Assign override state
-on('change:override', () => {
-    getAttrs(['override'], values => {
-        log("Changed override to " + values.override);
-        for (let section of imports.abilitySections) {
-            getSectionIDs(`repeating_${section}`, ids => {
-                const output = {};
-                ids.forEach(id => output[`repeating_${section}_${id}_repeatingOverride`] = values.override);
-                setAttrs(output);
-            });
-        }
-    });
-});
-
-</script>
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file tabs
-
-const tabsImports = new (function() {
-    this.export = {};
-
-const workerName = "tabs"
-
-
-})();
-
-// Build: Source/workers/tabs.js
-
-
-// Tabs
-
-const buttonlist = ["character", "items", "abilities", "settings"];
-buttonlist.forEach(button => {
-    on(`clicked:${button}`, () => {
-        setAttrs({
-            sheetTab: button
-        });
-    });
-});
-
-// Initial setup
-on("sheet:opened", () => {
-    getAttrs([
-        "d20",
-        "advantage",
-        "mpRecovery",
-        "mpRecoveryBlock",
-        "resourceRecovery",
-        "resource2Recovery",
-        "resource",
-        "resource2"
-    ], values => {
-        setAttrs({
-            d20: values.d20 ?? "1d20",
-            advantage: values.advantage ?? 0,
-            mpRecovery: values.mpRecovery ?? 2,
-            mpRecoveryBlock: values.mpRecoveryBlock ?? "off",
-            resourceRecovery: values.resourceRecovery ?? 0,
-            resource2Recovery: values.resource2Recovery ?? 0,
-            resource: values.resource ?? "",
-            resource2: values.resource2 ?? "none"
-        });
     });
 });
 
