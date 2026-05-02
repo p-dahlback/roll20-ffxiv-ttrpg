@@ -1394,7 +1394,7 @@ const AddEffects = function(customEngine, customRemove) {
             }
             if (hadDuplicate && !didReplace) {
                 // Couldn't replace - the effect was blocked.
-                this.engine.logd("Skipping effect; already an identical or greater effect from the same source");
+                this.engine().logd("Skipping effect; already an identical or greater effect from the same source");
                 return { result: false, summaries: [] };
             }
         }
