@@ -95,6 +95,17 @@
                 <option value="roll">Roll d20 + value</option>
             </select>
         </div>
+
+        <div class="entry fancy lowkey">
+            <h3>Sheet import/export</h3>
+            <p class="medium" style="margin-top: 8px;">Import: Clear the sheet and set it up according to the sheet pasted in the text box.</p>
+            <input type="text" name="attr_import" placeholder="Sheet" />
+            <button type="action" name="act_importSheet">Import</button>
+
+            <p class="medium" style="margin-top: 8px;">Export: Output the sheet definition into the text box.</p>
+            <button type="action" name="act_exportSheet">Export</button>
+            <input type="text" name="attr_export" placeholder="Sheet" />
+        </div>
     </div>
 
     <div class="override overrideContent fancy lowkey">

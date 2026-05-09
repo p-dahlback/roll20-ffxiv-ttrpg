@@ -5,11 +5,6 @@
 
 const sheets = {
     npc: {
-        job: "NPC",
-        jobIcon: "",
-        role: "",
-        level: 30,
-        override: "manual",
         resources: { 
             hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0, 
             resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -25,10 +20,12 @@ const sheets = {
     
     level30: {
         ast: {
-            job: "AST",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
-            role: "Healer / Astrologian",
-            level: 30,
+            base: {
+                job: "AST",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
+                role: "Healer / Astrologian",
+                level: 30
+            },
             resources: { 
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -68,10 +65,12 @@ const sheets = {
             }
         },
         blm: {
-            job: "BLM",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
-            role: "DPS / Black Mage",
-            level: 30,
+            base:  {
+                job: "BLM",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
+                role: "DPS / Black Mage",
+                level: 30
+            },
             resources: { 
                 hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -114,10 +113,12 @@ const sheets = {
             }
         },
         brd: {
-            job: "BRD",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
-            role: "DPS / Bard",
-            level: 30,
+            base: {
+                job: "BRD",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
+                role: "DPS / Bard",
+                level: 30
+            },
             resources: { 
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -161,10 +162,12 @@ const sheets = {
             }
         },
         drg: {
-            job: "DRG",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png",
-            role: "DPS / Dragoon",
-            level: 30,
+            base: {
+                job: "DRG",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png",
+                role: "DPS / Dragoon",
+                level: 30
+            },
             resources: { 
                 hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -204,10 +207,12 @@ const sheets = {
             }
         },
         drk: {
-            job: "DRK",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png",
-            role: "Tank / Dark Knight",
-            level: 30,
+            base: {
+                job: "DRK",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png",
+                role: "Tank / Dark Knight",
+                level: 30
+            },
             resources: { 
                 hitPoints: 32, hitPoints_max: 32, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -244,10 +249,12 @@ const sheets = {
             }
         },
         mch: {
-            job: "MCH",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png",
-            role: "DPS / Machinist",
-            level: 30,
+            base: {
+                job: "MCH",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png",
+                role: "DPS / Machinist",
+                level: 30
+            },
             resources: { 
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
                 resource: "Heat", resourceValue: 0, resourceValue_max: 4, 
@@ -286,10 +293,12 @@ const sheets = {
             }
         },
         mnk: {
-            job: "MNK",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png",
-            role: "DPS / Monk",
-            level: 30,
+            base: {
+                job: "MNK",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png",
+                role: "DPS / Monk",
+                level: 30
+            },
             resources: { 
                 hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
                 resource: "Chakra", resourceValue: 3, resourceValue_max: 3, 
@@ -332,10 +341,12 @@ const sheets = {
             }
         },
         nin: {
-            job: "NIN",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png",
-            role: "DPS / Ninja",
-            level: 30,
+            base: {
+                job: "NIN",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png",
+                role: "DPS / Ninja",
+                level: 30
+            },
             resources: { 
                 hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
                 resource: "Mudra", resourceValue: 0, resourceValue_max: 3, 
@@ -380,10 +391,12 @@ const sheets = {
             }
         },
         pld: {
-            job: "PLD",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png",
-            role: "Tank / Paladin",
-            level: 30,
+            base: {
+                job: "PLD",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png",
+                role: "Tank / Paladin",
+                level: 30
+            },
             resources: {
                 hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -422,10 +435,12 @@ const sheets = {
             }
         },
         sch: {
-            job: "SCH",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png",
-            role: "Healer / Scholar",
-            level: 30,
+            base: {
+                job: "SCH",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png",
+                role: "Healer / Scholar",
+                level: 30
+            },
             resources: {
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -462,10 +477,12 @@ const sheets = {
             }
         },
         smn: {
-            job: "SMN",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png",
-            role: "DPS / Summoner",
-            level: 30,
+            base: {
+                job: "SMN",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png",
+                role: "DPS / Summoner",
+                level: 30
+            },
             resources: {
                 hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5,
                 resource: "Aetherflow", resourceValue: 2, resourceValue_max: 2, 
@@ -511,10 +528,12 @@ const sheets = {
             }
         },
         war: {
-            job: "WAR",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
-            role: "Tank / Warrior",
-            level: 30,
+            base: {
+                job: "WAR",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
+                role: "Tank / Warrior",
+                level: 30
+            },
             resources: {
                 hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -551,10 +570,12 @@ const sheets = {
             }
         },
         whm: {
-            job: "WHM",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png",
-            role: "Healer / White Mage",
-            level: 30,
+            base: {
+                job: "WHM",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png",
+                role: "Healer / White Mage",
+                level: 30
+            },
             resources: {
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -564,8 +585,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 1, dex: 1, vit: 2, int: 3, mnd: 5, defense: 11, magicDefense: 14, vigilance: 15, speed: 5 },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Stone II", type: "Primary, Magic, Earth-Aspected, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WHM/stone-ii.png" },
@@ -592,10 +612,12 @@ const sheets = {
 
         // Pets
         carbuncle: {
-            job: "CARBUNCLE",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/CARBUNCLE.png",
-            role: "Pet / Carbuncle",
-            level: 30,
+            base: {
+                job: "CARBUNCLE",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/CARBUNCLE.png",
+                role: "Pet / Carbuncle",
+                level: 30
+            },
             resources: {
                 hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -621,10 +643,12 @@ const sheets = {
             }
         },
         eos: {
-            job: "EOS",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/EOS.png",
-            role: "Pet / Eos",
-            level: 30,
+            base: {
+                job: "EOS",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/EOS.png",
+                role: "Pet / Eos",
+                level: 30
+            },
             resources: {
                 hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -647,10 +671,12 @@ const sheets = {
 
         // Companions
         defender: {
-            job: "DEFENDER",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DEFENDER.png",
-            role: "Chocobo Companion / Defender",
-            level: 30,
+            base: {
+                job: "DEFENDER",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DEFENDER.png",
+                role: "Chocobo Companion / Defender",
+                level: 30
+            },
             resources: {
                 hitPoints: 40, hitPoints_max: 40, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -660,8 +686,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 14, magicDefense: 14, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Choco Strike", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Deals 2 damage and inflicts Enmity on all targets.", hitType: "None", damageType: "Damage", baseValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
@@ -670,10 +695,12 @@ const sheets = {
             }
         },
         healer: {
-            job: "HEALER",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/HEALER.png",
-            role: "Chocobo Companion / Healer",
-            level: 30,
+            base: {
+                job: "HEALER",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/HEALER.png",
+                role: "Chocobo Companion / Healer",
+                level: 30
+            },
             resources: {
                 hitPoints: 25, hitPoints_max: 25, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -683,8 +710,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Choco Cure + Choco Esuna", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Restores 12 HP and removes a single enfeeblement from the target. The target may choose which enfeeblement to remove.", hitType: "None", damageType: "Healing", baseValue: "12", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
@@ -693,10 +719,12 @@ const sheets = {
             }
         },
         attacker: {
-            job: "ATTACKER",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/ATTACKER.png",
-            role: "Chocobo Companion / Attacker",
-            level: 30,
+            base: {
+                job: "ATTACKER",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/ATTACKER.png",
+                role: "Chocobo Companion / Attacker",
+                level: 30
+            },
             resources: {
                 hitPoints: 30, hitPoints_max: 30, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -706,8 +734,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Choco Slash", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Deals 15 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "15", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },

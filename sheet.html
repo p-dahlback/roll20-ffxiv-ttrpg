@@ -4540,6 +4540,17 @@
                 <option value="roll">Roll d20 + value</option>
             </select>
         </div>
+
+        <div class="entry fancy lowkey">
+            <h3>Sheet import/export</h3>
+            <p class="medium" style="margin-top: 8px;">Import: Clear the sheet and set it up according to the sheet pasted in the text box.</p>
+            <input type="text" name="attr_import" placeholder="Sheet" />
+            <button type="action" name="act_importSheet">Import</button>
+
+            <p class="medium" style="margin-top: 8px;">Export: Output the sheet definition into the text box.</p>
+            <button type="action" name="act_exportSheet">Export</button>
+            <input type="text" name="attr_export" placeholder="Sheet" />
+        </div>
     </div>
 
     <div class="override overrideContent fancy lowkey">
@@ -4736,146 +4747,6 @@
 
 <!-- -----------------SHEET WORKERS (version 1.0.0)----------------- -->
 
-
-<script type="text/worker">
-
-// Build (version 1.0.0), generated file toggles
-
-const togglesImports = new (function() {
-    this.export = {};
-
-const workerName = "toggles"
-
-// Build (version 1.0.0): Source/workers/common/abilitySections.js
-
-
-const abilitySections = [
-    "limit", 
-    "song1", "song2", "song3", 
-    "primary1", "primary2", "primary3", 
-    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
-    "secondary1", "secondary2", "secondary3", 
-    "instant1", "instant2", "instant3", 
-    "technique1", "technique2", "technique3"
-];
-
-this.export.abilitySections = abilitySections;
-
-
-})();
-
-// Build: Source/workers/toggles.js
-
-
-
-// Expand/collapse
-
-const imports = togglesImports.export;
-const itemSections = ["titles", "minions", "items"];
-
-function toggleExpandedState(attributeName) {
-    getAttrs([attributeName], values => {
-        // Toggle
-        const value = values[attributeName];
-        var attributes = {};
-        var newValue = "on";
-        if (value == "on" || value == "1") {
-            newValue = "off";
-        } else if (value == "off" || value == "0") {
-            newValue = "on";
-        }
-        attributes[attributeName] = newValue;
-        setAttrs(attributes);
-    });
-}
-
-function toggleExpandedStateInSection(eventInfo) {
-    const sourceAttributes = eventInfo.sourceAttribute.split("_");
-    const section = sourceAttributes[1];
-    const rowId = sourceAttributes[2];
-    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
-}
-
-function setCollapsedStateForSection(isExpanded, section) {
-    getSectionIDs(`repeating_${section}`, ids => {
-        var attributes = {};
-        for (let id of ids) {
-            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
-        }
-        if (Object.keys(attributes).length > 0) {
-            setAttrs(attributes);
-        }
-    });
-}
-
-const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
-for (let section of toggleSections) {
-    on(`clicked:repeating_${section}:info`, eventInfo => {
-        toggleExpandedStateInSection(eventInfo);
-    });
-}
-
-on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
-    const actionComponents = eventInfo.htmlAttributes.name.split("_");
-    const section = actionComponents[1];
-    toggleExpandedState(`${section}HeaderExpandItem`);
-});
-
-on("clicked:expandAllEffects", () => {
-    setCollapsedStateForSection(false, "effects");
-});
-
-on("clicked:collapseAllEffects", () => {
-    setCollapsedStateForSection(true, "effects");
-});
-
-on("clicked:expandAllTraits", () => {
-    setCollapsedStateForSection(false, "traits");
-});
-
-on("clicked:collapseAllTraits", () => {
-    setCollapsedStateForSection(true, "traits");
-});
-
-on("clicked:expandAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(false, section);
-    }
-});
-
-on("clicked:collapseAllItems", () => {
-    for (let section of itemSections) {
-        setCollapsedStateForSection(true, section);
-    }
-});
-
-on("clicked:expandAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(false, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "off",
-        primaryHeaderExpandItem: "off",
-        secondaryHeaderExpandItem: "off",
-        instantHeaderExpandItem: "off",
-        techniqueHeaderExpandItem: "off"
-    });
-});
-
-on("clicked:collapseAllAbilities", () => {
-    for (let section of imports.abilitySections) {
-        setCollapsedStateForSection(true, section);
-    }
-    setAttrs({
-        songHeaderExpandItem: "on",
-        primaryHeaderExpandItem: "on",
-        secondaryHeaderExpandItem: "on",
-        instantHeaderExpandItem: "on",
-        techniqueHeaderExpandItem: "on"
-    });
-});
-
-</script>
 
 <script type="text/worker">
 
@@ -7251,6 +7122,28 @@ const abilitySections = [
 
 this.export.abilitySections = abilitySections;
 
+// Build (version 1.0.0): Source/workers/common/threadlessPromise.js
+
+
+const ThreadLessPromise = class {
+    constructor(count, completion) {
+        this.count = count;
+        this.completions = 0;
+        this.completion = completion;
+    }
+
+    complete() {
+        this.completions += 1;
+        engine.logd(`Completed cleanup ${this.completions}/${this.count}`);
+        if (this.completions >= this.count) {
+            this.completion();
+        }
+    }
+};
+
+
+this.export.ThreadLessPromise = ThreadLessPromise;
+
 // Build (version 1.0.0): Source/workers/../common/addEffects.js
 
 
@@ -8715,11 +8608,6 @@ this.export.performAbility = performAbility;
 
 const sheets = {
     npc: {
-        job: "NPC",
-        jobIcon: "",
-        role: "",
-        level: 30,
-        override: "manual",
         resources: { 
             hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0, 
             resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -8735,10 +8623,12 @@ const sheets = {
     
     level30: {
         ast: {
-            job: "AST",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
-            role: "Healer / Astrologian",
-            level: 30,
+            base: {
+                job: "AST",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/AST.png",
+                role: "Healer / Astrologian",
+                level: 30
+            },
             resources: { 
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -8778,10 +8668,12 @@ const sheets = {
             }
         },
         blm: {
-            job: "BLM",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
-            role: "DPS / Black Mage",
-            level: 30,
+            base:  {
+                job: "BLM",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BLM.png",
+                role: "DPS / Black Mage",
+                level: 30
+            },
             resources: { 
                 hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -8824,10 +8716,12 @@ const sheets = {
             }
         },
         brd: {
-            job: "BRD",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
-            role: "DPS / Bard",
-            level: 30,
+            base: {
+                job: "BRD",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/BRD.png",
+                role: "DPS / Bard",
+                level: 30
+            },
             resources: { 
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -8871,10 +8765,12 @@ const sheets = {
             }
         },
         drg: {
-            job: "DRG",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png",
-            role: "DPS / Dragoon",
-            level: 30,
+            base: {
+                job: "DRG",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRG.png",
+                role: "DPS / Dragoon",
+                level: 30
+            },
             resources: { 
                 hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -8914,10 +8810,12 @@ const sheets = {
             }
         },
         drk: {
-            job: "DRK",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png",
-            role: "Tank / Dark Knight",
-            level: 30,
+            base: {
+                job: "DRK",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DRK.png",
+                role: "Tank / Dark Knight",
+                level: 30
+            },
             resources: { 
                 hitPoints: 32, hitPoints_max: 32, magicPoints: 5, magicPoints_max: 5, 
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -8954,10 +8852,12 @@ const sheets = {
             }
         },
         mch: {
-            job: "MCH",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png",
-            role: "DPS / Machinist",
-            level: 30,
+            base: {
+                job: "MCH",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MCH.png",
+                role: "DPS / Machinist",
+                level: 30
+            },
             resources: { 
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5, 
                 resource: "Heat", resourceValue: 0, resourceValue_max: 4, 
@@ -8996,10 +8896,12 @@ const sheets = {
             }
         },
         mnk: {
-            job: "MNK",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png",
-            role: "DPS / Monk",
-            level: 30,
+            base: {
+                job: "MNK",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/MNK.png",
+                role: "DPS / Monk",
+                level: 30
+            },
             resources: { 
                 hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
                 resource: "Chakra", resourceValue: 3, resourceValue_max: 3, 
@@ -9042,10 +8944,12 @@ const sheets = {
             }
         },
         nin: {
-            job: "NIN",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png",
-            role: "DPS / Ninja",
-            level: 30,
+            base: {
+                job: "NIN",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/NIN.png",
+                role: "DPS / Ninja",
+                level: 30
+            },
             resources: { 
                 hitPoints: 26, hitPoints_max: 26, magicPoints: 5, magicPoints_max: 5, 
                 resource: "Mudra", resourceValue: 0, resourceValue_max: 3, 
@@ -9090,10 +8994,12 @@ const sheets = {
             }
         },
         pld: {
-            job: "PLD",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png",
-            role: "Tank / Paladin",
-            level: 30,
+            base: {
+                job: "PLD",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/PLD.png",
+                role: "Tank / Paladin",
+                level: 30
+            },
             resources: {
                 hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9132,10 +9038,12 @@ const sheets = {
             }
         },
         sch: {
-            job: "SCH",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png",
-            role: "Healer / Scholar",
-            level: 30,
+            base: {
+                job: "SCH",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SCH.png",
+                role: "Healer / Scholar",
+                level: 30
+            },
             resources: {
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9172,10 +9080,12 @@ const sheets = {
             }
         },
         smn: {
-            job: "SMN",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png",
-            role: "DPS / Summoner",
-            level: 30,
+            base: {
+                job: "SMN",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/SMN.png",
+                role: "DPS / Summoner",
+                level: 30
+            },
             resources: {
                 hitPoints: 21, hitPoints_max: 21, magicPoints: 5, magicPoints_max: 5,
                 resource: "Aetherflow", resourceValue: 2, resourceValue_max: 2, 
@@ -9221,10 +9131,12 @@ const sheets = {
             }
         },
         war: {
-            job: "WAR",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
-            role: "Tank / Warrior",
-            level: 30,
+            base: {
+                job: "WAR",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WAR.png",
+                role: "Tank / Warrior",
+                level: 30
+            },
             resources: {
                 hitPoints: 35, hitPoints_max: 35, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9261,10 +9173,12 @@ const sheets = {
             }
         },
         whm: {
-            job: "WHM",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png",
-            role: "Healer / White Mage",
-            level: 30,
+            base: {
+                job: "WHM",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/WHM.png",
+                role: "Healer / White Mage",
+                level: 30
+            },
             resources: {
                 hitPoints: 24, hitPoints_max: 24, magicPoints: 5, magicPoints_max: 5,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9274,8 +9188,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "true", hasInstants: "true", hasTechniques: "false", hasLimitBreak: "true"
             },
             attributes: { str: 1, dex: 1, vit: 2, int: 3, mnd: 5, defense: 11, magicDefense: 14, vigilance: 15, speed: 5 },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Stone II", type: "Primary, Magic, Earth-Aspected, Invoked", cost: 1, uses: 0, uses_max: 0, resource: "MP", target: "Single", range: "10 squares", check: "MND (d20 + 5)", cr: "Target's Magic Defense", baseEffect: "Deals 2 damage to the target.", directHit: "Deals an additional 1d6 damage.", stat: "MND", hitType: "Hit", damageType: "Damage", hitDie: "1d20cs20", baseValue: "2", dhValue: "1d6", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/WHM/stone-ii.png" },
@@ -9302,10 +9215,12 @@ const sheets = {
 
         // Pets
         carbuncle: {
-            job: "CARBUNCLE",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/CARBUNCLE.png",
-            role: "Pet / Carbuncle",
-            level: 30,
+            base: {
+                job: "CARBUNCLE",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/CARBUNCLE.png",
+                role: "Pet / Carbuncle",
+                level: 30
+            },
             resources: {
                 hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9331,10 +9246,12 @@ const sheets = {
             }
         },
         eos: {
-            job: "EOS",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/EOS.png",
-            role: "Pet / Eos",
-            level: 30,
+            base: {
+                job: "EOS",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/EOS.png",
+                role: "Pet / Eos",
+                level: 30
+            },
             resources: {
                 hitPoints: 0, hitPoints_max: 0, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9357,10 +9274,12 @@ const sheets = {
 
         // Companions
         defender: {
-            job: "DEFENDER",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DEFENDER.png",
-            role: "Chocobo Companion / Defender",
-            level: 30,
+            base: {
+                job: "DEFENDER",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/DEFENDER.png",
+                role: "Chocobo Companion / Defender",
+                level: 30
+            },
             resources: {
                 hitPoints: 40, hitPoints_max: 40, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9370,8 +9289,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 14, magicDefense: 14, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Choco Strike", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "All enemies within range", range: "A 5x5 area centered on this character", baseEffect: "Deals 2 damage and inflicts Enmity on all targets.", hitType: "None", damageType: "Damage", baseValue: "2", effectTarget: "Enmity(5)", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
@@ -9380,10 +9298,12 @@ const sheets = {
             }
         },
         healer: {
-            job: "HEALER",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/HEALER.png",
-            role: "Chocobo Companion / Healer",
-            level: 30,
+            base: {
+                job: "HEALER",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/HEALER.png",
+                role: "Chocobo Companion / Healer",
+                level: 30
+            },
             resources: {
                 hitPoints: 25, hitPoints_max: 25, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9393,8 +9313,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Choco Cure + Choco Esuna", type: "Primary, Magic", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "10 squares", baseEffect: "Restores 12 HP and removes a single enfeeblement from the target. The target may choose which enfeeblement to remove.", hitType: "None", damageType: "Healing", baseValue: "12", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
@@ -9403,10 +9322,12 @@ const sheets = {
             }
         },
         attacker: {
-            job: "ATTACKER",
-            jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/ATTACKER.png",
-            role: "Chocobo Companion / Attacker",
-            level: 30,
+            base: {
+                job: "ATTACKER",
+                jobIcon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Jobs/ATTACKER.png",
+                role: "Chocobo Companion / Attacker",
+                level: 30
+            },
             resources: {
                 hitPoints: 30, hitPoints_max: 30, magicPoints: 0, magicPoints_max: 0,
                 resource: "", resourceValue: 0, resourceValue_max: 0, 
@@ -9416,8 +9337,7 @@ const sheets = {
                 resourceReset: "", hasBestial: "false", hasNadi: "false", hasOpo: "false", hasSecondaries: "false", hasInstants: "false", hasTechniques: "false", hasLimitBreak: "false"
             },
             attributes: { str: 3, dex: 3, vit: 3, int: 3, mnd: 3, defense: 13, magicDefense: 13, vigilance: 13, speed: 5, character_race: "Cloudkin, Chocobo", size: "medium" },
-            traits: [
-            ],
+            traits: [],
             abilities: {
                 primary: [
                     { title: "Choco Slash", type: "Primary, Physical", cost: 0, uses: 0, uses_max: 0, target: "Single", range: "1 square", baseEffect: "Deals 15 damage to the target.", hitType: "None", damageType: "Damage", baseValue: "15", icon: "https://raw.githubusercontent.com/p-dahlback/roll20-ffxiv-ttrpg/refs/heads/main/Images/Abilities/chocobo.png" },
@@ -9430,99 +9350,464 @@ const sheets = {
 
 this.export.sheets = sheets;
 
-// Build (version 1.0.0): Source/workers/main/setup/sheetSetup.js
+// Build (version 1.0.0): Source/workers/main/setup/sheetAttributes.js
 
 
-const SheetSetup = function() {
-    this.execute = function(sheet) {
-        this.clearAllAbilitiesAndEffects(() => {
+const SheetAttributes = function() {
+
+    this.misc = [
+        "character_name", "character_race", "origin", "bonds",
+        
+        "turnOrder", "turnOrderStyle", "fortune", "whisper", "whisperExemptAbilities",
+
+        "job", "jobIcon", "role", "level", "sheet_type", "team", "size", "override", "advantage",
+            
+        "selectedTitle", "selectedTitleEffect", "selectedMinion", "selectedMinionEffect",
+
+        "songHeaderExpandItem", "primaryHeaderExpandItem", "ninjutsuHeaderExpandItem", "secondaryHeaderExpandItem", "instantHeaderExpandItem", "techniqueHeaderExpandItem"
+    ];
+
+    this.resources = [
+        "hitPoints", "hitPoints_max", "magicPoints", "magicPoints_max", "barrierPoints", "barrierPoints_max",
+
+        "resource", "resourceValue", "resourceValue_max", 
+        "resource2", "resource2Value", "resource2Value_max", 
+        "resource3", "resource3Value", "resource3Value_max", 
+        "range1", "range1_max", "range2", "range2_max", "range3", "range3_max",
+        "resourceReset", "hasBestial", "hasNadi", "hasOpo", "hasSecondaries", "hasInstants", "hasTechniques", "hasLimitBreak"
+    ];
+
+    this.main = [
+        "str", "dex", "vit", "int", "mnd", "defense", "magicDefense", "vigilance", "speed"
+    ];
+
+    this.traits = [
+        "title", "effect", "icon", "automatic", "editable"
+    ];
+
+    this.titles = [
+        "title", "effect", "repeatingExpandItem"
+    ];
+
+    this.minions = [
+        "title", "effect", "repeatingExpandItem"
+    ];
+
+    this.items = [
+        "title", "effect", "count", "repeatingExpandItem"
+    ];
+
+    this.abilities = [
+        "uses", "uses_max", "cost", "resource",
+
+        "icon", "title", "type", "condition", "trigger", "target", "range", "check", "cr", "repeatingExpandItem",
+        "baseEffect", "directHit", "effectName", "limitation", "effect", 
+
+        "stat", "hitType", "damageType", "hitDie", "baseValue", "dhValue", "restore", "effectSelf", "effectTarget", "combo",
+
+        "repeatingOverride"
+    ];
+};
+
+const sheetAttributes = new SheetAttributes();
+this.export.SheetAttributes = SheetAttributes;
+this.export.sheetAttributes = sheetAttributes;
+
+// Build (version 1.0.0): Source/workers/main/setup/sheetImport.js
+
+
+const SheetImport = function() {
+
+    this.importSheet = function(text) {
+        engine.logd("Importing full sheet");
+        let sheet;
+        try {
+            sheet = JSON.parse(text);
+        } catch {
+            setAttrs({
+                import: "Invalid format, cannot import"
+            });
+        }
+        if (!sheet.base) {
+            engine.logd("No detectable base attributes in import; aborting");
+            return;
+        }
+        var attributes = {};
+        sheetReset.clear(() => {
+            engine.logd("Clear complete, initializing sheet");
+            attributes = this.applyMiscAttributes(sheet, attributes);
+            attributes = this.applyResources(sheet, attributes);
+            attributes = this.applyMainAttributes(sheet, attributes);
+            attributes = this.applyTraits(sheet, attributes, null);
+            attributes = this.applyTitles(sheet, attributes);
+            attributes = this.applyMinions(sheet, attributes);
+            attributes = this.applyItems(sheet, attributes);
+            attributes = this.applyAbilities(sheet, attributes, null);
+            attributes.import = "";
+            attributes.export = "";
+            
+            setAttrs(attributes);
+        });
+    };
+
+    this.importJob = function(sheet) {
+        engine.logd("Importing Job Sheet");
+        sheetReset.clearAllAbilitiesAndEffects(() => {
             engine.logd("Clear complete; initializing sheet");
             var attributes = {
-                job: sheet.job,
-                jobIcon: sheet.jobIcon,
-                level: sheet.level ?? 30,
-                role: sheet.role,
-                sheet_type: "unique",
-                team: "adventurer",
-                size: "normal"
+                job: sheet.base.job,
+                jobIcon: sheet.base.jobIcon,
+                level: sheet.base.level ?? 30,
+                role: sheet.base.role
             };
             attributes.override = sheet.override ?? "auto";
             attributes.barrierPoints = 0;
 
-            engine.logd("Preparing resources");
-            for (let entry of Object.entries(sheet.resources)) {
-                attributes[entry[0]] = entry[1];
-            }
-
-            engine.logd("Preparing base attributes");
-            for (let entry of Object.entries(sheet.attributes)) {
-                attributes[entry[0]] = entry[1];
-                attributes[`${entry[0]}Effective`] = entry[1];
-                attributes[`${entry[0]}Display`] = entry[1];
-                attributes[`${entry[0]}Unblocked`] = entry[1];
-                attributes[`${entry[0]}Override`] = 0;
-            }
-            attributes.mpRecovery = 2;
-            attributes.mpRecoveryBlock = "off";
-
-            if (sheet.traits) {
-                engine.logd("Preparing traits");
-                for (let trait of sheet.traits) {
-                    let id = engine.generateId();
-                    for (let entry of Object.entries(trait)) {
-                        attributes[`repeating_traits_${id}_${entry[0]}`] = entry[1];
-                        attributes[`repeating_traits_${id}_icon`] = sheet.jobIcon;
-                        attributes[`repeating_traits_${id}_automatic`] = "1";
-                        attributes[`repeating_traits_${id}_editable`] = "off";
-                    }
-                }
-            }
-
-            if (sheet.abilities) {
-                engine.logd("Preparing abilities");
-                for (let section of Object.entries(sheet.abilities)) {
-                    for (let index in section[1]) {
-                        let ability = section[1][index];
-                        if (ability.spacer) {
-                            continue;
-                        }
-                        let sectionName;
-                        if (section[0] === "limit") {
-                            sectionName = section[0];
-                        } else {
-                            let column = (index % 3) + 1;
-                            sectionName = `${section[0]}${column}`;
-                        }
-                        let id = engine.generateId();
-                        for (let entry of Object.entries(ability)) {
-                            attributes[`repeating_${sectionName}_${id}_${entry[0]}`] = entry[1];
-                        }
-                        attributes[`repeating_${sectionName}_${id}_repeatingOverride`] = "auto";
-                    }
-                }
-            }
+            attributes = this.applyResources(sheet, attributes);
+            attributes = this.applyMainAttributes(sheet, attributes);
+            attributes = this.applyTraits(sheet, attributes, {
+                icon: sheet.base.jobIcon,
+                automatic: "1",
+                editable: "off"
+            });
+            attributes = this.applyAbilities(sheet, attributes, {
+                repeatingOverride: "auto"
+            });
             setAttrs(attributes);
         });
+    };
+
+    this.applyMiscAttributes = function(sheet, attributes) {
+        if (!sheet.base) {
+            return attributes;
+        }
+        engine.logd("Preparing base attributes");
+        // Set defaults if needed
+        attributes.origin = "";
+        attributes.bonds = "";
+        attributes.selectedTitle = "";
+        attributes.selectedTitleEffect = "";
+        attributes.selectedMinion = "";
+        attributes.selectedMinionEffect = "";
+        attributes.mpRecovery = sheet.base.mpRecovery ?? 2;
+        attributes.mpRecoveryBlock = sheet.base.mpRecoveryBlock ?? "off";
+
+        for (let key of sheetAttributes.misc) {
+            if (sheet.base[key] || sheet.base[key] === 0) {
+                attributes[key] = sheet.base[key];
+            }
+        }
+        return attributes;
+    };
+
+    this.applyResources = function(sheet, attributes) {
+        if (!sheet.resources) {
+            return attributes;
+        }
+        engine.logd("Preparing resource attributes");
+        for (let key of sheetAttributes.resources) {
+            if (sheet.resources[key] || sheet.resources[key] === 0) {
+                attributes[key] = sheet.resources[key];
+            }
+        }
+        return attributes;
+    };
+
+    this.applyMainAttributes = function(sheet, attributes) {
+        if (!sheet.attributes) {
+            return attributes;
+        }
+        engine.logd("Preparing main attributes");
+        for (let key of sheetAttributes.main) {
+            let value = sheet.attributes[key] ?? 0;
+            attributes[key] = value;
+            attributes[`${key}Effective`] = value;
+            attributes[`${key}Display`] = value;
+            attributes[`${key}Unblocked`] = value;
+            attributes[`${key}Override`] = 0;
+        }
+        return attributes;
+    };
+
+    this.applyTraits = function(sheet, attributes, defaults) {
+        if (!sheet.traits) {
+            return attributes;
+        }
+        engine.logd("Preparing traits");
+        for (let trait of sheet.traits) {
+            let id = engine.generateId();
+            for (let key of sheetAttributes.traits) {
+                if (trait[key] || trait[key] === 0) {
+                    attributes[`repeating_traits_${id}_${key}`] = trait[key];
+                } else if (defaults && defaults[key]) {
+                    attributes[`repeating_traits_${id}_${key}`] = defaults[key];
+                }
+            }
+        }
+        return attributes;
+    };
+
+    this.applyTitles = function(sheet, attributes) {
+        if (!sheet.titles) {
+            return attributes;
+        }
+        engine.logd("Preparing titles");
+        for (let title of sheet.titles) {
+            let id = engine.generateId();
+            for (let key of sheetAttributes.titles) {
+                if (title[key] || title[key] === 0) {
+                    attributes[`repeating_titles_${id}_${key}`] = title[key];
+                }
+            }
+        }
+        return attributes;
+    };
+
+    this.applyMinions = function(sheet, attributes) {
+        if (!sheet.minions) {
+            return attributes;
+        }
+        engine.logd("Preparing minions");
+        for (let minion of sheet.minions) {
+            let id = engine.generateId();
+            for (let key of sheetAttributes.minions) {
+                if (minion[key] || minion[key] === 0) {
+                    attributes[`repeating_minions_${id}_${key}`] = minion[key];
+                }
+            }
+        }
+        return attributes;
+    };
+
+    this.applyItems = function(sheet, attributes) {
+        if (!sheet.items) {
+            return attributes;
+        }
+        engine.logd("Preparing items");
+        for (let item of sheet.items) {
+            let id = engine.generateId();
+            for (let key of sheetAttributes.items) {
+                if (item[key] || item[key] === 0) {
+                    attributes[`repeating_items_${id}_${key}`] = item[key];
+                }
+            }
+        }
+        return attributes;
+    };
+
+    this.applyAbilities = function(sheet, attributes, defaults) {
+        if (!sheet.abilities) {
+            return attributes;
+        }
+        engine.logd("Preparing abilities");
+        for (let section of Object.entries(sheet.abilities)) {
+            for (let index in section[1]) {
+                let ability = section[1][index];
+                if (ability.spacer) {
+                    continue;
+                }
+                let sectionName;
+                if (section[0] === "limit") {
+                    sectionName = section[0];
+                } else {
+                    let column = (index % 3) + 1;
+                    sectionName = `${section[0]}${column}`;
+                }
+                let id = engine.generateId();
+                for (let key of sheetAttributes.abilities) {
+                    if (ability[key] || ability[key] === 0) {
+                        attributes[`repeating_${sectionName}_${id}_${key}`] = ability[key];
+                    } else if (defaults && defaults[key]) {
+                        attributes[`repeating_${sectionName}_${id}_${key}`] = defaults[key];
+                    }
+                }
+            }
+        }
+        return attributes;
+    };
+};
+
+const sheetImport = new SheetImport();
+this.export.SheetImport = SheetImport;
+this.export.sheetImport = sheetImport;
+
+// Build (version 1.0.0): Source/workers/main/setup/sheetExport.js
+
+
+const SheetExport = function() {
+
+    this.execute = function() {
+        let basicAttributes = sheetAttributes.misc.concat(sheetAttributes.resources, sheetAttributes.main);
+        getAttrs(basicAttributes, values => {
+            var target = {
+                base: {},
+                resources: {},
+                attributes: {}
+            };
+            target = this.applyAttributes(values, target, "base", sheetAttributes.misc);
+            target = this.applyAttributes(values, target, "resources", sheetAttributes.resources);
+            target = this.applyAttributes(values, target, "attributes", sheetAttributes.main);
+
+            let basicSections = [
+                { name: "traits", keys: sheetAttributes.traits },
+                { name: "titles", keys: sheetAttributes.titles },
+                { name: "minions", keys: sheetAttributes.minions },
+                { name: "items", keys: sheetAttributes.items }
+            ];
+            let abilities = abilitySections.map(section => { return { name: section, keys: sheetAttributes.abilities }; });
+            let allSections = basicSections.concat(abilities);
+            var repeatingTarget = {};
+
+            let promise = new ThreadLessPromise(allSections.length, () => {
+                for (let section of basicSections) {
+                    engine.logd("Exporting " + section.name);
+                    target[section.name] = repeatingTarget[section.name];
+                }
+                target = this.processAbilities(abilitySections, repeatingTarget, target);
+                this.exportObject(target);
+            });
+            
+            for (let section of allSections) {
+                this.applyRepeating(section.name, section.keys, objects => {
+                    repeatingTarget[section.name] = objects;
+                    promise.complete();
+                });
+            }
+        });
+    };
+
+    this.exportObject = function(object) {
+        engine.logd("Export complete; output to textbox");
+
+        let text = JSON.stringify(object);
+        setAttrs({
+            export: text
+        });
+    };
+
+    this.processAbilities = function(abilitySections, container, target) {
+        engine.logd("Final processing of abilities");
+        let config = abilitySections.sort().reduce(
+            (accumulator, section) => {
+                let match = section.match(/([A-Za-z]+)([0-9]+)?/);
+                if (!match[1]) {
+                    return accumulator;
+                } else if (!match[2]) {
+                    accumulator[section] = { maxCount: container[section].length, items: [container[section]] };
+                } else {
+                    let pureName = match[1];
+                    let number = parseInt(match[2]);
+                    if (isNaN(number)) {
+                        return accumulator;
+                    }
+                    // Make zero indexed
+                    number = number - 1;
+                    if (!accumulator[pureName]) {
+                        accumulator[pureName] = { maxCount: 0, items: [[]] };
+                    }
+                    if (accumulator[pureName].length < number + 1) {
+                        accumulator[pureName].items.push(container[section]);
+                    } else {
+                        accumulator[pureName].items[number] = container[section];
+                    }
+                    if (container[section].length > accumulator[pureName].maxCount) {
+                        accumulator[pureName].maxCount = container[section].length;
+                    }
+                }
+                return accumulator;
+            },
+            {}
+        );
+        target.abilities = {};
+        for (let key of Object.keys(config)) {
+            let maxCount = config[key].maxCount;
+            let items = config[key].items;
+            var abilities = [];
+
+            engine.logd("Exporting " + key);
+            for (let index = 0; index < maxCount; index++) {
+                for (let section in items) {
+                    if (index >= items[section].length) {
+                        abilities.push({ spacer: true });
+                    } else {
+                        abilities.push(items[section][index]);
+                    }
+                }
+            }
+            target.abilities[key] = abilities;
+        }
+        return target;
+    };
+
+    this.applyAttributes = function(attributes, target, parentKey, attributeKeys) {
+        engine.logd(`Exporting ${parentKey} attributes`);
+        for (let key of attributeKeys) {
+            if (attributes[key] || attributeKeys[key] === 0) {
+                target[parentKey][key] = attributes[key];
+            }
+        }
+        return target;
+    };
+
+    this.applyRepeating = function(sectionName, attributeKeys, completion) {
+        engine.logd("Processing " + sectionName);
+        getSectionIDs(`repeating_${sectionName}`, ids => {
+            if (ids.length === 0) {
+                completion([]);
+            } else {
+                let attributes = ids.reduce(
+                    (accumulator, id) => {
+                        let attributesForId = attributeKeys.map(key => { return `repeating_${sectionName}_${id}_${key}`; });
+                        accumulator = accumulator.concat(attributesForId);
+                        return accumulator;
+                    },
+                    []
+                );
+                getAttrs(attributes, values => {
+                    var objects = [];
+                    for (let id of ids) {
+                        var target = {};
+                        for (let key of attributeKeys) {
+                            let value = values[`repeating_${sectionName}_${id}_${key}`];
+                            if (value || value === 0) {
+                                target[key] = value;
+                            }
+                        }
+                        objects.push(target);
+                    }
+                    completion(objects);
+                });
+            }
+        });
+    };
+};
+
+const sheetExport = new SheetExport();
+this.export.SheetExport = SheetExport;
+this.export.sheetExport = sheetExport;
+
+// Build (version 1.0.0): Source/workers/main/setup/sheetReset.js
+
+
+const SheetReset = function() {
+
+    this.clear = function(completion) {
+        engine.logd(`Clearing all list objects`);
+        let sections = abilitySections.concat(["effects", "traits", "titles", "minions", "items"]);
+        let promise = new ThreadLessPromise(sections.length, completion);
+        for (let section of sections) {
+            getSectionIDs(`repeating_${section}`, ids => {
+                for (let id of ids) {
+                    removeRepeatingRow(`repeating_${section}_${id}`);
+                }
+                promise.complete();
+            });
+        }
     };
 
     this.clearAllAbilitiesAndEffects = function(completion) {
         engine.logd(`Clearing abilities and effects`);
         let sections = abilitySections.concat(["traits", "effects"]);
-        const ThreadLessPromise = class {
-            constructor(count, completion) {
-                this.count = count;
-                this.completions = 0;
-                this.completion = completion;
-            }
-
-            complete() {
-                this.completions += 1;
-                engine.logd(`Completed cleanup ${this.completions}/${this.count}`);
-                if (this.completions >= this.count) {
-                    this.completion();
-                }
-            }
-        };
         let promise = new ThreadLessPromise(sections.length, completion);
 
         for (let section of sections) {
@@ -9546,9 +9831,9 @@ const SheetSetup = function() {
     };
 };
 
-const sheetSetup = new SheetSetup();
-this.export.SheetSetup = SheetSetup;
-this.export.sheetSetup = sheetSetup;
+const sheetReset = new SheetReset();
+this.export.SheetReset = SheetReset;
+this.export.sheetReset = sheetReset;
 
 
 })();
@@ -9579,7 +9864,26 @@ on("clicked:applyJob", () => {
                 return;
             }
         }
-        imports.sheetSetup.execute(sheet);
+        imports.sheetImport.importJob(sheet);
+    });
+});
+
+on("clicked:importSheet", () => {
+    getAttrs(["import"], values => {
+        if (!values.import) {
+            return;
+        }
+        imports.sheetImport.importSheet(values.import);
+    });
+});
+
+on("clicked:exportSheet", () => {
+    imports.sheetExport.execute();
+});
+
+on("clicked:clearExport", () => {
+    setAttrs({
+        export: ""
     });
 });
 
@@ -9699,6 +10003,146 @@ on("clicked:phase", () => {
 
 on("clicked:end", () => {
     imports.rest.end();
+});
+
+</script>
+
+<script type="text/worker">
+
+// Build (version 1.0.0), generated file toggles
+
+const togglesImports = new (function() {
+    this.export = {};
+
+const workerName = "toggles"
+
+// Build (version 1.0.0): Source/workers/common/abilitySections.js
+
+
+const abilitySections = [
+    "limit", 
+    "song1", "song2", "song3", 
+    "primary1", "primary2", "primary3", 
+    "ninjutsu1", "ninjutsu2", "ninjutsu3", 
+    "secondary1", "secondary2", "secondary3", 
+    "instant1", "instant2", "instant3", 
+    "technique1", "technique2", "technique3"
+];
+
+this.export.abilitySections = abilitySections;
+
+
+})();
+
+// Build: Source/workers/toggles.js
+
+
+
+// Expand/collapse
+
+const imports = togglesImports.export;
+const itemSections = ["titles", "minions", "items"];
+
+function toggleExpandedState(attributeName) {
+    getAttrs([attributeName], values => {
+        // Toggle
+        const value = values[attributeName];
+        var attributes = {};
+        var newValue = "on";
+        if (value == "on" || value == "1") {
+            newValue = "off";
+        } else if (value == "off" || value == "0") {
+            newValue = "on";
+        }
+        attributes[attributeName] = newValue;
+        setAttrs(attributes);
+    });
+}
+
+function toggleExpandedStateInSection(eventInfo) {
+    const sourceAttributes = eventInfo.sourceAttribute.split("_");
+    const section = sourceAttributes[1];
+    const rowId = sourceAttributes[2];
+    toggleExpandedState(`repeating_${section}_${rowId}_repeatingExpandItem`);
+}
+
+function setCollapsedStateForSection(isExpanded, section) {
+    getSectionIDs(`repeating_${section}`, ids => {
+        var attributes = {};
+        for (let id of ids) {
+            attributes[`repeating_${section}_${id}_repeatingExpandItem`] = isExpanded ? "on" : "off";
+        }
+        if (Object.keys(attributes).length > 0) {
+            setAttrs(attributes);
+        }
+    });
+}
+
+const toggleSections = ["traits", "effects"].concat(itemSections).concat(imports.abilitySections);
+for (let section of toggleSections) {
+    on(`clicked:repeating_${section}:info`, eventInfo => {
+        toggleExpandedStateInSection(eventInfo);
+    });
+}
+
+on("clicked:song_info clicked:primary_info clicked:ninjutsu_info clicked:secondary_info clicked:instant_info clicked:technique_info", eventInfo => {
+    const actionComponents = eventInfo.htmlAttributes.name.split("_");
+    const section = actionComponents[1];
+    toggleExpandedState(`${section}HeaderExpandItem`);
+});
+
+on("clicked:expandAllEffects", () => {
+    setCollapsedStateForSection(false, "effects");
+});
+
+on("clicked:collapseAllEffects", () => {
+    setCollapsedStateForSection(true, "effects");
+});
+
+on("clicked:expandAllTraits", () => {
+    setCollapsedStateForSection(false, "traits");
+});
+
+on("clicked:collapseAllTraits", () => {
+    setCollapsedStateForSection(true, "traits");
+});
+
+on("clicked:expandAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(false, section);
+    }
+});
+
+on("clicked:collapseAllItems", () => {
+    for (let section of itemSections) {
+        setCollapsedStateForSection(true, section);
+    }
+});
+
+on("clicked:expandAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(false, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "off",
+        primaryHeaderExpandItem: "off",
+        secondaryHeaderExpandItem: "off",
+        instantHeaderExpandItem: "off",
+        techniqueHeaderExpandItem: "off"
+    });
+});
+
+on("clicked:collapseAllAbilities", () => {
+    for (let section of imports.abilitySections) {
+        setCollapsedStateForSection(true, section);
+    }
+    setAttrs({
+        songHeaderExpandItem: "on",
+        primaryHeaderExpandItem: "on",
+        secondaryHeaderExpandItem: "on",
+        instantHeaderExpandItem: "on",
+        techniqueHeaderExpandItem: "on"
+    });
 });
 
 </script>

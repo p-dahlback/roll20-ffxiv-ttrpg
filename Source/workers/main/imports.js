@@ -5,5 +5,6 @@
 /* build:import ../common/effects.js */
 /* build:import common/workerengine.js */
 /* build:import common/abilitySections.js */
+/* build:import common/threadlessPromise.js */
 /* build:import ../common/addEffects.js */
 /* build:import ../common/removeEffects.js */

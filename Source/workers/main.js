@@ -24,7 +24,26 @@ on("clicked:applyJob", () => {
                 return;
             }
         }
-        imports.sheetSetup.execute(sheet);
+        imports.sheetImport.importJob(sheet);
+    });
+});
+
+on("clicked:importSheet", () => {
+    getAttrs(["import"], values => {
+        if (!values.import) {
+            return;
+        }
+        imports.sheetImport.importSheet(values.import);
+    });
+});
+
+on("clicked:exportSheet", () => {
+    imports.sheetExport.execute();
+});
+
+on("clicked:clearExport", () => {
+    setAttrs({
+        export: ""
     });
 });
 
