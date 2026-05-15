@@ -52,7 +52,7 @@ const SheetAttributes = function() {
         "icon", "title", "type", "condition", "trigger", "target", "range", "check", "cr", "repeatingExpandItem",
         "baseEffect", "directHit", "effectName", "limitation", "effect", 
 
-        "stat", "hitType", "damageType", "hitDie", "baseValue", "dhValue", "restore", "effectSelf", "effectTarget", "combo",
+        "stat", "hitType", "damageType", "hitDie", "baseValue", "dhValue", "restore", "effectSelf", "effectTarget", "combo", "conditionalValue",
 
         "repeatingOverride"
     ];
